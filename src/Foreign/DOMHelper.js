@@ -19,6 +19,12 @@ exports.htmlCollectionToArray = function (collection) {
   return Array.prototype.slice.call(collection);
 };
 
+exports.getValue = function (element) {
+    return function () {
+      return element.value;
+    };
+};
+
 exports.keyCode = function (ev) {
   return ev.keyCode;
 };

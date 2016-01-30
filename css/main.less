@@ -12,6 +12,7 @@
 @fontSize:      16px;
 @fontSizeSmall: 14px;
 @fontSizeLarge: 24px;
+@fontSizeInput:            24px;
 
 // Dimensions
 @width:               800px;
@@ -27,6 +28,8 @@
 @boxWidth:            240px;
 @boxSpacing:          80px;
 @boxHeightMin:        100px;
+
+
 
 @transformerHeight:   30px;
 @transformerSpacing:  7px;
@@ -128,6 +131,17 @@ b {
     overflow: hidden;
 }
 
+.textarea {
+  outline: none;
+}
+
+#maintextarea {
+  outline: none;
+  resize: none;
+  font-family: 'Roboto Condensed', sans;
+  font-size: @fontSizeInput; 
+}
+
 .controlBox {
     text-align: center;
     float: left;
@@ -218,6 +232,10 @@ li.sortable-ghost {
     &:hover {
         background-color: darken(@bgCol, 10);
     }
+}
+
+#enterbutton {
+ font-size: @fontSizeLarge;
 }
 
 p.footer {

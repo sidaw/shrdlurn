@@ -69,6 +69,13 @@ chapter0 = {
             difficulty: Medium,
             initial: [[Yellow, Yellow, Red], [Yellow, Red], [Red], [Red], [Yellow, Red], [Yellow, Yellow, Red]],
             target: [[Red, Yellow, Red], [Red, Yellow, Red], [Red, Yellow, Red], [Red, Yellow, Red], [Red, Yellow, Red], [Red, Yellow, Red]]
+        },
+	"0.0" :-> {
+            name: "my test on this",
+            help: Just """more stuff?.""",
+            difficulty: Medium,
+            initial: [[Yellow, Yellow, Red], [Yellow, Red], [Red], [Red],[Yellow], [Yellow, Yellow, Red], [Yellow, Yellow, Red]],
+            target: [[Red, Yellow, Red], [Red, Yellow, Red], [Red, Yellow, Red], [Red, Yellow, Red], [Red, Yellow, Red], [Red, Yellow, Red]]
         }
     ]
 }

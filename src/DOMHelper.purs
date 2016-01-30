@@ -70,3 +70,6 @@ foreign import setStyleAttribute :: forall eff. String -> String -> HTMLElement 
 foreign import classAdd :: forall eff. String -> Element -> Eff (dom :: DOM | eff) Unit
 
 foreign import classRemove :: forall eff. String -> Element -> Eff (dom :: DOM | eff) Unit
+
+foreign import getValue :: forall eff. Element
+                                -> Eff (dom :: DOM | eff) String

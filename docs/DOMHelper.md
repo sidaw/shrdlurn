@@ -98,4 +98,10 @@ classAdd :: forall eff. String -> Element -> Eff (dom :: DOM | eff) Unit
 classRemove :: forall eff. String -> Element -> Eff (dom :: DOM | eff) Unit
 ```
 
+#### `getValue`
+
+``` purescript
+getValue :: forall eff. Element -> Eff (dom :: DOM | eff) String
+```
+
 

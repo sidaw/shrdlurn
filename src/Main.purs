@@ -22,6 +22,7 @@ import Data.List
 import Data.Maybe
 import Data.Nullable (toMaybe)
 import Data.String.Regex (regex, parseFlags, replace)
+import Data.String (split)
 import Data.Traversable
 import qualified Data.StrMap as SM
 
@@ -129,7 +130,8 @@ render setupUI gs = do
             setInnerHTML "" selectLevel
             traverse_ (appendLevelElement selectLevel gs.currentLevel) allLevelIds
 
-    let transformers = mapMaybe (getTransformer chapter) tids
+    -- let transformers = mapMaybe (getTransformer chapter) tids
+    let transformers = toList [mapStack Yellow, mapStack Yellow, mapStack Red]
     let steps = allSteps transformers level.initial
 
     -- On-canvas rendering
@@ -187,8 +189,19 @@ replaceTransformers ch initial = SM.fold replaceT initial ch.transformers
           replacement tr = "<span class=\"transformer\">" ++ tr.name ++ "</span>"
 
 -- | Clear all functions for the current level
-resetLevel = modifyGameStateAndRender true mod
+resetLevel = modifyGameStateAndRender false mod
     where mod gs = gs { levelState = SM.insert gs.currentLevel Nil gs.levelState }
+
+
+-- | clicked enter
+enteredText = do
+    doc <- getDocument
+    Just maintextarea <- getElementById' "maintextarea" doc
+    cmdsequence <- getValue maintextarea
+    
+    modifyGameStateAndRender true (mod cmdsequence)
+    
+    where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel (toList (split " " cmdsequence)) gs.levelState }
 
 -- | Go to the previous level
 prevLevel = modifyGameStateAndRender true mod
@@ -220,14 +233,6 @@ keyPress event = do
 
     when (not ctrlPressed) $
         case code of
-             -- 'r': reset lists
-             82 ->  resetLevel
-             -- '<-', 'p': previous level
-             37 -> prevLevel
-             80 -> prevLevel
-             -- '->', 'n': next level
-             39 -> nextLevel
-             78 -> nextLevel
              _ -> return unit
 
     return unit
@@ -323,7 +328,7 @@ main = do
     Just ulAvailable <- getElementById' "available" doc
     Just ulProgram   <- getElementById' "program" doc
     installSortable ulAvailable (return unit)
-    installSortable ulProgram reprogramHandler
+    installSortable ulProgram (return unit)
 
     -- set up keyboard event handlers
     win <- windowToEventTarget <$> window
@@ -336,6 +341,9 @@ main = do
     -- Click handlers for buttons
     withElementById "reset" doc $ \button ->
         addEventListener' click (const resetLevel) (elementToEventTarget button)
+
+    withElementById "enterbutton" doc $ \button ->
+        addEventListener' click (const enteredText) (elementToEventTarget button)
 
     withElementById "nextlevel" doc $ \button ->
         addEventListener' click (const nextLevel) (elementToEventTarget button)
