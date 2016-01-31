@@ -41,6 +41,18 @@ convert :: AWall -> Wall
 
 Convert 2D Array to List
 
+#### `intToStack`
+
+``` purescript
+intToStack :: Array Int -> Stack
+```
+
+#### `intToWall`
+
+``` purescript
+intToWall :: Array (Array Int) -> Wall
+```
+
 #### `LevelEntry`
 
 ``` purescript

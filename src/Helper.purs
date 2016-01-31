@@ -27,6 +27,13 @@ type AWall = Array AStack
 convert :: AWall -> Wall
 convert = toList <<< map toList
 
+intToStack :: Array Int -> Stack
+intToStack = toList <<< map intToCube
+
+
+intToWall :: (Array (Array Int)) -> Wall
+intToWall = toList <<< map intToStack
+
 -- | Helper type to create levels from arrays
 type LevelEntry = {
     name       :: String,

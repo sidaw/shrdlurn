@@ -36,6 +36,7 @@ import Storage
 -- import Transformer
 import Types
 import Helper
+import Sempre
 
 
 -- | Type synonyms for different combinations of effects
@@ -151,8 +152,14 @@ enteredText = do
     doc <- getDocument
     Just maintextarea <- getElementById' "maintextarea" doc
     cmdsequence <- getValue maintextarea
+
+    isomer <- getIsomerInstance "canvas"
+    -- On-canvas rendering
+    clearCanvas isomer
+    -- renderWalls isomer (toList [wallFromJSON "{}"])
+    renderWalls isomer (toList [intToWall [[1, 2, 3], [3, 2], [1], [1,2]]])
     -- cmdsequence <- Nil
-    log $ "some random stuff: " ++ cmdsequence
+    log readJSON cmdsequence :: F (Array (Array Int))
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
 

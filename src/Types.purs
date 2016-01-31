@@ -47,6 +47,14 @@ cubeToEnum 3 = Just Orange
 cubeToEnum 4 = Just Yellow
 cubeToEnum _ = Nothing
 
+intToCube :: Int -> Cube
+intToCube 0 = Cyan
+intToCube 1 = Brown
+intToCube 2 = Red
+intToCube 3 = Orange
+intToCube 4 = Yellow
+intToCube _ = Yellow
+
 type Stack = List Cube
 
 type Wall = List Stack

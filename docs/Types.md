@@ -20,6 +20,12 @@ Bounded Cube
 Enum Cube
 ```
 
+#### `intToCube`
+
+``` purescript
+intToCube :: Int -> Cube
+```
+
 #### `Stack`
 
 ``` purescript
