@@ -159,7 +159,7 @@ enteredText = do
     -- renderWalls isomer (toList [wallFromJSON "{}"])
     renderWalls isomer (toList [intToWall [[1, 2, 3], [3, 2], [1], [1,2]]])
     -- cmdsequence <- Nil
-    log readJSON cmdsequence :: F (Array (Array Int))
+    log either "" (readJSON cmdsequence :: F (Array (Array Int)))
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
 
