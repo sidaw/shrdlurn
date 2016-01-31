@@ -13,7 +13,7 @@ foreign import data STORAGE :: !
 
 type SaveableGameState = {
     currentLevel :: LevelId,
-    levelState :: SM.StrMap (Array TransformerId)
+    levelState :: SM.StrMap (Array String)
 }
 
 toSaveable :: GameState -> SaveableGameState

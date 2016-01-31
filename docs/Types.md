@@ -85,7 +85,7 @@ type Chapter = { name :: String, transformers :: StrMap TransformerRecord, level
 #### `GameState`
 
 ``` purescript
-type GameState = { currentLevel :: LevelId, levelState :: StrMap (List TransformerId) }
+type GameState = { currentLevel :: LevelId, levelState :: StrMap (List String) }
 ```
 
 

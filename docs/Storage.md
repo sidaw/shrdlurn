@@ -9,7 +9,7 @@ data STORAGE :: !
 #### `SaveableGameState`
 
 ``` purescript
-type SaveableGameState = { currentLevel :: LevelId, levelState :: StrMap (Array TransformerId) }
+type SaveableGameState = { currentLevel :: LevelId, levelState :: StrMap (Array String) }
 ```
 
 #### `toSaveable`

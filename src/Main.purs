@@ -20,20 +20,23 @@ import Data.Foldable
 import Data.Int
 import Data.List
 import Data.Maybe
-import Data.Nullable (toMaybe)
+-- import Data.Nullable (toMaybe)
 import Data.String.Regex (regex, parseFlags, replace)
-import Data.String (split)
-import Data.Traversable
+-- import Data.String (split)
+-- import Data.Traversable
 import qualified Data.StrMap as SM
+import Data.Foreign
+import Data.Foreign.Class
 
 import Analytics
 import DOMHelper
 import Isomer
 import Levels
-import Sortable
 import Storage
-import Transformer
+-- import Transformer
 import Types
+import Helper
+
 
 -- | Type synonyms for different combinations of effects
 type EffIsomer = forall eff. Eff (isomer :: ISOMER | eff) Unit
@@ -50,7 +53,7 @@ cubeColor Yellow = colorFromRGB 237 201  81
 
 -- | Spacing between two walls
 spacing :: Number
-spacing = 5.5
+spacing = 9.0
 
 -- | Like traverse_, but the function also takes an index parameter
 traverseWithIndex_ :: forall a b m. (Applicative m) => (Int -> a -> m b) -> (List a) -> m Unit
@@ -87,121 +90,71 @@ renderTarget isomer target = do
     setIsomerConfig isomer 28.0 1280.0 410.0
     renderWall isomer 0.0 target
 
--- | Get program (list of transformer ids) of the active level
-getCurrentIds :: GameState -> (List TransformerId)
-getCurrentIds gs = case (SM.lookup gs.currentLevel gs.levelState) of
-                       Just ids -> ids
-                       Nothing -> Nil
 
 -- | Render all UI components, DOM and canvas
 render :: Boolean -> GameState -> App
 render setupUI gs = do
     doc <- getDocument
     isomer <- getIsomerInstance "canvas"
-
     let level   = getLevel gs.currentLevel
-        chapter = getChapter gs.currentLevel
-        tids    = getCurrentIds gs
+       -- wallee    = getCurrentWallList gs
 
     -- Set up UI, only if new level is loaded
     when setupUI $ do
-        Just ulAvailable <- getElementById' "available" doc
-        Just ulProgram   <- getElementById' "program" doc
-
-        setInnerHTML "" ulAvailable
-        setInnerHTML "" ulProgram
-
-        let unused       = foldl (flip SM.delete) chapter.transformers tids
-            insert sm id = case (getTransformerRecord chapter id) of
-                               (Just tr) -> SM.insert id tr sm
-                               Nothing ->   sm
-            active =       foldl insert SM.empty tids
-
-        -- create li elements for transformers
-        traverseWithKey_ (appendTransformerElement ulAvailable) unused
-        traverseWithKey_ (appendTransformerElement ulProgram) active
-
-        -- set up mouse event handlers
-        let installClickHandler li = addEventListener' click (clickLi (htmlElementToElement li)) (htmlElementToEventTarget li)
-        children' ulAvailable >>= traverse_ installClickHandler
-        children' ulProgram   >>= traverse_ installClickHandler
-
         withElementById "levels" doc $ \selectLevel -> do
             setInnerHTML "" selectLevel
             traverse_ (appendLevelElement selectLevel gs.currentLevel) allLevelIds
 
     -- let transformers = mapMaybe (getTransformer chapter) tids
-    let transformers = toList [mapStack Yellow, mapStack Yellow, mapStack Red]
-    let steps = allSteps transformers level.initial
+    -- let transformers = toList [mapStack Yellow, mapStack Yellow, mapStack Red]
+    -- let steps = allSteps transformers level.initial
 
     -- On-canvas rendering
     clearCanvas isomer
-    renderWalls isomer steps
+    -- renderWalls isomer steps
+    -- renderWalls isomer wallee
+    renderWalls isomer (getWallList "")
     renderTarget isomer level.target
 
     -- DOM 'rendering'
-    let solved = maybe false (== (level.target)) (last steps)
-        visibility = if solved then "visible" else "hidden"
-        cssAction = if solved then classAdd "flash" else classRemove "flash"
+    -- let solved = maybe false (== (level.target)) (last wallee)
+    --    visibility = if solved then "visible" else "hidden"
+    --    cssAction = if solved then classAdd "flash" else classRemove "flash"
 
-    withElementById "message" doc (setStyleAttribute "visibility" visibility <<< unsafeElementToHTMLElement)
-    withElementById "solved" doc cssAction
+    -- withElementById "message" doc (setStyleAttribute "visibility" visibility <<< unsafeElementToHTMLElement)
+    -- withElementById "solved" doc cssAction
 
-    let helpHTML = maybe "" (nameToHTML <<< replaceTransformers chapter) level.help
-    withElementById "help" doc (setInnerHTML helpHTML)
+    withElementById "help" doc $ \helpText -> do
+       setInnerHTML (fromMaybe "" level.help) helpText
 
     -- Debug output:
     let toArray = fromList :: forall a. List a -> Array a
         toArrays = toArray <<< map toArray
-    log $ "Program: " ++ show (toArray tids)
     log $ "Target: " ++ show (toArrays level.target)
-    log "Steps:"
-    traverse_ (print <<< toArrays) steps
     log ""
+
+getWallList :: String -> (List Wall)
+getWallList json = (toList [convert [[Yellow, Red, Red], [Yellow, Red], [Red], [Red]], convert [[Yellow, Yellow, Red], [Yellow, Red], [Red], [Red]]])
 
 -- | Replace all occurences of a pattern in a string with a replacement
 replaceAll :: String -> String -> String -> String
 replaceAll pattern replacement = replace (regex pattern flags) replacement
     where flags = parseFlags "g"
 
--- | Replace color placeholders in the transformer description by colored rectangular divs
-replaceColors :: String -> String
-replaceColors s =
-    foldl replaceColor s ("X" : map show (toList $ Cyan `enumFromTo` Yellow))
-        where replaceColor s c = replaceAll (pattern c) (replacement c) s
-              pattern c = "{" ++ c ++ "}"
-              replacement c = "<div class=\"cube " ++ c ++ "\"> </div>"
-
--- | Replace stack markers
-replaceStacks :: String -> String
-replaceStacks = replaceAll "\\[" """<div class="stack">""" <<<
-                replaceAll "\\]" "</div>"
-
--- | Render a transformer name as HTML
-nameToHTML :: String -> String
-nameToHTML = replaceColors <<< replaceStacks
-
--- | Replace transformer names by boxes
-replaceTransformers :: Chapter -> String -> String
-replaceTransformers ch initial = SM.fold replaceT initial ch.transformers
-    where replaceT text id tr = replaceAll (pattern id) (replacement tr) text
-          pattern id = "`" ++ id ++ "`"
-          replacement tr = "<span class=\"transformer\">" ++ tr.name ++ "</span>"
-
 -- | Clear all functions for the current level
 resetLevel = modifyGameStateAndRender false mod
     where mod gs = gs { levelState = SM.insert gs.currentLevel Nil gs.levelState }
-
+   
 
 -- | clicked enter
 enteredText = do
     doc <- getDocument
     Just maintextarea <- getElementById' "maintextarea" doc
     cmdsequence <- getValue maintextarea
-    
-    modifyGameStateAndRender true (mod cmdsequence)
-    
-    where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel (toList (split " " cmdsequence)) gs.levelState }
+    -- cmdsequence <- Nil
+    log $ "some random stuff: " ++ cmdsequence
+    -- modifyGameStateAndRender true (mod cmdsequence)
+    --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
 
 -- | Go to the previous level
 prevLevel = modifyGameStateAndRender true mod
@@ -217,7 +170,7 @@ prevLevel = modifyGameStateAndRender true mod
 nextLevel = do
     mgs <- loadGameState
     let gs' = fromMaybe initialGS mgs
-    analyticsLevelChanged (next gs'.currentLevel)
+--    analyticsLevelChanged (next gs'.currentLevel)
 
     modifyGameStateAndRender true mod
     where mod gs   = gs { currentLevel = next gs.currentLevel }
@@ -235,31 +188,6 @@ keyPress event = do
         case code of
              _ -> return unit
 
-    return unit
-
--- | Click handler for the <li> elements (transformers)
-clickLi :: Element -> Event -> App
-clickLi liEl event = do
-    newId <- unsafeGetAttribute "id" liEl
-    Just ul <- toMaybe <$> parentElement (elementToNode liEl)
-    ulId <- unsafeGetAttribute "id" ul
-    modifyGameStateAndRender true (modify ulId newId)
-
-    where modify ulId clicked gs = let program = getCurrentIds gs
-                                       program' =
-                                           if ulId == "available"
-                                           then program `snoc` clicked
-                                           else filter (/= clicked) program
-                          in gs { levelState = SM.insert gs.currentLevel program' gs.levelState }
-
--- | Add a li-element corresponding to the given Transformer
-appendTransformerElement :: Element -> String -> TransformerRecord -> EffDOM
-appendTransformerElement ul id t = do
-    doc <- getDocument
-    li <- createElement "li" doc
-    setAttribute "id" id li
-    setInnerHTML (nameToHTML t.name) li
-    appendChild (elementToNode li) (elementToNode ul)
     return unit
 
 -- | Add an option-element corresponding to the given Level
@@ -306,30 +234,10 @@ levelChangeHandler selectLevel _ = do
     modifyGameStateAndRender true $ \gs ->
         gs { currentLevel = levelId }
 
--- | Event handler for a 'reprogram' (new instruction, re-ordering, ..)
-reprogramHandler :: App
-reprogramHandler = do
-    doc <- getDocument
-
-    -- Retrieve current 'program'
-    Just ulAvailable <- getElementById' "program" doc
-    lis <- children' ulAvailable
-    let getId = unsafeGetAttribute "id" <<< htmlElementToElement
-    program <- toList <$> traverse getId lis
-
-    modifyGameStateAndRender false $ \gs ->
-        gs { levelState = SM.insert gs.currentLevel program gs.levelState }
-
 main :: App
 main = do
     doc <- getDocument
-
-    -- install sortable
-    Just ulAvailable <- getElementById' "available" doc
-    Just ulProgram   <- getElementById' "program" doc
-    installSortable ulAvailable (return unit)
-    installSortable ulProgram (return unit)
-
+    
     -- set up keyboard event handlers
     win <- windowToEventTarget <$> window
     addEventListener' keydown keyPress win
@@ -337,10 +245,6 @@ main = do
     -- set up 'change' handler for the level selector
     withElementById "levels" doc $ \selectLevel ->
         addEventListener' change (levelChangeHandler selectLevel) (elementToEventTarget selectLevel)
-
-    -- Click handlers for buttons
-    withElementById "reset" doc $ \button ->
-        addEventListener' click (const resetLevel) (elementToEventTarget button)
 
     withElementById "enterbutton" doc $ \button ->
         addEventListener' click (const enteredText) (elementToEventTarget button)

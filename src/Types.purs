@@ -90,5 +90,5 @@ type Chapter = {
 
 type GameState = {
     currentLevel :: LevelId,
-    levelState   :: SM.StrMap (List TransformerId)
+    levelState   :: SM.StrMap (List String)
 }
