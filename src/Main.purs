@@ -20,6 +20,7 @@ import Data.Foldable
 import Data.Int
 import Data.List
 import Data.Maybe
+import Data.Either
 -- import Data.Nullable (toMaybe)
 import Data.String.Regex (regex, parseFlags, replace)
 -- import Data.String (split)
@@ -145,9 +146,12 @@ replaceAll pattern replacement = replace (regex pattern flags) replacement
 -- | Clear all functions for the current level
 resetLevel = modifyGameStateAndRender false mod
     where mod gs = gs { levelState = SM.insert gs.currentLevel Nil gs.levelState }
-   
 
--- | clicked enter
+
+ignoreError = either (const [[0]]) (id)
+
+jsonToWall x =  intToWall $ ignoreError $ readJSON x :: F (Array (Array Int))
+-- | Clicked
 enteredText = do
     doc <- getDocument
     Just maintextarea <- getElementById' "maintextarea" doc
@@ -156,10 +160,12 @@ enteredText = do
     isomer <- getIsomerInstance "canvas"
     -- On-canvas rendering
     clearCanvas isomer
-    -- renderWalls isomer (toList [wallFromJSON "{}"])
-    renderWalls isomer (toList [intToWall [[1, 2, 3], [3, 2], [1], [1,2]]])
+    renderWalls isomer $ toList $ [jsonToWall cmdsequence]
+    -- parsedJSON <- readJSON cmdsequence :: F (Array (Array Int))
+    -- renderWalls isomer (toList [intToWall (rights parsedJSON)])
+    -- [[1, 2, 3], [3, 2], [1], [1,2]]
     -- cmdsequence <- Nil
-    log either "" (readJSON cmdsequence :: F (Array (Array Int)))
+    print $ either (const [[0]]) (id) (readJSON cmdsequence :: F (Array (Array Int)))
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
 
