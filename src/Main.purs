@@ -1,4 +1,4 @@
-module Main (App(..), main) where
+module Main (App(..), main, renderJSON) where
 
 import Prelude
 import Control.Apply
@@ -37,8 +37,6 @@ import Storage
 -- import Transformer
 import Types
 import Helper
-import Sempre
-
 
 -- | Type synonyms for different combinations of effects
 type EffIsomer = forall eff. Eff (isomer :: ISOMER | eff) Unit
@@ -83,7 +81,7 @@ renderWall isomer y wall =
 -- | Render a series of walls
 renderWalls :: IsomerInstance -> (List Wall) -> EffIsomer
 renderWalls isomer walls = do
-    setIsomerConfig isomer 40.0 10.0 320.0
+    setIsomerConfig isomer 40.0 200.0 500.0
     traverseWithIndex_ (\y -> renderWall isomer (toNumber y)) walls
 
 -- | Render the target shape
@@ -113,18 +111,9 @@ render setupUI gs = do
 
     -- On-canvas rendering
     clearCanvas isomer
-    -- renderWalls isomer steps
-    -- renderWalls isomer wallee
+   
     renderWalls isomer (getWallList "")
     renderTarget isomer level.target
-
-    -- DOM 'rendering'
-    -- let solved = maybe false (== (level.target)) (last wallee)
-    --    visibility = if solved then "visible" else "hidden"
-    --    cssAction = if solved then classAdd "flash" else classRemove "flash"
-
-    -- withElementById "message" doc (setStyleAttribute "visibility" visibility <<< unsafeElementToHTMLElement)
-    -- withElementById "solved" doc cssAction
 
     withElementById "help" doc $ \helpText -> do
        setInnerHTML (fromMaybe "" level.help) helpText
@@ -147,61 +136,24 @@ replaceAll pattern replacement = replace (regex pattern flags) replacement
 resetLevel = modifyGameStateAndRender false mod
     where mod gs = gs { levelState = SM.insert gs.currentLevel Nil gs.levelState }
 
-
 ignoreError = either (const [[0]]) (id)
-
 jsonToWall x =  intToWall $ ignoreError $ readJSON x :: F (Array (Array Int))
--- | Clicked
-enteredText = do
-    doc <- getDocument
-    Just maintextarea <- getElementById' "maintextarea" doc
-    cmdsequence <- getValue maintextarea
 
+renderJSON :: String -> App
+renderJSON jsonstr = do
+    doc <- getDocument
     isomer <- getIsomerInstance "canvas"
     -- On-canvas rendering
     clearCanvas isomer
-    renderWalls isomer $ toList $ [jsonToWall cmdsequence]
+    renderWalls isomer $ toList $ [jsonToWall jsonstr]
     -- parsedJSON <- readJSON cmdsequence :: F (Array (Array Int))
     -- renderWalls isomer (toList [intToWall (rights parsedJSON)])
     -- [[1, 2, 3], [3, 2], [1], [1,2]]
     -- cmdsequence <- Nil
-    print $ either (const [[0]]) (id) (readJSON cmdsequence :: F (Array (Array Int)))
+    log "here"
+    print $ either (const [[0]]) (id) (readJSON jsonstr :: F (Array (Array Int)))
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
-
--- | Go to the previous level
-prevLevel = modifyGameStateAndRender true mod
-    where mod gs   = gs { currentLevel = prev gs.currentLevel }
-          prev cur = fromMaybe cur $ before cur allLevelIds
-          before _ Nil                   = Nothing
-          before _ (Cons _ Nil)          = Nothing
-          before x (Cons b (Cons x' xs)) = if x == x'
-                                           then Just b
-                                           else before x (x':xs)
-
--- | Go to the next level
-nextLevel = do
-    mgs <- loadGameState
-    let gs' = fromMaybe initialGS mgs
---    analyticsLevelChanged (next gs'.currentLevel)
-
-    modifyGameStateAndRender true mod
-    where mod gs   = gs { currentLevel = next gs.currentLevel }
-          next cur = fromMaybe cur $ head =<< (tail $ dropWhile (/= cur) allLevelIds)
-
--- | General key press handler
-keyPress :: Event -> App
-keyPress event = do
-    doc <- getDocument
-    let kev = unsafeEventToKeyboardEvent event
-        code = keyCode kev
-        ctrlPressed = ctrlKey kev
-
-    when (not ctrlPressed) $
-        case code of
-             _ -> return unit
-
-    return unit
 
 -- | Add an option-element corresponding to the given Level
 appendLevelElement :: Element -> LevelId -> LevelId -> EffDOM
@@ -251,19 +203,8 @@ main :: App
 main = do
     doc <- getDocument
     
-    -- set up keyboard event handlers
-    win <- windowToEventTarget <$> window
-    addEventListener' keydown keyPress win
-
-    -- set up 'change' handler for the level selector
     withElementById "levels" doc $ \selectLevel ->
         addEventListener' change (levelChangeHandler selectLevel) (elementToEventTarget selectLevel)
-
-    withElementById "enterbutton" doc $ \button ->
-        addEventListener' click (const enteredText) (elementToEventTarget button)
-
-    withElementById "nextlevel" doc $ \button ->
-        addEventListener' click (const nextLevel) (elementToEventTarget button)
 
     -- load game state (or set initial one)
     gs <- fromMaybe initialGS <$> loadGameState

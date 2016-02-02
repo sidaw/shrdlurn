@@ -1,7 +1,6 @@
 // module Sempre
 function cleanValue(valuestring) {
-    return valuestring.
-	.replace(/fb:en./g, '')
+    return valuestring.replace(/fb:en./g, '')
         .replace(/edu.stanford.nlp.sempre.overnight.CubeWorld./g,'')
 	.toLowerCase();
 }
@@ -45,7 +44,6 @@ var formatFormula =  function(formula) {
     }
     return str
 }
-exports.formatFormula = formatFormula
 
 var formatValue = function(value, listlen) {
     if (typeof value == 'undefined') return ''
@@ -82,23 +80,8 @@ var formatValue = function(value, listlen) {
     }   
     return str
 }
-exports.formatValue = formatValue;
 
-var unpackListValue = function(value) {
-    if (!value) return null
-    if (value[0] != 'list') {
-	console.log('not a list')
-	return null
-    }
-    var elements = []
-    for (var i=1; i<value.length; i++) {
-	    elements.push(formatValue(value[i], value.length));
-    }
-    return elements
-}
-exports.unpackListValue = unpackListValue
-
-exports.parseSEMPRE = function (jsontext) {
+var parseSEMPRE = function (jsontext) {
     var jsresp = JSON.parse(jsontext)['candidates'];
     // filter BADJAVA
     var valid = jsresp.filter(function (v) {return v['value'][0]!='error' && v['value'].length!=1})
@@ -108,7 +91,7 @@ exports.parseSEMPRE = function (jsontext) {
     
     for (var i=0; i<valid.length; i++) {
 	var qapair = new Object();
-	qapair.value = valid[i]['value'];
+	qapair.value = formatValue(valid[i]['value']);
 	qapair.formula = formatFormula(valid[i]['formula']);
 	qapair.raw = valid[i];
 	qapair.rank = i;
@@ -137,21 +120,42 @@ var sempreFormat = function (ques) {
     return ques.replace(/\+/g, ' __+ ').replace(/\(/g, ' [ ').replace(/\)/g, ' ] ')
 	.replace(/\+/g, ' + ').replace(/-/g, ' - ').replace(/\*/g, ' * ').replace(/\//g, ' / ')
 }
-exports.sempreFormat = sempreFormat;
 
-// query various problems
-exports.query = function(query, callback) {
-    var request = require('request');
+var semprequery = function(query, callback) {
     var pquery = sempreFormat(query);
-    setTimeout(function() {
-	request('http://localhost:8400/sempre?format=lisp2json&q='+pquery, function (error, response, body) {
-	    if (!error && response.statusCode == 200) {
-		//response = formatter.toHumanFriendly(body);
-		//log.info({note:'sempre_query_response', source:source, query:query, response:response})
-		callback(body);
-	    } else {
-		console.log('sempre error or 200 status');
-	    }
-	})
-    }, 50);
+    var xmlhttp = new XMLHttpRequest();
+    var url = 'http://localhost:8400/sempre?format=lisp2json&q='+pquery
+    console.log(url)
+    xmlhttp.onreadystatechange = function() {
+	if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
+            displayValue(xmlhttp.responseText);
+	};
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();	
 }
+
+function displayValue(strval) {
+    var formval = parseSEMPRE(strval);
+    document.getElementById("sempreret").innerHTML = formval[0].formula + ": " + formval[0].value;
+    var PSMain = PS.Main;
+    PSMain.renderJSON(formval[0].value)()
+}
+
+function runCurrentQuery() {
+    querystr = document.getElementById("maintextarea").value
+    document.getElementById("maintextarea").value = ''
+    document.getElementById("history").innerHTML += "<br/>" + querystr 
+    semprequery(querystr, displayValue)
+}
+
+document.getElementById("enterbutton").onclick = function() {
+    runCurrentQuery()
+};
+
+document.getElementById("maintextarea").onkeypress = function(e) {
+    if (e.keyCode == 13) {
+	runCurrentQuery();
+	return false;
+    }
+};

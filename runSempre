@@ -1,0 +1,10 @@
+#!/bin/sh
+SEMPATH=../semparse
+GRAMMAR=../cubesem/grammar/cube.grammar
+cd $SEMPATH
+
+# elif [ $1 = "cube" ]; then
+
+OPTIONS="-Dmodules=core,overnight -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains rule -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 1000 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true" #-Parser FloatingParser
+
+rlwrap java $OPTIONS "$@"

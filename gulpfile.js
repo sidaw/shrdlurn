@@ -92,7 +92,7 @@ gulp.task("concat", ["bundle"], function() {
     return gulp.src([
         "bower_components/isomer/dist/isomer.min.js",
         "dist/main.js",
-	"js/sempre.js"
+	"js/Sempre.js"
 	
         ])
         .pipe(concat("main.js"))
