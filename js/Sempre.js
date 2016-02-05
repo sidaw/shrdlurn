@@ -1,7 +1,9 @@
 // module Sempre
 function cleanValue(valuestring) {
-    return valuestring.replace(/fb:en./g, '')
-        .replace(/edu.stanford.nlp.sempre.overnight.CubeWorld./g,'')
+    if (!valuestring) return '';
+    return valuestring
+        .replace(/edu.stanford.nlp.sempre.cubeworld.CubeWorld./g,'')
+	.replace(/edu.stanford.nlp.sempre./g,'')
 	.toLowerCase();
 }
 
@@ -87,7 +89,7 @@ var parseSEMPRE = function (jsontext) {
     var valid = jsresp.filter(function (v) {return v['value'][0]!='error' && v['value'].length!=1})
     //console.log(valid)
     var lstqapairs = [];
-    if(valid.length == 0) return 'too many answers...';
+    if(valid.length == 0) return undefined;
     
     for (var i=0; i<valid.length; i++) {
 	var qapair = new Object();
@@ -95,6 +97,8 @@ var parseSEMPRE = function (jsontext) {
 	qapair.formula = formatFormula(valid[i]['formula']);
 	qapair.raw = valid[i];
 	qapair.rank = i;
+	qapair.score = valid[i].score.toFixed(2);
+	qapair.prob = valid[i].prob.toFixed(2);
 	lstqapairs.push(qapair);
     }
     // console.log(lstqapairs)
@@ -128,30 +132,135 @@ var semprequery = function(query, callback) {
     console.log(url)
     xmlhttp.onreadystatechange = function() {
 	if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
-            displayValue(xmlhttp.responseText);
+            callback(xmlhttp.responseText);
 	};
     }
     xmlhttp.open("GET", url, true);
     xmlhttp.send();	
 }
 
-function displayValue(strval) {
-    var formval = parseSEMPRE(strval);
-    document.getElementById("sempreret").innerHTML = formval[0].formula + ": " + formval[0].value;
+var semprequery = function(query, callback) {
+    var pquery = sempreFormat(query);
+    //var xmlhttp = new XMLHttpRequest();
+    var url = 'http://localhost:8400/sempre?format=lisp2json&q='+pquery
+    console.log(url)
+    xmlhttp.onreadystatechange = function() {
+	if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
+            callback(xmlhttp.responseText);
+	};
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();	
+}
+
+var semprecommand = function(cmd) {
+    var url = 'http://localhost:8400/sempre?format=lisp2json&q='+cmd
+    console.log(url)
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();	
+}
+
+
+function logh(strlog) {document.getElementById("history").innerHTML += strlog + "; " }
+
+function updateCanvas(strwalls) {
     var PSMain = PS.Main;
-    PSMain.renderJSON(formval[0].value)()
+    var transformedwall = '[' + G.originalWall + ',' + G.originalWall + ']';
+    console.log(strwalls)
+    
+    if ( strwalls && strwalls.length > 0)
+    {
+	var isAction = strwalls.indexOf('true') == -1 && strwalls.indexOf('false')==-1 //hack!
+	if (isAction)
+	    transformedwall = '[ ' + G.originalWall + ',' + strwalls +' ]'
+    }
+    PSMain.renderJSON(transformedwall)()
+}
+
+String.prototype._format = function(placeholders) {
+    var s = this;
+    for(var propertyName in placeholders) {
+	console.log(propertyName)
+        var re = new RegExp('{' + propertyName + '}', 'gm');
+        s = s.replace(re, placeholders[propertyName]);
+    }    
+    return s;
+};
+
+function doSempreAction(jsonstr) {
+    var formval = parseSEMPRE(jsonstr);
+    if (formval == undefined) {
+	console.log('undefined answer from sempre')
+	return
+    }
+    G.semAnsInd = 0;
+    G.semAns = formval;
+    document.getElementById("sempreret").innerHTML = ''
+    for (i in formval)
+	document.getElementById("sempreret").innerHTML +=
+    '(prob={prob},score={score}): {formula}'._format(formval[i]) +
+     '<br/>';
+    
+    var strwalls = formval[G.semAnsInd].value;
+    updateCanvas(strwalls)
+}
+
+function showNext() {
+    if (G.semAnsInd < G.semAns.length )
+	updateCanvas(G.semAns[++G.semAnsInd].value)
 }
 
 function runCurrentQuery() {
     querystr = document.getElementById("maintextarea").value
     document.getElementById("maintextarea").value = ''
-    document.getElementById("history").innerHTML += "<br/>" + querystr 
-    semprequery(querystr, displayValue)
+
+    logh('  ' + querystr)
+    
+    if (querystr.startsWith(":|")) {
+	newWall()
+    }
+    else if (querystr.startsWith(":)")) {
+	semprecommand('(a ' + G.semAnsInd+')')
+	showNext()
+    }
+    else if (querystr.startsWith(":(")) {
+	showNext()
+    }
+    else {
+	semprequery('parse ' + querystr, doSempreAction)
+    }
 }
+
+function newWall() {
+    querystr = "_newInitialWall" // attach arguments here!
+    semprequery(querystr, function (jsonstr) {
+	var formval = parseSEMPRE(jsonstr);
+	G.originalWall = formval[0].value;
+	updateCanvas()
+    })
+}
+
+var G = {}
+G.originalWall = "";
+G.semAns = {};
+G.semAnsInd = 0;
+var xmlhttp = new XMLHttpRequest();
 
 document.getElementById("enterbutton").onclick = function() {
     runCurrentQuery()
 };
+
+document.getElementById("newwallbutton").onclick = function() {
+    newWall()
+};
+document.getElementById("happybutton").onclick = function() {
+    semprecommand('(a ' + G.semAnsInd+')')
+    showNext()
+};
+document.getElementById("sadbutton").onclick = function() {
+    showNext()
+};
+
 
 document.getElementById("maintextarea").onkeypress = function(e) {
     if (e.keyCode == 13) {
@@ -159,3 +268,6 @@ document.getElementById("maintextarea").onkeypress = function(e) {
 	return false;
     }
 };
+
+newWall();
+document.getElementById("maintextarea").focus()

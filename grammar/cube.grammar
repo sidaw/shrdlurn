@@ -1,27 +1,29 @@
 #
-(def @getInitialWall edu.stanford.nlp.sempre.overnight.CubeWorld.getInitialWall)
-(def @newInitialWall edu.stanford.nlp.sempre.overnight.CubeWorld.newInitialWall)
-(def @randomWall edu.stanford.nlp.sempre.overnight.CubeWorld.randomWall)
+(def @getInitialWall edu.stanford.nlp.sempre.cubeworld.CubeWorld.getInitialWall)
+(def @newInitialWall edu.stanford.nlp.sempre.cubeworld.CubeWorld.newInitialWall)
+(def @randomWall edu.stanford.nlp.sempre.cubeworld.CubeWorld.randomWall)
 
-(def @changeSetColor edu.stanford.nlp.sempre.overnight.CubeWorld.changeSetColor)
-(def @removeSet edu.stanford.nlp.sempre.overnight.CubeWorld.removeSet)
-(def @setUnion edu.stanford.nlp.sempre.overnight.CubeWorld.setUnion)
-(def @setIntersection edu.stanford.nlp.sempre.overnight.CubeWorld.setIntersection)
-(def @getColor edu.stanford.nlp.sempre.overnight.CubeWorld.getColor)
-(def @getRowBottom edu.stanford.nlp.sempre.overnight.CubeWorld.getRowBottom)
-(def @getRowTop edu.stanford.nlp.sempre.overnight.CubeWorld.getRowTop)
-(def @stackOnTop edu.stanford.nlp.sempre.overnight.CubeWorld.stackOnTop)
+(def @changeSetColor edu.stanford.nlp.sempre.cubeworld.CubeWorld.changeSetColor)
+(def @removeSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet)
+(def @setUnion edu.stanford.nlp.sempre.cubeworld.CubeWorld.setUnion)
+(def @setIntersection edu.stanford.nlp.sempre.cubeworld.CubeWorld.setIntersection)
+(def @setDifference edu.stanford.nlp.sempre.cubeworld.CubeWorld.setDifference)
+(def @getColor edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor)
+(def @getRowBottom edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowBottom)
+(def @getRowTop edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowTop)
+(def @stackOnTop edu.stanford.nlp.sempre.cubeworld.CubeWorld.stackOnTop)
 
 
-(rule $ROOT ($Action) (IdentityFn))
+(rule $ROOT (parse $Action) (IdentityFn))
+(rule $ROOT ($_Action) (IdentityFn))
 
 # for debugging, mostly
-(rule $ROOT ($Set ) (IdentityFn) )
+(rule $ROOT (parse $Set ) (IdentityFn) )
 
 # some internal commands
-(rule $Action ( _getInitialWall ) (ConstantFn (call @getInitialWall)))
-(rule $Action ( _newInitialWall ) (ConstantFn (call @newInitialWall)))
-(rule $Action ( _randomWall ) (ConstantFn (call @randomWall (number 10) (number 8))))
+(rule $_Action ( _getInitialWall ) (ConstantFn (call @getInitialWall)))
+(rule $_Action ( _newInitialWall ) (ConstantFn (call @newInitialWall (number 10) (number 8) )))
+(rule $_Action ( _randomWall ) (ConstantFn (call @randomWall (number 10) (number 8))))
 
 (rule $Action ( remove $Set ) (lambda s (call @removeSet (var s) )))
 (rule $Action ( change $Set $Color )
@@ -29,11 +31,23 @@
 (rule $Action ( stack $Set $Color )
       (lambda s (lambda c (call @stackOnTop (var s) (var c)))))
 
-(rule $Set ( union $Set $Set) (lambda s1 (lambda s2
+(rule $Action ( change $Color $Set )
+       (lambda c (lambda s (call @changeSetColor (var s) (var c)))))
+(rule $Action ( stack $Color $Set)
+       (lambda c (lambda s (call @stackOnTop (var s) (var c)))))
+
+(rule $Set ( or $Set $Set) (lambda s1 (lambda s2
+(call @setUnion (var s1) (var s2)))))
+(rule $Set ( $Set or $Set) (lambda s1 (lambda s2
 (call @setUnion (var s1) (var s2)))))
 
-(rule $Set ( inter $Set $Set) (lambda s1 (lambda s2
+(rule $Set ( and $Set $Set) (lambda s1 (lambda s2
 (call @setIntersection (var s1) (var s2)))))
+(rule $Set ( $Set and $Set) (lambda s1 (lambda s2
+(call @setIntersection (var s1) (var s2)))))
+
+(rule $Set ( $Set but not $Set) (lambda s1 (lambda s2
+(call @setDifference (var s1) (var s2)))))
 
 (rule $Set ($Color) (lambda c (call @getColor (var c) )))
 
@@ -42,8 +56,15 @@
 
 (rule $Number ($PHRASE) (NumberFn))
 
-(rule $Color (cyan) (ConstantFn (number 0 COLOR)))
-(rule $Color (brown) (ConstantFn (number 1 COLOR)))
-(rule $Color (red) (ConstantFn (number 2 COLOR)))
-(rule $Color (orange) (ConstantFn (number 3 COLOR)))
-(rule $Color (yellow) (ConstantFn (number 4 COLOR)))
+(when false (
+	     (rule $Color (cyan) (ConstantFn (number 0 COLOR)))
+	     (rule $Color (brown) (ConstantFn (number 1 COLOR)))
+	     (rule $Color (red) (ConstantFn (number 2 COLOR)))
+	     (rule $Color (orange) (ConstantFn (number 3 COLOR)))
+	     (rule $Color (yellow) (ConstantFn (number 4 COLOR)))
+	     )
+      )
+
+(for @x (0 1 2 3 4) 
+     (rule $Color ($TOKEN) (ConstantFn (number @x COLOR)))
+)

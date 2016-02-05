@@ -81,7 +81,7 @@ renderWall isomer y wall =
 -- | Render a series of walls
 renderWalls :: IsomerInstance -> (List Wall) -> EffIsomer
 renderWalls isomer walls = do
-    setIsomerConfig isomer 40.0 200.0 500.0
+    setIsomerConfig isomer 50.0 40.0 650.0
     traverseWithIndex_ (\y -> renderWall isomer (toNumber y)) walls
 
 -- | Render the target shape
@@ -98,16 +98,6 @@ render setupUI gs = do
     isomer <- getIsomerInstance "canvas"
     let level   = getLevel gs.currentLevel
        -- wallee    = getCurrentWallList gs
-
-    -- Set up UI, only if new level is loaded
-    when setupUI $ do
-        withElementById "levels" doc $ \selectLevel -> do
-            setInnerHTML "" selectLevel
-            traverse_ (appendLevelElement selectLevel gs.currentLevel) allLevelIds
-
-    -- let transformers = mapMaybe (getTransformer chapter) tids
-    -- let transformers = toList [mapStack Yellow, mapStack Yellow, mapStack Red]
-    -- let steps = allSteps transformers level.initial
 
     -- On-canvas rendering
     clearCanvas isomer
@@ -136,8 +126,13 @@ replaceAll pattern replacement = replace (regex pattern flags) replacement
 resetLevel = modifyGameStateAndRender false mod
     where mod gs = gs { levelState = SM.insert gs.currentLevel Nil gs.levelState }
 
-ignoreError = either (const [[0]]) (id)
-jsonToWall x =  intToWall $ ignoreError $ readJSON x :: F (Array (Array Int))
+ignoreErrorWall = either (const [[]]) (id)
+jsonToWall :: String -> Wall
+jsonToWall x =  intToWall $ ignoreErrorWall $ readJSON x :: F (Array (Array Int))
+
+ignoreErrorWalls = either (const [[[]]]) (id)
+jsonToWalls :: String -> (List Wall)
+jsonToWalls x =  intToWalls $ ignoreErrorWalls $ readJSON x :: F (Array (Array (Array Int)))
 
 renderJSON :: String -> App
 renderJSON jsonstr = do
@@ -145,7 +140,7 @@ renderJSON jsonstr = do
     isomer <- getIsomerInstance "canvas"
     -- On-canvas rendering
     clearCanvas isomer
-    renderWalls isomer $ toList $ [jsonToWall jsonstr]
+    renderWalls isomer $ jsonToWalls jsonstr
     -- parsedJSON <- readJSON cmdsequence :: F (Array (Array Int))
     -- renderWalls isomer (toList [intToWall (rights parsedJSON)])
     -- [[1, 2, 3], [3, 2], [1], [1,2]]
@@ -155,19 +150,6 @@ renderJSON jsonstr = do
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
 
--- | Add an option-element corresponding to the given Level
-appendLevelElement :: Element -> LevelId -> LevelId -> EffDOM
-appendLevelElement select currentId lid = do
-    let chapter = getChapter lid
-        level = getLevel lid
-    doc <- getDocument
-    option <- createElement "option" doc
-    setAttribute "value" lid option
-    when (currentId == lid) $
-        setAttribute "selected" "selected" option
-    setTextContent (levelTitle lid level) (elementToNode option)
-    appendChild (elementToNode option) (elementToNode select)
-    return unit
 
 -- | Initial game state for first-time visitors
 initialGS :: GameState
@@ -189,23 +171,11 @@ modifyGameStateAndRender setupUI modifyGS = do
     render setupUI gs'
     saveGameState gs'
 
--- | Event handler for a level change
-levelChangeHandler :: Element -> Event -> App
-levelChangeHandler selectLevel _ = do
-    levelId <- getSelectedValue selectLevel
-
-    analyticsLevelChanged levelId
-
-    modifyGameStateAndRender true $ \gs ->
-        gs { currentLevel = levelId }
 
 main :: App
 main = do
     doc <- getDocument
     
-    withElementById "levels" doc $ \selectLevel ->
-        addEventListener' change (levelChangeHandler selectLevel) (elementToEventTarget selectLevel)
-
     -- load game state (or set initial one)
     gs <- fromMaybe initialGS <$> loadGameState
     saveGameState gs

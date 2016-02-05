@@ -2,35 +2,35 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>teach a language</title>
+    <title>teach computer</title>
     <meta name="author" content="S.W.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Teach the computer your language">
+    <meta name="description" content="teach computer">
     <link rel="stylesheet" type="text/css" href="dist/main.css">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
-    <link rel="icon" type="image/png" href="img/favicon-196.png" sizes="196x196">
-    <link rel="icon" type="image/png" href="img/favicon-32.png" sizes="32x32">
-  </head>
-  <body>
-    <div id="container">
+   </head>
+<body>
+
+<div id="container">
       <div id="panel">
-        <b>Choose level:</b><br>
-        <select id="levels"></select>
         <b>Goal:</b>
         <div id="goal"></div>
-	<p id="help"></p>
+        <b>History:</b>
 	<p id="history"></p>
       </div>
       
       <canvas id="canvas" width="1600" height="860"></canvas>
 
       <div id="chat" style=center>
-         <textarea id="maintextarea" cols="50" rows="1"></textarea>
+         <textarea id="maintextarea" cols="45" rows="1"></textarea>
 	 <div class="buttons">
-	   <a class="button" id="enterbutton">Enter</a>
+	   <a class="button" id="enterbutton">:O <span>enter command</span></a>
+	   <a class="button" id="newwallbutton"> :| <span>random wall</span> </a>
+	   <a class="button" id="happybutton">:) <span>correct action</span></a>
+	   <a class="button" id="sadbutton">:(<span>wrong action</span></a>
 	 </div>
 	 
-	 <p id="sempreret">something should work right?</p>
+	 <p id="sempreret">debugging info is here</p>
        </div>
     </div>
     <script type="text/javascript" src="dist/main.js"></script>

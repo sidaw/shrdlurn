@@ -53,6 +53,12 @@ intToStack :: Array Int -> Stack
 intToWall :: Array (Array Int) -> Wall
 ```
 
+#### `intToWalls`
+
+``` purescript
+intToWalls :: Array (Array (Array Int)) -> List Wall
+```
+
 #### `LevelEntry`
 
 ``` purescript

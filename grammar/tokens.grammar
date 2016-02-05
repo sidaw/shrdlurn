@@ -1,0 +1,31 @@
+#
+(def @getInitialWall edu.stanford.nlp.sempre.overnight.CubeWorld.getInitialWall)
+(def @newInitialWall edu.stanford.nlp.sempre.overnight.CubeWorld.newInitialWall)
+(def @randomWall edu.stanford.nlp.sempre.overnight.CubeWorld.randomWall)
+
+(def @changeSetColor edu.stanford.nlp.sempre.overnight.CubeWorld.changeSetColor)
+(def @removeSet edu.stanford.nlp.sempre.overnight.CubeWorld.removeSet)
+(def @setUnion edu.stanford.nlp.sempre.overnight.CubeWorld.setUnion)
+(def @setIntersection edu.stanford.nlp.sempre.overnight.CubeWorld.setIntersection)
+(def @getColor edu.stanford.nlp.sempre.overnight.CubeWorld.getColor)
+(def @getRowBottom edu.stanford.nlp.sempre.overnight.CubeWorld.getRowBottom)
+(def @getRowTop edu.stanford.nlp.sempre.overnight.CubeWorld.getRowTop)
+(def @stackOnTop edu.stanford.nlp.sempre.overnight.CubeWorld.stackOnTop)
+
+
+(rule $ROOT ($Action) (IdentityFn))
+
+(rule $Action ( _newInitialWall ) (ConstantFn (call @newInitialWall (number 10) (number 8) )) (anchored 1))
+
+(rule $Action ( $TOKEN $Set ) (lambda t (lambda s (call @removeSet (var s) ))))
+
+(rule $Action ( $TOKEN $Set $Color )
+      (lambda t (lambda s (lambda c (call @changeSetColor (var s) (var c))))))
+
+(rule $Set ($Color) (lambda c (call @getColor (var c) )))
+
+(rule $Color ($TOKEN) (ConstantFn (number 0 COLOR)))
+(rule $Color ($TOKEN) (ConstantFn (number 1 COLOR)))
+(rule $Color ($TOKEN) (ConstantFn (number 2 COLOR)))
+(rule $Color ($TOKEN) (ConstantFn (number 3 COLOR)))
+(rule $Color ($TOKEN) (ConstantFn (number 4 COLOR)))
