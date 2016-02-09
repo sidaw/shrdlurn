@@ -11,9 +11,9 @@ OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sem
 
 #-FeatureExtractor.useAllFeatures true
 
-OPTIONS_SIMPLE="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains rule bigram -Grammar.inPaths $GRAMMARSIMPLE -Parser.pruneErrorValues true -Parser.beamSize 1000 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true -Parser FloatingParser"
+OPTIONS_SIMPLE="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains rule bigram -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 200 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true -Parser FloatingParser -FloatingParser.maxDepth 8"
 
 OPTIONS_TOKENS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains rule span denotation -FeatureExtractor.featureComputers DerivOpCountFeatureComputer -Grammar.inPaths $GRAMMARTOKENS -Parser.pruneErrorValues true -Parser.beamSize 1000 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true"
 
-rlwrap java $OPTIONS "$@"
-#rlwrap java $OPTIONS_SIMPLE "$@"
+#rlwrap java $OPTIONS "$@"
+rlwrap java $OPTIONS_SIMPLE "$@"

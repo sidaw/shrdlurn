@@ -21,9 +21,9 @@
 (rule $ROOT (parse $Set ) (IdentityFn) )
 
 # some internal commands
-(rule $_Action ( _getInitialWall ) (ConstantFn (call @getInitialWall)))
-(rule $_Action ( _newInitialWall ) (ConstantFn (call @newInitialWall (number 10) (number 8) )))
-(rule $_Action ( _randomWall ) (ConstantFn (call @randomWall (number 10) (number 8))))
+(rule $_Action ( _getInitialWall ) (ConstantFn (call @getInitialWall)) (anchored 1))
+(rule $_Action ( _newInitialWall ) (ConstantFn (call @newInitialWall (number 10) (number 8) ))  (anchored 1))
+(rule $_Action ( _randomWall ) (ConstantFn (call @randomWall (number 10) (number 8)))  (anchored 1))
 
 (rule $Action ( remove $Set ) (lambda s (call @removeSet (var s) )))
 (rule $Action ( change $Set $Color )
@@ -54,7 +54,7 @@
 (rule $Set (row $Number) (lambda c (call @getRowBottom (var c) )))
 (rule $Set (top $Number) (lambda c (call @getRowTop (var c) )))
 
-(rule $Number ($PHRASE) (NumberFn))
+(rule $Number ($PHRASE) (NumberFn) (anchored 1))
 
 (when false (
 	     (rule $Color (cyan) (ConstantFn (number 0 COLOR)))

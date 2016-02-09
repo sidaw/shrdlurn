@@ -154,7 +154,7 @@ var semprequery = function(query, callback) {
 }
 
 var semprecommand = function(cmd) {
-    var url = 'http://localhost:8400/sempre?format=lisp2json&q='+cmd
+    var url = 'http://localhost:8400/sempre?format=lisp2json&q='+G.currentQuery + '&accept='+cmd
     console.log(url)
     xmlhttp.open("GET", url, true);
     xmlhttp.send();	
@@ -220,14 +220,15 @@ function runCurrentQuery() {
 	newWall()
     }
     else if (querystr.startsWith(":)")) {
-	semprecommand('(a ' + G.semAnsInd+')')
+	semprecommand(G.semAnsInd)
 	showNext()
     }
     else if (querystr.startsWith(":(")) {
 	showNext()
     }
     else {
-	semprequery('parse ' + querystr, doSempreAction)
+	G.currentQuery = 'parse ' + querystr
+	semprequery(G.currentQuery , doSempreAction)
     }
 }
 
@@ -244,6 +245,7 @@ var G = {}
 G.originalWall = "";
 G.semAns = {};
 G.semAnsInd = 0;
+G.currentQuery = "";
 var xmlhttp = new XMLHttpRequest();
 
 document.getElementById("enterbutton").onclick = function() {
@@ -254,7 +256,7 @@ document.getElementById("newwallbutton").onclick = function() {
     newWall()
 };
 document.getElementById("happybutton").onclick = function() {
-    semprecommand('(a ' + G.semAnsInd+')')
+    semprecommand(G.semAnsInd)
     showNext()
 };
 document.getElementById("sadbutton").onclick = function() {

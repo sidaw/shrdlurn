@@ -1,21 +1,25 @@
 #
-(def @getInitialWall edu.stanford.nlp.sempre.overnight.CubeWorld.getInitialWall)
-(def @newInitialWall edu.stanford.nlp.sempre.overnight.CubeWorld.newInitialWall)
-(def @randomWall edu.stanford.nlp.sempre.overnight.CubeWorld.randomWall)
+(def @getInitialWall edu.stanford.nlp.sempre.cubeworld.CubeWorld.getInitialWall)
+(def @newInitialWall edu.stanford.nlp.sempre.cubeworld.CubeWorld.newInitialWall)
+(def @randomWall edu.stanford.nlp.sempre.cubeworld.CubeWorld.randomWall)
 
-(def @changeSetColor edu.stanford.nlp.sempre.overnight.CubeWorld.changeSetColor)
-(def @removeSet edu.stanford.nlp.sempre.overnight.CubeWorld.removeSet)
-(def @setUnion edu.stanford.nlp.sempre.overnight.CubeWorld.setUnion)
-(def @setIntersection edu.stanford.nlp.sempre.overnight.CubeWorld.setIntersection)
-(def @getColor edu.stanford.nlp.sempre.overnight.CubeWorld.getColor)
-(def @getRowBottom edu.stanford.nlp.sempre.overnight.CubeWorld.getRowBottom)
-(def @getRowTop edu.stanford.nlp.sempre.overnight.CubeWorld.getRowTop)
-(def @stackOnTop edu.stanford.nlp.sempre.overnight.CubeWorld.stackOnTop)
+(def @changeSetColor edu.stanford.nlp.sempre.cubeworld.CubeWorld.changeSetColor)
+(def @removeSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet)
+(def @setUnion edu.stanford.nlp.sempre.cubeworld.CubeWorld.setUnion)
+(def @setIntersection edu.stanford.nlp.sempre.cubeworld.CubeWorld.setIntersection)
+(def @setDifference edu.stanford.nlp.sempre.cubeworld.CubeWorld.setDifference)
+(def @getColor edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor)
+(def @getRowBottom edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowBottom)
+(def @getRowTop edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowTop)
+(def @stackOnTop edu.stanford.nlp.sempre.cubeworld.CubeWorld.stackOnTop)
 
 
 (rule $ROOT ($Action) (IdentityFn))
 
+# some internal commands
+(rule $Action ( _getInitialWall ) (ConstantFn (call @getInitialWall)))
 (rule $Action ( _newInitialWall ) (ConstantFn (call @newInitialWall (number 10) (number 8) )) (anchored 1))
+(rule $Action ( _randomWall ) (ConstantFn (call @randomWall (number 10) (number 8))))
 
 
 (rule $Action ( remove $Set ) (lambda s (call @removeSet (var s) )))
