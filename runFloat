@@ -1,0 +1,14 @@
+#!/bin/sh
+SEMPATH=../semparse
+GRAMMAR=../cubesem/grammar/floating.grammar
+
+EXAMPLEPATH=../cubesem/examples/
+cd $SEMPATH
+
+# elif [ $1 = "cube" ]; then  -FloatingParser.useSizeInsteadOfDepth true 
+FLOAT_OPTS="-Parser FloatingParser -FloatingParser.maxDepth 8"
+
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -Master.newExamplesPath $EXAMPLEPATH -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains ngram -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -Params.initStepSize 1 -Params.adaptiveStepSize false -Params.initWeightsRandomly true -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 200 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true"
+
+rlwrap java $OPTIONS $FLOAT_OPTS "$@"
+#rlwrap java $OPTIONS_SIMPLE "$@"

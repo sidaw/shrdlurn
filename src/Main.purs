@@ -81,50 +81,19 @@ renderWall isomer y wall =
 -- | Render a series of walls
 renderWalls :: IsomerInstance -> (List Wall) -> EffIsomer
 renderWalls isomer walls = do
-    setIsomerConfig isomer 50.0 40.0 650.0
+    setIsomerConfig isomer 40.0 40.0 500.0
     traverseWithIndex_ (\y -> renderWall isomer (toNumber y)) walls
 
 -- | Render the target shape
 renderTarget :: IsomerInstance -> Wall -> EffIsomer
 renderTarget isomer target = do
-    setIsomerConfig isomer 28.0 1280.0 410.0
+    setIsomerConfig isomer 30.0 1280.0 500.0
     renderWall isomer 0.0 target
-
-
--- | Render all UI components, DOM and canvas
-render :: Boolean -> GameState -> App
-render setupUI gs = do
-    doc <- getDocument
-    isomer <- getIsomerInstance "canvas"
-    let level   = getLevel gs.currentLevel
-       -- wallee    = getCurrentWallList gs
-
-    -- On-canvas rendering
-    clearCanvas isomer
-   
-    renderWalls isomer (getWallList "")
-    renderTarget isomer level.target
-
-    withElementById "help" doc $ \helpText -> do
-       setInnerHTML (fromMaybe "" level.help) helpText
-
-    -- Debug output:
-    let toArray = fromList :: forall a. List a -> Array a
-        toArrays = toArray <<< map toArray
-    log $ "Target: " ++ show (toArrays level.target)
-    log ""
-
-getWallList :: String -> (List Wall)
-getWallList json = (toList [convert [[Yellow, Red, Red], [Yellow, Red], [Red], [Red]], convert [[Yellow, Yellow, Red], [Yellow, Red], [Red], [Red]]])
 
 -- | Replace all occurences of a pattern in a string with a replacement
 replaceAll :: String -> String -> String -> String
 replaceAll pattern replacement = replace (regex pattern flags) replacement
     where flags = parseFlags "g"
-
--- | Clear all functions for the current level
-resetLevel = modifyGameStateAndRender false mod
-    where mod gs = gs { levelState = SM.insert gs.currentLevel Nil gs.levelState }
 
 ignoreErrorWall = either (const [[]]) (id)
 jsonToWall :: String -> Wall
@@ -134,51 +103,27 @@ ignoreErrorWalls = either (const [[[]]]) (id)
 jsonToWalls :: String -> (List Wall)
 jsonToWalls x =  intToWalls $ ignoreErrorWalls $ readJSON x :: F (Array (Array (Array Int)))
 
-renderJSON :: String -> App
-renderJSON jsonstr = do
+renderJSON :: String -> String -> App
+renderJSON jsonwalls jsontarget = do
     doc <- getDocument
     isomer <- getIsomerInstance "canvas"
     -- On-canvas rendering
     clearCanvas isomer
-    renderWalls isomer $ jsonToWalls jsonstr
+    renderWalls isomer $ jsonToWalls jsonwalls
+    renderTarget isomer $ jsonToWall jsontarget
     -- parsedJSON <- readJSON cmdsequence :: F (Array (Array Int))
     -- renderWalls isomer (toList [intToWall (rights parsedJSON)])
     -- [[1, 2, 3], [3, 2], [1], [1,2]]
     -- cmdsequence <- Nil
     log "here"
-    print $ either (const [[0]]) (id) (readJSON jsonstr :: F (Array (Array Int)))
+    print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
-
-
+    
 -- | Initial game state for first-time visitors
 initialGS :: GameState
 initialGS = { currentLevel: firstLevel, levelState: SM.empty }
 
--- | Load, modify and store the game state. Render the new state
-modifyGameStateAndRender :: Boolean
-                         -> (GameState -> GameState)
-                         -> forall eff. Eff (dom :: DOM, console :: CONSOLE, isomer :: ISOMER, storage :: STORAGE | eff) Unit
-modifyGameStateAndRender setupUI modifyGS = do
-    -- Load old game state from local storage
-    mgs <- loadGameState
-    let gs = fromMaybe initialGS mgs
-
-    -- Modify by supplied function
-    let gs' = modifyGS gs
-
-    -- Render the new state and save back to local storage
-    render setupUI gs'
-    saveGameState gs'
-
-
 main :: App
 main = do
-    doc <- getDocument
-    
-    -- load game state (or set initial one)
-    gs <- fromMaybe initialGS <$> loadGameState
-    saveGameState gs
-
-    -- render initial state
-    render true gs
+    renderJSON "[[[]]]" "[[]]"

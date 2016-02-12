@@ -89,11 +89,11 @@ b {
 }
 
 #goal {
-    height: 120px;
+    height: 180px;
     width: 100%;
 }
 
-#levels {
+#tasks {
     width: 100%;
 
     margin: 4px 0 15px 0;
@@ -147,6 +147,7 @@ b {
     float: left;
 }
 
+
 .left {
     margin-left: (@width - 2 * @boxWidth - @boxSpacing) / 2;
 }
@@ -161,7 +162,6 @@ b {
 
 .button {
     cursor: pointer;
-
     margin: 3px;
     
     color: #000;
@@ -176,12 +176,17 @@ b {
     border-bottom: 1px solid #000;
     border-radius: 5px;
 
-    width: 25px;
+    width: 40px;
     display: inline-block;
     position: relative;
+    outline: none;
 
     &:hover {
         background-color: darken(@bgCol, 10);
+    }
+    &:disabled {
+        background-color: #FFFFFF;
+	color: #E0E0E0;
     }
 }
 
@@ -190,7 +195,7 @@ b {
     display: inline-block;
 }
 
-a.button span {
+button.button span {
   position: absolute;
   width:140px;
   color: #FFFFFF;
@@ -200,8 +205,9 @@ a.button span {
   text-align: center;
   visibility: hidden;
   border-radius: 6px;
+  
 }
-a.button span:after {
+button.button span:after {
   content: '';
   position: absolute;
   bottom: 100%;
@@ -212,18 +218,17 @@ a.button span:after {
   border-right: 8px solid transparent;
   border-left: 8px solid transparent;
 }
-a:hover.button span {
+button:hover.button span {
   visibility: visible;
   opacity: 1;
-  top: 30px;
+  top: 50px;
   left: 50%;
   margin-left: -76px;
   z-index: 999;
 }
 
-
 .divider{
-    width:5px;
+    width:20px;
     height:auto;
     display:inline-block;
 }

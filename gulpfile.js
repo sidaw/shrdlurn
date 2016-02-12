@@ -51,7 +51,7 @@ gulp.task("psc", function() {
 gulp.task("bundle", ["psc"], function() {
     return purescript.pscBundle({
             src: "output/main/**/*.js",
-            output: "dist/main.js",
+            output: "dist/mainps.js",
             module: "Main",
             main: "Main"
         });
@@ -91,9 +91,9 @@ gulp.task("less", function() {
 gulp.task("concat", ["bundle"], function() {
     return gulp.src([
         "bower_components/isomer/dist/isomer.min.js",
-        "dist/main.js",
-	"js/Sempre.js"
-	
+        "dist/mainps.js",
+	"js/Sempre.js",
+	"js/GameLogic.js"
         ])
         .pipe(concat("main.js"))
         .pipe(gulp.dest("dist"));

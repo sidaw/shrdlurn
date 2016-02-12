@@ -3,11 +3,13 @@ SEMPATH=../semparse
 GRAMMAR=../cubesem/grammar/cube.grammar
 GRAMMARSIMPLE=../cubesem/grammar/simplecube.grammar
 GRAMMARTOKENS=../cubesem/grammar/tokens.grammar
+
+EXAMPLEPATH=../cubesem/examples/
 cd $SEMPATH
 
 # elif [ $1 = "cube" ]; then
 
-OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains rule span ngram lemmaAndBinaries -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 1000 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true"
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -Master.newExamplesPath $EXAMPLEPATH -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains ngram -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -Params.initStepSize 0.1 -Params.adaptiveStepSize false -Params.initWeightsRandomly true -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 500 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true"
 
 #-FeatureExtractor.useAllFeatures true
 
@@ -15,5 +17,5 @@ OPTIONS_SIMPLE="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.
 
 OPTIONS_TOKENS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains rule span denotation -FeatureExtractor.featureComputers DerivOpCountFeatureComputer -Grammar.inPaths $GRAMMARTOKENS -Parser.pruneErrorValues true -Parser.beamSize 1000 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true"
 
-#rlwrap java $OPTIONS "$@"
-rlwrap java $OPTIONS_SIMPLE "$@"
+rlwrap java $OPTIONS "$@"
+#rlwrap java $OPTIONS_SIMPLE "$@"

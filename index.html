@@ -1,39 +1,54 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>teach computer</title>
-    <meta name="author" content="S.W.">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="teach computer">
-    <link rel="stylesheet" type="text/css" href="dist/main.css">
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
-   </head>
+<head>
+<meta charset="utf-8" />
+<title>!!??:):(</title>
+<meta name="author" content="S.W.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="teach computer">
+<link rel="stylesheet" type="text/css" href="dist/main.css">
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
+</head>
 <body>
 
 <div id="container">
-      <div id="panel">
-        <b>Goal:</b>
-        <div id="goal"></div>
-        <b>History:</b>
-	<p id="history"></p>
-      </div>
-      
-      <canvas id="canvas" width="1600" height="860"></canvas>
+<div id="panel">
+  <b>Choose level:</b><br>
+  <select id="tasks"></select>
+  <b>Goal:</b>
+<div id="goal"></div>
 
-      <div id="chat" style=center>
-         <textarea id="maintextarea" cols="45" rows="1"></textarea>
-	 <div class="buttons">
-	   <a class="button" id="enterbutton">:O <span>enter command</span></a>
-	   <a class="button" id="newwallbutton"> :| <span>random wall</span> </a>
-	   <a class="button" id="happybutton">:) <span>correct action</span></a>
-	   <a class="button" id="sadbutton">:(<span>wrong action</span></a>
-	 </div>
-	 
-	 <p id="sempreret">debugging info is here</p>
-       </div>
-    </div>
-    <script type="text/javascript" src="dist/main.js"></script>
-   
-  </body>
+<b>History:</b>
+<p id="history"></p>
+</div>
+
+<div id="message">
+  <span id="solved" class="animated">Solved ✓</span>
+<div class="buttons"><a id="nextlevel" class="button"><u>N</u>ext level</a></div>
+</div>
+
+<canvas id="canvas" width="1600" height="860"></canvas>
+
+<div id="chat" style=center>
+  <p id="currentcmd"> <b>No command</b> </p>
+  <p id="status">status information.</p>
+  <textarea id="maintextarea" cols="45" rows="1"></textarea>
+<div class="buttons">
+  <button class="button" id="trybutton">!<span>try this command</span></button>
+  <button class="button" id="dobutton">!!<span>do this</span></button>
+  <button class="button" id="randbutton">??<span>random start</span> </button>
+<div class="divider"></div>
+  <button class="button" id="prevbutton"><-<span>prev. try</span> </button>
+  <button class="button" id="nextbutton">-><span>next try</span> </button>
+  <button class="button" id="randactionbutton">-?<span>rand. try</span> </button>
+<div class="divider"></div>
+   <button class="button" id="happybutton"> :) <span>correct</span></button>
+   <button class="button" id="describebutton"> :O <span>you did that</span></button>
+</div>
+<p id="sempreret">debugging info is here</p>
+</div>
+</div>
+<script type="text/javascript" src="dist/main.js"></script>
+
+</body>
 </html>
