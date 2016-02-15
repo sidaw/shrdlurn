@@ -14,11 +14,13 @@
 (def @getRowTop edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowTop)
 (def @stackOnTop edu.stanford.nlp.sempre.cubeworld.CubeWorld.stackOnTop)
 
-(rule $ROOT (parse $Action) (IdentityFn) (anchored 1)) # excecute some action
+(rule $ROOT ($parse $Action) (SelectFn 1)) # excecute some action
+(rule $parse (parse) (anchored 1))
+
 (rule $ROOT ($_Action) (IdentityFn) (anchored 1)) # excecute a command
 
 # for debugging, mostly
-(rule $ROOT (parse $Set ) (IdentityFn) (anchored 1))
+# (rule $ROOT (parse $Set ) (IdentityFn) (anchored 1))
 
 # some internal commands
 (rule $_Action ( _newInitialWall $TOKEN) (lambda s (call @newInitialWall (var s))) (anchored 1))

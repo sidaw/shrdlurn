@@ -1,0 +1,82 @@
+(example 
+  (utterance "rm br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string  [[0,0,0],[2],[2,2,2,0]]))
+)
+(example 
+  (utterance "kp br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string  [[1],[1,1,1],[]]))
+)
+(example 
+  (utterance "rm cy")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string  [[1],[1,1,1,2],[2,2,2]]))
+)
+(example 
+  (utterance "kp cy")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0],[],[0]]))
+)
+(example 
+  (utterance "kp top")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[1],[2],[0]]))
+)
+(example 
+  (utterance "rm top")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0],[1,1,1],[2,2,2]]))
+)
+(example 
+  (utterance "rm top br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0],[1,1,1,2],[2,2,2,0]]))
+)
+(example 
+  (utterance "rm top cy")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,1],[1,1,1,2],[2,2,2]]))
+)
+
+(example 
+  (utterance "kp top cy")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[],[],[0]]))
+)
+(example 
+  (utterance "kp top br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[1],[],[]]))
+)
+
+(example 
+  (utterance "br to cy")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,0],[0,0,0,2],[2,2,2,0]]))
+)
+
+(example 
+  (utterance "cy to br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[1,1,1,1],[1,1,1,2],[2,2,2,1]]))
+)
+
+(example 
+  (utterance "tp cy to br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,1],[1,1,1,2],[2,2,2,1]]))
+)
+
+
+(example 
+  (utterance "tp br to cy")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,0],[1,1,1,2],[2,2,2,0]]))
+)
+
+(example 
+  (utterance "")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]))
+)

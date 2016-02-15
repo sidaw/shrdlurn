@@ -2,13 +2,18 @@
 SEMPATH=../semparse
 GRAMMAR=../cubesem/grammar/floating.grammar
 
-EXAMPLEPATH=../cubesem/examples/
 cd $SEMPATH
 
+# java -ea -Dmodules=core,freebase,overnight -Xms8G -Xmx10G -cp libsempre/*:lib/* edu.stanford.nlp.sempre.Main -execDir state/execs/7.exec -overwriteExecDir -addToView 0 -JavaExecutor.convertNumberValues false -useAnchorsOnce true -trackLocalChoices -JoinFn.typeInference true -Builder.parser FloatingParser -FloatingParser.executeAllDerivations true -LanguageAnalyzer.lowerCaseTokens false -Learner.maxTrainIters 5 -Derivation.showUtterance -maxExamples train:MAX -FeatureExtractor.featureDomains denotation -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -CubeWorldFeatureComputer.featureDomains ngram context -coarsePrune -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Grammar.inPaths $GRAMMAR -Dataset.trainFrac 0.8 -Dataset.devFrac 0.2 -FloatingParser.maxDepth 9 -Parser.beamSize 20 -Dataset.inPaths train:../cubesem/data/train.examples test:../cubesem/data/test.examples
+
+#-Grammar.tags generate general
+
 # elif [ $1 = "cube" ]; then  -FloatingParser.useSizeInsteadOfDepth true 
-FLOAT_OPTS="-Parser FloatingParser -FloatingParser.maxDepth 8"
+FLOAT_OPTS="-Parser FloatingParser -FloatingParser.maxDepth 11 -FloatingParser.useSizeInsteadOfDepth true"
+TRAIN_IN="-Dataset.inPaths train:../cubesem/data/train.examples -Learner.maxTrainIters 5"
+TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/train.raw -Master.newParamsPath ../cubesem/newparam"
+# -Dataset.inPaths train:../cubesem/examples"
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains heads -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -Params.initStepSize 0.2 -Params.adaptiveStepSize true -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 20 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -coarsePrune -Params.l1Reg lazy -Params.l1RegCoeff 0.0001"
 
-OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -Master.newExamplesPath $EXAMPLEPATH -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains ngram -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -Params.initStepSize 1 -Params.adaptiveStepSize false -Params.initWeightsRandomly true -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 200 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -server true"
-
-rlwrap java $OPTIONS $FLOAT_OPTS "$@"
+rlwrap java $OPTIONS $FLOAT_OPTS $TRAIN_IN $TRAIN_OUTS " -Master.commands \"(context (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))\"" "$@"
 #rlwrap java $OPTIONS_SIMPLE "$@"

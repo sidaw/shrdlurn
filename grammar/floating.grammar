@@ -4,24 +4,45 @@
 (def @randomWall edu.stanford.nlp.sempre.cubeworld.CubeWorld.randomWall)
 (def @setCurrentWall edu.stanford.nlp.sempre.cubeworld.CubeWorld.setCurrentWall)
 
-(def @changeSetColor edu.stanford.nlp.sempre.cubeworld.CubeWorld.changeSetColor)
-(def @removeSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.filterSet)
-(def @keepSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet)
+(def @changeSetColor context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.changeSetColor)
+(def @removeSet context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet)
+(def @keepSet context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet)
+(def @stackOnTop context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.stackOnTop)
+
 (def @setUnion edu.stanford.nlp.sempre.cubeworld.CubeWorld.setUnion)
 (def @setIntersection edu.stanford.nlp.sempre.cubeworld.CubeWorld.setIntersection)
 (def @setDifference edu.stanford.nlp.sempre.cubeworld.CubeWorld.setDifference)
-(def @getColor edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor)
-(def @getRowBottom edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowBottom)
-(def @getRowTop edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowTop)
-(def @stackOnTop edu.stanford.nlp.sempre.cubeworld.CubeWorld.stackOnTop)
 
-(rule $ROOT ($Action) (IdentityFn)) # excecute some action
-(rule $Action ( remove $Set ) (lambda s (call @removeSet (var s) )))
-(rule $Action ( keep $Set ) (lambda s (call @filterSet (var s) )))
+(def @getColor context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor)
+(def @getRowBottom context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowBottom)
+(def @getRowTop context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getRowTop)
+
+(def @wallToString edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString)
+
+(rule $ROOT ($Action) (lambda a (call @wallToString (var a)) )) # excecute some action
+# (rule $ROOT ($Action) (IdentityFn)) # excecute some action
+(rule $Action ( $Set ) (lambda s (call @removeSet (var s) )))
+(rule $Action ( $Set ) (lambda s (call @keepSet (var s) )))
+(rule $Action ( $Set $Color )
+      (lambda s (lambda c (call @changeSetColor (var s) (var c)))))
+
 (rule $Set ($Color) (lambda c (call @getColor (var c) )))
 (for @x (0 1) 
-     (rule $Color ($TOKEN) (ConstantFn (number @x COLOR)))
+     (rule $Color (tok) (ConstantFn (number @x COLOR)))
 )
+
+(rule $Set ($Row) (lambda r (call @getRowTop (var r) )))
+
+(for @x (0 1) 
+     (rule $Row (tok) (ConstantFn (number @x)))
+)
+
+(rule $Set ($Set $Set) (lambda s1 (lambda s2
+(call @setIntersection (var s1) (var s2)))))
+
+(rule $Set ($Set $Set) (lambda s1 (lambda s2
+(call @setUnion (var s1) (var s2)))))
+
 
 (when false (
 (rule $Action ( change $Set $Color )
