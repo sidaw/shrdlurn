@@ -1,4 +1,9 @@
 (example 
+  (utterance "")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]))
+)
+(example 
   (utterance "rm br")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
   (targetValue (string  [[0,0,0],[2],[2,2,2,0]]))
@@ -51,32 +56,39 @@
 )
 
 (example 
-  (utterance "br to cy")
+  (utterance "color br cy")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
   (targetValue (string [[0,0,0,0],[0,0,0,2],[2,2,2,0]]))
 )
 
 (example 
-  (utterance "cy to br")
+  (utterance "color cy br")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
   (targetValue (string [[1,1,1,1],[1,1,1,2],[2,2,2,1]]))
 )
 
 (example 
-  (utterance "tp cy to br")
+  (utterance "color top cy br")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
   (targetValue (string [[0,0,0,1],[1,1,1,2],[2,2,2,1]]))
 )
-
-
 (example 
-  (utterance "tp br to cy")
+  (utterance "color br cy")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
   (targetValue (string [[0,0,0,0],[1,1,1,2],[2,2,2,0]]))
 )
-
 (example 
-  (utterance "")
+  (utterance "stack br on br")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
-  (targetValue (string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]))
+  (targetValue (string [[0,0,0,1,1],[1,1,1,1,1,1,2],[2,2,2,0]]))
+)
+(example 
+  (utterance "stack cy on br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,1,0],[0,1,0,1,0,2],[2,2,2,0]]))
+)
+(example 
+  (utterance "stack cy on top br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,1,0],[0,1,1,2],[2,2,2,0]]))
 )

@@ -25,16 +25,19 @@
 (rule $Action ( $Set ) (lambda s (call @keepSet (var s) )))
 (rule $Action ( $Set $Color )
       (lambda s (lambda c (call @changeSetColor (var s) (var c)))))
-
+(rule $Action ( stack $Set $Color )
+      (lambda s (lambda c (call @stackOnTop (var s) (var c)))))
+      
 (rule $Set ($Color) (lambda c (call @getColor (var c) )))
-(for @x (0 1) 
+(for @x (0 1 3) 
      (rule $Color (tok) (ConstantFn (number @x COLOR)))
 )
 
 (rule $Set ($Row) (lambda r (call @getRowTop (var r) )))
+(rule $Set ($Row) (lambda r (call @getRowBottom (var r) )))
 
 (for @x (0 1) 
-     (rule $Row (tok) (ConstantFn (number @x)))
+     (rule $Row (tok) (ConstantFn (number @x ROW)))
 )
 
 (rule $Set ($Set $Set) (lambda s1 (lambda s2
