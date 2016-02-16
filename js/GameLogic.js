@@ -127,8 +127,9 @@ function newWall(gs) {
     var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.CubeWorld.getLevel (string {task})))"._format(gs); // attach arguments here!
     var cmds = {q:wallcommand, sessionId:gs.sessionId};
     sempre.sempreQuery(cmds, function (jsonstr) {
-	var lines = sempre.parseSEMPRElines(jsonstr);
-	var walls = lines[0].split('|');
+	var jsresp = JSON.parse(jsonstr)['lines'];
+	var walls = jsresp[0].replace(/\(string /g, '').replace(/\)|\s/g, '').split('|');
+	console.log(walls);
 	gs.originalWall = walls[0];
 	gs.targetWall = walls[1];
 	if (gs.query.length > 0)

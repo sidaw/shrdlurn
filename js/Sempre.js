@@ -87,15 +87,6 @@ var sempre = {
 	return str
     },
 
-    parseSEMPRElines: function (jsontext) {
-	var jsresp = JSON.parse(jsontext)['lines'];
-	var retval = [];
-	for (k in jsresp) {
-	    retval.push(this.formatValue(jsresp[0]));
-	}
-	return retval;
-    }
-
     parseSEMPRE: function (jsontext) {
 	var jsresp = JSON.parse(jsontext)['candidates'];
 	// filter BADJAVA
@@ -139,10 +130,11 @@ var sempre = {
 
     sempreQuery: function(cmds, callback) {
 	var xmlhttp = new XMLHttpRequest();
+	var cmdstr = [];
 	for (k in cmds) {
-	    cmdstr += '&' + k + '=' + encodeURIComponent(cmds[k]);
+	    cmdstr.push(k + '=' + encodeURIComponent(cmds[k]));
 	}
-	var url = SEMPRE_URL + '/sempre?format=lisp2json'+encodeURIComponent(cmdstr)
+	var url = SEMPRE_URL + '/sempre?format=lisp2json&'+cmdstr.join('&');
 	console.log(url)
 	xmlhttp.onreadystatechange = function() {
 	    if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {

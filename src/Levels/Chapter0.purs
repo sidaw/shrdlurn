@@ -12,9 +12,29 @@ import Types
 chapter0 :: Chapter
 chapter0 = {
     name: "Introduction",
+
+    transformers: fromArray [
+        "replaceYbyR" :> {
+            name: "map {Yellow}↦{Red}",
+            function: replaceSingle Yellow Red
+        },
+        "stackY" :> {
+            name: "map (stack {Yellow})",
+            function: map (`snoc` Yellow)
+        },
+        "replaceYbyYR" :> {
+            name: "map {Yellow}↦[{Red}{Yellow}]",
+            function: replaceMultiple Yellow (Yellow : Red : Nil)
+        },
+        "rejectY" :> {
+            name: "map (reject {Yellow})",
+            function: mapReject Yellow
+        }
+    ],
+
     levels: fromArray [
         "0.1" :-> {
-            name: "remove",
+            name: "Transformation",
             help: Just """In this game, your goal is to create a sequence of functions which
                           transforms the colored cubes into the desired pattern (shown above).
                           To change yellow cubes to red cubes, add the function `replaceYbyR` to your program.
