@@ -56,9 +56,9 @@
 )
 
 (example 
-  (utterance "color br cy")
+  (utterance "color top br cy")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
-  (targetValue (string [[0,0,0,0],[0,0,0,2],[2,2,2,0]]))
+  (targetValue (string [[0,0,0,0],[1,1,1,2],[2,2,2,0]]))
 )
 
 (example 
@@ -69,13 +69,13 @@
 
 (example 
   (utterance "color top cy br")
-  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
-  (targetValue (string [[0,0,0,1],[1,1,1,2],[2,2,2,1]]))
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2,0],[2,2,2,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,1],[1,1,1,2,1],[2,2,2,1]]))
 )
 (example 
   (utterance "color br cy")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
-  (targetValue (string [[0,0,0,0],[1,1,1,2],[2,2,2,0]]))
+  (targetValue (string [[0,0,0,0],[0,0,0,2],[2,2,2,0]]))
 )
 (example 
   (utterance "stack br on br")
@@ -85,10 +85,16 @@
 (example 
   (utterance "stack cy on br")
   (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
-  (targetValue (string [[0,0,0,1,0],[0,1,0,1,0,2],[2,2,2,0]]))
+  (targetValue (string [[0,0,0,1,0],[1,0,1,0,1,0,2],[2,2,2,0]]))
 )
 (example 
-  (utterance "stack cy on top br")
-  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))
-  (targetValue (string [[0,0,0,1,0],[0,1,1,2],[2,2,2,0]]))
+  (utterance "stack cy on top cy")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,0],[1,1,1,2],[2,2,2,0,0]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,0,0],[1,1,1,2],[2,2,2,0,0,0]]))
+)
+
+(example
+  (utterance "stack br on top br")
+  (context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0,1]]) (name b) (name c))))
+  (targetValue (string [[0,0,0,1,1],[1,1,1,2],[2,2,2,0,1,1]]))
 )

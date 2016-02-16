@@ -1,4 +1,5 @@
 "use strict"
+var SEMPRE_URL = "http://localhost:8400"
 var sempre = {
     cleanValue: function (valuestring) {
 	if (!valuestring) return '';
@@ -86,6 +87,15 @@ var sempre = {
 	return str
     },
 
+    parseSEMPRElines: function (jsontext) {
+	var jsresp = JSON.parse(jsontext)['lines'];
+	var retval = [];
+	for (k in jsresp) {
+	    retval.push(this.formatValue(jsresp[0]));
+	}
+	return retval;
+    }
+
     parseSEMPRE: function (jsontext) {
 	var jsresp = JSON.parse(jsontext)['candidates'];
 	// filter BADJAVA
@@ -127,29 +137,18 @@ var sempre = {
 	    .replace(/\+/g, ' + ').replace(/-/g, ' - ').replace(/\*/g, ' * ').replace(/\//g, ' / ')
     },
 
-    sempreQuery: function(query, callback) {
-	var pquery = this.sempreFormat(query);
+    sempreQuery: function(cmds, callback) {
 	var xmlhttp = new XMLHttpRequest();
-	var url = 'http://localhost:8400/sempre?format=lisp2json&q='+pquery
+	for (k in cmds) {
+	    cmdstr += '&' + k + '=' + encodeURIComponent(cmds[k]);
+	}
+	var url = SEMPRE_URL + '/sempre?format=lisp2json'+encodeURIComponent(cmdstr)
 	console.log(url)
 	xmlhttp.onreadystatechange = function() {
 	    if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
 		callback(xmlhttp.responseText);
 	    };
 	}
-	xmlhttp.open("GET", url, true);
-	xmlhttp.send();	
-    },
-
-    /// cmds is a dict that gets turned into &k1=v1&kv=v2
-    sempreCommand: function(cmds) {
-	var cmdstr = ''
-	for (k in cmds) {
-	    cmdstr += '&' + k + '=' + encodeURIComponent(cmds[k]);
-	}
-	var url = 'http://localhost:8400/sempre?format=lisp2json'+cmdstr
-	var xmlhttp = new XMLHttpRequest();
-	console.log(url)
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();	
     }

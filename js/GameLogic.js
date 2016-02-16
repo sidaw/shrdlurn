@@ -80,13 +80,17 @@ function GameState() {
 	if (this.noAnswer()) return
 	if (this.semAnsInd < this.semAns.length-1)
 	    this.semAnsInd++;
-	 this.currentWall = this.semAns[this.semAnsInd].value;
+	this.currentWall = this.semAns[this.semAnsInd].value;
     }
     this.prevIfPossible = function() {
 	if (this.noAnswer()) return
 	if (this.semAnsInd > 0)
 	    this.semAnsInd--;
-	 this.currentWall = this.semAns[this.semAnsInd].value;
+	this.currentWall = this.semAns[this.semAnsInd].value;
+    }
+
+    this.getStandardQuery = function() {
+	return {q: this.query, sessionId:this.sessionId}
     }
 }
 
@@ -120,55 +124,37 @@ function updateCurrentWall(gs, jsonstr) {
 }
 
 function newWall(gs) {
-    querystr = "_newInitialWall " + gs.task; // attach arguments here!
-    if (gs.mode == "train") {
-	sempre.sempreQuery(querystr, function (jsonstr) {
-	    var formval = sempre.parseSEMPRE(jsonstr);
-	    gs.originalWall = formval[0].value;
-	    
-	    if (gs.mode=="train") {
-		gs.targetWall = formval[0].value;
-	    }
-
-	    if (gs.query.length > 0){
-		GameAction.tryaction(gs)
-	    }
-	updateCanvas(gs)
+    var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.CubeWorld.getLevel (string {task})))"._format(gs); // attach arguments here!
+    var cmds = {q:wallcommand, sessionId:gs.sessionId};
+    sempre.sempreQuery(cmds, function (jsonstr) {
+	var lines = sempre.parseSEMPRElines(jsonstr);
+	var walls = lines[0].split('|');
+	gs.originalWall = walls[0];
+	gs.targetWall = walls[1];
+	if (gs.query.length > 0)
+	    GameAction.tryaction(gs);
+	updateCanvas(gs);
     })
-    } else {
-	gs.originalWall = '[[0,0,0],[1,1,1]]'
-	gs.currentWall = '[[0,0,0],[1,1,1]]'
-	gs.targetWall = '[[1,1,1],[0,0,0]]'
-	updateCanvas(gs)
-    }
 }
 
-
-function toSempreWall(jsonstr) {
-    console.log(jsonstr)
-    return jsonstr.replace(/\s/g, "").replace(/\],\[/g, "__").replace(/,/g, "_").replace(/(\[\[|\]\])/g, "")
-}
 
 var GameAction = {
     tryaction: function(gs) {
-	var sempreq = 'parse ' + gs.query;
-	sempre.sempreQuery(sempreq , function(jsonstr) {
+	var cmds = {q:gs.query, sessionId:gs.sessionId};
+	sempre.sempreQuery(cmds , function(jsonstr) {
 	    updateCurrentWall(gs, jsonstr);
 	    writeSemAns(gs);
 	    updateCanvas(gs);
-	    updateStatus(gs.statusMessage())
+	    updateStatus(gs.statusMessage());
 	});
     },
     
     commit: function(gs) {
-	var wallstr = toSempreWall(gs.currentWall)
-	sempre.sempreQuery('_setCurrentWall ' + wallstr , function(jsonstr) {
-	    var formval = sempre.parseSEMPRE(jsonstr);
-	    if (formval == undefined) {
-		console.log('undefined answer from sempre')
-		return
-	    }
-	    gs.originalWall = formval[0].value;
+	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {currentWall}) (name b) (name c))))"._format(gs); // attach arguments here!
+	var cmds = {q:wallcommand, sessionId:gs.sessionId};
+	sempre.sempreQuery(cmds , function(jsonstr) {
+	    
+	    gs.originalWall = g.currentWall;
 	    updateCanvas(gs);
 	    updateStatus(gs.statusMessage("exec"))
 	});
@@ -177,7 +163,7 @@ var GameAction = {
     random: function(gs) {
 	newWall(gs)
 	updateStatus(gs.statusMessage("got a random wall"))
-	 
+	
     },
 
     prev: function(gs) {
@@ -198,7 +184,7 @@ var GameAction = {
     },
 
     accept: function(gs) {
-	sempre.sempreCommand({q:"parse " + gs.query, accept:gs.semAnsInd, sessionId:gs.sessionId})
+	sempre.sempreQuery({q: gs.query, accept:gs.semAnsInd, sessionId:gs.sessionId})
 	//updateCanvas(GS)
 	updateStatus(gs.statusMessage("accept"))
     },
@@ -231,8 +217,10 @@ function writeSemAns(gs) {
 
 // DOM functions, and events
 function popTasks() {
-    var trainers = ['baby_wall', 'binary_wall', 'random_wall'];
-    var puzzles = ['baby_speak', 'temp_variables', 'chessboard', 'binary_adder'];
+    var trainers = ['baby_wall'];
+    var puzzles = ['swall.removeSet.getColor', 'swall.keepSet.getColor',
+		   'swall.changeColor', 'swall.stack', 'swall.stacktop',
+		   'swall.stacktopofcolor', 'medium.greatwall'];
     var ps = document.getElementById("tasks");
 
     var poplist = function(prefix, strlist) {

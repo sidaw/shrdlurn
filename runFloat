@@ -10,10 +10,10 @@ cd $SEMPATH
 
 # elif [ $1 = "cube" ]; then  -FloatingParser.useSizeInsteadOfDepth true 
 FLOAT_OPTS="-Parser FloatingParser -FloatingParser.maxDepth 11 -FloatingParser.useSizeInsteadOfDepth true"
-TRAIN_IN="-Dataset.inPaths train:../cubesem/data/train.examples -Learner.maxTrainIters 15"
+TRAIN_IN="-Dataset.inPaths train:../cubesem/data/train.examples -Learner.maxTrainIters 10"
 TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/train.raw -Master.newParamsPath ../cubesem/newparam"
 # -Dataset.inPaths train:../cubesem/examples"
-OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains heads -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -Params.initStepSize 0.2 -Params.adaptiveStepSize true -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 50 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -Params.l1Reg lazy -Params.l1RegCoeff 0.0001"
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains heads -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -CubeWorldFeatureComputer.ngramN 2 -Params.initStepSize 0.2 -Params.adaptiveStepSize false -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 50 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -Params.l1Reg lazy -Params.l1RegCoeff 0.0001"
 
-rlwrap java $OPTIONS $FLOAT_OPTS $TRAIN_IN $TRAIN_OUTS " -Master.commands \"(context (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))\"" "$@"
+rlwrap java $OPTIONS $FLOAT_OPTS $TRAIN_OUTS " -Master.commands \"(context (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))\"" "$@"
 #rlwrap java $OPTIONS_SIMPLE "$@"
