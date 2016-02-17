@@ -216,7 +216,7 @@ function writeSemAns(gs) {
     var formval = gs.semAns;
     for (i in formval)
 	document.getElementById("sempreret").innerHTML +=
-    (i+1) + ': (prob={prob},score={score}): {formula}'._format(formval[i]) +
+    (1+i) + ' : (prob={prob},score={score}): {formula}'._format(formval[i]) +
 	'<br/>';
 }
 
@@ -225,7 +225,9 @@ function writeSemAns(gs) {
 function popTasks() {
     var puzzles = ['0.0 keep', '0.1 remove',
 		   '0.2 change color', '0.3 stack', '0.4 stack on top',
-		   '0.5 stack on top of color', '1.0 greatwall'];
+		   '0.5 stack on top of color', '0.6 stack on top most',
+		   '0.7 left and right', '1.0 temp vars', , '1.1 the great wall',
+		   '1.2 checker', '1.3 stacking'];
     var ps = document.getElementById("tasks");
 
     var poplist = function(prefix, strlist) {
@@ -303,10 +305,31 @@ function runCurrentQuery() {
 	GameAction.tryaction(GS);
     }
 }
+
+var Hotkeys = {
+    ENTER: 13,
+    LEFT: 37,
+    RIGHT: 39,
+    UP: 38,
+    DOWN: 40
+};
+
 document.getElementById("maintextarea").onkeypress = function(e) {
-    if (e.keyCode == 13) { // enter key
-	runCurrentQuery()
+    if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
+	runCurrentQuery();
 	return false;
+    }
+};
+
+document.onkeydown = function(e) {
+    if (e.keyCode == Hotkeys.LEFT) {
+	GameAction.prev(GS);
+	return false;
+    } else if (e.keyCode == Hotkeys.RIGHT) {
+	GameAction.next(GS);
+	return false;
+    } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
+	GameAction.accept(GS);
     }
 };
 
