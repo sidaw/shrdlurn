@@ -88,9 +88,9 @@ var sempre = {
     },
 
     parseSEMPRE: function (jsontext) {
-	var jsresp = JSON.parse(jsontext)['candidates'];
+	var valid = JSON.parse(jsontext)['candidates'];
 	// filter BADJAVA
-	var valid = jsresp.filter(function (v) {return v['value'][0]!='error' && v['value'].length!=1})
+	// var valid = jsresp.filter(function (v) {return v['value'][0]!='error' && v['value'].length!=1})
 	//console.log(valid)
 	var lstqapairs = [];
 	if(valid.length == 0) return undefined;
@@ -105,6 +105,7 @@ var sempre = {
 	    qapair.prob = valid[i].prob.toFixed(2);
 	    lstqapairs.push(qapair);
 	}
+	return lstqapairs;
 	// console.log(lstqapairs)
 	// deduplicate by the formula, from the end
 	// assuming scores are sorted in descending order

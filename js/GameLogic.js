@@ -21,7 +21,7 @@ function GameState() {
     
     this.query = "";
     this.mode = "train";
-    this.task = "baby_wall";
+    this.task = "0.0 remove";
 
     this.numsteps = 1;
 
@@ -99,11 +99,7 @@ var GS = new GameState();
 // changes game state when task changes
 function taskChanged(gs, taskstr)
 {
-    if (taskstr.startsWith('train:'))
-	gs.mode = 'train';
-    else
-	gs.mode = 'puzzle'
-    gs.task = taskstr.replace(/(train:|puzzle:)\s*/g, '');
+    gs.task = taskstr.replace(/^(train:|puzzle:)\s*/g, '');
 }
 
 function updateCanvas(gs) {
@@ -132,9 +128,17 @@ function newWall(gs) {
 	console.log(walls);
 	gs.originalWall = walls[0];
 	gs.targetWall = walls[1];
-	if (gs.query.length > 0)
-	    GameAction.tryaction(gs);
-	updateCanvas(gs);
+
+	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {originalWall}) (name b) (name c))))"._format(gs); // attach arguments here!
+	var setcontext = {q:contextcommand, sessionId:gs.sessionId};
+	sempre.sempreQuery(setcontext, function(jsonstr) {
+    	    // applies the current command to the new thing
+	    if (gs.query.length > 0)
+		GameAction.tryaction(gs);
+	    else
+		updateCanvas(gs);
+	});
+
     })
 }
 
@@ -212,16 +216,16 @@ function writeSemAns(gs) {
     var formval = gs.semAns;
     for (i in formval)
 	document.getElementById("sempreret").innerHTML +=
-    '(prob={prob},score={score}): {formula}'._format(formval[i]) +
+    (i+1) + ': (prob={prob},score={score}): {formula}'._format(formval[i]) +
 	'<br/>';
 }
 
 // DOM functions, and events
+// consider retriving this list from sempre
 function popTasks() {
-    var trainers = ['baby_wall'];
-    var puzzles = ['swall.removeSet.getColor', 'swall.keepSet.getColor',
-		   'swall.changeColor', 'swall.stack', 'swall.stacktop',
-		   'swall.stacktopofcolor', 'medium.greatwall'];
+    var puzzles = ['0.0 keep', '0.1 remove',
+		   '0.2 change color', '0.3 stack', '0.4 stack on top',
+		   '0.5 stack on top of color', '1.0 greatwall'];
     var ps = document.getElementById("tasks");
 
     var poplist = function(prefix, strlist) {
@@ -232,8 +236,7 @@ function popTasks() {
 	    ps.appendChild(p1);
 	}
     }
-    poplist('train: ', trainers);
-    poplist('puzzle: ', puzzles);
+    poplist('', puzzles);
 }
 
 document.getElementById("trybutton").onclick = function() {
@@ -270,19 +273,6 @@ document.getElementById("tasks").onchange = function() {
     var t = document.getElementById("tasks");
     var taskstr = t.options[t.selectedIndex].value;
     taskChanged(GS, taskstr);
-    if (GS.mode == "train") {
-	document.getElementById("prevbutton").disabled = false;
-	document.getElementById("nextbutton").disabled = false;
-	document.getElementById("randactionbutton").disabled = false;
-	document.getElementById("happybutton").disabled = false;
-	document.getElementById("describebutton").disabled = false;
-    } else {
-	document.getElementById("prevbutton").disabled = true;
-	document.getElementById("nextbutton").disabled = true;
-	document.getElementById("randactionbutton").disabled = true;
-	document.getElementById("happybutton").disabled = true;
-	document.getElementById("describebutton").disabled = true;
-    }
     newWall(GS);
     updateStatus(GS.statusMessage())
 };

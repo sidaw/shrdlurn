@@ -1,0 +1,91 @@
+[ {
+  "id" : "session:stdin",
+  "utterance" : "rm br",
+  "context" : "(context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string 1_2_0_0__1_0_0_0__1) (name b) (name c))))",
+  "targetFormula" : "(call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 1 COLOR)))",
+  "targetValue" : "(list (list (number 2 COLOR) (number 0 COLOR) (number 0 COLOR)) (list (number 0 COLOR) (number 0 COLOR) (number 0 COLOR)) (list))"
+}, {
+  "id" : "session:stdin",
+  "utterance" : "kp br",
+  "context" : "(context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string 1_2_0_0__1_0_0_0__1) (name b) (name c))))",
+  "targetFormula" : "(call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 1 COLOR)))",
+  "targetValue" : "(list (list (number 1 COLOR)) (list (number 1 COLOR)) (list (number 1 COLOR)))"
+}, {
+  "id" : "session:stdin",
+  "utterance" : "rm cy",
+  "context" : "(context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string 1_2_0_0__1_0_0_0__1) (name b) (name c))))",
+  "targetFormula" : "(call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 0 COLOR)))",
+  "targetValue" : "(list (list (number 1 COLOR) (number 2 COLOR)) (list (number 1 COLOR)) (list (number 1 COLOR)))"
+}, {
+  "id" : "session:stdin",
+  "utterance" : "kp cyan",
+  "context" : "(context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string 1_2_0_0__1_0_0_0__1) (name b) (name c))))",
+  "targetFormula" : "(call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 0 COLOR)))",
+  "targetValue" : "(list (list (number 0 COLOR) (number 0 COLOR)) (list (number 0 COLOR) (number 0 COLOR) (number 0 COLOR)) (list))"
+}, {
+  "id" : "session:stdin",
+  "utterance" : "rm b",
+  "context" : "(context (date 2016 1 13) (graph NaiveKnowledgeGraph ((string [[1,2,3],[2,2],[2]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 2 COLOR))))",
+  "targetValue" : "(string [[2],[2,2],[2]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "sd s",
+  "context" : "(context (date 2016 1 15) (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 0 COLOR))))",
+  "targetValue" : "(string [[1],[1,1,1,2],[2,2,2]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "sd sda",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[2],[3],[0,2,0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 2 COLOR))))",
+  "targetValue" : "(string [[],[3],[0,0]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "sd sda",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[2],[3],[0,2,0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 2 COLOR))))",
+  "targetValue" : "(string [[],[3],[0,0]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "sd sda",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[2],[3],[0,2,0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 2 COLOR))))",
+  "targetValue" : "(string [[],[3],[0,0]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "kp r",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[0,2,3,3],[3,2,0],[0,0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 2 COLOR))))",
+  "targetValue" : "(string [[2],[2],[]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "kp or",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[0,2,3,3],[3,2,0],[0,0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 3 COLOR))))",
+  "targetValue" : "(string [[3,3],[3],[]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "kp red",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[2,3,0,0],[3,3]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 2 COLOR))))",
+  "targetValue" : "(string [[2],[]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "kp cy",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[2,3,0,0],[3,3]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 0 COLOR))))",
+  "targetValue" : "(string [[0,0],[]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "kp red",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[0,0,0],[2,0,2],[1,1,0],[2,0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 2 COLOR))))",
+  "targetValue" : "(string [[],[2,2],[],[2]])"
+}, {
+  "id" : "session:deadbeef",
+  "utterance" : "kp brown",
+  "context" : "(context (date 2016 1 16) (graph NaiveKnowledgeGraph ((string [[0],[2,1,1]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.keepSet (call context:edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 1 COLOR))))",
+  "targetValue" : "(string [[],[1,1]])"
+} ]
