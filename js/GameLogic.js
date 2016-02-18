@@ -24,6 +24,7 @@ function GameState() {
     this.task = "0.0 remove";
 
     this.numsteps = 1;
+    this.debug = true;
 
     this.noAnswer = function() {
 	return this.semAns.length==undefined || this.semAns.length == 0
@@ -33,11 +34,14 @@ function GameState() {
 	return this.numsteps +") "+  this.basicStatusMessage(mode)
     }
     this.basicStatusMessage = function (mode) {
-	var def =  this.mode + " mode"
+	var def =  ">"
 	if (this.query) {
 	    def += ", command: " + this.query
-	    if (!this.noAnswer())
+	    if (!this.noAnswer()) {
 		def += ", showing # " + (this.semAnsInd+1) + "/" + this.semAns.length;
+		if (this.debug)
+		    def += "\n (formula " + this.semAns[this.semAnsInd].formula +")";
+	    }
 	}
 	if (mode == undefined)
 	    return def;
@@ -148,7 +152,8 @@ var GameAction = {
 	var cmds = {q:gs.query, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
 	    updateCurrentWall(gs, jsonstr);
-	    writeSemAns(gs);
+	    if (gs.debug)
+		writeSemAns(gs);
 	    updateCanvas(gs);
 	    updateStatus(gs.statusMessage());
 	});
@@ -156,11 +161,13 @@ var GameAction = {
     
     commit: function(gs) {
 	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {currentWall}) (name b) (name c))))"._format(gs); // attach arguments here!
-	var cmds = {q:wallcommand, sessionId:gs.sessionId};
+	var cmds = {q:contextcommand, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
-	    
-	    gs.originalWall = g.currentWall;
-	    updateCanvas(gs);
+	    gs.originalWall = gs.currentWall;
+	    if (gs.query.length > 0)
+		GameAction.tryaction(gs);
+	    else
+		updateCanvas(gs);
 	    updateStatus(gs.statusMessage("exec"))
 	});
     },
@@ -216,7 +223,7 @@ function writeSemAns(gs) {
     var formval = gs.semAns;
     for (i in formval)
 	document.getElementById("sempreret").innerHTML +=
-    (1+i) + ' : (prob={prob},score={score}): {formula}'._format(formval[i]) +
+    (1+parseInt(i)) + ' : (prob={prob},score={score}): {formula}'._format(formval[i]) +
 	'<br/>';
 }
 
@@ -224,9 +231,8 @@ function writeSemAns(gs) {
 // consider retriving this list from sempre
 function popTasks() {
     var puzzles = ['0.0 keep', '0.1 remove',
-		   '0.2 change color', '0.3 stack', '0.4 stack on top',
-		   '0.5 stack on top of color', '0.6 stack on top most',
-		   '0.7 left and right', '1.0 temp vars', , '1.1 the great wall',
+		   '0.2 change color', '0.3 stack', '0.4 stack ++',
+		   '1.0 temp vars', , '1.1 the great wall',
 		   '1.2 checker', '1.3 stacking'];
     var ps = document.getElementById("tasks");
 
@@ -328,8 +334,12 @@ document.onkeydown = function(e) {
     } else if (e.keyCode == Hotkeys.RIGHT) {
 	GameAction.next(GS);
 	return false;
+    } else if (e.keyCode == Hotkeys.UP) {
+	document.getElementById("maintextarea").value = GS.query; return false;
+    } else if (e.keyCode == Hotkeys.DOWN) {
+	GameAction.random(GS); return false;
     } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
-	GameAction.accept(GS);
+	GameAction.accept(GS); return false;
     }
 };
 

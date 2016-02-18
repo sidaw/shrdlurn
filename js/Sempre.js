@@ -1,5 +1,7 @@
 "use strict"
-var SEMPRE_URL = "http://localhost:8400"
+if (SEMPRE_URL==undefined)
+    var SEMPRE_URL = "http://localhost:8400"
+
 var sempre = {
     cleanValue: function (valuestring) {
 	if (!valuestring) return '';

@@ -14,6 +14,8 @@
 # uncontextful unary set ops
 (def @topOfSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.topOfSet)
 (def @bottomOfSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.bottomOfSet)
+(def @leftOfSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.leftOfSet)
+(def @rightOfSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.rightOfSet)
 (def @complementOfSet edu.stanford.nlp.sempre.cubeworld.CubeWorld.complementOfSet)
 
 # contextful first level primitives
@@ -22,8 +24,11 @@
 
 (def @wallToString edu.stanford.nlp.sempre.cubeworld.CubeWorld.wallToString)
 
+
+####### Start of the actual grammar
+
 (rule $ROOT ($Action) (lambda a (call @wallToString (var a)) )) # excecute some action
-# (rule $ROOT ($Action) (IdentityFn)) # excecute some action
+
 (rule $Action ( $Set ) (lambda s (call @removeSet (var s) )))
 (rule $Action ( $Set ) (lambda s (call @keepSet (var s) )))
 (rule $Action ( $Set $Color )
@@ -38,16 +43,17 @@
 )
 
 (rule $Set (tok $Set) (lambda r (call @topOfSet (var r) )))
-(rule $Set (tok $Set) (lambda r (call @bottomOfSet (var r) )))
-(rule $Set (tok $Set) (lambda r (call @complementOfSet (var r) )))
+# (rule $Set (tok $Set) (lambda r (call @bottomOfSet (var r) )))
+# (rule $Set (tok $Set) (lambda r (call @leftOfSet (var r) )))
+(rule $Set (tok $Set) (lambda r (call @rightOfSet (var r) )))
 
 (rule $Set ($Set $Set) (lambda s1 (lambda s2
 (call @setIntersection (var s1) (var s2)))))
+# (rule $Set ($Set $Set) (lambda s1 (lambda s2
+# (call @setUnion (var s1) (var s2)))))
 
-(rule $Set ($Set $Set) (lambda s1 (lambda s2
-(call @setUnion (var s1) (var s2)))))
-(rule $Set ($Set $Set) (lambda s1 (lambda s2
-(call @setDifference (var s1) (var s2)))))
+# (rule $Set ($Set $Set) (lambda s1 (lambda s2
+# (call @setDifference (var s1) (var s2)))))
 
 (when false (
 (rule $Action ( change $Set $Color )
