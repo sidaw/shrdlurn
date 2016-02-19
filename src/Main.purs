@@ -53,7 +53,7 @@ cubeColor Yellow = colorFromRGB 237 201  81
 
 -- | Spacing between two walls
 spacing :: Number
-spacing = 9.0
+spacing = 6.0
 
 -- | Like traverse_, but the function also takes an index parameter
 traverseWithIndex_ :: forall a b m. (Applicative m) => (Int -> a -> m b) -> (List a) -> m Unit
@@ -76,12 +76,22 @@ renderWall isomer y Nil =
     -- Render a gray placeholder for the empty wall
     renderBlock isomer 1.0 (-spacing * y) 0.0 5.0 0.9 0.1 (colorFromRGB 100 100 100)
 renderWall isomer y wall =
-    traverseWithIndex_ (\x -> renderStack isomer y (toNumber (length wall - x))) (reverse wall)
+    if isEmptyWall wall
+    then traverseWithIndex_ (\x -> renderStack isomer y (toNumber (length wall - x))) (reverse wall)
+    else renderBlock isomer 1.0 (-spacing * y) 0.0 5.0 0.9 0.1 (colorFromRGB 100 100 100)
+    
+isEmptyWall :: Wall -> Boolean
+isEmptyWall wall =
+    if length wall == 0 then true
+    else Nothing /= findIndex isEmptyStack wall
+isEmptyStack :: Stack -> Boolean
+isEmptyStack stack = length stack > 0
+
 
 -- | Render a series of walls
 renderWalls :: IsomerInstance -> (List Wall) -> EffIsomer
 renderWalls isomer walls = do
-    setIsomerConfig isomer 40.0 40.0 500.0
+    setIsomerConfig isomer 35.0 40.0 400.0
     traverseWithIndex_ (\y -> renderWall isomer (toNumber y)) walls
 
 -- | Render the target shape
@@ -103,14 +113,14 @@ ignoreErrorWalls = either (const [[[]]]) (id)
 jsonToWalls :: String -> (List Wall)
 jsonToWalls x =  intToWalls $ ignoreErrorWalls $ readJSON x :: F (Array (Array (Array Int)))
 
-renderJSON :: String -> String -> App
-renderJSON jsonwalls jsontarget = do
+renderJSON :: String -> App
+renderJSON jsonwalls = do
     doc <- getDocument
     isomer <- getIsomerInstance "canvas"
     -- On-canvas rendering
     clearCanvas isomer
     renderWalls isomer $ jsonToWalls jsonwalls
-    renderTarget isomer $ jsonToWall jsontarget
+    -- renderTarget isomer $ jsonToWall jsontarget
     -- parsedJSON <- readJSON cmdsequence :: F (Array (Array Int))
     -- renderWalls isomer (toList [intToWall (rights parsedJSON)])
     -- [[1, 2, 3], [3, 2], [1], [1,2]]
@@ -126,4 +136,4 @@ initialGS = { currentLevel: firstLevel, levelState: SM.empty }
 
 main :: App
 main = do
-    renderJSON "[[[]]]" "[[]]"
+    renderJSON "[[[]]]"

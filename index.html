@@ -15,11 +15,20 @@
 <div id="panel">
   <b>Choose level:</b><br>
   <select id="tasks"></select>
-  <b>Goal:</b>
-<div id="goal"></div>
-
-<b>History:</b>
-<p id="history"></p>
+  <b>Shortcuts:</b>
+<div id="goal">
+&crarr;: enter
+<br/>
+&#x238c;: ctrl-z
+<br/>
+&larr;: left arrow
+<br/>
+&rarr;: right arrow
+<br/>
+&#x2713;: shift-enter
+</div>
+  <b>History:</b>
+  <p id="history"></p>
 </div>
 
 <div id="message">
@@ -34,17 +43,20 @@
   <p id="status">status information.</p>
   <textarea id="maintextarea" cols="45" rows="1"></textarea>
 <div class="buttons">
-  <button class="button" id="trybutton">!<span>try this command</span></button>
-  <button class="button" id="dobutton">!!<span>do this</span></button>
-  <button class="button" id="randbutton">??<span>random start</span> </button>
+  <button class="button" id="dobutton">&crarr;<span>enter</span></button>
+  <button class="button" id="undobutton">&#x238c;<span>undo</span> </button>
 <div class="divider"></div>
-  <button class="button button--train" id="happybutton"> :) <span>correct</span></button>
-  <button class="button button--train" id="prevbutton"><-<span>prev. try</span> </button>
-  <button class="button button--train" id="nextbutton">-><span>next try</span> </button>
-  <button class="button button--train" id="randactionbutton" style="visibility:hidden">-?<span>rand. try</span> </button>
-  <button class="button button--train" id="describebutton"  style="visibility:hidden"> :O <span>you did that</span></button>
+
+<button class="button button--train" id="prevbutton">&larr;<span>scroll</span> </button>
+<button class="button button--train" id="nextbutton">&rarr;<span>scroll</span> </button>
+<button class="button button--train" id="acceptbutton"> &#x2713; <span>correct</span></button>
+
+<button class="button button--train" id="randactionbutton" style="visibility:hidden">-?<span>rand. try</span> </button>
+<button class="button button--train" id="describebutton"  style="visibility:hidden"> :O <span>you did that</span></button>
 </div>
-<p id="sempreret">debugging info is here</p>
+<p id="sempreret">
+debugging info here
+</p>
 </div>
 </div>
 <script type="text/javascript" src="dist/main.js"></script>

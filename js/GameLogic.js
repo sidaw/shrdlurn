@@ -11,42 +11,47 @@ String.prototype._format = function(placeholders) {
 
 function GameState() {
     // the walls, just json strings
-    this.originalWall = "[[]]";
     this.currentWall = "[[]]";
-    this.goalWall = "[[]]";
+    this.targetWall = "[[]]";
+    this.listWalls = [];
     
-    this.semAns = {}; // current answer list returned by sempre
-    this.semAnsInd = 0;
+    this.NBest = []; // current answer list returned by sempre
+    this.NBestInd = 0;
     this.sessionId = "deadbeef";
     
     this.query = "";
-    this.mode = "train";
-    this.task = "0.0 remove";
+    this.task = "0.0 basics";
 
     this.numsteps = 1;
     this.debug = true;
 
     this.noAnswer = function() {
-	return this.semAns.length==undefined || this.semAns.length == 0
+	return this.NBest==undefined || this.NBest.length == 0 || this.NBest.length == undefined
+    }
+    this.noQuery = function() {
+	return this.query==undefined || this.query.trim().length==0
     }
     this.statusMessage = function (mode) {
 	this.numsteps++;
 	return this.numsteps +") "+  this.basicStatusMessage(mode)
     }
+    this.resetNBest = function() {
+	this.NBest = []; // current answer list returned by sempre
+	this.NBestInd = 0;
+    }
+    
     this.basicStatusMessage = function (mode) {
-	var def =  ">"
+	var def =  ""
 	if (this.query) {
-	    def += ", command: " + this.query
+	    def += "command: " + this.query
 	    if (!this.noAnswer()) {
-		def += ", showing # " + (this.semAnsInd+1) + "/" + this.semAns.length;
+		def += ", showing # " + (this.NBestInd+1) + "/" + this.NBest.length;
 		if (this.debug)
-		    def += "\n (formula " + this.semAns[this.semAnsInd].formula +")";
+		    def += "\n (formula " + this.NBest[this.NBestInd].formula +")";
 	    }
 	}
 	if (mode == undefined)
 	    return def;
-	else if (mode == "describe")
-	    return "no, what you did was: " + this.query
 	else if (mode == "exec") {
 	    if (this.query.trim() == "")
 		return "nothing to execute, type a command"
@@ -54,7 +59,7 @@ function GameState() {
 	} else if (mode == "accept") {
 	    if (this.noAnswer())
 		return "nothing to accept"
-	    return "accepted #" + (this.semAnsInd+1) + " for " + this.query
+	    return "accepted #" + (this.NBestInd+1) + " for " + this.query
 	}
 	else
 	    return mode + ', ' + def;
@@ -67,30 +72,30 @@ function GameState() {
     }
 
     this.setCurrentWall = function() {
-	this.currentWall = this.semAns[this.semAnsInd].value;
+	if (this.NBest.length>0)
+	    this.currentWall = this.NBest[this.NBestInd].value;
+	else
+	    this.currentWall = '[[]]';
     }
     
     this.getCurrentWall = function() {
 	if ( this.currentWall && this.currentWall.length > 0)
 	{
-	    // hack for debugging sets
-	    var isAction = this.currentWall.indexOf('true') == -1 && this.currentWall.indexOf('false')==-1
-	    if (isAction)
-		return this.currentWall;
+	    return this.currentWall;
 	}
 	return '[[]]';
     }
     this.nextIfPossible = function() {
 	if (this.noAnswer()) return
-	if (this.semAnsInd < this.semAns.length-1)
-	    this.semAnsInd++;
-	this.currentWall = this.semAns[this.semAnsInd].value;
+	if (this.NBestInd < this.NBest.length-1)
+	    this.NBestInd++;
+	this.currentWall = this.NBest[this.NBestInd].value;
     }
     this.prevIfPossible = function() {
 	if (this.noAnswer()) return
-	if (this.semAnsInd > 0)
-	    this.semAnsInd--;
-	this.currentWall = this.semAns[this.semAnsInd].value;
+	if (this.NBestInd > 0)
+	    this.NBestInd--;
+	this.currentWall = this.NBest[this.NBestInd].value;
     }
 
     this.getStandardQuery = function() {
@@ -100,16 +105,18 @@ function GameState() {
 
 var GS = new GameState();
 
-// changes game state when task changes
-function taskChanged(gs, taskstr)
-{
-    gs.task = taskstr.replace(/^(train:|puzzle:)\s*/g, '');
-}
-
 function updateCanvas(gs) {
     var PSMain = PS.Main;
-    var wallpair = '[' + gs.originalWall + ',' + gs.getCurrentWall() + ']';
-    PSMain.renderJSON(wallpair)(gs.targetWall)()
+    var walls = [];
+    
+    walls = walls.concat(gs.listWalls)
+    walls.push(gs.getCurrentWall())
+    var MAXSTEPS = 3;
+    for (var i=0; i < MAXSTEPS - gs.listWalls.length; i++)
+	walls.push('[[]]')
+    walls.push(gs.targetWall)
+    
+    PSMain.renderJSON('['+walls.join(',')+']')()
 }
 
 function updateCurrentWall(gs, jsonstr) {
@@ -118,64 +125,98 @@ function updateCurrentWall(gs, jsonstr) {
 	console.log('undefined answer from sempre')
 	return
     }
-    gs.semAnsInd = 0;
-    gs.semAns = formval;
+    gs.NBestInd = 0;
+    gs.NBest = formval;
     gs.setCurrentWall();
 }
 
 function newWall(gs) {
-    var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.CubeWorld.getLevel (string {task})))"._format(gs); // attach arguments here!
+    var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.getLevel (string {task})))"._format(gs); // attach arguments here!
     var cmds = {q:wallcommand, sessionId:gs.sessionId};
     sempre.sempreQuery(cmds, function (jsonstr) {
 	var jsresp = JSON.parse(jsonstr)['lines'];
 	var walls = jsresp[0].replace(/\(string /g, '').replace(/\)|\s/g, '').split('|');
 	console.log(walls);
-	gs.originalWall = walls[0];
+	gs.listWalls = [];
+	gs.listWalls.push(walls[0]);
 	gs.targetWall = walls[1];
-
-	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {originalWall}) (name b) (name c))))"._format(gs); // attach arguments here!
-	var setcontext = {q:contextcommand, sessionId:gs.sessionId};
-	sempre.sempreQuery(setcontext, function(jsonstr) {
-    	    // applies the current command to the new thing
-	    if (gs.query.length > 0)
-		GameAction.tryaction(gs);
-	    else
-		updateCanvas(gs);
-	});
-
+	gs.resetNBest();
+	gs.setCurrentWall();
+	gs.query = '';
+	updateCanvas(gs);
     })
 }
 
 
 var GameAction = {
-    tryaction: function(gs) {
+    candidates: function(gs) {
+	updateStatus("running the command: {query}"._format(gs));
 	var cmds = {q:gs.query, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
 	    updateCurrentWall(gs, jsonstr);
 	    if (gs.debug)
 		writeSemAns(gs);
 	    updateCanvas(gs);
-	    updateStatus(gs.statusMessage());
 	});
     },
-    
-    commit: function(gs) {
-	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {currentWall}) (name b) (name c))))"._format(gs); // attach arguments here!
-	var cmds = {q:contextcommand, sessionId:gs.sessionId};
-	sempre.sempreQuery(cmds , function(jsonstr) {
-	    gs.originalWall = gs.currentWall;
-	    if (gs.query.length > 0)
-		GameAction.tryaction(gs);
-	    else
-		updateCanvas(gs);
-	    updateStatus(gs.statusMessage("exec"))
-	});
+
+    commitandcandidates: function(gs) {
+	if (gs.noAnswer()) {
+	    console.log("no answer");
+	    var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
+		._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
+
+	    var cmds = {q:contextcommand, sessionId:gs.sessionId};
+	    sempre.sempreQuery(cmds , function(jsonrespcontext) {
+		if (gs.noQuery()) { // refuse to run empty queries
+		    updateStatus('write a command');
+		} else {
+		    updateStatus('executed command');
+		    GameAction.candidates(gs);
+		}
+	    });
+	} else {
+	    console.log("has asnwer");
+	    gs.listWalls.push(gs.currentWall);
+	    var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
+		._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
+	    gs.resetNBest();
+	    gs.setCurrentWall();
+	    var cmds = {q:contextcommand, sessionId:gs.sessionId};
+	    sempre.sempreQuery(cmds , function(jsonrespcontext) {
+		if (gs.noQuery()) { // refuse to run empty queries
+		    updateStatus('write a command');
+		    updateCanvas(gs); // probablty redundant
+		} else {
+		    updateStatus('executed command');
+		    GameAction.candidates(gs);
+		}
+	    });
+	}
+    },
+    undo: function(gs) {
+	if (gs.noAnswer()) { // not in scrolling mode
+	    gs.resetNBest();
+	    gs.setCurrentWall();
+	    if ( gs.listWalls.length == 1) {
+		newWall(gs)
+		updateStatus(gs.statusMessage("new instance"))
+	    } else {
+		// else pop the top and set it as context
+		gs.listWalls.pop();
+		updateStatus(gs.statusMessage("undo"))
+	    }
+	    updateCanvas(gs);
+	} else { // scrolling
+	    gs.resetNBest();
+	    gs.setCurrentWall();
+	    updateCanvas(gs);
+	}
     },
     
     random: function(gs) {
 	newWall(gs)
 	updateStatus(gs.statusMessage("got a random wall"))
-	
     },
 
     prev: function(gs) {
@@ -190,13 +231,8 @@ var GameAction = {
 	updateStatus(gs.statusMessage())
     },
 
-    randact: function(gs) {
-	newWall(gs)
-	updateStatus(gs.statusMessage("took a random action"))
-    },
-
     accept: function(gs) {
-	sempre.sempreQuery({q: gs.query, accept:gs.semAnsInd, sessionId:gs.sessionId})
+	sempre.sempreQuery({q: gs.query, accept:gs.NBestInd, sessionId:gs.sessionId}, function(){})
 	//updateCanvas(GS)
 	updateStatus(gs.statusMessage("accept"))
     },
@@ -220,7 +256,7 @@ function updateStatus(strstatus)
 
 function writeSemAns(gs) {
     document.getElementById("sempreret").innerHTML = ''
-    var formval = gs.semAns;
+    var formval = gs.NBest;
     for (i in formval)
 	document.getElementById("sempreret").innerHTML +=
     (1+parseInt(i)) + ' : (prob={prob},score={score}): {formula}'._format(formval[i]) +
@@ -230,10 +266,10 @@ function writeSemAns(gs) {
 // DOM functions, and events
 // consider retriving this list from sempre
 function popTasks() {
-    var puzzles = ['0.0 keep', '0.1 remove',
-		   '0.2 change color', '0.3 stack', '0.4 stack ++',
-		   '1.0 temp vars', , '1.1 the great wall',
-		   '1.2 checker', '1.3 stacking'];
+    var puzzles = ['0.0 basics', '0.1 actions',
+		   '0.2 logic?',
+		   '1.0 castle', , '1.1 checker',
+		   '1.2 triangle'];
     var ps = document.getElementById("tasks");
 
     var poplist = function(prefix, strlist) {
@@ -247,18 +283,41 @@ function popTasks() {
     poplist('', puzzles);
 }
 
-document.getElementById("trybutton").onclick = function() {
-    querystr = document.getElementById("maintextarea").value;
+
+document.getElementById("tasks").onchange = function() {
+    var t = document.getElementById("tasks");
+    var taskstr = t.options[t.selectedIndex].value;
+    GS.task = taskstr;
+    newWall(GS);
+    updateStatus(GS.statusMessage())
+};
+
+var Hotkeys = {
+    ENTER: 13,
+    LEFT: 37,
+    RIGHT: 39,
+    UP: 38,
+    DOWN: 40,
+    Z : 90
+};
+
+function runCurrentQuery() {
+    var querystr = document.getElementById("maintextarea").value
+    document.getElementById("maintextarea").value = ''
+    logh('  ' + querystr)
+
     if (querystr.length>0) {
-	GS.query = querystr
-	GameAction.tryaction(GS);
+	GS.query = querystr;
+	GameAction.commitandcandidates(GS);
+    } else {
+	//document.getElementById("maintextarea").value = GS.query
     }
-};
+}
 document.getElementById("dobutton").onclick = function() {
-    GameAction.commit(GS);
+    runCurrentQuery();
 };
-document.getElementById("randbutton").onclick = function() {
-    GameAction.random(GS);
+document.getElementById("undobutton").onclick = function() {
+    GameAction.undo(GS);
 };
 document.getElementById("prevbutton").onclick = function() {
     GameAction.prev(GS);
@@ -266,65 +325,8 @@ document.getElementById("prevbutton").onclick = function() {
 document.getElementById("nextbutton").onclick = function() {
     GameAction.next(GS);
 };
-document.getElementById("randactionbutton").onclick = function() {
-    GameAction.randact(GS);
-};
-document.getElementById("happybutton").onclick = function() {
+document.getElementById("acceptbutton").onclick = function() {
     GameAction.accept(GS);
-};
-document.getElementById("describebutton").onclick = function() {
-    GameAction.describe(GS);
-};
-
-
-document.getElementById("tasks").onchange = function() {
-    var t = document.getElementById("tasks");
-    var taskstr = t.options[t.selectedIndex].value;
-    taskChanged(GS, taskstr);
-    newWall(GS);
-    updateStatus(GS.statusMessage())
-};
-
-function runCurrentQuery() {
-    var querystr = document.getElementById("maintextarea").value
-    document.getElementById("maintextarea").value = ''
-    logh('  ' + querystr)
-    updateStatus(GS.statusMessage())
-    
-    if (querystr.startsWith("?")) {
-	GameAction.random(GS);
-    }
-    else if (querystr.startsWith(")")) {
-	GameAction.accept(GS);
-    }
-    else if (querystr.startsWith("<")) {
-	GameAction.prev(GS);
-    }
-    else if (querystr.startsWith(">")) {
-	GameAction.next(GS);
-    }
-    else if (querystr.length>0) {
-	GS.query = querystr;
-	GameAction.tryaction(GS);
-    } else {
-	document.getElementById("maintextarea").value = GS.query
-	GameAction.tryaction(GS);
-    }
-}
-
-var Hotkeys = {
-    ENTER: 13,
-    LEFT: 37,
-    RIGHT: 39,
-    UP: 38,
-    DOWN: 40
-};
-
-document.getElementById("maintextarea").onkeypress = function(e) {
-    if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
-	runCurrentQuery();
-	return false;
-    }
 };
 
 document.onkeydown = function(e) {
@@ -337,10 +339,15 @@ document.onkeydown = function(e) {
     } else if (e.keyCode == Hotkeys.UP) {
 	document.getElementById("maintextarea").value = GS.query; return false;
     } else if (e.keyCode == Hotkeys.DOWN) {
-	GameAction.random(GS); return false;
+	GameAction.undo(GS); return false;
     } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
-	GameAction.accept(GS); return false;
-    }
+	GameAction.accept(GS);
+	return false;
+    } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
+	runCurrentQuery(); return false;
+    } else if (e.keyCode == Hotkeys.Z && e.ctrlKey) {
+	GameAction.undo(GS); return false;
+    } return true;
 };
 
 popTasks();

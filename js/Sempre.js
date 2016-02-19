@@ -108,22 +108,22 @@ var sempre = {
 	    lstqapairs.push(qapair);
 	}
 	return lstqapairs;
-	// console.log(lstqapairs)
-	// deduplicate by the formula, from the end
-	// assuming scores are sorted in descending order
-	var dictqa = {};
-	for (var i=lstqapairs.length-1; i>=0; i--) {
-	    dictqa[lstqapairs[i].formula] = lstqapairs[i];
-	}
-	listqadedup = []
-	for (var key in dictqa) {
-	    listqadedup.push(dictqa[key])
-	}
-	listqadedup.sort(function(a,b){return a.rank - b.rank});
-	// var enough_score = function (v) {return v.raw.score > 0};
-	// start of formatting hacks
-	formula_value = listqadedup
-	return formula_value;   
+	// // console.log(lstqapairs)
+	// // deduplicate by the formula, from the end
+	// // assuming scores are sorted in descending order
+	// var dictqa = {};
+	// for (var i=lstqapairs.length-1; i>=0; i--) {
+	//     dictqa[lstqapairs[i].formula] = lstqapairs[i];
+	// }
+	// listqadedup = []
+	// for (var key in dictqa) {
+	//     listqadedup.push(dictqa[key])
+	// }
+	// listqadedup.sort(function(a,b){return a.rank - b.rank});
+	// // var enough_score = function (v) {return v.raw.score > 0};
+	// // start of formatting hacks
+	// formula_value = listqadedup
+	// return formula_value;   
     },
 
     sempreFormat: function (ques) {
