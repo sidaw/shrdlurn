@@ -31,10 +31,6 @@ function GameState() {
     this.noQuery = function() {
 	return this.query==undefined || this.query.trim().length==0
     }
-    this.statusMessage = function (mode) {
-	this.numsteps++;
-	return this.numsteps +") "+  this.basicStatusMessage(mode)
-    }
     this.resetNBest = function() {
 	this.NBest = []; // current answer list returned by sempre
 	this.NBestInd = 0;
@@ -43,23 +39,18 @@ function GameState() {
     this.basicStatusMessage = function (mode) {
 	var def =  ""
 	if (this.query) {
-	    def += "command: " + this.query
-	    if (!this.noAnswer()) {
-		def += ", showing # " + (this.NBestInd+1) + "/" + this.NBest.length;
-		if (this.debug)
-		    def += "\n (formula " + this.NBest[this.NBestInd].formula +")";
-	    }
+	    
 	}
 	if (mode == undefined)
 	    return def;
 	else if (mode == "exec") {
 	    if (this.query.trim() == "")
-		return "nothing to execute, type a command"
+		return "??"
 	    return "executed: " + this.query
 	} else if (mode == "accept") {
 	    if (this.noAnswer())
 		return "nothing to accept"
-	    return "accepted #" + (this.NBestInd+1) + " for " + this.query
+	    return this.query + " # " + (this.NBestInd+1) + ": ✓"
 	}
 	else
 	    return mode + ', ' + def;
@@ -150,7 +141,7 @@ function newWall(gs) {
 
 var GameAction = {
     candidates: function(gs) {
-	updateStatus("running the command: {query}"._format(gs));
+	updateStatus("↵: {query}"._format(gs));
 	var cmds = {q:gs.query, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
 	    updateCurrentWall(gs, jsonstr);
@@ -161,38 +152,19 @@ var GameAction = {
     },
 
     commitandcandidates: function(gs) {
-	if (gs.noAnswer()) {
-	    console.log("no answer");
-	    var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
-		._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
-
-	    var cmds = {q:contextcommand, sessionId:gs.sessionId};
-	    sempre.sempreQuery(cmds , function(jsonrespcontext) {
-		if (gs.noQuery()) { // refuse to run empty queries
-		    updateStatus('write a command');
-		} else {
-		    updateStatus('executed command');
-		    GameAction.candidates(gs);
-		}
-	    });
-	} else {
-	    console.log("has asnwer");
+	if (!gs.noAnswer()) {
+	    console.log("use current answer, accept, and clear Nbest");
+	    sempre.sempreQuery({q: gs.query, accept:gs.NBestInd, sessionId:gs.sessionId}, function(){})
 	    gs.listWalls.push(gs.currentWall);
-	    var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
-		._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
 	    gs.resetNBest();
 	    gs.setCurrentWall();
-	    var cmds = {q:contextcommand, sessionId:gs.sessionId};
-	    sempre.sempreQuery(cmds , function(jsonrespcontext) {
-		if (gs.noQuery()) { // refuse to run empty queries
-		    updateStatus('write a command');
-		    updateCanvas(gs); // probablty redundant
-		} else {
-		    updateStatus('executed command');
-		    GameAction.candidates(gs);
-		}
-	    });
 	}
+	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
+	    ._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
+	var cmds = {q:contextcommand, sessionId:gs.sessionId};
+	sempre.sempreQuery(cmds , function(jsonrespcontext) {
+		GameAction.candidates(gs);
+	});
     },
     undo: function(gs) {
 	if (gs.noAnswer()) { // not in scrolling mode
@@ -200,45 +172,43 @@ var GameAction = {
 	    gs.setCurrentWall();
 	    if ( gs.listWalls.length == 1) {
 		newWall(gs)
-		updateStatus(gs.statusMessage("new instance"))
+		updateStatus("⎌: already at the start, got a new wall.")
 	    } else {
 		// else pop the top and set it as context
 		gs.listWalls.pop();
-		updateStatus(gs.statusMessage("undo"))
+		if ( gs.listWalls.length == 1)
+		    updateStatus("⎌: undo again for new instance.")
+		else
+		    updateStatus("⎌: at the previous wall")
 	    }
 	    updateCanvas(gs);
 	} else { // scrolling
 	    gs.resetNBest();
 	    gs.setCurrentWall();
+	    updateStatus("⎌: cleared current choices")
 	    updateCanvas(gs);
 	}
     },
-    
     random: function(gs) {
 	newWall(gs)
-	updateStatus(gs.statusMessage("got a random wall"))
+	updateStatus("got a random wall.")
     },
 
     prev: function(gs) {
 	gs.prevIfPossible()
 	updateCanvas(gs)
-	updateStatus(gs.statusMessage())
+	updateStatus("↑: showing the previous candidate")
     },
 
     next: function(gs) {
 	GS.nextIfPossible()
 	updateCanvas(gs)
-	updateStatus(gs.statusMessage())
+	updateStatus("↓: showing the next candidate")
     },
-
     accept: function(gs) {
 	sempre.sempreQuery({q: gs.query, accept:gs.NBestInd, sessionId:gs.sessionId}, function(){})
 	//updateCanvas(GS)
-	updateStatus(gs.statusMessage("accept"))
-    },
-
-    describe: function(gs) {
-	updateStatus(GS.statusMessage("describe"))
+	updateStatus("✓: confirmed.")
     }
 };
 //*************** DOM stuff
@@ -247,10 +217,19 @@ function logh(strlog) {document.getElementById("history").innerHTML += strlog + 
 function updateStatus(strstatus)
 {
     document.getElementById("status").innerHTML = strstatus
-    if (GS.query && GS.query.length>0)
-	document.getElementById("currentcmd").innerHTML = "<b>Current command: </b>" + GS.query
+    
+    if (GS.query && GS.query.length>0) {
+	var stateinfo = "<b>↵: {query}"._format({query:GS.query});
+	if (!GS.noAnswer()) {
+	    stateinfo = "<b>↵: {query} (#{NbestInd}/{Nbestlen})</b>"
+		._format({query:GS.query, NbestInd:GS.NBestInd+1, Nbestlen: GS.NBest.length});
+		if (this.debug)
+		    stateinfo += "\n (formula " + this.NBest[this.NBestInd].formula +")";
+	}
+	document.getElementById("currentcmd").innerHTML = stateinfo;
+    }
     else
-	document.getElementById("currentcmd").innerHTML = "<b>No command</b>"
+	document.getElementById("currentcmd").innerHTML = "<b>enter a command</b>"
 }
 
 
@@ -288,17 +267,9 @@ document.getElementById("tasks").onchange = function() {
     var t = document.getElementById("tasks");
     var taskstr = t.options[t.selectedIndex].value;
     GS.task = taskstr;
+    updateStatus("selected level {task}"._format({task:taskstr}));
     newWall(GS);
-    updateStatus(GS.statusMessage())
-};
-
-var Hotkeys = {
-    ENTER: 13,
-    LEFT: 37,
-    RIGHT: 39,
-    UP: 38,
-    DOWN: 40,
-    Z : 90
+    
 };
 
 function runCurrentQuery() {
@@ -329,23 +300,28 @@ document.getElementById("acceptbutton").onclick = function() {
     GameAction.accept(GS);
 };
 
+var Hotkeys = {
+    ENTER: 13,
+    LEFT: 37,
+    RIGHT: 39,
+    UP: 38,
+    DOWN: 40,
+    Z : 90
+};
+
 document.onkeydown = function(e) {
-    if (e.keyCode == Hotkeys.LEFT) {
+    if (e.keyCode == Hotkeys.UP) {
 	GameAction.prev(GS);
 	return false;
-    } else if (e.keyCode == Hotkeys.RIGHT) {
+    } else if (e.keyCode == Hotkeys.DOWN) {
 	GameAction.next(GS);
 	return false;
-    } else if (e.keyCode == Hotkeys.UP) {
-	document.getElementById("maintextarea").value = GS.query; return false;
-    } else if (e.keyCode == Hotkeys.DOWN) {
-	GameAction.undo(GS); return false;
     } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
 	GameAction.accept(GS);
 	return false;
     } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
 	runCurrentQuery(); return false;
-    } else if (e.keyCode == Hotkeys.Z && e.ctrlKey) {
+    } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
 	GameAction.undo(GS); return false;
     } return true;
 };
