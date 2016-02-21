@@ -53,7 +53,7 @@ cubeColor Yellow = colorFromRGB 237 201  81
 
 -- | Spacing between two walls
 spacing :: Number
-spacing = 6.0
+spacing = 5.5
 
 -- | Like traverse_, but the function also takes an index parameter
 traverseWithIndex_ :: forall a b m. (Applicative m) => (Int -> a -> m b) -> (List a) -> m Unit
@@ -91,7 +91,7 @@ isEmptyStack stack = length stack > 0
 -- | Render a series of walls
 renderWalls :: IsomerInstance -> (List Wall) -> EffIsomer
 renderWalls isomer walls = do
-    setIsomerConfig isomer 35.0 40.0 400.0
+    setIsomerConfig isomer 35.0 40.0 350.0
     traverseWithIndex_ (\y -> renderWall isomer (toNumber y)) walls
 
 -- | Render the target shape
@@ -125,7 +125,7 @@ renderJSON jsonwalls = do
     -- renderWalls isomer (toList [intToWall (rights parsedJSON)])
     -- [[1, 2, 3], [3, 2], [1], [1,2]]
     -- cmdsequence <- Nil
-    log "here"
+
     print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }

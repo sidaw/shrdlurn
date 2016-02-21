@@ -1,65 +1,66 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-<head>
-<meta charset="utf-8" />
-<title>!!??:):(</title>
-<meta name="author" content="S.W.">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="teach computer">
-<link rel="stylesheet" type="text/css" href="dist/main.css">
-<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
-</head>
-<body>
+  <head>
+    <meta charset="utf-8" />
+    <title>!!??:):(</title>
+    <meta name="author" content="S.W.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="teach computer">
+    <link rel="stylesheet" type="text/css" href="dist/main.css">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
+  </head>
+  <body>
+    <div id="container">
+      <div id="panel">
+	<b>Choose level:</b><br>
+	<select id="tasks"></select>
+	<b>Shortcuts:</b>
+	<div id="shortcuts">
+	  &crarr;: enter
+	  <br/>
+	  &#x238c;: ctrl-z
+	  <br/>
+	  &darr;: next (down)
+	  <br/>
+	  &uarr;: previous (up)
+	  <br/>
+	  &#x2713;: shift-enter
+	</div>
+	<b>History:</b>
+	<p id="history"></p>
+      </div>
+      <div id="message">
+	<span id="solved" class="animated">solved?</span>
+	<div class="buttons">
+	  <button class="button button--train" id="solvedandnext"> &#x2713;</button>
+	</div>
+      </div>
 
-<div id="container">
-<div id="panel">
-  <b>Choose level:</b><br>
-  <select id="tasks"></select>
-  <b>Shortcuts:</b>
-<div id="goal">
-&crarr;: enter
-<br/>
-&#x238c;: ctrl-z
-<br/>
-&darr;: next (down)
-<br/>
-&uarr;: previous (up)
-<br/>
-&#x2713;: shift-enter
-</div>
-  <b>History:</b>
-  <p id="history"></p>
-</div>
+      <canvas id="canvas" width="1200" height="900"></canvas>
 
-<div id="message">
-  <span id="solved" class="animated">Solved ✓</span>
-<div class="buttons"><a id="nextlevel" class="button"><u>N</u>ext level</a></div>
-</div>
+      <div id="chat" style=center>
+	<input type="text" id="maintextarea" placeholder=" type command"></input>
+	<div class="buttons">
+	  <button class="button" id="dobutton">&crarr;<span>enter</span></button>
+	  <button class="button" id="undobutton">&#x238c;<span>undo</span> </button>
+	  <div class="divider"></div>
 
-<canvas id="canvas" width="1600" height="860"></canvas>
+	  <button class="button button--train" id="prevbutton">&darr;<span>scroll</span> </button>
+	  <button class="button button--train" id="nextbutton">&uarr;<span>scroll</span> </button>
+	  <button class="button button--train" id="acceptbutton"> &#x2713; <span>correct</span></button>
 
-<div id="chat" style=center>
-  <p id="currentcmd"> <b>No command</b> </p>
-  <p id="status">status information.</p>
-  <textarea id="maintextarea" cols="45" rows="1"></textarea>
-<div class="buttons">
-  <button class="button" id="dobutton">&crarr;<span>enter</span></button>
-  <button class="button" id="undobutton">&#x238c;<span>undo</span> </button>
-<div class="divider"></div>
+	  <button class="button button--train" id="randactionbutton" style="visibility:hidden">-?<span>rand. try</span> </button>
+	  <button class="button button--train" id="describebutton"  style="visibility:hidden"> :O <span>you did that</span></button>
+	</div>
+	<p><span id="currentcmd"> <b>No command</b> </span>, <span
+								id="status">type one!</span> </p>
 
-<button class="button button--train" id="prevbutton">&darr;<span>scroll</span> </button>
-<button class="button button--train" id="nextbutton">&uarr;<span>scroll</span> </button>
-<button class="button button--train" id="acceptbutton"> &#x2713; <span>correct</span></button>
+	<p id="sempreret">
+	  debugging info here
+	</p>
+      </div>
+    </div>
+    <script type="text/javascript" src="dist/main.js"></script>
 
-<button class="button button--train" id="randactionbutton" style="visibility:hidden">-?<span>rand. try</span> </button>
-<button class="button button--train" id="describebutton"  style="visibility:hidden"> :O <span>you did that</span></button>
-</div>
-<p id="sempreret">
-debugging info here
-</p>
-</div>
-</div>
-<script type="text/javascript" src="dist/main.js"></script>
-
-</body>
+  </body>
 </html>

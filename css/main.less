@@ -11,14 +11,15 @@
 // Font
 @fontSize:      16px;
 @fontSizeSmall: 14px;
-@fontSizeLarge: 28px;
+@fontSizeLarge: 25px;
 @fontSizeInput:            24px;
 
 // Dimensions
 @width:               800px;
 
-@canvasWidth:         @width;
-@canvasHeight:        430px;
+@canvasWidth:         0.75 * @width;
+@canvasRatio :        900/1200;
+@canvasHeight:        @canvasWidth * @canvasRatio;
 
 @logoWidth:           216px;
 @logoMargin:          10px;
@@ -86,19 +87,19 @@ b {
     padding: 0px;
 }
 
-#goal {
-    height: 180px;
+#shortcuts {
+    height: 110px;
     width: 100%;
 }
-
+#history {
+    width: 100%;
+}
 #tasks {
     width: 100%;
-
     margin: 4px 0 15px 0;
     padding: 3px 0px;
     font-size: @fontSize;
     background-color: #fff;
-
     border: 1px solid @borderGray;
     border-bottom: 1px solid #aaa;
     border-radius: 3px;
@@ -120,8 +121,14 @@ b {
     padding: 1px;
 
     #solved {
-        font-size: @fontSizeLarge;
+        font-size: @fontSizeInput;
         .bold;
+    }
+    #nextlevel {
+        font-size: @fontSizeSmall;
+    }
+    #tryanother {
+        font-size: @fontSizeSmall;
     }
 }
 
@@ -138,6 +145,22 @@ b {
   resize: none;
   font-family: 'Roboto Condensed', sans;
   font-size: @fontSizeInput; 
+}
+input[type="text"] {
+  display: block;
+  font-family: 'Roboto Condensed', sans;
+  font-size: @fontSizeInput;
+  appearance: none;
+  resize: none;
+  width: @width*0.72-15px;
+  border-radius: 5px;
+  padding: 3px;
+  border: solid 3px #969696;
+  margin-bottom:12px;
+}
+input[type="text"]:focus {
+  outline: none;
+  border: solid 3px #A6A6A6;
 }
 
 .controlBox {
@@ -178,7 +201,7 @@ b {
     display: inline-block;
     position: relative;
     outline: none;
-
+    text-align: center;
     &:hover {
         background-color: darken(@bgCol, 10);
     }
@@ -191,6 +214,12 @@ b {
 .button--train {
     background-color: #FFFFFF;
     color: #000;
+}
+.button--solved {
+    background-color: #FFFFFF;
+    color: #000;
+    font-size: 24px;
+    width: 70px;
 }
 
 .width-30px{
