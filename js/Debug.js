@@ -1,0 +1,1 @@
+configs.debugMode = true;

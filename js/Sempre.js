@@ -1,7 +1,4 @@
 "use strict"
-if (SEMPRE_URL==undefined)
-    var SEMPRE_URL = "http://localhost:8400"
-
 var sempre = {
     cleanValue: function (valuestring) {
 	if (!valuestring) return '';
@@ -137,7 +134,7 @@ var sempre = {
 	for (k in cmds) {
 	    cmdstr.push(k + '=' + encodeURIComponent(cmds[k]));
 	}
-	var url = SEMPRE_URL + '/sempre?format=lisp2json&'+cmdstr.join('&');
+	var url = configs.SEMPRE_URL + '/sempre?format=lisp2json&'+cmdstr.join('&');
 	console.log(url)
 	xmlhttp.onreadystatechange = function() {
 	    if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {

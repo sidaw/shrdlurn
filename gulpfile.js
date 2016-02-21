@@ -100,6 +100,19 @@ gulp.task("concat", ["bundle"], function() {
         .pipe(gulp.dest("dist"));
 });
 
+gulp.task("concatdebug", ["bundle"], function() {
+    return gulp.src([
+        "bower_components/isomer/dist/isomer.min.js",
+        "dist/mainps.js",
+	"js/Config.js",
+	"js/Debug.js",
+	"js/Sempre.js",
+	"js/GameLogic.js"
+        ])
+        .pipe(concat("main.js"))
+        .pipe(gulp.dest("dist"));
+});
+
 gulp.task("compress", ["concat"], function() {
     return gulp.src("dist/main.js")
         .pipe(uglify())
@@ -114,14 +127,13 @@ gulp.task("docs", ["clean-docs"], function () {
                 "Helper": "docs/Helper.md",
                 "Isomer": "docs/Isomer.md",
                 "Levels": "docs/Levels.md",
-                "Storage": "docs/Storage.md",
-                "Transformer": "docs/Transformer.md",
                 "Types": "docs/Types.md",
-                "Unsafe": "docs/Unsafe.md"
+		"Unsafe": "docs/Unsafe.md"
             }
         });
 });
 
 gulp.task("prod", ["clean", "less", "psci", "bundle:cli", "bundle", "concat", "compress", "docs"]);
 gulp.task("dev", ["less", "psci", "bundle", "concat"]);
+gulp.task("debug", ["less", "psci", "bundle", "concatdebug"]);
 gulp.task("default", ["less", "psci", "bundle", "concat", "docs"]);
