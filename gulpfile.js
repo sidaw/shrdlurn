@@ -22,12 +22,8 @@ var foreigns = [
 var sourcesCli = [
     "bower_components/purescript-*/src/**/*.purs",
     "src/Types.purs",
-    "src/Transformer.purs",
-    "src/Levels.purs",
     "src/Helper.purs",
-    "src/Unsafe.purs",
-    "src/Levels/*.purs",
-    "cli/*.purs"
+    "src/Unsafe.purs"
 ];
 
 gulp.task("clean-docs", function(cb) {
@@ -126,7 +122,6 @@ gulp.task("docs", ["clean-docs"], function () {
                 "DOMHelper": "docs/DOMHelper.md",
                 "Helper": "docs/Helper.md",
                 "Isomer": "docs/Isomer.md",
-                "Levels": "docs/Levels.md",
                 "Types": "docs/Types.md",
 		"Unsafe": "docs/Unsafe.md"
             }

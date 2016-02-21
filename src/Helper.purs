@@ -1,5 +1,4 @@
 module Helper where
-
 import Prelude
 import Data.List
 import Data.Maybe
@@ -35,27 +34,3 @@ intToWall = toList <<< map intToStack
 
 intToWalls :: (Array (Array (Array Int))) -> (List Wall)
 intToWalls = toList <<< map intToWall
-
--- | Helper type to create levels from arrays
-type LevelEntry = {
-    name       :: String,
-    help       :: Maybe String,
-    difficulty :: Difficulty,
-    initial    :: AWall,
-    target     :: AWall
-}
-
-infixl 6 :->
-
--- | Helper function to create levels from arrays of cubes (instead of lists)
-(:->) :: LevelId
-      -> LevelEntry
-      -> Tuple LevelId Level
-(:->) lid entry =
-    lid :> {
-        name: entry.name,
-        help: entry.help,
-        difficulty: entry.difficulty,
-        initial: convert entry.initial,
-        target: convert entry.target
-    }

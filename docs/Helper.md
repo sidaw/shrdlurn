@@ -59,22 +59,4 @@ intToWall :: Array (Array Int) -> Wall
 intToWalls :: Array (Array (Array Int)) -> List Wall
 ```
 
-#### `LevelEntry`
-
-``` purescript
-type LevelEntry = { name :: String, help :: Maybe String, difficulty :: Difficulty, initial :: AWall, target :: AWall }
-```
-
-Helper type to create levels from arrays
-
-#### `(:->)`
-
-``` purescript
-(:->) :: LevelId -> LevelEntry -> Tuple LevelId Level
-```
-
-_left-associative / precedence 6_
-
-Helper function to create levels from arrays of cubes (instead of lists)
-
 

@@ -1,5 +1,4 @@
 module Main (App(..), main, renderJSON) where
-
 import Prelude
 import Control.Apply
 import Control.Bind
@@ -7,41 +6,31 @@ import Control.Monad
 import Control.Monad.Eff
 import Control.Monad.Eff.Console
 import DOM
-import DOM.Event.EventTypes (change, click, keydown)
-import DOM.Event.Types (Event())
 import DOM.HTML (window)
-import DOM.HTML.Types (windowToEventTarget, htmlElementToEventTarget, htmlElementToElement)
+
 import DOM.Node.Document (createElement)
 import DOM.Node.Element (setAttribute)
-import DOM.Node.Node (appendChild, setTextContent, parentElement)
-import DOM.Node.Types (Element(), Node(), elementToNode, elementToEventTarget)
 import Data.Enum
 import Data.Foldable
 import Data.Int
 import Data.List
 import Data.Maybe
 import Data.Either
--- import Data.Nullable (toMaybe)
-import Data.String.Regex (regex, parseFlags, replace)
--- import Data.String (split)
--- import Data.Traversable
 import qualified Data.StrMap as SM
 import Data.Foreign
 import Data.Foreign.Class
-
-import Analytics
 import DOMHelper
 import Isomer
-import Levels
-import Storage
 -- import Transformer
 import Types
 import Helper
 
+import Data.String.Regex (regex, parseFlags, replace)
+
 -- | Type synonyms for different combinations of effects
 type EffIsomer = forall eff. Eff (isomer :: ISOMER | eff) Unit
 type EffDOM    = forall eff. Eff (dom :: DOM | eff) Unit
-type App       = forall eff. Eff (dom :: DOM, console :: CONSOLE, isomer :: ISOMER, storage :: STORAGE | eff) Unit
+type App       = forall eff. Eff (dom :: DOM, console :: CONSOLE, isomer :: ISOMER | eff) Unit
 
 -- | RGB codes for the abstract colors
 cubeColor :: Cube -> IsomerColor
@@ -130,10 +119,6 @@ renderJSON jsonwalls = do
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
     
--- | Initial game state for first-time visitors
-initialGS :: GameState
-initialGS = { currentLevel: firstLevel, levelState: SM.empty }
-
 main :: App
 main = do
     renderJSON "[[[]]]"
