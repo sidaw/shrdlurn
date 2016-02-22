@@ -32,6 +32,8 @@ cubeColor Red    = colorFromRGB 204  51  63
 cubeColor Orange = colorFromRGB 235 104  65
 cubeColor Yellow = colorFromRGB 237 201  81
 
+gray = (colorFromRGB 200 200 200)
+
 -- | Spacing between two walls
 spacing :: Number
 spacing = 5.0
@@ -52,16 +54,16 @@ xPosition x y = x
 -- | Render a single stack of cubes
 renderStack :: IsomerInstance -> Number -> Number -> Stack -> EffIsomer
 renderStack isomer y x stack = do
-    --renderBlock isomer (xPosition x y) (-spacing * y) (-0.1) 1.0 0.9 0.1 (colorFromRGB 100 100 100)
+    --renderBlock isomer (xPosition x y) (-spacing * y) (-0.1) 1.0 0.9 0.1 gray
     traverseWithIndex_ (\z -> renderCube isomer (xPosition x y) (-spacing * y) (toNumber z)) $ map cubeColor stack
 
 -- | Render a wall (multiple stacks)
 renderWall :: IsomerInstance -> Number -> Number -> Wall -> EffIsomer
 renderWall isomer initlen y Nil =
     -- Render a gray placeholder for the empty wall
-    renderBlock isomer 1.0 (-spacing * y) 0.0 5.0 0.9 0.1 (colorFromRGB 100 100 100)
+    renderBlock isomer 1.0 (-spacing * y) 0.0 5.0 0.9 0.1 gray
 renderWall isomer initlen y wall  = do
-    renderBlock isomer (xPosition 1.0 y) (-spacing * y) (-0.1) (initlen-0.1) 0.9 0.1 (colorFromRGB 100 100 100)
+    renderBlock isomer (xPosition 1.0 y) (-spacing * y) (-0.1) (initlen-0.1) 0.9 0.1 gray
     traverseWithIndex_ (\x -> renderStack isomer y (toNumber (length wall - x))) (reverse wall)
     --if wallNotEmpty wall
     --then traverseWithIndex_ (\x -> renderStack isomer y (toNumber (length wall - x))) (reverse wall)
