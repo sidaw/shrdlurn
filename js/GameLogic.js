@@ -190,7 +190,7 @@ var GameAction = {
 	    gs.resetNBest();
 	    gs.setCurrentWall();
 	} else {
-	    updateStatus("use ↑ and ↓ to scroll");
+	    updateStatus("use ↑ and ↓ to scroll, ⎌ to undo, and ✓ to express approval");
 	}
 	
 	if (configs.hardMaxSteps
@@ -301,7 +301,7 @@ var GameAction = {
     checkAnswer: function(gs) {
 	if (gs.currentWall == gs.targetWall) {
 	    showNextButton(true);
-	    updateStatus("correct result, is that what you said?");
+	    updateStatus("shift-enter or ✓ if this is what you want");
 	    return true;
 	} else {
 	    showNextButton(false); return false;
