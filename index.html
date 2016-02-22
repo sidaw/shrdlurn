@@ -35,9 +35,13 @@
 	</div>
       </div>
 
-      <canvas id="canvas" width="1200" height="900"></canvas>
-
+      <canvas id="canvas" width="1200" height="800"></canvas>
+      <div id="startblocks">&darr; start</div>
+      <div id="goalblocks">↖ goal </div>
+      
       <div id="chat" style=center>
+	<p>&nbsp; <span id="currentcmd"><b>No command</b> </span>,
+	<span id="status">type one!</span></p>
 	<input type="text" id="maintextarea" placeholder=" type command"></input>
 	<div class="buttons">
 	  <button class="button" id="dobutton">&crarr;<span>enter</span></button>
@@ -47,14 +51,9 @@
 	  <button class="button button--train" id="prevbutton">&darr;<span>scroll</span> </button>
 	  <button class="button button--train" id="nextbutton">&uarr;<span>scroll</span> </button>
 	  <button class="button button--train" id="acceptbutton"> &#x2713; <span>correct</span></button>
-
-	  <button class="button button--train" id="randactionbutton" style="visibility:hidden">-?<span>rand. try</span> </button>
-	  <button class="button button--train" id="describebutton"  style="visibility:hidden"> :O <span>you did that</span></button>
 	</div>
-	<p><span id="currentcmd"> <b>No command</b> </span>,
-	<span id="status">type one!</span></p>
 	<p>
-	<b>Commands: </b> <span id="history"></span>
+	<span id="history" style="visibility:hidden"></span>
 	</p>
 	<p id="sempreret">
 	</p>

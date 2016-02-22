@@ -11,7 +11,7 @@ configs.defaultMaxSteps = 3;
 configs.hardMaxSteps = true; // not allowing num steps to exceed this
 
 configs.maximumNbest = 42;
-configs.debugMode = true;
+configs.debugMode = false;
 
 configs.levels = []
 configs.levels.push({

@@ -369,7 +369,7 @@ function popTasks() {
 
 document.getElementById("tasks").onchange = function() {
     var t = document.getElementById("tasks");
-    var taskstr = t.options[t.selectedIndex].id;
+    var taskstr = t.options[t.selectedIndex].name;
     GS.taskind = t.selectedIndex;
     newWall(GS);
     updateStatus("selected level {task}"._format({task:taskstr}));
@@ -402,6 +402,8 @@ document.getElementById("nextbutton").onclick = function() {
 };
 document.getElementById("acceptbutton").onclick = function() {
     GameAction.accept(GS);
+    if (GameAction.checkAnswer(GS))
+	    GameAction.nextLevel(GS)
 };
 
 document.getElementById("solvedandnext").onclick = function() {

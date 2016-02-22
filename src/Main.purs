@@ -77,7 +77,7 @@ stackNotEmpty stack = length stack > 0
 -- | Render a series of walls
 renderWalls :: IsomerInstance -> (List Wall) -> EffIsomer
 renderWalls isomer walls = do
-    setIsomerConfig isomer 35.0 40.0 350.0
+    setIsomerConfig isomer 35.0 40.0 325.0
     traverseWithIndex_ (\y -> renderWall isomer (lengthWithDefault (head walls)) (toNumber y)) walls
 
 lengthWithDefault :: Maybe Wall -> Number

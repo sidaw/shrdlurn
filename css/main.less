@@ -18,7 +18,7 @@
 @width:               800px;
 
 @canvasWidth:         0.75 * @width;
-@canvasRatio :        900/1200;
+@canvasRatio :        800/1200;
 @canvasHeight:        @canvasWidth * @canvasRatio;
 
 @logoWidth:           216px;
@@ -61,6 +61,23 @@ b {
     width: @logoWidth;
 }
 
+#startblocks {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    .bold;
+    color: #C0C0C0;
+    font-size: 25px
+}
+#goalblocks {
+    position: absolute;
+    top: @canvasHeight - 30px;
+    left: @canvasWidth - 150px;
+    .bold;
+    color: #C0C0C0;
+    font-size: 25px
+}
+
 #container {
     position: relative;
     margin: 0 auto;
@@ -77,6 +94,7 @@ b {
     border-radius: 5px;
     border: 1px solid @borderGray;
 }
+
 
 #panel {
     position: absolute;
