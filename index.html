@@ -12,8 +12,8 @@
   <body>
     <div id="container">
       <div id="panel">
-	<b>Choose level:</b><br>
-	<select id="tasks"></select>
+	<select id="tasks" size="5"></select>
+	<p/>
 	<b>Shortcuts:</b>
 	<div id="shortcuts">
 	  &crarr;: enter
@@ -26,8 +26,7 @@
 	  <br/>
 	  &#x2713;: shift-enter
 	</div>
-	<b>History:</b>
-	<p id="history"></p>
+	
       </div>
       <div id="message">
 	<span id="solved" class="animated">solved?</span>
@@ -52,11 +51,12 @@
 	  <button class="button button--train" id="randactionbutton" style="visibility:hidden">-?<span>rand. try</span> </button>
 	  <button class="button button--train" id="describebutton"  style="visibility:hidden"> :O <span>you did that</span></button>
 	</div>
-	<p><span id="currentcmd"> <b>No command</b> </span>, <span
-								id="status">type one!</span> </p>
-
+	<p><span id="currentcmd"> <b>No command</b> </span>,
+	<span id="status">type one!</span></p>
+	<p>
+	<b>Commands: </b> <span id="history"></span>
+	</p>
 	<p id="sempreret">
-	  debugging info here
 	</p>
       </div>
     </div>

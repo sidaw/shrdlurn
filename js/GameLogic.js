@@ -20,9 +20,10 @@ function GameState() {
     this.sessionId = "deadbeef";
     
     this.query = "";
-    this.taskind = 0;
+    this.numQueries = 0;
 
-    this.numQueries = 1;
+    this.taskind = 0;
+    this.successCounts = {}
     
     this.noAnswer = function() {
 	return this.NBest==undefined || this.NBest.length == 0 || this.NBest.length == undefined
@@ -97,6 +98,19 @@ function GameState() {
     this.getStandardQuery = function() {
 	return {q: this.query, sessionId:this.sessionId}
     }
+
+    this.getSuccessCount = function(levelid) {
+	if (this.successCounts[levelid] == undefined)
+	    return 0;
+	return this.successCounts[levelid]
+    }
+    this.incrementSuccessCount = function(levelid) {
+	if (this.successCounts[levelid] == undefined)
+	    this.successCounts[levelid] = 1;
+	else {
+	    this.successCounts[levelid] ++;
+	}
+    }
 }
 
 var GS = new GameState();
@@ -124,17 +138,6 @@ function updateCanvas(gs) {
     PSMain.renderJSON('['+walls.join(',')+']')();
 }
 
-function updateCurrentWall(gs, jsonstr) {
-    var formval = sempre.parseSEMPRE(jsonstr);
-    if (formval == undefined) {
-	console.log('undefined answer from sempre')
-	return
-    }
-    gs.NBestInd = 0;
-    gs.NBest = formval;
-    gs.setCurrentWall();
-}
-
 function newWall(gs) {
     var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.getLevel (string {task})))"
 	._format({task: configs.levels[gs.taskind].id}); // attach arguments here!
@@ -142,7 +145,12 @@ function newWall(gs) {
     gs.resetNBest();
     gs.query = '';
     gs.listWalls = [];
+    
     sempre.sempreQuery(cmds, function (jsonstr) {
+	if (jsonstr == "ERR_CONNECTION_REFUSED") {
+	    updateStatus("our server might be down...")
+	    return
+	}
 	var jsresp = JSON.parse(jsonstr)['lines'];
 	var walls = jsresp[0].replace(/\(string /g, '').replace(/\)|\s/g, '').split('|');
 	gs.listWalls.push(walls[0]);
@@ -157,15 +165,23 @@ var GameAction = {
     _candidates: function(gs) {
 	var cmds = {q:gs.query, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
-	    updateCurrentWall(gs, jsonstr);
+	    var formval = sempre.parseSEMPRE(jsonstr);
+	    if (formval == undefined) {
+		console.log('undefined answer from sempre')
+		return;
+	    } else {
+		gs.NBestInd = 0;
+		gs.NBest = formval;
+		gs.setCurrentWall();
+	    }
 	    if (configs.debugMode)
 		writeSemAns(gs);
 	    updateCanvas(gs);
+	    GameAction.checkAnswer(gs);
 	});
     },
 
     commitandcandidates: function(gs) {
-	
 	if (!gs.noAnswer()) {
 	    console.log("use current answer, accept, and clear Nbest");
 	    updateStatus("accepted previous wall. use ↑ and ↓ to scroll.");
@@ -175,7 +191,6 @@ var GameAction = {
 	    gs.setCurrentWall();
 	} else {
 	    updateStatus("use ↑ and ↓ to scroll");
-	    GameAction.checkAnswer(gs)
 	}
 	
 	if (configs.hardMaxSteps
@@ -205,8 +220,8 @@ var GameAction = {
 		else
 		    updateStatus("⎌: at the previous wall")
 		GameAction.checkAnswer(gs)
+		updateCanvas(gs);
 	    }
-	    updateCanvas(gs);
 	} else { // scrolling
 	    gs.resetNBest();
 	    gs.setCurrentWall();
@@ -220,19 +235,32 @@ var GameAction = {
 	newWall(gs)
 	updateStatus("another example of this level.")
     },
-    nextLevel: function(gs) {
+    nextLevel: function(gs) { // either the next random instance, or the next new level
 	gs.resetNBest();
 	gs.setCurrentWall();
-	solvedLevelStatus(gs.taskind);
+	gs.incrementSuccessCount( configs.levels[gs.taskind].id );
+	showNextButton(false);
+	var curSucc = gs.getSuccessCount( configs.levels[gs.taskind].id );
+	var minSucc = configs.levels[gs.taskind].minSuccess;
+	if (gs.getSuccessCount( configs.levels[gs.taskind].id ) < configs.levels[gs.taskind].minSuccess) {
+	    newWall(gs);
+	    updateStatus("solve this puzzle " + (minSucc - curSucc) + " more times to advance.");
+	    popTasks();
+	    return false;
+	}
+	    
 	if (gs.taskind+1 < configs.levels.length) {
 	    gs.taskind++;
 	    newWall(gs);
+	    updateStatus("the new level is: {levelname}"._format({levelname:configs.levels[gs.taskind].name}))
+	    popTasks();
+	    return true;
 	} else {
 	    updateStatus("already at the last level.");
+	    popTasks();
 	    return false;
 	}
-	updateStatus("the new level is: {levelname}"._format({levelname:configs.levels[gs.taskind].name}))
-	return true;
+	
     },
     prev: function(gs) {
 	if (gs.noAnswer()) {
@@ -271,8 +299,13 @@ var GameAction = {
 		     ._format({accept:gs.NBestInd, length:gs.NBest.length}))
     },
     checkAnswer: function(gs) {
-	if (gs.currentWall == gs.targetWall) showNextButton(true);
-	else showNextButton(false);
+	if (gs.currentWall == gs.targetWall) {
+	    showNextButton(true);
+	    updateStatus("correct result, is that what you said?");
+	    return true;
+	} else {
+	    showNextButton(false); return false;
+	}
     }
 };
 //*************** DOM stuff
@@ -280,8 +313,6 @@ var GameAction = {
 function showNextButton(show) {
     if (show) {
 	document.getElementById("message").style.visibility = "visible";
-	updateStatus("you got the result, but is that what you said?");
-	
     } else {
 	document.getElementById("message").style.visibility = "hidden";
     }
@@ -320,27 +351,28 @@ function writeSemAns(gs) {
 function popTasks() {
     var puzzles = configs.puzzles;
     var ps = document.getElementById("tasks");
+    ps.options.length = 0;
     for (var l in configs.levels) {
 	var p1 = document.createElement("option");
-	p1.text = (parseInt(l)+1) + ": " + configs.levels[l].name;
+	var numSucc = GS.getSuccessCount(configs.levels[l].id);
+	var minSucc = configs.levels[l].minSuccess;
+	var solved = numSucc >= minSucc? ' ✓' : '';
+	p1.text =  (parseInt(l)+1) + " " + configs.levels[l].name
+	    + " ({numSucc}/{minSucc})" 
+	    ._format({numSucc:numSucc, minSucc:minSucc}) + solved
 	p1.id = "level-" + configs.levels[l].id;
+	
 	ps.appendChild(p1);
     }
+    ps.selectedIndex = GS.taskind;
 }
-function solvedLevelStatus(levelind) {
-    logh('<br\> <b> solved level: ' + configs.levels[levelind].name +"</b><br\>")
-    var t = document.getElementById("tasks");
-    var lvlname = t.options[t.selectedIndex].text;
-    if (!lvlname.endsWith("✓"))
-	t.options[t.selectedIndex].text = lvlname + ' ✓';
-}
+
 document.getElementById("tasks").onchange = function() {
     var t = document.getElementById("tasks");
     var taskstr = t.options[t.selectedIndex].id;
     GS.taskind = t.selectedIndex;
-    updateStatus("selected level {task}"._format({task:taskstr}));
     newWall(GS);
-    GameAction.checkAnswer(GS)
+    updateStatus("selected level {task}"._format({task:taskstr}));
 };
 
 function runCurrentQuery(gs) {
@@ -349,7 +381,7 @@ function runCurrentQuery(gs) {
 
     if (querystr.length>0) {
 	gs.numQueries++; 
-	logh(gs.numQueries + ': ' + querystr + '; ')
+	logh(gs.numQueries + ' ' + querystr + '; ')
 	gs.query = querystr;
 	GameAction.commitandcandidates(gs);
     } else {
@@ -371,13 +403,10 @@ document.getElementById("nextbutton").onclick = function() {
 document.getElementById("acceptbutton").onclick = function() {
     GameAction.accept(GS);
 };
+
 document.getElementById("solvedandnext").onclick = function() {
     GameAction.accept(GS);
-    if (GameAction.nextLevel(GS)) {
-	var t = document.getElementById("tasks");
-	t.selectedIndex++;
-    }
-    GameAction.checkAnswer(GS)
+    GameAction.nextLevel(GS);
 };
 
 var Hotkeys = {
@@ -389,15 +418,20 @@ var Hotkeys = {
     Z : 90
 };
 
-document.onkeydown = function(e) {
+document.getElementById("maintextarea").onkeydown = function(e) {
     if (e.keyCode == Hotkeys.UP) {
 	GameAction.prev(GS);
 	return false;
     } else if (e.keyCode == Hotkeys.DOWN) {
 	GameAction.next(GS);
 	return false;
-    } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
+    }
+}
+document.onkeydown = function(e) {
+    if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
 	GameAction.accept(GS);
+	if (GameAction.checkAnswer(GS))
+	    GameAction.nextLevel(GS)
 	return false;
     } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
 	runCurrentQuery(GS); return false;

@@ -139,10 +139,12 @@ var sempre = {
 	xmlhttp.onreadystatechange = function() {
 	    if (xmlhttp.readyState == XMLHttpRequest.DONE && xmlhttp.status == 200) {
 		callback(xmlhttp.responseText);
-	    };
+	    } else {
+		console.log("xmlhttp issue?")
+	    }
 	}
 	xmlhttp.open("GET", url, true);
-	xmlhttp.send();	
+	xmlhttp.send(null);	
     }
 }
 

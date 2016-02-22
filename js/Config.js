@@ -2,6 +2,7 @@
 var configs = {};
 if (configs.SEMPRE_URL==undefined)
     configs.SEMPRE_URL = "http://jonsson.stanford.edu:8400"
+// configs.SEMPRE_URL = "http://localhost:8400"
 
 configs.costPerStep = 3;
 configs.costPerScroll = 1;
@@ -15,39 +16,45 @@ configs.debugMode = true;
 configs.levels = []
 configs.levels.push({
     id: "remove",
-    name: "baby steps*",
+    name: "baby steps",
     maxSteps: 1,
-    description: "come back here to train more when struggling"
+    description: "come back here to train more when struggling",
+    minSuccess: 10
 })
 configs.levels.push({
     id: "stack",
-    name: "more blocks*",
+    name: "more blocks",
     maxSteps: 1,
-    description: ""
+    description: "",
+    minSuccess: 10
 })
 configs.levels.push({
     id: "castle",
     name: "castle",
     maxSteps: 1,
-    description: ""
+    description: "",
+    minSuccess: 4
 })
 configs.levels.push({
     id: "checker2castle",
-    name: "checker and castle",
+    name: "more steps",
     maxSteps: 2,
-    description: ""
+    description: "",
+    minSuccess: 4
 })
 configs.levels.push({
     id: "tallcastle",
-    name: "tall castle",
+    name: "taller",
     maxSteps: 3,
-    description: ""
+    description: "",
+    minSuccess: 4
 })
 configs.levels.push({
     id: "checker",
     name: "checker",
     maxSteps: 4,
-    description: ""
+    description: "",
+    minSuccess: 4
 })
 
 if (false) {
@@ -66,14 +73,16 @@ configs.levels.push({
 
 configs.levels.push({
     id: "logic",
-    name: "logic*",
+    name: "logic",
     maxSteps: 2,
-    description: ""
+    description: "",
+    minSuccess: 10
 })
 configs.levels.push({
     id: "triangle",
     name: "triangle",
     maxSteps: 3,
-    description: ""
+    description: "",
+    minSuccess: 4
 })
 
