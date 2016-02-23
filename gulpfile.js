@@ -88,6 +88,7 @@ gulp.task("concat", ["bundle"], function() {
     return gulp.src([
         "bower_components/isomer/dist/isomer.min.js",
         "dist/mainps.js",
+	"js/Util.js",
 	"js/Config.js",
 	"js/Sempre.js",
 	"js/GameLogic.js"
@@ -100,6 +101,7 @@ gulp.task("concatdebug", ["bundle"], function() {
     return gulp.src([
         "bower_components/isomer/dist/isomer.min.js",
         "dist/mainps.js",
+	"js/Util.js",
 	"js/Config.js",
 	"js/Debug.js",
 	"js/Sempre.js",

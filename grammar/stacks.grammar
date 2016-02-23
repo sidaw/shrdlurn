@@ -18,14 +18,20 @@
 
 # contextful first level primitives
 (def @getColor context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getColor)
+(def @getTopColor context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getTopColor)
 (def @getAll context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getAll)
+(def @getGEQ edu.stanford.nlp.sempre.cubeworld.StacksWorld.getGEQ)
 
 # final ops
 (def @wallToString edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString)
 ####### Start of the actual grammar
 
 (rule $ROOT ($Action) (lambda a (call @wallToString (var a)) )) # excecute some action
+(rule $ROOT ($Action $Action) (lambda a (call @wallToString (var a)) ))
+
 # (rule $Action ( $Set ) (lambda s (call @removeAll (var s) )))
+# (rule $Action ( $Set ) (lambda s (call @doubleTop (var s) )))
+
 (rule $Action ( $Set ) (lambda s (call @removeTop (var s) )))
 (rule $Action ( $Set $Color )
       (lambda s (lambda c (call @stackOnTop (var s) (var c)))))
@@ -35,9 +41,9 @@
 (for @x (0 1 2 3) 
      (rule $Color (tok) (ConstantFn (number @x COLOR)))
 )
-(rule $Set (tok $Set) (lambda r (call @leftMost1 (var r) )))
-(rule $Set (tok $Set) (lambda r (call @rightMost1 (var r) )))
-(rule $Set (tok $Set) (lambda r (call @complement (var r) )))
+(rule $Set (tok $Set) (lambda s (call @leftMost1 (var s) )))
+(rule $Set (tok $Set) (lambda s (call @rightMost1 (var s) )))
+(rule $Set (tok $Set) (lambda s (call @complement (var s) )))
 
 (rule $Set ($Set $Set) (lambda s1 (lambda s2
 (call @setIntersection (var s1) (var s2)))))
@@ -46,39 +52,10 @@
 (rule $Set ($Set $Set) (lambda s1 (lambda s2
 (call @setDifference (var s1) (var s2)))))
 
-(when false (
-(rule $Action ( change $Set $Color )
-      (lambda s (lambda c (call @changeSetColor (var s) (var c)))))
-(rule $Action ( stack $Set $Color )
-      (lambda s (lambda c (call @stackOnTop (var s) (var c)))))
-      
-(rule $Set ( or $Set $Set) (lambda s1 (lambda s2
-(call @setUnion (var s1) (var s2)))))
-(rule $Set ( $Set or $Set) (lambda s1 (lambda s2
-(call @setUnion (var s1) (var s2)))))
 
-(rule $Set ( and $Set $Set) (lambda s1 (lambda s2
-(call @setIntersection (var s1) (var s2)))))
-(rule $Set ( $Set and $Set) (lambda s1 (lambda s2
-(call @setIntersection (var s1) (var s2)))))
-
-(rule $Set ( $Set but not $Set) (lambda s1 (lambda s2
-(call @setDifference (var s1) (var s2)))))
-
-(rule $Set (row $Number) (lambda c (call @getRowBottom (var c) )))
-(rule $Set (top $Number) (lambda c (call @getRowTop (var c) )))
-
+(when use_numbers (
 (rule $Number ($PHRASE) (NumberFn) (anchored 1))
-
-(when false (
-	     (rule $Color (cyan) (ConstantFn (number 0 COLOR)))
-	     (rule $Color (brown) (ConstantFn (number 1 COLOR)))
-	     (rule $Color (red) (ConstantFn (number 2 COLOR)))
-	     (rule $Color (orange) (ConstantFn (number 3 COLOR)))
-	     (rule $Color (yellow) (ConstantFn (number 4 COLOR)))
-	     ))
-
-(for @x (0 1 2) 
-     (rule $Color ($TOKEN) (ConstantFn (number @x COLOR)))
-)
+(rule $Set ($Set $Number) (lambda s (lambda sc (call  @leftMost (var sc) (var lf))))) #sc for stack count
+(rule $Set ($Set $Number) (lambda s (lambda sc (call @rightMost (var sc) (var ri)))))
+(rule $Set ($Set $Number) (lambda s (lambda h (call @getGEQ (var s) (var h))))) # h for height
 ))

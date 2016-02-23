@@ -95,32 +95,42 @@ var sempre = {
 	if(valid.length == 0) return undefined;
 	
 	for (var i=0; i<valid.length; i++) {
-	    var qapair = new Object();
+	    var qapair = {};
 	    qapair.value = this.formatValue(valid[i]['value']);
-	    qapair.formula = this.formatFormula(valid[i]['formula']);
-	    qapair.raw = valid[i];
+	    // qapair.formula = this.formatFormula(valid[i]['formula']);
+	    //qapair.raw = valid[i];
+	    qapair.score = valid[i].score.toFixed(6);
 	    qapair.rank = i;
-	    qapair.score = valid[i].score.toFixed(2);
-	    qapair.prob = valid[i].prob.toFixed(2);
+	    qapair.prob = valid[i].prob.toFixed(6);
 	    lstqapairs.push(qapair);
 	}
-	return lstqapairs;
-	// // console.log(lstqapairs)
-	// // deduplicate by the formula, from the end
-	// // assuming scores are sorted in descending order
-	// var dictqa = {};
-	// for (var i=lstqapairs.length-1; i>=0; i--) {
-	//     dictqa[lstqapairs[i].formula] = lstqapairs[i];
-	// }
-	// listqadedup = []
-	// for (var key in dictqa) {
-	//     listqadedup.push(dictqa[key])
-	// }
-	// listqadedup.sort(function(a,b){return a.rank - b.rank});
-	// // var enough_score = function (v) {return v.raw.score > 0};
-	// // start of formatting hacks
-	// formula_value = listqadedup
-	// return formula_value;   
+
+	function combine(vs, v) {
+	    if (vs == undefined) {
+		vs = {};
+		vs.value = v.value;
+		vs.prob = parseFloat(v.prob);
+		vs.score = parseFloat(v.score);
+		vs.rank = i;
+		vs.count = 1;
+	    } else {
+		vs.value = v.value;
+		vs.prob += parseFloat(v.prob);
+		vs.score = Math.max(vs.score, parseFloat(v.score));
+		vs.count += 1;
+	    }
+	    return vs;
+	}
+	nbestdict = lstqapairs.reduce(function(nbestdict, nbest) {
+	    nbestdict[nbest.value] = combine(nbestdict[nbest.value], nbest);
+	    return nbestdict;
+	}, {});
+	listqadedup = []
+	for (var key in nbestdict) {
+	     listqadedup.push(nbestdict[key])
+	}
+	listqadedup.sort(function(a,b){return b.score - a.score});
+	return listqadedup; 
     },
 
     sempreFormat: function (ques) {

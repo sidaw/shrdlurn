@@ -32,11 +32,13 @@ cubeColor Red    = colorFromRGB 204  51  63
 cubeColor Orange = colorFromRGB 235 104  65
 cubeColor Yellow = colorFromRGB 237 201  81
 
-gray = (colorFromRGB 200 200 200)
+gray = (colorFromRGB 185 185 185)
 
 -- | Spacing between two walls
 spacing :: Number
 spacing = 5.0
+cubesize :: Number
+cubesize = 35.0
 
 -- | Like traverse_, but the function also takes an index parameter
 traverseWithIndex_ :: forall a b m. (Applicative m) => (Int -> a -> m b) -> (List a) -> m Unit
@@ -79,7 +81,7 @@ stackNotEmpty stack = length stack > 0
 -- | Render a series of walls
 renderWalls :: IsomerInstance -> (List Wall) -> EffIsomer
 renderWalls isomer walls = do
-    setIsomerConfig isomer 35.0 40.0 325.0
+    setIsomerConfig isomer cubesize 40.0 325.0
     traverseWithIndex_ (\y -> renderWall isomer (lengthWithDefault (head walls)) (toNumber y)) walls
 
 lengthWithDefault :: Maybe Wall -> Number

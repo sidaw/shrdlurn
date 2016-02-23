@@ -1,14 +1,4 @@
 "use strict"
-// captures the game state
-String.prototype._format = function(placeholders) {
-    var s = this;
-    for(var propertyName in placeholders) {
-        var re = new RegExp('{' + propertyName + '}', 'gm');
-        s = s.replace(re, placeholders[propertyName]);
-    }    
-    return s;
-};
-
 function GameState() {
     // the walls, just json strings
     this.currentWall = "[[]]";
@@ -17,12 +7,13 @@ function GameState() {
     
     this.NBest = []; // current answer list returned by sempre
     this.NBestInd = 0;
-    this.sessionId = "deadbeef";
     
     this.query = "";
     this.numQueries = 0;
-
     this.taskind = 0;
+
+    // the only persistent states
+    this.sessionId = "deadbeef";
     this.successCounts = {}
     
     this.noAnswer = function() {
@@ -135,6 +126,7 @@ function updateCanvas(gs) {
 	walls.push('[[]]');
     // pad
     walls.push(gs.targetWall);
+    updateGoalTextPosition();
     PSMain.renderJSON('['+walls.join(',')+']')();
 }
 
@@ -180,12 +172,14 @@ var GameAction = {
 	    GameAction.checkAnswer(gs);
 	});
     },
-
+    _simpleaccept: function(gs) {
+	sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
+    },
     commitandcandidates: function(gs) {
 	if (!gs.noAnswer()) {
 	    console.log("use current answer, accept, and clear Nbest");
 	    updateStatus("accepted previous wall. use ↑ and ↓ to scroll.");
-	    sempre.sempreQuery({q: gs.query, accept:gs.NBestInd, sessionId:gs.sessionId}, function(){})
+	    GameAction._simpleaccept(gs);
 	    gs.listWalls.push(gs.currentWall);
 	    gs.resetNBest();
 	    gs.setCurrentWall();
@@ -293,7 +287,7 @@ var GameAction = {
 	    updateStatus("✓: can't accept, give a command first");
 	    return;
 	}
-	sempre.sempreQuery({q: gs.query, accept:gs.NBestInd, sessionId:gs.sessionId}, function(){})
+	GameAction._simpleaccept(gs);
 	//updateCanvas(GS)
 	updateStatus("✓: confirmed (#{accept}/{length})"
 		     ._format({accept:gs.NBestInd, length:gs.NBest.length}))
@@ -342,7 +336,7 @@ function writeSemAns(gs) {
     var formval = gs.NBest;
     for (i in formval)
 	document.getElementById("sempreret").innerHTML +=
-    (1+parseInt(i)) + ' : (prob={prob},score={score}): {formula}'._format(formval[i]) +
+    (1+parseInt(i)) + ': prob={prob}, score={score}, count={count}: value={value} '._format(formval[i]) +
 	'<br/>';
 }
 
@@ -367,9 +361,18 @@ function popTasks() {
     ps.selectedIndex = GS.taskind;
 }
 
+function updateGoalTextPosition() {
+    var initx = 15; var inity = 170;
+    var g = document.getElementById("goalblocks");
+    var scalefactor = 600/1200.0; // this is radio of height of canvas in html vs stylesheet
+    var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
+    g.style.top=(inity + (configs.levels[GS.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
+    g.style.left=(initx + (configs.levels[GS.taskind].maxSteps+1)*space*1.717/2)+"px";
+}
+
 document.getElementById("tasks").onchange = function() {
     var t = document.getElementById("tasks");
-    var taskstr = t.options[t.selectedIndex].name;
+    var taskstr = configs.levels[t.selectedIndex].name;
     GS.taskind = t.selectedIndex;
     newWall(GS);
     updateStatus("selected level {task}"._format({task:taskstr}));

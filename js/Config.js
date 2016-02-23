@@ -16,35 +16,28 @@ configs.debugMode = false;
 configs.levels = []
 configs.levels.push({
     id: "remove",
-    name: "baby steps",
+    name: "baby",
     maxSteps: 1,
     description: "come back here to train more when struggling",
     minSuccess: 10
 })
 configs.levels.push({
     id: "stack",
-    name: "more blocks",
+    name: "toddler",
     maxSteps: 1,
     description: "",
     minSuccess: 10
 })
 configs.levels.push({
-    id: "castle",
-    name: "castle",
-    maxSteps: 1,
-    description: "",
-    minSuccess: 4
-})
-configs.levels.push({
-    id: "checker2castle",
-    name: "more steps",
+    id: "pattern",
+    name: "patterns",
     maxSteps: 2,
     description: "",
-    minSuccess: 4
+    minSuccess: 10
 })
 configs.levels.push({
-    id: "tallcastle",
-    name: "taller",
+    id: "littlehouse",
+    name: "house",
     maxSteps: 3,
     description: "",
     minSuccess: 4
@@ -85,4 +78,10 @@ configs.levels.push({
     description: "",
     minSuccess: 4
 })
-
+configs.levels.push({
+    id: "heart",
+    name: "heart",
+    maxSteps: 3,
+    description: "",
+    minSuccess: 1
+})

@@ -7,11 +7,11 @@ cd $SEMPATH
 #-Grammar.tags generate general
 
 # elif [ $1 = "cube" ]; then  -FloatingParser.useSizeInsteadOfDepth true 
-FLOAT_OPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true"
+FLOAT_OPTS="-Parser FloatingParser -FloatingParser.maxDepth 9 -FloatingParser.useSizeInsteadOfDepth true"
 TRAIN_IN="-Dataset.inPaths train:../cubesem/data/trainstack.json -Learner.maxTrainIters 5"
 TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/trainstack.json -Master.newParamsPath ../cubesem/newparam"
 # -Dataset.inPaths train:../cubesem/examples"
-OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains heads -FeatureExtractor.featureComputers cubeworld.CubeWorldFeatureComputer -CubeWorldFeatureComputer.ngramN 2 -Params.initStepSize 0.1 -Params.adaptiveStepSize true -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 10 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -Params.l1Reg lazy -Params.l1RegCoeff 0.001"
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains heads -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer -StacksWorldFeatureComputer.ngramN 2 -Params.initStepSize 0.5 -Params.adaptiveStepSize true -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -Parser.beamSize 20 -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens false -Params.l1Reg lazy -Params.l1RegCoeff 0.001"
 
 rlwrap java $OPTIONS $FLOAT_OPTS $TRAIN_OUTS  "$@"
 #" -Master.commands \"(context (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))\""
