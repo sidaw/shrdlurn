@@ -111,7 +111,7 @@ var sempre = {
 		vs.value = v.value;
 		vs.prob = parseFloat(v.prob);
 		vs.score = parseFloat(v.score);
-		vs.rank = i;
+		vs.rank = v.rank;
 		vs.count = 1;
 	    } else {
 		vs.value = v.value;

@@ -102,6 +102,10 @@ function GameState() {
 	    this.successCounts[levelid] ++;
 	}
     }
+    this.effectiveStepsNumber = function() {
+	if (this.noAnswer()) return this.listWalls.length-1;
+	else return this.listWalls.length;
+    }
 }
 
 var GS = new GameState();
@@ -186,12 +190,7 @@ var GameAction = {
 	} else {
 	    updateStatus("use ↑ and ↓ to scroll, ⎌ to undo, and ✓ to express approval");
 	}
-	
-	if (configs.hardMaxSteps
-	    && gs.listWalls.length > configs.levels[gs.taskind].maxSteps) {
-	    updateStatus("using too many steps, try ⎌.");
-	    return;
-	}
+
 	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
 	    ._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
 	var cmds = {q:contextcommand, sessionId:gs.sessionId};
@@ -258,7 +257,7 @@ var GameAction = {
     },
     prev: function(gs) {
 	if (gs.noAnswer()) {
-	    updateStatus("↑: can't scroll, give a command");
+	    updateStatus("↑: can't scroll, give a command or or ⎌");
 	    return;
 	}
 	if (gs.prevIfPossible()) {
@@ -271,7 +270,7 @@ var GameAction = {
     },
     next: function(gs) {
 	if (gs.noAnswer()) {
-	    updateStatus("↓: can't scroll, give a command");
+	    updateStatus("↓: can't scroll, give a command or ⎌");
 	    return;
 	}
 	if (GS.nextIfPossible()) {
@@ -317,12 +316,10 @@ function updateStatus(strstatus)
     document.getElementById("status").innerHTML = strstatus
     
     if (GS.query && GS.query.length>0) {
-	var stateinfo = "<b>↵: {query}"._format({query:GS.query});
+	var stateinfo = "<b>↵: {query}</b>"._format({query:GS.query});
 	if (!GS.noAnswer()) {
 	    stateinfo = "<b>↵: {query} (#{NbestInd}/{Nbestlen})</b>"
 		._format({query:GS.query, NbestInd:GS.NBestInd+1, Nbestlen: GS.NBest.length});
-		if (configs.debugMode)
-		    stateinfo += "\n (formula " + GS.NBest[GS.NBestInd].formula +")";
 	}
 	document.getElementById("currentcmd").innerHTML = stateinfo;
     }
@@ -383,12 +380,17 @@ function runCurrentQuery(gs) {
     document.getElementById("maintextarea").value = ''
 
     if (querystr.length>0) {
-	gs.numQueries++; 
-	logh(gs.numQueries + ' ' + querystr + '; ')
-	gs.query = querystr;
-	GameAction.commitandcandidates(gs);
+	if (configs.hardMaxSteps
+	    && gs.effectiveStepsNumber() >= configs.levels[gs.taskind].maxSteps) {
+	    updateStatus("entered \"" + querystr +"\", but used too many steps, ⎌ first.");
+	} else {
+	    gs.numQueries++; 
+	    logh(gs.numQueries + ' ' + querystr + '; ')
+	    gs.query = querystr;
+	    GameAction.commitandcandidates(gs);
+	}
     } else {
-	updateStatus("there is no command");
+	updateStatus("enter a command");
     }
 }
 document.getElementById("dobutton").onclick = function() {

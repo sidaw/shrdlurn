@@ -23,8 +23,8 @@ configs.levels.push({
 })
 configs.levels.push({
     id: "stack",
-    name: "toddler",
-    maxSteps: 1,
+    name: "baby+",
+    maxSteps: 2,
     description: "",
     minSuccess: 10
 })
