@@ -99,8 +99,9 @@ function GameState() {
 	if (this.successCounts[levelid] == undefined)
 	    this.successCounts[levelid] = 1;
 	else {
-	    this.successCounts[levelid] ++;
+	    this.successCounts[levelid] = parseInt(this.successCounts[levelid])+1;
 	}
+	util.setStore("successCounts", this.successCounts)
     }
     this.effectiveStepsNumber = function() {
 	if (this.noAnswer()) return this.listWalls.length-1;
@@ -393,27 +394,35 @@ function runCurrentQuery(gs) {
 	updateStatus("enter a command");
     }
 }
+
+var maintextarea = document.getElementById("maintextarea");
 document.getElementById("dobutton").onclick = function() {
     runCurrentQuery(GS);
+    maintextarea.focus();
 };
 document.getElementById("undobutton").onclick = function() {
     GameAction.undo(GS);
+    maintextarea.focus();
 };
 document.getElementById("prevbutton").onclick = function() {
     GameAction.prev(GS);
+    maintextarea.focus();
 };
 document.getElementById("nextbutton").onclick = function() {
     GameAction.next(GS);
+    maintextarea.focus();
 };
 document.getElementById("acceptbutton").onclick = function() {
     GameAction.accept(GS);
     if (GameAction.checkAnswer(GS))
-	    GameAction.nextLevel(GS)
+	GameAction.nextLevel(GS)
+    maintextarea.focus();
 };
 
 document.getElementById("solvedandnext").onclick = function() {
     GameAction.accept(GS);
     GameAction.nextLevel(GS);
+    maintextarea.focus();
 };
 
 var Hotkeys = {
@@ -447,6 +456,9 @@ document.onkeydown = function(e) {
     } return true;
 };
 
+
+GS.sessionId = util.getId();
+GS.successCounts = util.getStore("successCounts", {})
 popTasks();
 newWall(GS);
 document.getElementById("maintextarea").focus()
