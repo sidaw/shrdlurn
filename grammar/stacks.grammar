@@ -27,17 +27,17 @@
 ####### Start of the actual grammar
 
 (rule $ROOT ($Action) (lambda a (call @wallToString (var a)) )) # excecute some action
-(rule $ROOT ($Action $Action) (lambda a (call @wallToString (var a)) ))
+# (rule $ROOT ($Action $Action) (lambda a (call @wallToString (var a)) ))
 
 # (rule $Action ( $Set ) (lambda s (call @removeAll (var s) )))
 # (rule $Action ( $Set ) (lambda s (call @doubleTop (var s) )))
-
 (rule $Action ( $Set ) (lambda s (call @removeTop (var s) )))
 (rule $Action ( $Set $Color )
       (lambda s (lambda c (call @stackOnTop (var s) (var c)))))
 
 (rule $Set (tok) (ConstantFn (call @getAll)))
 (rule $Set ($Color) (lambda c (call @getColor (var c) )))
+(rule $Set ($Color) (lambda c (call @getTopColor (var c) )))
 (for @x (0 1 2 3) 
      (rule $Color (tok) (ConstantFn (number @x COLOR)))
 )
@@ -49,13 +49,13 @@
 (call @setIntersection (var s1) (var s2)))))
 (rule $Set ($Set $Set) (lambda s1 (lambda s2
 (call @setUnion (var s1) (var s2)))))
-(rule $Set ($Set $Set) (lambda s1 (lambda s2
-(call @setDifference (var s1) (var s2)))))
+#(rule $Set ($Set $Set) (lambda s1 (lambda s2
+#(call @setDifference (var s1) (var s2)))))
 
 
-(when use_numbers (
+(when usenumbers 
 (rule $Number ($PHRASE) (NumberFn) (anchored 1))
-(rule $Set ($Set $Number) (lambda s (lambda sc (call  @leftMost (var sc) (var lf))))) #sc for stack count
-(rule $Set ($Set $Number) (lambda s (lambda sc (call @rightMost (var sc) (var ri)))))
+(rule $Set ($Set $Number) (lambda s (lambda n (call  @leftMost (var n) (var s))))) #sc for stack count
+(rule $Set ($Set $Number) (lambda s (lambda n (call @rightMost (var n) (var s)))))
 (rule $Set ($Set $Number) (lambda s (lambda h (call @getGEQ (var s) (var h))))) # h for height
-))
+)

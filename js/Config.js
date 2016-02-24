@@ -15,18 +15,18 @@ configs.debugMode = false;
 
 configs.levels = []
 configs.levels.push({
-    id: "remove",
+    id: "baby",
     name: "baby",
-    maxSteps: 1,
+    maxSteps: 2,
     description: "come back here to train more when struggling",
-    minSuccess: 10
+    minSuccess: 20
 })
 configs.levels.push({
-    id: "stack",
+    id: "baby+",
     name: "baby+",
     maxSteps: 2,
     description: "",
-    minSuccess: 10
+    minSuccess: 15
 })
 configs.levels.push({
     id: "pattern",
@@ -40,29 +40,16 @@ configs.levels.push({
     name: "house",
     maxSteps: 3,
     description: "",
-    minSuccess: 4
+    minSuccess: 2
 })
 configs.levels.push({
     id: "checker",
     name: "checker",
     maxSteps: 4,
     description: "",
-    minSuccess: 4
+    minSuccess: 2
 })
 
-if (false) {
-configs.levels.push({
-    id: "remove2",
-    name: "just top*",
-    maxSteps: 1,
-    description: ""
-})
-configs.levels.push({
-    id: "removeall",
-    name: "ambiguity*",
-    maxSteps: 1,
-    description: ""
-})}
 
 configs.levels.push({
     id: "logic",
@@ -76,7 +63,7 @@ configs.levels.push({
     name: "triangle",
     maxSteps: 3,
     description: "",
-    minSuccess: 4
+    minSuccess: 2
 })
 configs.levels.push({
     id: "heart",

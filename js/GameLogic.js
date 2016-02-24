@@ -22,6 +22,9 @@ function GameState() {
     this.noQuery = function() {
 	return this.query==undefined || this.query.trim().length==0
     }
+    this.currentCandidate = function() {
+	return this.NBest[this.NBestInd]
+    }
     this.resetNBest = function() {
 	this.NBest = []; // current answer list returned by sempre
 	this.NBestInd = 0;
@@ -132,6 +135,7 @@ function updateCanvas(gs) {
     // pad
     walls.push(gs.targetWall);
     updateGoalTextPosition();
+    updateReaction(gs);
     PSMain.renderJSON('['+walls.join(',')+']')();
 }
 
@@ -182,14 +186,13 @@ var GameAction = {
     },
     commitandcandidates: function(gs) {
 	if (!gs.noAnswer()) {
-	    console.log("use current answer, accept, and clear Nbest");
-	    updateStatus("accepted previous wall. use ↑ and ↓ to scroll.");
+	    updateStatus("accepted previous wall. use ↓ and ↑ to scroll.");
 	    GameAction._simpleaccept(gs);
 	    gs.listWalls.push(gs.currentWall);
 	    gs.resetNBest();
 	    gs.setCurrentWall();
 	} else {
-	    updateStatus("use ↑ and ↓ to scroll, ⎌ to undo, and ✓ to express approval");
+	    updateStatus("use ↓ and ↑ to scroll, ⎌ to undo, and ✓ to express approval");
 	}
 
 	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
@@ -319,15 +322,14 @@ function updateStatus(strstatus)
     if (GS.query && GS.query.length>0) {
 	var stateinfo = "<b>↵: {query}</b>"._format({query:GS.query});
 	if (!GS.noAnswer()) {
-	    stateinfo = "<b>↵: {query} (#{NbestInd}/{Nbestlen})</b>"
-		._format({query:GS.query, NbestInd:GS.NBestInd+1, Nbestlen: GS.NBest.length});
+	    stateinfo = "<b>↵: {query} (#{NBestInd}/{NBestlen})</b>"
+		._format({query:GS.query, NBestInd:GS.NBestInd+1, NBestlen: GS.NBest.length});
 	}
 	document.getElementById("currentcmd").innerHTML = stateinfo;
     }
     else
 	document.getElementById("currentcmd").innerHTML = "<b>no command to run</b>";
 }
-
 
 function writeSemAns(gs) {
     document.getElementById("sempreret").innerHTML = ''
@@ -336,6 +338,19 @@ function writeSemAns(gs) {
 	document.getElementById("sempreret").innerHTML +=
     (1+parseInt(i)) + ': prob={prob}, score={score}, count={count}: value={value} '._format(formval[i]) +
 	'<br/>';
+}
+
+function updateReaction(gs) {
+    var reaction =  document.getElementById('reaction');
+    if (gs.noAnswer())
+	reaction.innerHTML = util.emojione.numToImg(3);
+    else {
+	var cc = gs.currentCandidate().maxprob;
+	var cutoffs = [0.5, 0.2, 0.1, 0.01, 0.001, 0.00005, 0];
+	reaction.innerHTML = util.emojione.numToImg(cutoffs.findIndex(function(val){
+	    return cc >= val;
+	}));
+    }
 }
 
 // DOM functions, and events
@@ -435,7 +450,7 @@ var Hotkeys = {
 };
 
 document.getElementById("maintextarea").onkeydown = function(e) {
-    if (e.keyCode == Hotkeys.UP) {
+    if (e.keyCode == Hotkeys.UP) { // consider capture this in doc
 	GameAction.prev(GS);
 	return false;
     } else if (e.keyCode == Hotkeys.DOWN) {
