@@ -2,8 +2,7 @@
   "name": "cubesem",
   "version": "0.1.0",
   "authors": [
-    "David Peter <mail@david-peter.de>",
-    "Sida Wang"
+    "Sida Wang <sidaw@cs.stanford.edu>"
   ],
   "description": "teach your computer a language",
   "license": "MIT",
