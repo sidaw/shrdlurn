@@ -1,13 +1,13 @@
 {
-  "name": "cube-composer",
-  "description": "A puzzle game inspired by functional programming",
+  "name": "cubesem",
+  "description": "teach the computer your language",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sharkdp/cube-composer.git"
+    "url": "https://github.com/sidaw/cubesem.git"
   },
-  "author": "David Peter <mail@david-peter.de>",
+  "author": "Sida Wang <sidaw@cs.stanford.edu>",
   "license": "MIT",
-  "homepage": "https://github.com/sharkdp/cube-composer",
+  "homepage": "https://github.com/sidaw/cubesem",
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-concat": "^2.5.2",
