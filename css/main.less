@@ -5,7 +5,6 @@
 @orange:  #EB6841;
 @yellow:  #EDC951;
 
-@transformerGray:  #eee;
 @borderGray:       #ccc;
 
 // Font
@@ -18,7 +17,7 @@
 @width:               800px;
 
 @canvasWidth:         0.75 * @width;
-@canvasRatio :        800/1200;
+@canvasRatio :        800/1100; // equals the numbers in HTML
 @canvasHeight:        @canvasWidth * @canvasRatio;
 
 @logoWidth:           216px;
@@ -29,9 +28,6 @@
 @boxWidth:            240px;
 @boxSpacing:          80px;
 @boxHeightMin:        100px;
-
-@transformerHeight:   30px;
-@transformerSpacing:  7px;
 
 @cubeSize:            11px;
 
@@ -69,19 +65,19 @@ b {
 
 #startblocks {
     position: absolute;
-    top: 170px;
-    left: 15px;
+    top: 180px;
+    left: 25px;
     .bold;
-    color: #969696;
-    font-size: 15px
+    color: #000;
+    font-size: 20px
 }
 #goalblocks {
     position: absolute;
     top: @canvasHeight - 30px;
     left: @canvasWidth - 150px;
     .bold;
-    color: #969696;
-    font-size: 15px
+    color: #000;
+    font-size: 20px
 }
 
 #container {
@@ -161,34 +157,26 @@ b {
 #controls {
     overflow: hidden;
 }
-
-.textarea {
-  outline: none;
-}
-
 #maintextarea {
-  outline: none;
-  resize: none;
-  font-family: 'Roboto Condensed', sans;
-  font-size: @fontSizeInput; 
-}
-input[type="text"] {
   display: block;
   font-family: 'Roboto Condensed', sans;
   font-size: @fontSizeInput;
   appearance: none;
+  outline: none;
   resize: none;
-  width: @width*0.72-15px;
+  width: @width*0.75-15px;
   border-radius: 5px;
   padding: 3px;
   border: solid 3px #969696;
   margin-bottom:12px;
 }
-input[type="text"]:focus {
+#maintextarea:focus {
   outline: none;
   border: solid 3px #000;
 }
-
+#helptext {
+ width: @width*0.75-15px;
+}
 .controlBox {
     text-align: center;
     float: left;
@@ -377,8 +365,8 @@ a {
 .emojione {
   /* Emoji Sizing */
   font-size: inherit;
-  height: 65px;
-  width: 65px;
+  height: 35px;
+  width: 35px;
   min-height: 20px;
   min-width: 20px;
 

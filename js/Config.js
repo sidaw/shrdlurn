@@ -19,7 +19,7 @@ configs.levels.push({
     name: "baby",
     maxSteps: 2,
     description: "come back here to train more when struggling",
-    minSuccess: 20
+    minSuccess: 20, godMod:10
 })
 configs.levels.push({
     id: "baby+",

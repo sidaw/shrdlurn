@@ -110,6 +110,7 @@ var sempre = {
 		vs = {};
 		vs.value = v.value;
 		vs.prob = parseFloat(v.prob);
+		vs.probs = [v.prob];
 		vs.score = parseFloat(v.score);
 		vs.rank = v.rank;
 		vs.count = 1;
@@ -119,15 +120,16 @@ var sempre = {
 		vs.prob += parseFloat(v.prob);
 		vs.score = Math.max(vs.score, parseFloat(v.score));
 		vs.maxprob = Math.max(vs.maxprob, parseFloat(v.prob));
+		vs.probs.push(v.prob);
 		vs.count += 1;
 	    }
 	    return vs;
 	}
-	nbestdict = lstqapairs.reduce(function(nbestdict, nbest) {
-	    nbestdict[nbest.value] = combine(nbestdict[nbest.value], nbest);
-	    return nbestdict;
+	var nbestdict = lstqapairs.reduce(function(nbd, nbest) {
+	    nbd[nbest.value] = combine(nbd[nbest.value], nbest);
+	    return nbd;
 	}, {});
-	listqadedup = []
+	var listqadedup = []
 	for (var key in nbestdict) {
 	     listqadedup.push(nbestdict[key])
 	}

@@ -181,6 +181,9 @@ var GameAction = {
 	    GameAction.checkAnswer(gs);
 	});
     },
+    _godScroll: function(gs) { // mess with the nbest list, and put the right answer earlier when enabled.
+	
+    },
     _simpleaccept: function(gs) {
 	sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
     },
@@ -342,8 +345,9 @@ function writeSemAns(gs) {
 
 function updateReaction(gs) {
     var reaction =  document.getElementById('reaction');
-    if (gs.noAnswer())
+    if (gs.noAnswer()) {
 	reaction.innerHTML = util.emojione.numToImg(3);
+    }
     else {
 	var cc = gs.currentCandidate().maxprob;
 	var cutoffs = [0.5, 0.2, 0.1, 0.01, 0.001, 0.00005, 0];
@@ -375,12 +379,17 @@ function popTasks() {
 }
 
 function updateGoalTextPosition() {
-    var initx = 15; var inity = 170;
+    var initx = 25; var inity = 180;
     var g = document.getElementById("goalblocks");
-    var scalefactor = 600/1200.0; // this is radio of height of canvas in html vs stylesheet
+    var scalefactor = 800*0.75/1100.0; // this is radio of the widths of canvas in html vs stylesheet
     var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
     g.style.top=(inity + (configs.levels[GS.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
     g.style.left=(initx + (configs.levels[GS.taskind].maxSteps+1)*space*1.717/2)+"px";
+
+    var cb = document.getElementById("reaction");
+    var stepnum = GS.listWalls.length;
+    cb.style.top=(inity + (stepnum)*space*0.5)+"px"; //sin 30 and 60 due to isometry
+    cb.style.left=(initx + (stepnum)*space*1.717/2)+"px";
 }
 
 document.getElementById("tasks").onchange = function() {

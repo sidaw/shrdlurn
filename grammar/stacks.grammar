@@ -20,7 +20,7 @@
 (def @getColor context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getColor)
 (def @getTopColor context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getTopColor)
 (def @getAll context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getAll)
-(def @getGEQ edu.stanford.nlp.sempre.cubeworld.StacksWorld.getGEQ)
+(def @getGEQ context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getGEQ)
 
 # final ops
 (def @wallToString edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString)
@@ -28,21 +28,26 @@
 
 (rule $ROOT ($Action) (lambda a (call @wallToString (var a)) )) # excecute some action
 # (rule $ROOT ($Action $Action) (lambda a (call @wallToString (var a)) ))
-
-# (rule $Action ( $Set ) (lambda s (call @removeAll (var s) )))
-# (rule $Action ( $Set ) (lambda s (call @doubleTop (var s) )))
 (rule $Action ( $Set ) (lambda s (call @removeTop (var s) )))
 (rule $Action ( $Set $Color )
       (lambda s (lambda c (call @stackOnTop (var s) (var c)))))
 
 (rule $Set (tok) (ConstantFn (call @getAll)))
+
 (rule $Set ($Color) (lambda c (call @getColor (var c) )))
 (rule $Set ($Color) (lambda c (call @getTopColor (var c) )))
 (for @x (0 1 2 3) 
      (rule $Color (tok) (ConstantFn (number @x COLOR)))
 )
-(rule $Set (tok $Set) (lambda s (call @leftMost1 (var s) )))
-(rule $Set (tok $Set) (lambda s (call @rightMost1 (var s) )))
+(rule $Set ($Count) (lambda h (call @getGEQ (var h))))
+(for @x (1 2 3) 
+     (rule $Count (tok) (ConstantFn (number @x COUNT)))
+)
+
+
+(rule $Set ($Set $Count) (lambda s (lambda n (call @leftMost (var s) (var n) )))) #sc for stack count
+(rule $Set ($Set $Count) (lambda s (lambda n (call @rightMost (var s)  (var n)))))
+
 (rule $Set (tok $Set) (lambda s (call @complement (var s) )))
 
 (rule $Set ($Set $Set) (lambda s1 (lambda s2
@@ -52,10 +57,6 @@
 #(rule $Set ($Set $Set) (lambda s1 (lambda s2
 #(call @setDifference (var s1) (var s2)))))
 
-
 (when usenumbers 
-(rule $Number ($PHRASE) (NumberFn) (anchored 1))
-(rule $Set ($Set $Number) (lambda s (lambda n (call  @leftMost (var n) (var s))))) #sc for stack count
-(rule $Set ($Set $Number) (lambda s (lambda n (call @rightMost (var n) (var s)))))
-(rule $Set ($Set $Number) (lambda s (lambda h (call @getGEQ (var s) (var h))))) # h for height
+(rule $Count ($TOKEN) (NumberFn) (anchored 1))
 )

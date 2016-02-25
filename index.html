@@ -11,12 +11,12 @@
   </head>
   <body>
 <div id="container">
-      <div id="reaction"></div>
+      
       <div id="panel">
 	<select id="tasks" size="5"></select>
 	<p/>
-	<b>Shortcuts:</b>
 	<div id="shortcuts">
+	<b>Shortcuts:</b><br/>
 	  &crarr;: enter
 	  <br/>
 	  &#x238c;: ctrl-z
@@ -27,6 +27,8 @@
 	  <br/>
 	  &#x2713;: shift-enter
 	</div>
+	<p/>
+	
 	
       </div>
       <div id="message">
@@ -36,9 +38,10 @@
 	</div>
       </div>
 
-      <canvas id="canvas" width="1200" height="800"></canvas>
+      <canvas id="canvas" width="1100" height="800"></canvas>
       <div id="startblocks">start</div>
       <div id="goalblocks">goal</div>
+      <div id="reaction"></div>
       
       <div id="chat" style=center>
 	<p>&nbsp; <span id="currentcmd"><b>No command</b> </span>,
@@ -52,6 +55,14 @@
 	  <button class="button button--train" id="nextbutton">&darr;<span>scroll</span> </button>
 	  <button class="button button--train" id="prevbutton">&uarr;<span>scroll</span> </button>
 	  <button class="button button--train" id="acceptbutton"> &#x2713; <span>correct</span></button>
+	  </div>
+	  <p/>
+	<div id="helptext">
+	  Reach the "goal" from the "start" by teaching the
+	  computer your language. Type a command, use ↓ and ↑ to
+	  select the right answer, then use ✓ to express your approval (<a
+	  href="https://github.com/sidaw/cubesem/blob/master/README.md"
+	  target="_blank">README</a>).
 	</div>
 	<p>
 	<span id="history" style="visibility:hidden"></span>

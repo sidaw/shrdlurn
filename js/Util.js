@@ -50,23 +50,26 @@ util.emojione = {};
 	':astonished:':["1f632"],
 	':confused:':["1f615"],
 	':rolling_eyes:':["1f644"],
+	':relieved:':['1f60c'],
+	':relaxed:':['263a'],
 	':neutral_face:':["1f610"],
 	':slight_smile:':["1f642"],
-	':smiley:':["1f603"]};
+	':smiley:':["1f603"],
+	':grinning:':["1f600"]};
     ns.numToShort = {
 	6: ':scream:',
 	5: ':astonished:',
 	4: ':confused:',
 	3: ':rolling_eyes:',
-	2: ':neutral_face:',
-	1: ':slight_smile:',
+	2: ':relieved:',
+	1: ':relaxed:',
 	0: ':smiley:'
     };
     
     ns.imagePathPNG = 'http://cdn.jsdelivr.net/emojione/assets/png/';
     ns.imagePathSVG = 'http://cdn.jsdelivr.net/emojione/assets/svg/';
     ns.cacheBustParam = ''; //'?v=2.1.1';
-    ns.imageType = 'svg';
+    ns.imageType = 'png'; // png or svg
     
     ns.shortnameToImage = function(shortname) {
 	unicode = ns.emojioneList[shortname][ns.emojioneList[shortname].length-1];
