@@ -16,7 +16,7 @@ bower install
 gulp
 ```
 
-## Acknowledgement
-- The sever side uses [SEMPRE](https://github.com/percyliang/sempre).
-- Rendering of the cubes and the css is from [cube composer](https://github.com/sharkdp/cube-composer), used with permission under MIT license.
-- emojis provided for free by [Emoji One](http://emojione.com/)
+## Acknowledgements
+- The serveruses [SEMPRE](https://github.com/percyliang/sempre).
+- Rendering of the cubes and the CSS is from [cube composer](https://github.com/sharkdp/cube-composer), which uses PureScript and [Isomer](https://github.com/jdan/isomer). Some code is used with permission under the MIT license.
+- Emojis are provided for free by [Emoji One](http://emojione.com/)
