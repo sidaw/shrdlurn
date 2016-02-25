@@ -1,4 +1,0 @@
-(example
-  (utterance "rm br")
-  (targetFormula (call edu.stanford.nlp.sempre.cubeworld.CubeWorld.removeSet (call edu.stanford.nlp.sempre.cubeworld.CubeWorld.getColor (number 1 COLOR))))
-)
