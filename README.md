@@ -13,6 +13,6 @@ gulp
 ```
 
 ## Acknowledgement
-The sever side uses [SEMPRE](https://github.com/percyliang/sempre).
-Rendering of the cubes and the css is from [cube composer](https://github.com/sharkdp/cube-composer), used with permission under MIT license.
-emojis provided for free by [Emoji One](http://emojione.com/)
+- The sever side uses [SEMPRE](https://github.com/percyliang/sempre).
+- Rendering of the cubes and the css is from [cube composer](https://github.com/sharkdp/cube-composer), used with permission under MIT license.
+- emojis provided for free by [Emoji One](http://emojione.com/)
