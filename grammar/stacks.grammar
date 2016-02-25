@@ -32,28 +32,29 @@
 (rule $Action ( $Set $Color )
       (lambda s (lambda c (call @stackOnTop (var s) (var c)))))
 
-(rule $Set (tok) (ConstantFn (call @getAll)))
-
-(rule $Set ($Color) (lambda c (call @getColor (var c) )))
-(rule $Set ($Color) (lambda c (call @getTopColor (var c) )))
 (for @x (0 1 2 3) 
      (rule $Color (tok) (ConstantFn (number @x COLOR)))
 )
-(rule $Set ($Count) (lambda h (call @getGEQ (var h))))
-(for @x (1 2 3) 
+# (rule $Set ($Count) (lambda h (call @getGEQ (var h))))
+(for @x (1) 
      (rule $Count (tok) (ConstantFn (number @x COUNT)))
 )
 
+(rule $Set (tok) (ConstantFn (call @getAll)))
 
-(rule $Set ($Set $Count) (lambda s (lambda n (call @leftMost (var s) (var n) )))) #sc for stack count
+(rule $Set (tok $Color) (lambda c (call @getColor  (var c) )))
+(rule $Set (tok $Color) (lambda c (call @getTopColor  (var c) )))
+(rule $Set ($Set $Count) (lambda s (lambda n (call @leftMost (var s) (var n) )))) 
 (rule $Set ($Set $Count) (lambda s (lambda n (call @rightMost (var s)  (var n)))))
+#(rule $Set (tok $Set) (lambda s (call @complement (var s) )))
+#(rule $Set (tok $Set) (lambda s (call @leftMost1 (var s) )))
+#(rule $Set (tok $Set) (lambda s (call @rightMost1 (var s) )))
 
-(rule $Set (tok $Set) (lambda s (call @complement (var s) )))
+#(rule $Set ($Set $Set) (lambda s1 (lambda s2
+#(call @setIntersection (var s1) (var s2)))))
+#(rule $Set ($Set $Set) (lambda s1 (lambda s2
+#(call @setUnion (var s1) (var s2)))))
 
-(rule $Set ($Set $Set) (lambda s1 (lambda s2
-(call @setIntersection (var s1) (var s2)))))
-(rule $Set ($Set $Set) (lambda s1 (lambda s2
-(call @setUnion (var s1) (var s2)))))
 #(rule $Set ($Set $Set) (lambda s1 (lambda s2
 #(call @setDifference (var s1) (var s2)))))
 

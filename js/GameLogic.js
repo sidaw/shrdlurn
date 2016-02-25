@@ -136,6 +136,7 @@ function updateCanvas(gs) {
     walls.push(gs.targetWall);
     updateGoalTextPosition();
     updateReaction(gs);
+
     PSMain.renderJSON('['+walls.join(',')+']')();
 }
 
@@ -396,6 +397,7 @@ document.getElementById("tasks").onchange = function() {
     var t = document.getElementById("tasks");
     var taskstr = configs.levels[t.selectedIndex].name;
     GS.taskind = t.selectedIndex;
+    GameAction.checkAnswer(GS);
     newWall(GS);
     updateStatus("selected level {task}"._format({task:taskstr}));
 };

@@ -19,7 +19,7 @@ configs.levels.push({
     name: "baby",
     maxSteps: 2,
     description: "come back here to train more when struggling",
-    minSuccess: 20, godMod:10
+    minSuccess: 15
 })
 configs.levels.push({
     id: "baby+",
@@ -38,37 +38,36 @@ configs.levels.push({
 configs.levels.push({
     id: "littlehouse",
     name: "house",
-    maxSteps: 3,
+    maxSteps: 4,
     description: "",
     minSuccess: 2
 })
 configs.levels.push({
-    id: "checker",
-    name: "checker",
+    id: "fork",
+    name: "fork",
+    maxSteps: 4,
+    description: "",
+    minSuccess: 2
+})
+configs.levels.push({
+    id: "ship",
+    name: "ship",
+    maxSteps: 4,
+    description: "",
+    minSuccess: 2
+})
+configs.levels.push({
+    id: "bottle",
+    name: "bottle",
+    maxSteps: 4,
+    description: "",
+    minSuccess: 2
+})
+configs.levels.push({
+    id: "triangle",
+    name: "triangle",
     maxSteps: 4,
     description: "",
     minSuccess: 2
 })
 
-
-configs.levels.push({
-    id: "logic",
-    name: "logic",
-    maxSteps: 2,
-    description: "",
-    minSuccess: 10
-})
-configs.levels.push({
-    id: "triangle",
-    name: "triangle",
-    maxSteps: 3,
-    description: "",
-    minSuccess: 2
-})
-configs.levels.push({
-    id: "heart",
-    name: "heart",
-    maxSteps: 3,
-    description: "",
-    minSuccess: 1
-})
