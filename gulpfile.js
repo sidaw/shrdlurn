@@ -113,7 +113,9 @@ gulp.task("concatdebug", ["bundle"], function() {
 
 gulp.task("compress", ["concat"], function() {
     return gulp.src("dist/main.js")
-        .pipe(uglify())
+        .pipe(uglify().on('error', function(e){
+            console.log(e);
+         }))
         .pipe(gulp.dest("dist"));
 });
 

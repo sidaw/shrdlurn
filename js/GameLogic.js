@@ -245,7 +245,7 @@ var GameAction = {
 	updateStatus("another example of this level.")
     },
     nextLevel: function(gs) { // either the next random instance, or the next new level
-	gs.penaltyPoints += gs.listNBestInd.reduce((a,b)=>a+b,0) + gs.NBestInd;
+	gs.penaltyPoints += gs.listNBestInd.reduce(function(a,b){return a+b},0) + gs.NBestInd;
 	gs.resetNBest();
 	gs.setCurrentWall();
 	gs.incrementSuccessCount( configs.levels[gs.taskind].id );
@@ -390,7 +390,7 @@ function popTasks() {
 }
 
 function updatePenaltyPoints(gs) {
-    var pts = gs.penaltyPoints + gs.listNBestInd.reduce((a,b)=>a+b,0) + gs.NBestInd;
+    var pts = gs.penaltyPoints + gs.listNBestInd.reduce(function(a,b){return a+b},0) + gs.NBestInd;
     document.getElementById("penalty").innerHTML = pts;
     console.log("updating "+pts);
 }
