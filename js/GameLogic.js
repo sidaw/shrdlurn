@@ -4,6 +4,7 @@ function GameState() {
     this.currentWall = "[[]]";
     this.targetWall = "[[]]";
     this.listWalls = [];
+    this.listNBestInd = []; // for score keeping
     
     this.NBest = []; // current answer list returned by sempre
     this.NBestInd = 0;
@@ -11,6 +12,8 @@ function GameState() {
     this.query = "";
     this.numQueries = 0;
     this.taskind = 0;
+
+    this.penaltyPoints = 0;
 
     // the only persistent states
     this.sessionId = "deadbeef";
@@ -105,6 +108,7 @@ function GameState() {
 	    this.successCounts[levelid] = parseInt(this.successCounts[levelid])+1;
 	}
 	util.setStore("successCounts", this.successCounts)
+	util.setStore("penaltyPoints", this.penaltyPoints)
     }
     this.effectiveStepsNumber = function() {
 	if (this.noAnswer()) return this.listWalls.length-1;
@@ -136,7 +140,7 @@ function updateCanvas(gs) {
     walls.push(gs.targetWall);
     updateGoalTextPosition();
     updateReaction(gs);
-
+    updatePenaltyPoints(gs);
     PSMain.renderJSON('['+walls.join(',')+']')();
 }
 
@@ -147,6 +151,7 @@ function newWall(gs) {
     gs.resetNBest();
     gs.query = '';
     gs.listWalls = [];
+    gs.listNBestInd = [];
     
     sempre.sempreQuery(cmds, function (jsonstr) {
 	if (jsonstr == "ERR_CONNECTION_REFUSED") {
@@ -156,6 +161,7 @@ function newWall(gs) {
 	var jsresp = JSON.parse(jsonstr)['lines'];
 	var walls = jsresp[0].replace(/\(string /g, '').replace(/\)|\s/g, '').split('|');
 	gs.listWalls.push(walls[0]);
+	
 	gs.targetWall = walls[1];
 	gs.setCurrentWall();
 	updateCanvas(gs);
@@ -193,6 +199,7 @@ var GameAction = {
 	    updateStatus("accepted previous wall. use ↓ and ↑ to scroll.");
 	    GameAction._simpleaccept(gs);
 	    gs.listWalls.push(gs.currentWall);
+	    gs.listNBestInd.push(gs.NBestInd);
 	    gs.resetNBest();
 	    gs.setCurrentWall();
 	} else {
@@ -216,6 +223,7 @@ var GameAction = {
 	    } else {
 		// else pop the top and set it as context
 		gs.listWalls.pop();
+		gs.listNBestInd.pop();
 		if ( gs.listWalls.length == 1)
 		    updateStatus("⎌: undo again for new instance.")
 		else
@@ -237,12 +245,14 @@ var GameAction = {
 	updateStatus("another example of this level.")
     },
     nextLevel: function(gs) { // either the next random instance, or the next new level
+	gs.penaltyPoints += gs.listNBestInd.reduce((a,b)=>a+b,0) + gs.NBestInd;
 	gs.resetNBest();
 	gs.setCurrentWall();
 	gs.incrementSuccessCount( configs.levels[gs.taskind].id );
 	showNextButton(false);
 	var curSucc = gs.getSuccessCount( configs.levels[gs.taskind].id );
 	var minSucc = configs.levels[gs.taskind].minSuccess;
+	
 	if (gs.getSuccessCount( configs.levels[gs.taskind].id ) < configs.levels[gs.taskind].minSuccess) {
 	    newWall(gs);
 	    updateStatus("solve this puzzle " + (minSucc - curSucc) + " more times to advance.");
@@ -340,7 +350,7 @@ function writeSemAns(gs) {
     var formval = gs.NBest;
     for (i in formval)
 	document.getElementById("sempreret").innerHTML +=
-    (1+parseInt(i)) + ': prob={prob}, score={score}, count={count}: value={value} '._format(formval[i]) +
+    (1+parseInt(i)) + ': prob={prob}, maxprob={maxprob}, score={score}, count={count}: value={value} '._format(formval[i]) +
 	'<br/>';
 }
 
@@ -379,6 +389,11 @@ function popTasks() {
     ps.selectedIndex = GS.taskind;
 }
 
+function updatePenaltyPoints(gs) {
+    var pts = gs.penaltyPoints + gs.listNBestInd.reduce((a,b)=>a+b,0) + gs.NBestInd;
+    document.getElementById("penalty").innerHTML = pts;
+    console.log("updating "+pts);
+}
 function updateGoalTextPosition() {
     var initx = 25; var inity = 180;
     var g = document.getElementById("goalblocks");
@@ -482,9 +497,20 @@ document.onkeydown = function(e) {
     } return true;
 };
 
+document.getElementById("reset").onclick = function() {
+    console.log("resetting!!")
+    util.resetStore();
+    GS.sessionId = util.getId();
+    GS.successCounts = util.getStore("successCounts", {})
+    GS.penaltyPoints = util.getStore("penaltyPoints", 0)
+    popTasks();
+    newWall(GS);
+    document.getElementById("maintextarea").focus()
+}
 
 GS.sessionId = util.getId();
 GS.successCounts = util.getStore("successCounts", {})
+GS.penaltyPoints = util.getStore("penaltyPoints", 0)
 popTasks();
 newWall(GS);
 document.getElementById("maintextarea").focus()

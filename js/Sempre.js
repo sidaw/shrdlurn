@@ -133,7 +133,7 @@ var sempre = {
 	for (var key in nbestdict) {
 	     listqadedup.push(nbestdict[key])
 	}
-	listqadedup.sort(function(a,b){return b.prob - a.prob});
+	listqadedup.sort(function(a,b){return b.maxprob - a.maxprob});
 	return listqadedup; 
     },
 

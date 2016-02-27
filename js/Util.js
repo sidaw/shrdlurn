@@ -42,6 +42,9 @@ util.getId= function() {
     }
     return util.store.guid;
 }
+util.resetStore = function() {
+    util.store.clear();
+}
 
 util.emojione = {};
 (function(ns) {
