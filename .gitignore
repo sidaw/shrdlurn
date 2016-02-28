@@ -4,3 +4,5 @@ node_modules
 bower_components
 .psci
 .psci_modules
+data/*.json
+data/*.lisp
