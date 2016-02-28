@@ -562,4 +562,64 @@
   "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[2,1,0],[2,1,0],[2,1],[2]]) (name b) (name c))))",
   "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.stackOnTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.leftMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getColor (number 0 COLOR))) (number 0 COLOR)))",
   "targetValue" : "(string [[2,1,0,0],[2,1,0],[2,1],[2]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "stack red left",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[2],[2],[2],[2]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.stackOnTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.leftMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getNonEmpty)) (number 2 COLOR)))",
+  "targetValue" : "(string [[2,2],[2],[2],[2]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "remove right",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[1],[2],[2],[1],[2],[2]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.removeTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.rightMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getNonEmpty))))",
+  "targetValue" : "(string [[1],[2],[2],[1],[2],[]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "stack red left",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[1],[1],[2],[1],[2],[2]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.stackOnTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.leftMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getNonEmpty)) (number 2 COLOR)))",
+  "targetValue" : "(string [[1,2],[1],[2],[1],[2],[2]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "remove cyan",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[3],[0],[0],[3],[0],[0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.removeTop (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getTopColor (number 0 COLOR))))",
+  "targetValue" : "(string [[3],[],[],[3],[],[]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "remove left",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[2],[2],[3],[3],[3],[3]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.removeTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.leftMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getNonEmpty))))",
+  "targetValue" : "(string [[],[2],[3],[3],[3],[3]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "remove left",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[0],[3],[3],[0],[3],[0]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.removeTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.leftMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getNonEmpty))))",
+  "targetValue" : "(string [[],[3],[3],[0],[3],[0]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "remove left",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[1],[1],[1],[1],[1]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.removeTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.leftMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getNonEmpty))))",
+  "targetValue" : "(string [[],[1],[1],[1],[1]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "stack red left",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[1],[1],[2],[2],[1],[1]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.stackOnTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.leftMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getNonEmpty)) (number 2 COLOR)))",
+  "targetValue" : "(string [[1,2],[1],[2],[2],[1],[1]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "stack brown left",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[3],[3],[3],[1],[3],[1]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.stackOnTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.leftMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getNonEmpty)) (number 1 COLOR)))",
+  "targetValue" : "(string [[3,1],[3],[3],[1],[3],[1]])"
+}, {
+  "id" : "session:zZkw2cK",
+  "utterance" : "stack red right",
+  "context" : "(context (date 2016 1 27) (graph NaiveKnowledgeGraph ((string [[3],[3],[3],[3],[3],[2]]) (name b) (name c))))",
+  "targetFormula" : "(call edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.stackOnTop (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.rightMost1 (call context:edu.stanford.nlp.sempre.cubeworld.StacksWorld.getTopColor (number 2 COLOR))) (number 2 COLOR)))",
+  "targetValue" : "(string [[3],[3],[3],[3],[3],[2,2]])"
 } ]

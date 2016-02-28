@@ -158,10 +158,9 @@ function newWall(gs) {
 	    updateStatus("our server might be down...")
 	    return
 	}
-	var jsresp = JSON.parse(jsonstr)['lines'];
-	var walls = jsresp[0].replace(/\(string /g, '').replace(/\)|\s/g, '').split('|');
+	var jsresp = JSON.parse(jsonstr)['exValue'];
+	var walls = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '').split('|');
 	gs.listWalls.push(walls[0]);
-	
 	gs.targetWall = walls[1];
 	gs.setCurrentWall();
 	updateCanvas(gs);

@@ -26,13 +26,13 @@
 # final ops
 (def @wallToString edu.stanford.nlp.sempre.cubeworld.StacksWorld.wallToString)
 ####### Start of the actual grammar
-# generates (NumColors+1) * (NumSets) = 5*54
-# NumSets = (NumColor*2 + 1)*(1+2+1+2) = 54
+# generates (NumColors+1) * (NumSets) = 125, 180
+# NumSets = (NumColors+1)*(1+2+2) = 25, 30
 
 (rule $ROOT ($Action) (lambda a (call @wallToString (var a)) )) # excecute some action
-(rule $Action ( $Set3 ) (lambda s3 (call @removeTop (var s3) )))
+(rule $Action ( $Set3 ) (lambda s (call @removeTop (var s) )))
 (rule $Action ( $Set3 $Color )
-      (lambda s3 (lambda c (call @stackOnTop (var s3) (var c)))))
+      (lambda s (lambda c (call @stackOnTop (var s) (var c)))))
 (rule $Set3 ($Set2) (IdentityFn))
 (rule $Set3 ($Set1) (IdentityFn))
 (rule $Set3 ($Set) (IdentityFn))
@@ -45,14 +45,14 @@
 # (rule $Set (tok) (ConstantFn (call @getAll)))
 (rule $Set (tok) (ConstantFn (call @getNonEmpty)))
 
-(rule $Set ($Color) (lambda c (call @getColor (var c) )))
+# (rule $Set ($Color) (lambda c (call @getColor (var c) )))
 (rule $Set ($Color) (lambda c (call @getTopColor (var c) )))
 
 (rule $Set1 ($Set) (lambda s (call @leftMost1 (var s) )))
 (rule $Set1 ($Set) (lambda s (call @rightMost1 (var s) )))
 
 (rule $Set2 ($Set) (lambda s (call @complement (var s) )))
-(rule $Set2 ($Set1) (lambda s1 (call @complement (var s1) )))
+(rule $Set2 ($Set1) (lambda s (call @complement (var s) )))
 
 #(rule $Set1 ($Set) (lambda s (call @leftMost  (var s) (number 1 COUNT))))
 #(rule $Set1 ($Set) (lambda s (call @rightMost (var s) (number 1 COUNT))))

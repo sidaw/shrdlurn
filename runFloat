@@ -7,16 +7,16 @@ cd $SEMPATH
 #use grammar tags: -Grammar.tags generate general
 
 # elif [ $1 = "cube" ]; then  -FloatingParser.useSizeInsteadOfDepth true 
-FLOAT_OPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 30 -StacksWorldFeatureComputer.ngramN 3 -Params.initStepSize 0.1 -Params.adaptiveStepSize true "
+FLOAT_OPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 50 -StacksWorldFeatureComputer.ngramN 3 -Params.initStepSize 0.1 -Params.adaptiveStepSize true "
 
-TRAIN_IN="-Dataset.inPaths train:../cubesem/data/fullgame.json -Learner.maxTrainIters 1" #test:../cubesem/data/fullgame.json 
-TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/fullgame.json -Master.newParamsPath ../cubesem/newparam"
+TRAIN_IN="-Dataset.inPaths train:../cubesem/data/validation.lisp -Learner.maxTrainIters 1" #test:../cubesem/data/fullgame.json 
+TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/validation.lisp -Master.newParamsPath ../cubesem/validation.params"
 # -Dataset.inPaths train:../cubesem/examples"
-OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains tree -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer  -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true -Server.numThreads 8"
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains tree -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer  -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true -Server.numThreads 4"
 
 # features are tree, heads, ngram
 DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
 
-rlwrap java $OPTIONS $FLOAT_OPTS $TRAIN_OUTS $TRAIN_IN "$@"
+rlwrap java $OPTIONS $FLOAT_OPTS $TRAIN_OUTS "$@"
 #" -Master.commands \"(context (graph NaiveKnowledgeGraph ((string [[0,0,0,1],[1,1,1,2],[2,2,2,0]]) (name b) (name c))))\""
 #rlwrap java $OPTIONS_SIMPLE "$@"

@@ -15,18 +15,18 @@ configs.debugMode = false;
 
 configs.levels = []
 configs.levels.push({
-    id: "baby",
-    name: "baby",
-    maxSteps: 2,
-    description: "come back here to train more when struggling",
-    minSuccess: 15
-})
-configs.levels.push({
-    id: "baby+",
-    name: "baby+",
+    id: "remove",
+    name: "basics",
     maxSteps: 2,
     description: "",
-    minSuccess: 15
+    minSuccess: 5
+})
+configs.levels.push({
+    id: "babystep",
+    name: "babysteps",
+    maxSteps: 2,
+    description: "",
+    minSuccess: 10
 })
 configs.levels.push({
     id: "pattern",
@@ -36,8 +36,38 @@ configs.levels.push({
     minSuccess: 10
 })
 configs.levels.push({
+    id: "babynot",
+    name: "notbaby",
+    maxSteps: 2,
+    description: "",
+    minSuccess: 10
+})
+configs.levels.push({
+    id: "babystack",
+    name: "stacks",
+    maxSteps: 2,
+    description: "",
+    minSuccess: 10
+})
+configs.levels.push({
     id: "littlehouse",
     name: "house",
+    maxSteps: 4,
+    description: "",
+    minSuccess: 1
+})
+configs.levels.push({
+    id: "triangle",
+    name: "triangle",
+    maxSteps: 4,
+    description: "",
+    minSuccess: 1
+})
+
+if (false) {
+configs.levels.push({
+    id: "bottle",
+    name: "bottle",
     maxSteps: 4,
     description: "",
     minSuccess: 2
@@ -57,17 +87,10 @@ configs.levels.push({
     minSuccess: 2
 })
 configs.levels.push({
-    id: "bottle",
-    name: "bottle",
+    id: "bigrandom",
+    name: "playground",
     maxSteps: 4,
     description: "",
-    minSuccess: 2
+    minSuccess: 100
 })
-configs.levels.push({
-    id: "triangle",
-    name: "triangle",
-    maxSteps: 4,
-    description: "",
-    minSuccess: 2
-})
-
+}
