@@ -6,7 +6,7 @@ In the beginning, the computer knows nothing about language, has no built-in voc
 
 ### Hints and Strategies
 - You can always skip ambiguous or difficult examples
-- Being concise and always use the same words is better if you want to finish quickly (remember it knows nothing, and learn everything from what you say). That
+- Being concise and always use the same words for the same action is better if you want to finish quickly (remember it knows nothing, and learn everything from what you say, and has no knowledge of synonyms).
 - The emoji indicates how surprised the computer is
 - If you have trouble making progress, consider being vague and use the wildcard *. i.e. "put * on the leftmost red", and approve the right action for that.
 - You can teach with low penality by describing what the computer likes to do, instead of finding what you said
