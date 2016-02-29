@@ -19,14 +19,14 @@ util.simpleid = function()
 {
     var text = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for( var i=0; i < 7; i++ )
+    for( var i=0; i < 11; i++ )
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
 }
-util.store = sessionStorage;
+util.store = localStorage;
 util.setStore = function(name, value) {
-    var jsonvalue = JSON.stringify(value)
+     var jsonvalue = JSON.stringify(value)
     util.store.setItem(name, jsonvalue);
 }
 
@@ -89,3 +89,7 @@ util.emojione = {};
 	return ns.shortnameToImage(ns.numToShort[num]);
     }
 } (util.emojione));
+
+util.log2int = function(nbestind) {
+    return Math.log2(nbestind+1);
+}

@@ -10,6 +10,7 @@ SESSIONSTUFF="-Master.onlineLearnExamples false -Master.independentSessions true
 TRAIN_IN="-Dataset.inPaths train:../cubesem/data/validation.lisp -Learner.maxTrainIters 1"
 #test:../cubesem/data/fullgame.json 
 TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/validation.lisp"
+
 # -Master.newParamsPath ../cubesem/validation.params
 # -Dataset.inPaths train:../cubesem/examples"
 OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains tree -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer  -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
@@ -18,7 +19,12 @@ OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sem
 DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
 
 if [ "$HOSTNAME" = "jonsson.stanford.edu" ]; then
-    rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF "-Master.newExamplesPath ../cubesem/examples/preturk.lisp" -Server.numThreads 16 "$@"
+    echo "running on jonsson"
+    TRAIN_OUTS_SERVER="-Master.newExamplesPath /afs/cs.stanford.edu/u/sidaw/git/cubesem/examples/ -Master.logPath /afs/cs.stanford.edu/u/sidaw/git/cubesem/logs/ -server true"
+    echo rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF $TRAIN_OUTS_SERVER -Server.numThreads 16 "$@"
+    rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF $TRAIN_OUTS_SERVER -Server.numThreads 16 "$@"
 else
-    rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS $SESSIONSTUFF -Server.numThreads 1 "$@"
+    echo "not running on jonsson"
+    TRAIN_OUTS_LOCAL="-Master.newExamplesPath ../cubesem/examples/ -Master.logPath ../cubesem/logs/ -server true"
+    rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS_LOCAL $SESSIONSTUFF -Server.numThreads 1 "$@"
 fi

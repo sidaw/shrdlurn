@@ -13,7 +13,7 @@ function GameState() {
     this.numQueries = 0;
     this.taskind = 0;
 
-    this.penaltyPoints = 0;
+    this.extraBits = 0;
 
     // the only persistent states
     this.sessionId = "deadbeef";
@@ -108,7 +108,7 @@ function GameState() {
 	    this.successCounts[levelid] = parseInt(this.successCounts[levelid])+1;
 	}
 	util.setStore("successCounts", this.successCounts)
-	util.setStore("penaltyPoints", this.penaltyPoints)
+	util.setStore("extraBits", this.extraBits)
     }
     this.effectiveStepsNumber = function() {
 	if (this.noAnswer()) return this.listWalls.length-1;
@@ -138,9 +138,10 @@ function updateCanvas(gs) {
 	walls.push('[[]]');
     // pad
     walls.push(gs.targetWall);
-    updateGoalTextPosition();
+    updateGoalTextPosition(gs);
     updateReaction(gs);
     updatePenaltyPoints(gs);
+    updateScrollingStatus(gs);
     PSMain.renderJSON('['+walls.join(',')+']')();
 }
 
@@ -169,6 +170,7 @@ function newWall(gs) {
 
 
 var GameAction = {
+    // functions starting with _ are internal, and should not modify status messages.
     _candidates: function(gs) {
 	var cmds = {q:gs.query, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
@@ -193,7 +195,7 @@ var GameAction = {
     _simpleaccept: function(gs) {
 	sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
     },
-    commitandcandidates: function(gs) {
+    commitandcandidates: function(gs) { // implicit accept, might get junk data
 	if (!gs.noAnswer()) {
 	    updateStatus("accepted previous wall. use ↓ and ↑ to scroll.");
 	    GameAction._simpleaccept(gs);
@@ -209,8 +211,17 @@ var GameAction = {
 	    ._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
 	var cmds = {q:contextcommand, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonrespcontext) {
-		GameAction._candidates(gs);
+	    GameAction._candidates(gs);
 	});	
+    },
+    candidates: function(gs) {
+	updateStatus("use ↓ and ↑ to scroll, ⎌ to undo, and ✓ to approve.")
+	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
+	    ._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
+	var cmds = {q:contextcommand, sessionId:gs.sessionId};
+	sempre.sempreQuery(cmds , function(jsonrespcontext) {
+	    GameAction._candidates(gs);
+	});
     },
     undo: function(gs) {
 	if (gs.noAnswer()) { // not in scrolling mode
@@ -244,7 +255,8 @@ var GameAction = {
 	updateStatus("another example of this level.")
     },
     nextLevel: function(gs) { // either the next random instance, or the next new level
-	gs.penaltyPoints += gs.listNBestInd.reduce(function(a,b){return a+b},0) + gs.NBestInd;
+	GameAction._simpleaccept(gs);
+	gs.extraBits += gs.listNBestInd.reduce(function(a,b){return util.log2int(a)+util.log2int(b)},0) + util.log2int(gs.NBestInd);
 	gs.resetNBest();
 	gs.setCurrentWall();
 	gs.incrementSuccessCount( configs.levels[gs.taskind].id );
@@ -266,7 +278,7 @@ var GameAction = {
 	    popTasks();
 	    return true;
 	} else {
-	    updateStatus("already at the last level.");
+	    updateStatus("You finished the game!");
 	    popTasks();
 	    return false;
 	}
@@ -299,6 +311,9 @@ var GameAction = {
 	}
     },
     accept: function(gs) {
+	GameAction._accept_commit(gs);
+    },
+    _accept_with_message: function(gs) {
 	if (gs.noAnswer()) {
 	    updateStatus("✓: can't accept, give a command first");
 	    return;
@@ -307,6 +322,25 @@ var GameAction = {
 	//updateCanvas(GS)
 	updateStatus("✓: confirmed (#{accept}/{length})"
 		     ._format({accept:gs.NBestInd, length:gs.NBest.length}))
+    },
+    _accept_commit: function(gs) {
+	if (!gs.noAnswer()) {
+	    GameAction._simpleaccept(gs);
+	    if (configs.hardMaxSteps
+	    && gs.effectiveStepsNumber() >= configs.levels[gs.taskind].maxSteps) {
+		updateStatus("accepted, but this is the last step, use ⎌ to go back, or ↑ ↓ to scroll.");
+		return;
+	    }
+	    updateStatus("✓: accepted (#{accept}/{length}), enter another command"
+		     ._format({accept:gs.NBestInd, length:gs.NBest.length}))
+	    gs.listWalls.push(gs.currentWall);
+	    gs.listNBestInd.push(gs.NBestInd);
+	    gs.resetNBest();
+	    gs.setCurrentWall();
+	    updateCanvas(gs);
+	} else {
+	    updateStatus("✓: can't accept nothing, run a command first");
+	}	
     },
     checkAnswer: function(gs) {
 	if (gs.currentWall == gs.targetWall) {
@@ -341,7 +375,7 @@ function updateStatus(strstatus)
 	document.getElementById("currentcmd").innerHTML = stateinfo;
     }
     else
-	document.getElementById("currentcmd").innerHTML = "<b>no command to run</b>";
+	document.getElementById("currentcmd").innerHTML = "<b>enter a command</b>";
 }
 
 function writeSemAns(gs) {
@@ -360,10 +394,36 @@ function updateReaction(gs) {
     }
     else {
 	var cc = gs.currentCandidate().maxprob;
-	var cutoffs = [0.5, 0.2, 0.1, 0.01, 0.001, 0.00005, 0];
+	var cutoffs = [0.5, 0.1, 0.05, 0.01, 0.001, 0.00001, -1];
 	reaction.innerHTML = util.emojione.numToImg(cutoffs.findIndex(function(val){
 	    return cc >= val;
 	}));
+    }
+}
+
+function updatePenaltyPoints(gs) {
+    var pts = gs.extraBits + gs.listNBestInd.reduce(function(a,b){return util.log2int(a) + util.log2int(b)},0) + util.log2int(gs.NBestInd);
+    document.getElementById("penalty").innerHTML = pts.toFixed(1);
+    console.log("updating "+pts);
+}
+function updateGoalTextPosition(gs) {
+    var initx = 25; var inity = 180;
+    var g = document.getElementById("goalblocks");
+    var scalefactor = 800*0.75/1100.0; // this is radio of the widths of canvas in html vs stylesheet
+    var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
+    g.style.top=(inity + (configs.levels[gs.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
+    g.style.left=(initx + (configs.levels[gs.taskind].maxSteps+1)*space*1.717/2)+"px";
+
+    var cb = document.getElementById("flyingdiv");
+    var stepnum = gs.listWalls.length;
+    cb.style.top=(inity + (stepnum)*space*0.5)+"px"; //sin 30 and 60 due to isometry
+    cb.style.left=(initx -10 + (stepnum)*space*1.717/2)+"px";
+}
+function updateScrollingStatus(gs) {
+    if (gs.noAnswer()) {
+	document.getElementById("flyingaccept").disabled=true;
+    } else {
+	document.getElementById("flyingaccept").disabled=false;
     }
 }
 
@@ -388,25 +448,6 @@ function popTasks() {
     ps.selectedIndex = GS.taskind;
 }
 
-function updatePenaltyPoints(gs) {
-    var pts = gs.penaltyPoints + gs.listNBestInd.reduce(function(a,b){return a+b},0) + gs.NBestInd;
-    document.getElementById("penalty").innerHTML = pts;
-    console.log("updating "+pts);
-}
-function updateGoalTextPosition() {
-    var initx = 25; var inity = 180;
-    var g = document.getElementById("goalblocks");
-    var scalefactor = 800*0.75/1100.0; // this is radio of the widths of canvas in html vs stylesheet
-    var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
-    g.style.top=(inity + (configs.levels[GS.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
-    g.style.left=(initx + (configs.levels[GS.taskind].maxSteps+1)*space*1.717/2)+"px";
-
-    var cb = document.getElementById("reaction");
-    var stepnum = GS.listWalls.length;
-    cb.style.top=(inity + (stepnum)*space*0.5)+"px"; //sin 30 and 60 due to isometry
-    cb.style.left=(initx + (stepnum)*space*1.717/2)+"px";
-}
-
 document.getElementById("tasks").onchange = function() {
     var t = document.getElementById("tasks");
     var taskstr = configs.levels[t.selectedIndex].name;
@@ -428,7 +469,7 @@ function runCurrentQuery(gs) {
 	    gs.numQueries++; 
 	    logh(gs.numQueries + ' ' + querystr + '; ')
 	    gs.query = querystr;
-	    GameAction.commitandcandidates(gs);
+	    GameAction.candidates(gs);
 	}
     } else {
 	updateStatus("enter a command");
@@ -452,17 +493,21 @@ document.getElementById("nextbutton").onclick = function() {
     GameAction.next(GS);
     maintextarea.focus();
 };
-document.getElementById("acceptbutton").onclick = function() {
-    GameAction.accept(GS);
-    if (GameAction.checkAnswer(GS))
+
+function acceptOnclick() {
+    if (GameAction.checkAnswer(GS)) {
 	GameAction.nextLevel(GS)
+    } else {
+	GameAction.accept(GS);
+    }
     maintextarea.focus();
+}
+document.getElementById("acceptbutton").onclick = function() {
+    acceptOnclick()
 };
 
-document.getElementById("solvedandnext").onclick = function() {
-    GameAction.accept(GS);
-    GameAction.nextLevel(GS);
-    maintextarea.focus();
+document.getElementById("flyingaccept").onclick = function() {
+    acceptOnclick()
 };
 
 var Hotkeys = {
@@ -475,19 +520,17 @@ var Hotkeys = {
 };
 
 document.getElementById("maintextarea").onkeydown = function(e) {
+    return true;
+}
+document.onkeydown = function(e) {
     if (e.keyCode == Hotkeys.UP) { // consider capture this in doc
 	GameAction.prev(GS);
 	return false;
     } else if (e.keyCode == Hotkeys.DOWN) {
 	GameAction.next(GS);
 	return false;
-    }
-}
-document.onkeydown = function(e) {
-    if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
-	GameAction.accept(GS);
-	if (GameAction.checkAnswer(GS))
-	    GameAction.nextLevel(GS)
+    } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
+	acceptOnclick();
 	return false;
     } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
 	runCurrentQuery(GS); return false;
@@ -501,7 +544,7 @@ document.getElementById("reset").onclick = function() {
     util.resetStore();
     GS.sessionId = util.getId();
     GS.successCounts = util.getStore("successCounts", {})
-    GS.penaltyPoints = util.getStore("penaltyPoints", 0)
+    GS.extraBits = util.getStore("extraBits", 0)
     popTasks();
     newWall(GS);
     document.getElementById("maintextarea").focus()
@@ -509,7 +552,10 @@ document.getElementById("reset").onclick = function() {
 
 GS.sessionId = util.getId();
 GS.successCounts = util.getStore("successCounts", {})
-GS.penaltyPoints = util.getStore("penaltyPoints", 0)
+GS.extraBits = util.getStore("extraBits", 0)
 popTasks();
+document.getElementById("flyingdiv").style.visibility="visible";
+document.getElementById("goalblocks").style.visibility="visible";
 newWall(GS);
-document.getElementById("maintextarea").focus()
+document.getElementById("maintextarea").focus();
+

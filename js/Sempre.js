@@ -23,7 +23,7 @@ var sempre = {
 		    this.formatFormula(formula[3]);
 	    }
 	    else if (op == '.tostring') {
-		str =this. formatFormula(formula[2]);
+		str = this. formatFormula(formula[2]);
 	    }
 	    // Default behavior just exposes the function call
 	    else {

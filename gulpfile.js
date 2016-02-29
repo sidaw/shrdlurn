@@ -53,23 +53,6 @@ gulp.task("bundle", ["psc"], function() {
         });
 });
 
-gulp.task("psc:cli", function() {
-    return purescript.psc({
-            src: sourcesCli,
-            ffi: foreigns,
-            output: "output/cli"
-        });
-});
-
-gulp.task("bundle:cli", ["psc:cli"], function() {
-    return purescript.pscBundle({
-            src: "output/cli/**/*.js",
-            output: "dist/cli.js",
-            module: "Main",
-            main: "Main"
-        });
-});
-
 gulp.task("psci", function () {
     return purescript.psci({
             src: sourcesCli,
@@ -111,6 +94,21 @@ gulp.task("concatdebug", ["bundle"], function() {
         .pipe(gulp.dest("dist"));
 });
 
+gulp.task("concatturk", ["bundle"], function() {
+    return gulp.src([
+        "bower_components/isomer/dist/isomer.min.js",
+        "dist/mainps.js",
+	"js/underscore.js",
+	"js/Util.js",
+	"js/TurkConfig.js",
+	"js/Sempre.js",
+	"js/GameLogic.js",
+	"js/Turk.js"
+        ])
+        .pipe(concat("main.js"))
+        .pipe(gulp.dest("dist"));
+});
+
 gulp.task("compress", ["concat"], function() {
     return gulp.src("dist/main.js")
         .pipe(uglify().on('error', function(e){
@@ -132,7 +130,8 @@ gulp.task("docs", ["clean-docs"], function () {
         });
 });
 
-gulp.task("prod", ["clean", "less", "psci", "bundle:cli", "bundle", "concat", "compress", "docs"]);
+gulp.task("prod", ["clean", "less", "psci", "bundle", "concat", "compress", "docs"]);
 gulp.task("dev", ["less", "psci", "bundle", "concat"]);
 gulp.task("debug", ["less", "psci", "bundle", "concatdebug"]);
-gulp.task("default", ["less", "psci", "bundle", "concat", "docs"]);
+gulp.task("turk", ["less", "psci", "bundle", "concatturk", "compress"]);
+gulp.task("default", ["less", "psci", "bundle", "concat"]);

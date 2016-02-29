@@ -29,26 +29,27 @@
 	</div>
 	<p/>
 	<div id="shortcuts">
-	<b><span id="penalty">0</span> penalty points </b> <br/><a id="reset"
+	<b><span id="penalty">0</span> extra bits penalty </b> <br/><a id="reset"
 	href="">reset progress</a><br/>
 	</div>
-	
       </div>
       <div id="message">
-	<span id="solved" class="animated">solved?</span>
-	<div class="buttons">
-	  <button class="button button--train" id="solvedandnext"> &#x2713;</button>
-	</div>
+	<span id="solved" class="animated">solved!</span>
+	<div>click ✓ (or ctrl-enter) for the next problem.</div>
       </div>
-
-      <canvas id="canvas" width="1100" height="800"></canvas>
       <div id="startblocks">start</div>
-      <div id="goalblocks">goal</div>
-      <div id="reaction"></div>
+      <div id="goalblocks" style="visibility:hidden;">goal</div>
       
+      <div id="flyingdiv" style="visibility:hidden;">
+	  <button class="button button--solved" id="flyingaccept">
+	&#x2713;</button>
+      </div>
+      <canvas id="canvas" width="1100" height="800"></canvas>
       <div id="chat" style=center>
-	<p>&nbsp; <span id="currentcmd"><b>No command</b> </span>,
-	<span id="status">type one!</span></p>
+	<div id="statusinfo">
+	&nbsp; <span id="reaction"></span>
+	<span id="currentcmd"><b>No command</b> </span>,
+	<span id="status">type one!</span></div>
 	<input type="text" id="maintextarea" placeholder=" type command"></input>
 	<div class="buttons">
 	  <button class="button" id="dobutton">&crarr;<span>enter</span></button>
@@ -61,26 +62,36 @@
 	  </div>
 	  <p/>
 	<div id="helptext">
-	  Reach the "goal" from the "start" by teaching the
-	  computer your language from nothing.
+	  Cooperatively build the "goal" blocks by teaching the
+	  computer any language. The computer knows nothing at the beginning, and you
+	  want to teach it fast, and minimize the extra-bits needed.
 	  Type a command, use ↓ and ↑ to
-	  select the right answer, then use ✓ (shift-enter) to express
-	  your approval. Use &#x238c; (ctrl-z) to undo when you are in
-	  trouble. You can skip any example by undoing at the start.
+	  select the right answer, use ✓ (shift-enter) to approve and
+	  move to the next step, and use &#x238c; (ctrl-z) to undo and skip.
 	  <br/>
 	  <a href="https://github.com/sidaw/cubesem/blob/master/README.md"
 	  target="_blank">help</a>,
 	  <a href="http://goo.gl/forms/Oxl09GJ9f3"
 	  target="_blank">comments</a>
 	</div>
+	<div id="turker" style="visibility:hidden;margin-top:2em">
+	  <hr>
+	  <p>Dear Turker, please click
+	  the button below after you are done, and paste the code back
+	  to AMT.
+	  <span id="turkmsg"></span></p>
+	  <button id="turkbutton" class="button"
+	  style="width:80px;">done</button>
+	  <div id="turkcode">XXXXXX</div>
+	</div>
+	<div>
 	<p>
-	<span id="history" style="visibility:hidden"></span>
+	<span id="history" style="visibility:hidden;"></span>
 	</p>
-	<p id="sempreret">
-	</p>
+	<p id="sempreret"></p>
+	</div>
       </div>
     </div>
     <script type="text/javascript" src="dist/main.js"></script>
-
   </body>
 </html>
