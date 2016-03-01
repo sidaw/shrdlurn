@@ -16,6 +16,6 @@ In the beginning, the computer knows nothing about language, has no built-in voc
 
 
 ## Acknowledgements
-- The serveruses [SEMPRE](https://github.com/percyliang/sempre).
-- Rendering of the cubes and the CSS is from [cube composer](https://github.com/sharkdp/cube-composer), which uses PureScript and [Isomer](https://github.com/jdan/isomer). Some code is used with permission under the MIT license.
+- The server uses [SEMPRE](https://github.com/percyliang/sempre).
+- PureScript code to render the cubes and the dev setup is adapted from the [cube composer](https://github.com/sharkdp/cube-composer) by [David Peter](http://david-peter.de/), which in turn uses [Isomer](https://github.com/jdan/isomer). Everything is under the MIT license.
 - Emojis are provided for free by [Emoji One](http://emojione.com/)
