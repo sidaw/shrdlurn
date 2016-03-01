@@ -15,7 +15,7 @@
 	<select id="tasks" size="5"></select>
 	<p/>
 	<div id="shortcuts">
-	<b>shortcuts:</b><br/>
+	<b>keyboard shortcuts:</b><br/>
 	  &crarr;: enter
 	   <br/>
 	  &#x2713;: shift-enter
@@ -27,9 +27,9 @@
 	  &uarr;: previous try
 	</div>
 	<p/>
-	<div id="shortcuts">
-	<b><span id="penalty">0</span> bits penalty </b> <br/><a id="reset"
-	href="">reset progress</a><br/>
+	<div>
+	<b><span id="penalty">0</span> bits penalty </b> <br/><br/><a id="reset"
+	href="">reset ALL progress</a>
 	</div>
       </div>
       <div id="message">
@@ -40,7 +40,8 @@
       <div id="goalblocks" style="visibility:hidden;">goal</div>
       
       <div id="flyingdiv" style="visibility:hidden;">
-	  <button class="button button--solved" id="flyingaccept">
+	  <button class="button button--solved" id="flyingaccept"
+	  ctitle="take this action (shift-enter)">
 	&#x2713;</button>
       </div>
       <canvas id="canvas" width="1100" height="800"></canvas>
@@ -49,25 +50,28 @@
 	&nbsp; <span id="reaction"></span>
 	<span id="currentcmd"><b>No command</b> </span>,
 	<span id="status">type one!</span></div>
-	<input type="text" id="maintextarea" placeholder=" type command"></input>
+	<input type="text" id="maintextarea" placeholder=" command the computer here"></input>
 	<div class="buttons">
-	  <button class="button" id="dobutton">&crarr;<span>enter</span></button>
-	  <button class="button" id="undobutton">&#x238c;<span>ctrl-z</span> </button>
+	  <button class="button" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
+	  <button class="button" id="undobutton" ctitle="undo (ctrl-z)">&#x238c;</button>
 	  <div class="divider"></div>
 
-	  <button class="button button--train" id="nextbutton">&darr;<span>next</span> </button>
-	  <button class="button button--train" id="prevbutton">&uarr;<span>prev.</span> </button>
-	  <button class="button button--train" id="acceptbutton"> &#x2713; <span>shift-enter</span></button>
+	  <button class="button button--train" id="nextbutton"
+	  ctitle="show next action (down key)">&darr; </button>
+	  <button class="button button--train (up key)" id="prevbutton"
+	  ctitle="show previous action">&uarr; </button>
+	  <button class="button button--train" id="acceptbutton"
+	  ctitle="take this action (shift-enter)"> &#x2713; </button>
 	  </div>
 	  <p/>
 	<div id="helptext">
 	  Cooperatively build the "goal" blocks by teaching the
 	  computer any language. The computer knows nothing, you have
-	  to teach it quickly while minimizing the scrolling penalty.
-	  Type a command, use ↓ and ↑ to
-	  select the right answer, use ✓ (shift-enter) to approve and
+	  to teach it quickly while minimizing the scrolling needed.
+	  Type a command and press enter, use ↓ and ↑ to
+	  select the right action, use ✓ (shift-enter) take the current action and
 	  move to the next step, and use &#x238c; (ctrl-z) to undo and
-	  skip. 
+	  skip examples. 
 	  <br/>
 	  <a href="https://github.com/sidaw/cubesem/blob/master/README.md"
 	  target="_blank">help</a>,

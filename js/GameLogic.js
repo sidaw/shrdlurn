@@ -220,7 +220,7 @@ var GameAction = {
 	});	
     },
     candidates: function(gs) {
-	updateStatus("use ↓ and ↑ to scroll, ⎌ to undo, and ✓ to approve.")
+	updateStatus("use ↓ and ↑ to scroll, ⎌ to undo, and ✓ to take the action.")
 	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
 	    ._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
 	var cmds = {q:contextcommand, sessionId:gs.sessionId};
@@ -234,30 +234,24 @@ var GameAction = {
 	    gs.setCurrentWall();
 	    if ( gs.listWalls.length == 1) {
 		newWall(gs)
-		updateStatus("⎌: already at the start, got a new wall instead.")
+		updateStatus("⎌: already at the start, got a new one instead.")
 	    } else {
 		// else pop the top and set it as context
 		gs.listWalls.pop();
 		gs.listNBestInd.pop();
 		if ( gs.listWalls.length == 1)
-		    updateStatus("⎌: undo again for new instance.")
+		    updateStatus("⎌: undo again for a new one.")
 		else
-		    updateStatus("⎌: at the previous wall")
+		    updateStatus("⎌: at the previous one")
 		GameAction.checkAnswer(gs)
 		updateCanvas(gs);
 	    }
 	} else { // scrolling
 	    gs.resetNBest();
 	    gs.setCurrentWall();
-	    updateStatus("⎌: cleared current choices")
+	    updateStatus("⎌: cleared current actions")
 	    updateCanvas(gs);
 	}
-    },
-    random: function(gs) {
-	gs.resetNBest();
-	gs.setCurrentWall();
-	newWall(gs)
-	updateStatus("another example of this level.")
     },
     nextLevel: function(gs) { // either the next random instance, or the next new level
 	GameAction._simpleaccept(gs);
@@ -271,7 +265,7 @@ var GameAction = {
 	
 	if (gs.getSuccessCount( configs.levels[gs.taskind].id ) < configs.levels[gs.taskind].minSuccess) {
 	    newWall(gs);
-	    updateStatus("solve this puzzle " + (minSucc - curSucc) + " more times to advance.");
+	    updateStatus("you did it! solve this puzzle " + (minSucc - curSucc) + " more times to advance.");
 	    popTasks();
 	    return false;
 	}
@@ -283,7 +277,7 @@ var GameAction = {
 	    popTasks();
 	    return true;
 	} else {
-	    updateStatus("You finished the game!");
+	    updateStatus("You finished the game! Thanks for playing.");
 	    popTasks();
 	    return false;
 	}
@@ -291,7 +285,7 @@ var GameAction = {
     },
     prev: function(gs) {
 	if (gs.noAnswer()) {
-	    updateStatus("↑: can't scroll, give a command or or ⎌");
+	    updateStatus("↑: can't scroll, say something or or ⎌");
 	    return;
 	}
 	if (gs.prevIfPossible()) {
@@ -305,7 +299,7 @@ var GameAction = {
     },
     next: function(gs) {
 	if (gs.noAnswer()) {
-	    updateStatus("↓: can't scroll, give a command or ⎌");
+	    updateStatus("↓: can't scroll, say something or ⎌");
 	    return;
 	}
 	if (GS.nextIfPossible()) {
@@ -322,7 +316,7 @@ var GameAction = {
     },
     _accept_with_message: function(gs) {
 	if (gs.noAnswer()) {
-	    updateStatus("✓: can't accept, give a command first");
+	    updateStatus("✓: can't accept, say something first");
 	    return;
 	}
 	GameAction._simpleaccept(gs);
@@ -346,7 +340,7 @@ var GameAction = {
 	    gs.setCurrentWall();
 	    updateCanvas(gs);
 	} else {
-	    updateStatus("✓: can't accept nothing, run a command first");
+	    updateStatus("✓: can't accept nothing, say something first");
 	}	
     },
     checkAnswer: function(gs) {
@@ -534,10 +528,10 @@ document.getElementById("maintextarea").onkeydown = function(e) {
     return true;
 }
 document.onkeydown = function(e) {
-    if (e.keyCode == Hotkeys.UP) { // consider capture this in doc
+    if (e.keyCode == Hotkeys.UP && e.target.id!="tasks") { // consider capture this in doc
 	GameAction.prev(GS);
 	return false;
-    } else if (e.keyCode == Hotkeys.DOWN) {
+    } else if (e.keyCode == Hotkeys.DOWN && e.target.id!="tasks") {
 	GameAction.next(GS);
 	return false;
     } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {

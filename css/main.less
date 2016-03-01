@@ -149,7 +149,7 @@ b {
     padding: 1px;
 
     #solved {
-        font-size: @fontSizeInput;
+        font-size: 35px;
         .bold;
     }
     #nextlevel {
@@ -250,36 +250,20 @@ b {
     display: inline-block;
 }
 
-button.button span {
+button[ctitle]:hover:after {
+  content: attr(ctitle);
+  padding: 2px 4px;
+  border: 1px solid #000;
+  border-radius: 2px;
+  background-color: #FFFFFF;
+  color: #000;
   position: absolute;
-  width:140px;
-  color: #FFFFFF;
-  background: #000000;
-  height: 23px;
-  line-height: 23px;
-  text-align: center;
-  visibility: hidden;
-  border-radius: 6px;
-  
-}
-button.button span:after {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -8px;
-  width: 0; height: 0;
-  border-bottom: 8px solid #000000;
-  border-right: 8px solid transparent;
-  border-left: 8px solid transparent;
-}
-button:hover.button span {
-  visibility: hidden;
+  font-size: @fontSizeSmall;
+  left: 0;
+  top: 100%;
+  margin-top: 5px;
+  white-space: nowrap;
   opacity: 1;
-  top: 50px;
-  left: 50%;
-  margin-left: -76px;
-  z-index: 999;
 }
 
 .divider{

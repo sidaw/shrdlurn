@@ -1,4 +1,4 @@
-// jack the simpleid function when mturkid is present
+// jack the simpleid function when a user is present
 if (util.parseQueryString()["user"]) {
     util.getId = function()
     {
