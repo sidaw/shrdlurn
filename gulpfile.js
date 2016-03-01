@@ -8,6 +8,8 @@ var less = require("gulp-less");
 var uglify = require("gulp-uglify");
 var concat = require("gulp-concat");
 var rimraf = require("rimraf");
+var obfuscate = require('gulp-obfuscate');
+ 
 
 var sources = [
     "src/**/*.purs",
@@ -74,7 +76,8 @@ gulp.task("concat", ["bundle"], function() {
 	"js/Util.js",
 	"js/Config.js",
 	"js/Sempre.js",
-	"js/GameLogic.js"
+	"js/GameLogic.js",
+	"js/GameSetup.js"
         ])
         .pipe(concat("main.js"))
         .pipe(gulp.dest("dist"));
@@ -88,7 +91,8 @@ gulp.task("concatdebug", ["bundle"], function() {
 	"js/Config.js",
 	"js/Debug.js",
 	"js/Sempre.js",
-	"js/GameLogic.js"
+	"js/GameLogic.js",
+	"js/GameSetup.js"
         ])
         .pipe(concat("main.js"))
         .pipe(gulp.dest("dist"));
@@ -103,7 +107,8 @@ gulp.task("concatturk", ["bundle"], function() {
 	"js/TurkConfig.js",
 	"js/Sempre.js",
 	"js/GameLogic.js",
-	"js/Turk.js"
+	"js/Turk.js",
+	"js/GameSetup.js",
         ])
         .pipe(concat("main.js"))
         .pipe(gulp.dest("dist"));
@@ -112,6 +117,14 @@ gulp.task("concatturk", ["bundle"], function() {
 gulp.task("compress", ["concat"], function() {
     return gulp.src("dist/main.js")
         .pipe(uglify().on('error', function(e){
+            console.log(e);
+         }))
+        .pipe(gulp.dest("dist"));
+});
+
+gulp.task('obfuscate', ["compress"], function () {
+    return gulp.src("dist/main.js")
+        .pipe(obfuscate().on('error', function(e){
             console.log(e);
          }))
         .pipe(gulp.dest("dist"));

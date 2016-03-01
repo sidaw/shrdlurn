@@ -2,7 +2,7 @@
 var configs = {};
 if (configs.SEMPRE_URL==undefined)
     configs.SEMPRE_URL = "http://jonsson.stanford.edu:8400"
-configs.SEMPRE_URL = "http://localhost:8400"
+// configs.SEMPRE_URL = "http://localhost:8400"
 
 configs.costPerStep = 3;
 configs.costPerScroll = 1;
@@ -48,4 +48,11 @@ configs.levels.push({
     maxSteps: 2,
     description: "",
     minSuccess: 10
+})
+configs.levels.push({
+    id: "littlehouse",
+    name: "house (optional)",
+    maxSteps: 4,
+    description: "",
+    minSuccess: 1
 })

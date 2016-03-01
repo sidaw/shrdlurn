@@ -11,31 +11,30 @@
   </head>
   <body>
 <div id="container">
-      
       <div id="panel">
 	<select id="tasks" size="5"></select>
 	<p/>
 	<div id="shortcuts">
 	<b>shortcuts:</b><br/>
 	  &crarr;: enter
+	   <br/>
+	  &#x2713;: shift-enter
 	  <br/>
 	  &#x238c;: ctrl-z
 	  <br/>
 	  &darr;: next try
 	  <br/>
 	  &uarr;: previous try
-	  <br/>
-	  &#x2713;: shift-enter
 	</div>
 	<p/>
 	<div id="shortcuts">
-	<b><span id="penalty">0</span> extra bits penalty </b> <br/><a id="reset"
+	<b><span id="penalty">0</span> bits penalty </b> <br/><a id="reset"
 	href="">reset progress</a><br/>
 	</div>
       </div>
       <div id="message">
 	<span id="solved" class="animated">solved!</span>
-	<div>click ✓ (or ctrl-enter) for the next problem.</div>
+	<div>click ✓ (or shift-enter) for the next problem.</div>
       </div>
       <div id="startblocks">start</div>
       <div id="goalblocks" style="visibility:hidden;">goal</div>
@@ -63,11 +62,12 @@
 	  <p/>
 	<div id="helptext">
 	  Cooperatively build the "goal" blocks by teaching the
-	  computer any language. The computer knows nothing at the beginning, and you
-	  want to teach it fast, and minimize the extra-bits needed.
+	  computer any language. The computer knows nothing, you have
+	  to teach it quickly while minimizing the scrolling penalty.
 	  Type a command, use ↓ and ↑ to
 	  select the right answer, use ✓ (shift-enter) to approve and
-	  move to the next step, and use &#x238c; (ctrl-z) to undo and skip.
+	  move to the next step, and use &#x238c; (ctrl-z) to undo and
+	  skip. 
 	  <br/>
 	  <a href="https://github.com/sidaw/cubesem/blob/master/README.md"
 	  target="_blank">help</a>,
@@ -82,7 +82,8 @@
 	  <span id="turkmsg"></span></p>
 	  <button id="turkbutton" class="button"
 	  style="width:80px;">done</button>
-	  <div id="turkcode">XXXXXX</div>
+	  <p/>
+	  <div id="turkcode">XXXXXX(to appear)</div>
 	</div>
 	<div>
 	<p>
@@ -92,6 +93,15 @@
 	</div>
       </div>
     </div>
+    
     <script type="text/javascript" src="dist/main.js"></script>
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-74509910-1', 'auto');
+    ga('send', 'pageview');
+    </script>
   </body>
 </html>

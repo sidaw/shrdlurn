@@ -1,17 +1,4 @@
-var turk = {}
-turk.parseQueryString = function() {
-    var str = window.location.search;
-    var objURL = {};
-
-    str.replace(
-        new RegExp( "([^?=&]+)(=([^&]*))?", "g" ),
-        function( $0, $1, $2, $3 ){
-            objURL[ $1 ] = $3;
-        }
-    );
-    return objURL;
-};
-
+var turk = {};
 (function(exports) {
     "use strict";
 
@@ -91,15 +78,14 @@ turk.parseQueryString = function() {
 
 turk.page = "turkube.html";
 turk.token = function (gs) {
-    var params = turk.parseQueryString();
-    var mturkid = params["mturkid"];
-    var tokeninfo = {id:mturkid, eB:gs.extraBits.toFixed(2), sid:gs.sessionId, sc:_.map(GS.successCounts, function(num, key){ return num; }), nq:gs.numQueries}
+    var mturkid = util.parseQueryString()["mturkid"];
+    var tokeninfo = {id:mturkid, eB:gs.extraBits.toFixed(2),
+		     sc:_.map(GS.successCounts, function(num, key){ return num; }),
+		     log:gs.log}
     var token = turk.XORCipher.encode(turk.page, JSON.stringify(tokeninfo))
     return token;
 };
-console.log(turk.token(GS));
 document.getElementById("turker").style.visibility="visible";
-
 turk.test = function(){return turk.XORCipher.decode(turk.page, turk.token(GS))}
 
 document.getElementById("turkbutton").onclick = function() {
@@ -117,4 +103,12 @@ document.getElementById("turkbutton").onclick = function() {
     } else {
 	turkmsg.innerHTML = "you will only get the code if you are done or made sufficient progress."
     }	
+}
+
+// jack the simpleid function when mturkid is present
+if (util.parseQueryString()["mturkid"]) {
+    util.getId = function()
+    {
+	return util.parseQueryString()["mturkid"];
+    }
 }

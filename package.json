@@ -12,6 +12,7 @@
     "gulp": "^3.9.0",
     "gulp-concat": "^2.5.2",
     "gulp-less": "^3.0.3",
+    "gulp-obfuscate": "^0.2.9",
     "gulp-purescript": "^0.5.0",
     "gulp-uglify": "^1.2.0",
     "rimraf": "^2.4.0"

@@ -10,11 +10,16 @@ function GameState() {
     this.NBestInd = 0;
     
     this.query = "";
-    this.numQueries = 0;
     this.taskind = 0;
 
     this.extraBits = 0;
-
+    this.log = {};
+    this.log.numQueries = 0;
+    this.log.totalChars = 0;
+    this.log.totalTokens = 0;
+    this.log.numScrolls = 0;
+    this.log.numStatus = 0;
+    
     // the only persistent states
     this.sessionId = "deadbeef";
     this.successCounts = {}
@@ -296,6 +301,7 @@ var GameAction = {
 	} else {
 	    updateStatus("↑: already showing the first one")
 	}
+	gs.log.numScrolls++;
     },
     next: function(gs) {
 	if (gs.noAnswer()) {
@@ -309,6 +315,7 @@ var GameAction = {
 	} else {
 	    updateStatus("↓: already showing the last one")
 	}
+	gs.log.numScrolls++;
     },
     accept: function(gs) {
 	GameAction._accept_commit(gs);
@@ -365,7 +372,7 @@ function logh(strlog) {document.getElementById("history").innerHTML += strlog; }
 function updateStatus(strstatus)
 {
     document.getElementById("status").innerHTML = strstatus
-    
+    GS.log.numStatus++;
     if (GS.query && GS.query.length>0) {
 	var stateinfo = "<b>↵: {query}</b>"._format({query:GS.query});
 	if (!GS.noAnswer()) {
@@ -460,13 +467,16 @@ document.getElementById("tasks").onchange = function() {
 function runCurrentQuery(gs) {
     var querystr = document.getElementById("maintextarea").value.trim()
     document.getElementById("maintextarea").value = ''
-
+    
     if (querystr.length>0) {
+	gs.log.totalTokens += querystr.split(" ").length;
+	gs.log.numQueries++;
+	gs.log.totalChars += querystr.length;
 	if (configs.hardMaxSteps
 	    && gs.effectiveStepsNumber() >= configs.levels[gs.taskind].maxSteps) {
 	    updateStatus("entered \"" + querystr +"\", but used too many steps, ⎌ first.");
 	} else {
-	    gs.numQueries++; 
+	    
 	    logh(gs.numQueries + ' ' + querystr + '; ')
 	    gs.query = querystr;
 	    GameAction.candidates(gs);
@@ -497,6 +507,7 @@ document.getElementById("nextbutton").onclick = function() {
 function acceptOnclick() {
     if (GameAction.checkAnswer(GS)) {
 	GameAction.nextLevel(GS)
+	ga('send', 'event', "custom", "passedlevel", GS.taskInd);
     } else {
 	GameAction.accept(GS);
     }
@@ -543,19 +554,11 @@ document.getElementById("reset").onclick = function() {
     console.log("resetting!!")
     util.resetStore();
     GS.sessionId = util.getId();
-    GS.successCounts = util.getStore("successCounts", {})
-    GS.extraBits = util.getStore("extraBits", 0)
+    GS.successCounts = util.getStore("successCounts", {});
+    GS.extraBits = util.getStore("extraBits", 0);
     popTasks();
     newWall(GS);
-    document.getElementById("maintextarea").focus()
+    document.getElementById("maintextarea").focus();
 }
 
-GS.sessionId = util.getId();
-GS.successCounts = util.getStore("successCounts", {})
-GS.extraBits = util.getStore("extraBits", 0)
-popTasks();
-document.getElementById("flyingdiv").style.visibility="visible";
-document.getElementById("goalblocks").style.visibility="visible";
-newWall(GS);
-document.getElementById("maintextarea").focus();
 

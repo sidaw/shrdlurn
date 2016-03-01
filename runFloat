@@ -20,7 +20,7 @@ DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
 
 if [ "$HOSTNAME" = "jonsson.stanford.edu" ]; then
     echo "running on jonsson"
-    TRAIN_OUTS_SERVER="-Master.newExamplesPath /afs/cs.stanford.edu/u/sidaw/git/cubesem/examples/ -Master.logPath /afs/cs.stanford.edu/u/sidaw/git/cubesem/logs/ -server true"
+    TRAIN_OUTS_SERVER="-Master.newExamplesPath /afs/cs.stanford.edu/u/sidaw/git/examples/ -Master.logPath /afs/cs.stanford.edu/u/sidaw/git/logs/ -server true"
     echo rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF $TRAIN_OUTS_SERVER -Server.numThreads 16 "$@"
     rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF $TRAIN_OUTS_SERVER -Server.numThreads 16 "$@"
 else
