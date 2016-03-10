@@ -102,6 +102,7 @@ var sempre = {
 	    qapair.score = valid[i].score.toFixed(7);
 	    qapair.rank = i;
 	    qapair.prob = valid[i].prob.toFixed(7);
+	    qapair.pprob = valid[i].pprob.toFixed(7);
 	    lstqapairs.push(qapair);
 	}
 
@@ -111,15 +112,20 @@ var sempre = {
 		vs.value = v.value;
 		vs.prob = parseFloat(v.prob);
 		vs.probs = [v.prob];
+		vs.pprob = parseFloat(v.pprob);
+		vs.pprobs = [v.pprob];
 		vs.score = parseFloat(v.score);
 		vs.rank = v.rank;
 		vs.count = 1;
 		vs.maxprob = parseFloat(v.prob);
+		vs.maxpprob = parseFloat(v.pprob);
 	    } else {
 		vs.value = v.value;
 		vs.prob += parseFloat(v.prob);
+		vs.pprob += parseFloat(v.pprob);
 		vs.score = Math.max(vs.score, parseFloat(v.score));
 		vs.maxprob = Math.max(vs.maxprob, parseFloat(v.prob));
+		vs.maxpprob = Math.max(vs.maxpprob, parseFloat(v.pprob));
 		vs.probs.push(v.prob);
 		vs.count += 1;
 	    }

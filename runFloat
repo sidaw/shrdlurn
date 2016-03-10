@@ -3,9 +3,9 @@ SEMPATH=../semparse
 GRAMMAR=../cubesem/grammar/stacks.grammar
 cd $SEMPATH
 # elif [ $1 = "cube" ]; then  -FloatingParser.useSizeInsteadOfDepth true 
-LEARNOPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 50 -StacksWorldFeatureComputer.ngramN 3 -Params.initStepSize 0.1 -Params.adaptiveStepSize true"
+LEARNOPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 50 -StacksWorldFeatureComputer.ngramN 3 -Params.initStepSize 1 -Params.adaptiveStepSize true"
 
-SESSIONSTUFF="-Master.onlineLearnExamples false -Master.independentSessions true"
+SESSIONSTUFF="-Master.onlineLearnExamples false -Master.independentSessions true -Master.bePragmatic true -Session.smoothAlpha 1.0"
 
 TRAIN_IN="-Dataset.inPaths train:../cubesem/data/validation.lisp -Learner.maxTrainIters 1"
 #test:../cubesem/data/fullgame.json 

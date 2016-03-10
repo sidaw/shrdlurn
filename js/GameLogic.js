@@ -384,7 +384,7 @@ function writeSemAns(gs) {
     var formval = gs.NBest;
     for (i in formval)
 	document.getElementById("sempreret").innerHTML +=
-    (1+parseInt(i)) + ': prob={prob}, maxprob={maxprob}, score={score}, count={count}: value={value} '._format(formval[i]) +
+    (1+parseInt(i)) + ': prob={prob}:{pprob}, maxprob={maxprob}:{maxpprob}, score={score}, count={count}: value={value} '._format(formval[i]) +
 	'<br/>';
 }
 
