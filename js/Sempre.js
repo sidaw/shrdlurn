@@ -102,7 +102,7 @@ var sempre = {
 	    qapair.score = valid[i].score.toFixed(7);
 	    qapair.rank = i;
 	    qapair.prob = valid[i].prob.toFixed(7);
-	    qapair.pprob = valid[i].pprob.toFixed(7);
+	    qapair.pprob = valid[i].pprob;
 	    lstqapairs.push(qapair);
 	}
 
@@ -123,9 +123,11 @@ var sempre = {
 		vs.value = v.value;
 		vs.prob += parseFloat(v.prob);
 		vs.pprob += parseFloat(v.pprob);
+		
 		vs.score = Math.max(vs.score, parseFloat(v.score));
 		vs.maxprob = Math.max(vs.maxprob, parseFloat(v.prob));
 		vs.maxpprob = Math.max(vs.maxpprob, parseFloat(v.pprob));
+		vs.rank = Math.min(vs.rank, v.rank);
 		vs.probs.push(v.prob);
 		vs.count += 1;
 	    }
@@ -139,7 +141,7 @@ var sempre = {
 	for (var key in nbestdict) {
 	     listqadedup.push(nbestdict[key])
 	}
-	listqadedup.sort(function(a,b){return b.maxprob - a.maxprob});
+	listqadedup.sort(function(a,b){return b.maxpprob - a.maxpprob});
 	return listqadedup; 
     },
 

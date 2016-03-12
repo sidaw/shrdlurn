@@ -380,12 +380,16 @@ function updateStatus(strstatus)
 }
 
 function writeSemAns(gs) {
-    document.getElementById("sempreret").innerHTML = ''
+    var sempreret = document.getElementById("sempreret");
+    var mystr = "<table> <tbody>"
     var formval = gs.NBest;
-    for (i in formval)
-	document.getElementById("sempreret").innerHTML +=
-    (1+parseInt(i)) + ': prob={prob}:{pprob}, maxprob={maxprob}:{maxpprob}, score={score}, count={count}: value={value} '._format(formval[i]) +
-	'<br/>';
+    for (var i in formval) {
+	mystr += "<tr><td>"+
+	(1+parseInt(i)) + "</td> <td>{rank}</td>  <td>{prob}</td> <td>{maxprob}</td> <td>{maxpprob}</td> <td>s:{score} c:{count} {value} </td></tr>"
+	    ._format(formval[i]);
+    }
+    mystr += "</tbody> </table>"
+    sempreret.innerHTML = mystr;
 }
 
 function updateReaction(gs) {
