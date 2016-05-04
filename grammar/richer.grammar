@@ -1,0 +1,74 @@
+# contextful top level functions
+(def @rootFn context:edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.rootFn)
+(def @condition edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.condition)
+
+# actions
+(def @add edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.add)
+(def @remove edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.remove)
+
+# action combiners
+(def @serial edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.serial)
+(def @repeat edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.repeat)
+
+# filters and their combiners
+(def @filter edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.filter)
+(def @contains edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.contains)
+(def @topColor edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.topColor)
+
+(def @not edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.not)
+(def @combine edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.combine)
+
+# TO TEST
+# (context (graph NaiveKnowledgeGraph ((string [[1,2,3,4],[4,3,1],[2,2,1],[2,2,3],[3],[]]) (name b) (name c))))
+#  (set JavaExecutor.printStackTrace true)
+####### Start of the actual grammar
+
+(rule $ROOT ($Action) (lambda a (call @rootFn (var a)) )) # process for better
+(rule $Action ($Action if $Cond) (lambda a (lambda c (call @condition (var a) (var c)))))
+
+# combo actions
+(rule $Action ($Action then $Action) (lambda a1 (lambda a2 (call @serial (var a1) (var a2)))))
+(rule $Action (repeat $Action $NUM times ) (lambda a (lambda n (call @repeat (var n) (var a)))))
+
+# basic actions
+(rule $Action (remove) (ConstantFn (call @remove)))
+(rule $Action (add $Type) (lambda t (call @add (var t))))
+
+# combo conditions
+(for @op (or and diff)
+(rule $Cond ($Cond @op $Cond) (lambda s1 (lambda s2
+					(call @combine (string @op) (var s1) (var s2)))))
+)
+
+(rule $Cond (not $Cond) (lambda c (call @not (var c))))
+
+(rule $Cond ( \( $Cond \) ) (IdentityFn))
+
+# basic conditions
+
+(rule $Cond (top $Type) (lambda t
+			      (call @topColor (var t))))
+(rule $Cond (contains $Type) (lambda t
+			      (call @contains (var t))))
+     
+(for @numprop (col height)
+     (rule $Cond (@numprop >  $NUM) (lambda n 
+				    (call @filter (string @numprop) (string >) (var n))))
+     (rule $Cond (@numprop >= $NUM)  (lambda n
+				    (call @filter (string @numprop) (string >=) (var n))))
+     (rule $Cond (@numprop =  $NUM)  (lambda n
+				    (call @filter (string @numprop) (string =) (var n))))
+     (rule $Cond (@numprop <  $NUM)  (lambda n
+				    (call @filter (string @numprop) (string <) (var n))))
+     (rule $Cond (@numprop <= $NUM)  (lambda n
+				    (call @filter (string @numprop) (string <=) (var n))))
+     )
+
+
+(rule $NUM ($TOKEN) (NumberFn))
+# cyan brown red orange yellow
+(rule $Type (cyan) (ConstantFn (number 0 COLOR)))
+(rule $Type (brown) (ConstantFn (number 1 COLOR)))
+(rule $Type (red) (ConstantFn (number 2 COLOR)))
+(rule $Type (orange) (ConstantFn (number 3 COLOR)))
+(rule $Type (yellow) (ConstantFn (number 2 COLOR)))

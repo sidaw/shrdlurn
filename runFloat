@@ -3,11 +3,11 @@ SEMPATH=../semparse
 GRAMMAR=../cubesem/grammar/stacks.grammar
 cd $SEMPATH
 # elif [ $1 = "cube" ]; then  -FloatingParser.useSizeInsteadOfDepth true 
-LEARNOPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -StacksWorldFeatureComputer.ngramN 2 -Params.initStepSize 0.1 -Params.adaptiveStepSize true"
+LEARNOPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -StacksWorldFeatureComputer.ngramN 2 -Params.initStepSize 0.1 -Params.adaptiveStepSize true -FeatureExtractor.featureDomains tree"
 
 SESSIONSTUFF="-Master.onlineLearnExamples false -Master.independentSessions true"
 
-PRAG="-Master.bePragmatic true -PragmaticListener.addModelProb false -PragmaticListener.smoothAlpha 1.0 -PragmaticListener.uniformWeight 0.01 -PragmaticListener.lambda 3.0 -Learner.onlineEvaluation true -Derivation.comparePragmatically true"
+PRAG="-Master.bePragmatic true -PragmaticListener.addModelProb true -PragmaticListener.smoothAlpha 1.0 -PragmaticListener.uniformWeight 0.001 -PragmaticListener.lambda 3.0 -Learner.onlineEvaluation true -Derivation.comparePragmatically true"
 
 # A2YJFCTJPPX66.lisp 70
 # A1HKYY6XI2OHO1.lisp 63
@@ -20,7 +20,7 @@ TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/validation.lisp"
 
 # -Master.newParamsPath ../cubesem/validation.params
 # -Dataset.inPaths train:../cubesem/examples"
-OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main  -execDir _OUTPATH_/runFloat -overwriteExecDir -addToView 0 -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains tree -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer  -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main  -execDir _OUTPATH_/runFloat -overwriteExecDir -addToView 0 -Main.interactive -JavaExecutor.convertNumberValues false -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer  -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
 
 # features are tree, heads, ngram
 DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
@@ -33,5 +33,5 @@ if [ "$HOSTNAME" = "jonsson.stanford.edu" ]; then
 else
     echo "not running on jonsson"
     TRAIN_OUTS_LOCAL="-Master.newExamplesPath ../cubesem/examples/ -Master.logPath ../cubesem/logs/ -server true"
-    rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS_LOCAL $SESSIONSTUFF $TRAIN_IN $PRAG -Server.numThreads 1 "$@"
+    rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS_LOCAL $SESSIONSTUFF $PRAG -Server.numThreads 1 "$@"
 fi

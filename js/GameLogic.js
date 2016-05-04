@@ -143,11 +143,11 @@ function updateCanvas(gs) {
 	walls.push('[[]]');
     // pad
     walls.push(gs.targetWall);
+    PSMain.renderJSON('['+walls.join(',')+']')();
     updateGoalTextPosition(gs);
     updateReaction(gs);
     updatePenaltyPoints(gs);
     updateScrollingStatus(gs);
-    PSMain.renderJSON('['+walls.join(',')+']')();
 }
 
 function newWall(gs) {
@@ -399,6 +399,7 @@ function updateReaction(gs) {
     }
     else {
 	var cc = gs.currentCandidate().maxprob;
+	if (!cc) {cc = 0};
 	var cutoffs = [0.5, 0.1, 0.05, 0.01, 0.001, 0.00001, -1];
 	reaction.innerHTML = util.emojione.numToImg(cutoffs.findIndex(function(val){
 	    return cc >= val;

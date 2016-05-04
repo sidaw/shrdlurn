@@ -1,0 +1,26 @@
+#!/bin/sh
+SEMPATH=../semparse
+GRAMMAR=../cubesem/grammar/richer.grammar
+cd $SEMPATH
+LEARNOPTS="-Parser BeamParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -StacksWorldFeatureComputer.ngramN 2 -Params.initStepSize 0.1 -Params.adaptiveStepSize true -FeatureExtractor.featureDomains none"
+SESSIONSTUFF="-Master.onlineLearnExamples false -Master.independentSessions true"
+
+TRAIN_IN="-Dataset.inPaths train1:../cubesem/data/turker_success/sidawangbaseline.lisp train2:../cubesem/data/turker_success/A2YJFCTJPPX66.lisp -Learner.maxTrainIters 1"
+#test:../cubesem/data/fullgame.json 
+TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/validation.lisp"
+
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main  -execDir _OUTPATH_/runFloat -overwriteExecDir -addToView 0 -Main.interactive -JavaExecutor.convertNumberValues false -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer"
+
+# features are tree, heads, ngram
+DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
+
+if [ "$HOSTNAME" = "jonsson.stanford.edu" ]; then
+    echo "running on jonsson"
+    TRAIN_OUTS_SERVER="-Master.newExamplesPath /afs/cs.stanford.edu/u/sidaw/git/examples/ -Master.logPath /afs/cs.stanford.edu/u/sidaw/git/logs/ -server true"
+    echo rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF $TRAIN_OUTS_SERVER -Server.numThreads 16 "$@"
+    rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF $TRAIN_OUTS_SERVER -Server.numThreads 16 "$@"
+else
+    echo "not running on jonsson"
+    TRAIN_OUTS_LOCAL="-Master.newExamplesPath ../cubesem/examples/ -Master.logPath ../cubesem/logs/"
+    rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS_LOCAL $SESSIONSTUFF -Server.numThreads 1 "$@"
+fi

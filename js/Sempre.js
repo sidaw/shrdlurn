@@ -101,7 +101,7 @@ var sempre = {
 	    //qapair.raw = valid[i];
 	    qapair.score = valid[i].score.toFixed(7);
 	    qapair.rank = i;
-	    qapair.prob = valid[i].prob.toFixed(7);
+	    qapair.prob = valid[i].prob;
 	    qapair.pprob = valid[i].pprob;
 	    lstqapairs.push(qapair);
 	}
