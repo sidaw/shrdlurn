@@ -17,7 +17,7 @@
 @width:               800px;
 
 @canvasWidth:         0.75 * @width;
-@canvasRatio :        800/1100; // equals the numbers in HTML
+@canvasRatio :        500/1100; // equals the numbers in HTML
 @canvasHeight:        @canvasWidth * @canvasRatio;
 
 @logoWidth:           216px;
@@ -56,7 +56,12 @@ b {
     left: (@width - @logoWidth) / 2;
     width: @logoWidth;
 }
-
+#formula {
+    width: @canvasWidth;
+}
+#statusinfo {
+    width: @canvasWidth;
+}
 #reaction {
     position: relative;
     top: 0px;
@@ -71,16 +76,16 @@ b {
 
 #startblocks {
     position: absolute;
-    top: 180px;
-    left: 25px;
+    top: 10px;
+    left: 10px;
     .bold;
     color: #000;
     font-size: 20px
 }
 #goalblocks {
     position: absolute;
-    top: @canvasHeight - 30px;
-    left: @canvasWidth - 150px;
+    top: 10px;
+    left: @canvasWidth - 50px;
     .bold;
     color: #000;
     font-size: 20px
@@ -130,7 +135,7 @@ b {
     border-radius: 3px;
     outline: none;
     width: 100%;
-    height:160px;
+    height:70px;
     overflow:auto;
 }
 
@@ -139,24 +144,16 @@ b {
     margin-top: 0;
 }
 
-#message {
-    visibility: hidden;
-
+#metaactions {
+    visibility: visible;
     position: absolute;
-    top: 350px;
-    left: 20px;
-
+    top: 230px;
+    left: 230px;
     padding: 1px;
 
     #solved {
         font-size: 35px;
         .bold;
-    }
-    #nextlevel {
-        font-size: @fontSizeSmall;
-    }
-    #tryanother {
-        font-size: @fontSizeSmall;
     }
 }
 

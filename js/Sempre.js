@@ -3,7 +3,8 @@ var sempre = {
     cleanValue: function (valuestring) {
 	if (!valuestring) return '';
 	return valuestring
-            .replace(/edu.stanford.nlp.sempre.cubeworld.CubeWorld./g,'')
+	    .replace(/edu.stanford.nlp.sempre.cubeworld.CubeWorld./g,'')
+            .replace(/edu.stanford.nlp.sempre.cubeworld..*\./g,'')
 	    .replace(/edu.stanford.nlp.sempre./g,'')
 	    .toLowerCase();
     },
@@ -97,7 +98,7 @@ var sempre = {
 	for (var i=0; i<valid.length; i++) {
 	    var qapair = {};
 	    qapair.value = this.formatValue(valid[i]['value']);
-	    // qapair.formula = this.formatFormula(valid[i]['formula']);
+	    qapair.formula = this.formatFormula(valid[i]['formula']);
 	    //qapair.raw = valid[i];
 	    qapair.score = valid[i].score.toFixed(7);
 	    qapair.rank = i;
@@ -110,6 +111,8 @@ var sempre = {
 	    if (vs == undefined) {
 		vs = {};
 		vs.value = v.value;
+		vs.formula = v.formula;
+		
 		vs.prob = parseFloat(v.prob);
 		vs.probs = [v.prob];
 		vs.pprob = parseFloat(v.pprob);

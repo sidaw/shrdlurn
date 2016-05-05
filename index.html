@@ -28,29 +28,31 @@
 	</div>
 	<p/>
 	<div>
-	<b><span id="penalty">0</span> bits penalty </b> <br/><br/><a id="reset"
+	<a id="reset"
 	href="">reset ALL progress</a>
 	</div>
+	</div>
+	
+      <div id="metaactions" class="buttons">
+	<button class="button button--solved" id="flyingaccept"
+	  ctitle="take this action (shift-enter)">&#x2713;</button>
+	<button class="button button--solved" id="describe"
+	  ctitle="describe the current action">...</button>
+	<button class="button button--solved" id="paraphrase"
+	ctitle="provide another way to say this">~</button>
       </div>
-      <div id="message">
-	<span id="solved" class="animated">solved!</span>
-	<div>click ✓ (or shift-enter) for the next problem.</div>
-      </div>
-      <div id="startblocks">start</div>
-      <div id="goalblocks" style="visibility:hidden;">goal</div>
       
-      <div id="flyingdiv" style="visibility:hidden;">
-	  <button class="button button--solved" id="flyingaccept"
-	  ctitle="take this action (shift-enter)">
-	&#x2713;</button>
-      </div>
-      <canvas id="canvas" width="1100" height="800"></canvas>
+      <div id="startblocks">before</div>
+      <div id="goalblocks">after</div>
+ 
+      <canvas id="canvas" width="1100" height="500"></canvas>
       <div id="chat" style=center>
+	<div id="formula"> <b>No action</b> </div>
 	<div id="statusinfo">
-	&nbsp; <span id="reaction"></span>
+	  &nbsp; <span id="reaction"></span>
 	<span id="currentcmd"><b>No command</b> </span>,
 	<span id="status">type one!</span></div>
-	<input type="text" id="maintextarea" placeholder=" command the computer here"></input>
+	<input type="text" id="maintextarea" placeholder=" type a command here"></input>
 	<div class="buttons">
 	  <button class="button" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
 	  <button class="button" id="undobutton" ctitle="undo (ctrl-z)">&#x238c;</button>
@@ -65,13 +67,7 @@
 	  </div>
 	  <p/>
 	<div id="helptext">
-	  Cooperatively build the "goal" from the "start"
-	  by teaching the computer any language.
-	  The computer knows nothing, and you have to teach quickly.
-	  Type a command and press enter, use ↓ and ↑ to
-	  select the right action, use ✓ (shift-enter) take the current action and
-	  move to the next step, and use &#x238c; (ctrl-z) to undo and
-	  skip examples. 
+	  Teach the computer. 
 	  <br/>
 	  <a href="https://github.com/sidaw/cubesem/blob/master/README.md"
 	  target="_blank">help</a>,

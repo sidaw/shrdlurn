@@ -137,21 +137,18 @@ function updateCanvas(gs) {
 	walls = walls.concat(gs.listWalls.slice(wlen - maxWalls));
     }
     
-    walls.push(gs.getCurrentWall())
-	
+    walls.push(gs.getCurrentWall());
+    
     for (var i=0; i < maxWalls- wlen; i++)
 	walls.push('[[]]');
-    // pad
-    walls.push(gs.targetWall);
     PSMain.renderJSON('['+walls.join(',')+']')();
-    updateGoalTextPosition(gs);
+    // updateGoalTextPosition(gs);
+    updateFormula(gs);
     updateReaction(gs);
-    updatePenaltyPoints(gs);
-    updateScrollingStatus(gs);
 }
 
 function newWall(gs) {
-    var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.getLevel (string {task})))"
+    var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.getWorld (string {task})))"
 	._format({task: configs.levels[gs.taskind].id}); // attach arguments here!
     var cmds = {q:wallcommand, sessionId:gs.sessionId};
     gs.resetNBest();
@@ -357,9 +354,9 @@ var GameAction = {
 
 function showNextButton(show) {
     if (show) {
-	document.getElementById("message").style.visibility = "visible";
+	document.getElementById("metaactions").style.visibility = "visible";
     } else {
-	document.getElementById("message").style.visibility = "hidden";
+	document.getElementById("metaactions").style.visibility = "visible";
     }
 } 
 function logh(strlog) {document.getElementById("history").innerHTML += strlog; }
@@ -385,7 +382,7 @@ function writeSemAns(gs) {
     var formval = gs.NBest;
     for (var i in formval) {
 	mystr += "<tr><td>"+
-	(1+parseInt(i)) + "</td> <td>{rank}</td>  <td>{prob}</td> <td>{maxprob}</td> <td>{maxpprob}</td> <td>s:{score} c:{count} {value} </td></tr>"
+	(1+parseInt(i)) + "</td> <td>{rank}</td>  <td>{score} c:{count}</td> <td>{formula}</td>  <td> {value} </td></tr>"
 	    ._format(formval[i]);
     }
     mystr += "</tbody> </table>"
@@ -407,30 +404,23 @@ function updateReaction(gs) {
     }
 }
 
-function updatePenaltyPoints(gs) {
-    var pts = gs.extraBits + gs.listNBestInd.reduce(function(a,b){return util.log2int(a) + util.log2int(b)},0) + util.log2int(gs.NBestInd);
-    document.getElementById("penalty").innerHTML = pts.toFixed(1);
-    console.log("updating "+pts);
+function updateFormula(gs) {
+    var formula =  document.getElementById('formula');
+    if (gs.noAnswer()) {
+	formula.innerHTML = "<b>No formula</b>";
+    }
+    else {
+	formula.innerHTML = gs.currentCandidate().formula;
+    }
 }
+
 function updateGoalTextPosition(gs) {
-    var initx = 25; var inity = 180;
+    var initx = 100; var inity = 280;
     var g = document.getElementById("goalblocks");
     var scalefactor = 800*0.75/1100.0; // this is radio of the widths of canvas in html vs stylesheet
     var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
     g.style.top=(inity + (configs.levels[gs.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
     g.style.left=(initx + (configs.levels[gs.taskind].maxSteps+1)*space*1.717/2)+"px";
-
-    var cb = document.getElementById("flyingdiv");
-    var stepnum = gs.listWalls.length;
-    cb.style.top=(inity + (stepnum)*space*0.5)+"px"; //sin 30 and 60 due to isometry
-    cb.style.left=(initx -10 + (stepnum)*space*1.717/2)+"px";
-}
-function updateScrollingStatus(gs) {
-    if (gs.noAnswer()) {
-	document.getElementById("flyingaccept").disabled=true;
-    } else {
-	document.getElementById("flyingaccept").disabled=false;
-    }
 }
 
 // DOM functions, and events
@@ -512,12 +502,22 @@ function acceptOnclick() {
     }
     maintextarea.focus();
 }
+function metaCommand(meta) {
+    maintextarea.value = meta;
+    maintextarea.focus();
+}
+
 document.getElementById("acceptbutton").onclick = function() {
     acceptOnclick()
 };
-
 document.getElementById("flyingaccept").onclick = function() {
-    acceptOnclick()
+    metaCommand("!accept")
+};
+document.getElementById("describe").onclick = function() {
+    metaCommand("!instead_of [" + GS.query + "] you_did: ")
+};
+document.getElementById("paraphrase").onclick = function() {
+    metaCommand("!define [" + GS.query + "] as: ")
 };
 
 var Hotkeys = {

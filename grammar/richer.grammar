@@ -27,6 +27,7 @@
 (rule $Action ($Action if $Cond) (lambda a (lambda c (call @condition (var a) (var c)))))
 
 # combo actions
+(rule $Action ( { $Action } ) (IdentityFn))
 (rule $Action ($Action then $Action) (lambda a1 (lambda a2 (call @serial (var a1) (var a2)))))
 (rule $Action (repeat $Action $NUM times ) (lambda a (lambda n (call @repeat (var n) (var a)))))
 
@@ -42,7 +43,7 @@
 
 (rule $Cond (not $Cond) (lambda c (call @not (var c))))
 
-(rule $Cond ( \( $Cond \) ) (IdentityFn))
+(rule $Cond ( { $Cond } ) (IdentityFn))
 
 # basic conditions
 
@@ -51,7 +52,7 @@
 (rule $Cond (contains $Type) (lambda t
 			      (call @contains (var t))))
      
-(for @numprop (col height)
+(for @numprop (col row height)
      (rule $Cond (@numprop >  $NUM) (lambda n 
 				    (call @filter (string @numprop) (string >) (var n))))
      (rule $Cond (@numprop >= $NUM)  (lambda n
@@ -71,4 +72,19 @@
 (rule $Type (brown) (ConstantFn (number 1 COLOR)))
 (rule $Type (red) (ConstantFn (number 2 COLOR)))
 (rule $Type (orange) (ConstantFn (number 3 COLOR)))
-(rule $Type (yellow) (ConstantFn (number 2 COLOR)))
+(rule $Type (yellow) (ConstantFn (number 4 COLOR)))
+
+# repeat add red 2 times then add cyan if height > 2
+# add red if col < 3 and row < 3
+# add red if col > 2 and col < 5 or row > 2 and row < 5
+# repeat add red if height < 3 10 times
+# repeat add red 5 times if height > 0
+# add red then add cyan then add yellow if row > 3 and col > 3 and height > 0
+
+# add red then add cyan then repeat add yellow 3 times if height < 1 and row < 5 and col < 5 or col > 8 then add brown
+# add red then add yellow if col > 1 then add cyan if col > 2 then add brown if col > 3 then add orange if col > 4
+# { remove if col > 5 } then { remove if col > 6 } then { remove if col > 7 }
+# remove if row > 5 then remove if row > 6 then remove if row > 7
+# remove if row < 4 then remove if row < 3 then remove if row < 2
+# { remove if col  < 4 } then { remove if col < 3 } then { remove if col < 2 }
+# repeat add red if height < 3 10 times

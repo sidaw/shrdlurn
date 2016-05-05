@@ -40,13 +40,14 @@ renderBlock :: forall eff. IsomerInstance
 renderBlock = runFn8 _renderBlock
 
 -- | Render a single colored cube at the given position
+cubesize = 0.8
 renderCube :: forall eff. IsomerInstance
            -> Number
            -> Number
            -> Number
            -> IsomerColor
            -> Eff (isomer :: ISOMER | eff) Unit
-renderCube isomer x y z col = renderBlock isomer x y z 0.9 0.9 0.9 col
+renderCube isomer x y z col = renderBlock isomer x y z cubesize cubesize 1.0 col
 
 -- | Clear the whole canvas that belongs to the Isomer instance
 foreign import clearCanvas :: forall eff. IsomerInstance
