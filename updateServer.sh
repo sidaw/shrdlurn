@@ -4,7 +4,7 @@ pushd
 cd ../semparse
 ant core cubeworld
 popd
-./runFloat -server true
+./runRich -server true
 
-scp index.html sidaw@jamie:~/public_html/cubes.html
+scp index.html sidaw@jamie:~/public_html/shrdlurn.html
 scp -r dist sidaw@jamie:~/public_html/

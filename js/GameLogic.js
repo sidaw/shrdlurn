@@ -142,6 +142,7 @@ function updateCanvas(gs) {
     for (var i=0; i < maxWalls- wlen; i++)
 	walls.push('[[]]');
     PSMain.renderJSON('['+walls.join(',')+']')();
+    PSMain.renderTargetJSON('[' + gs.targetWall + ']')();
     // updateGoalTextPosition(gs);
     updateFormula(gs);
     updateReaction(gs);
@@ -162,9 +163,9 @@ function newWall(gs) {
 	    return
 	}
 	var jsresp = JSON.parse(jsonstr)['exValue'];
-	var walls = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '').split('|');
-	gs.listWalls.push(walls[0]);
-	gs.targetWall = walls[1];
+	var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
+	gs.listWalls.push(wall);
+	gs.targetWall = wall;
 	gs.setCurrentWall();
 	updateCanvas(gs);
     })
@@ -377,7 +378,7 @@ function updateStatus(strstatus)
 }
 
 function writeSemAns(gs) {
-    var sempreret = document.getElementById("sempreret");
+    var sempreret = document.getElementById("nbestlist");
     var mystr = "<table> <tbody>"
     var formval = gs.NBest;
     for (var i in formval) {

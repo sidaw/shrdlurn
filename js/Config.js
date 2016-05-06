@@ -1,7 +1,7 @@
 "use strict"
 var configs = {};
 if (configs.SEMPRE_URL==undefined)
-    configs.SEMPRE_URL = "http://jonsson.stanford.edu:8400"
+    configs.SEMPRE_URL = "http://jonsson.stanford.edu:8401"
 // configs.SEMPRE_URL = "http://localhost:8400"
 
 configs.costPerStep = 3;

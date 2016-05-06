@@ -16,9 +16,9 @@ DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
 
 if [ "$HOSTNAME" = "jonsson.stanford.edu" ]; then
     echo "running on jonsson"
-    TRAIN_OUTS_SERVER="-Master.newExamplesPath /afs/cs.stanford.edu/u/sidaw/git/examples/ -Master.logPath /afs/cs.stanford.edu/u/sidaw/git/logs/ -server true"
-    echo rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF $TRAIN_OUTS_SERVER -Server.numThreads 16 "$@"
-    rlwrap java $OPTIONS $LEARNOPTS $SESSIONSTUFF $TRAIN_OUTS_SERVER -Server.numThreads 16 "$@"
+    TRAIN_OUTS_SERVER="-Master.newExamplesPath /afs/cs.stanford.edu/u/sidaw/shrdlurn/examples -Master.logPath /afs/cs.stanford.edu/u/sidaw/shrdlurn/logs -server true -Server.port 8401"
+    echo rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS_LOCAL $SESSIONSTUFF -Server.numThreads 8 "$@"
+    rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS_LOCAL $SESSIONSTUFF -Server.numThreads 8 "$@"
 else
     echo "not running on jonsson"
     TRAIN_OUTS_LOCAL="-Master.newExamplesPath ../cubesem/examples/ -Master.logPath ../cubesem/logs/"

@@ -11,7 +11,8 @@
   </head>
   <body>
 <div id="container">
-      <div id="panel">
+<div id="panel">
+       <canvas id="canvastarget" width="200" height="200"></canvas>
 	<select id="tasks" size="5"></select>
 	<p/>
 	<div id="shortcuts">
@@ -43,11 +44,11 @@
       </div>
       
       <div id="startblocks">before</div>
+      <div id="currentblocks">current</div>
       <div id="goalblocks">after</div>
  
       <canvas id="canvas" width="1100" height="500"></canvas>
       <div id="chat" style=center>
-	<div id="formula"> <b>No action</b> </div>
 	<div id="statusinfo">
 	  &nbsp; <span id="reaction"></span>
 	<span id="currentcmd"><b>No command</b> </span>,
@@ -89,7 +90,10 @@
 	<p>
 	<span id="history" style="visibility:hidden;"></span>
 	</p>
-	<div id="sempreret"></div>
+	<div id="debugdiv">
+	  <div id="nbestlist"> </div>
+	  <div id="formula"> <b>No action</b> </div>
+	</div>
 	</div>
       </div>
     </div>

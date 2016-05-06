@@ -65,7 +65,6 @@
 				    (call @filter (string @numprop) (string <=) (var n))))
      )
 
-
 (rule $NUM ($TOKEN) (NumberFn))
 # cyan brown red orange yellow
 (rule $Type (cyan) (ConstantFn (number 0 COLOR)))

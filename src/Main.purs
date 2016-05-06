@@ -1,4 +1,4 @@
-module Main (App(..), main, renderJSON) where
+module Main (App(..), main, renderJSON, renderTargetJSON) where
 import Prelude
 import Control.Apply
 import Control.Monad.Eff
@@ -73,7 +73,6 @@ advanceCol x = toNumber (mod x $ floor worldsize)
 -- | Render a series of walls
 renderWalls :: IsomerInstance -> (List Wall) -> EffIsomer
 renderWalls isomer walls = do
-    setIsomerConfig isomer cubesize 80.0 350.0
     traverseWithIndex_ (\y -> renderWall isomer worldsize (toNumber y)) walls
 
 -- | Replace all occurences of a pattern in a string with a replacement
@@ -97,17 +96,28 @@ renderJSON jsonwalls = do
     isomer <- getIsomerInstance "canvas"
     -- On-canvas rendering
     clearCanvas isomer
+    setIsomerConfig isomer 35.0 30.0 350.0
     renderWalls isomer $ jsonToWalls jsonwalls
     -- renderTarget isomer $ jsonToWall jsontarget
     -- parsedJSON <- readJSON cmdsequence :: F (Array (Array Int))
     -- renderWalls isomer (toList [intToWall (rights parsedJSON)])
     -- [[1, 2, 3], [3, 2], [1], [1,2]]
     -- cmdsequence <- Nil
-
-    print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
+    -- print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
+    
+renderTargetJSON :: String -> App
+renderTargetJSON jsonwalls = do
+    doc <- getDocument
+    isomer <- getIsomerInstance "canvastarget"
+    -- On-canvas rendering
+    clearCanvas isomer
+    setIsomerConfig isomer 12.0 5.0 160.0
+    renderWalls isomer $ jsonToWalls jsonwalls
+    print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
     
 main :: App
 main = do
     renderJSON "[[[]]]"
+    renderTargetJSON "[[]]"
