@@ -9,7 +9,7 @@ var uglify = require("gulp-uglify");
 var concat = require("gulp-concat");
 var rimraf = require("rimraf");
 var obfuscate = require('gulp-obfuscate');
- 
+var webserver = require('gulp-webserver');
 
 var sources = [
     "src/**/*.purs",
@@ -143,8 +143,16 @@ gulp.task("docs", ["clean-docs"], function () {
         });
 });
 
+gulp.task("webserver", function() {
+  return gulp.src('./')
+    .pipe(webserver({
+      livereload: true
+    }))
+});
+
 gulp.task("prod", ["clean", "less", "psci", "bundle", "concat", "compress", "docs"]);
 gulp.task("dev", ["less", "psci", "bundle", "concat"]);
 gulp.task("debug", ["less", "psci", "bundle", "concatdebug"]);
 gulp.task("turk", ["less", "psci", "bundle", "concatturk", "compress"]);
 gulp.task("default", ["less", "psci", "bundle", "concat"]);
+gulp.task("serve", ["dev", "webserver"])
