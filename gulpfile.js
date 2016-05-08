@@ -146,8 +146,8 @@ gulp.task("docs", ["clean-docs"], function () {
 gulp.task("webserver", function() {
   return gulp.src('./')
     .pipe(webserver({
-      livereload: true
-    }))
+      livereload: false
+    }));
 });
 
 gulp.task("prod", ["clean", "less", "psci", "bundle", "concat", "compress", "docs"]);
@@ -156,3 +156,6 @@ gulp.task("debug", ["less", "psci", "bundle", "concatdebug"]);
 gulp.task("turk", ["less", "psci", "bundle", "concatturk", "compress"]);
 gulp.task("default", ["less", "psci", "bundle", "concat"]);
 gulp.task("serve", ["dev", "webserver"])
+
+gulp.watch("css/*", ["serve"]);
+gulp.watch("js/*", ["serve"]);
