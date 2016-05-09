@@ -432,8 +432,8 @@ function updateGoalTextPosition(gs) {
 
 // State stuff
 
-function saveGameState(gs) {
-  var state = { name: Math.floor(new Date().getTime() / 1000), data: gs.listWalls[gs.listWalls.length - 1] };
+function saveGameState(gs, name) {
+  var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
   var states = localStorage.getItem("states");
   if (states === null) { states = []; }
   else { states = JSON.parse(states); }
@@ -541,7 +541,16 @@ document.getElementById("tasks").onchange = function() {
 };
 
 document.getElementById("save_state").onclick = function() {
-  saveGameState(GS);
+  var state_name = document.getElementById("state_name");
+  if (state_name.value.length > 0) {
+    saveGameState(GS, state_name.value);
+    state_name.value = "";
+    state_name.className = "";
+    document.getElementById("save_state").innerHTML = "Save Current State";
+  } else {
+    state_name.className = "active";
+    document.getElementById("save_state").innerHTML = "Save This State";
+  }
 }
 
 document.getElementById("load_state").onclick = function() {
@@ -564,6 +573,20 @@ document.getElementById("load_state").onclick = function() {
     }
   }
 }
+
+function addPoint() {
+  var points = localStorage.getItem("points");
+  if (!points) points = 0;
+  points++;
+  localStorage.setItem("points", points);
+  document.getElementById("game_points").innerHTML = points;
+}
+
+window.addEventListener("load", function() {
+  var points = localStorage.getItem("points");
+  if (!points) points = 0;
+  document.getElementById("game_points").innerHTML = points;
+})
 
 // Query stuff
 
@@ -620,6 +643,7 @@ function acceptOnclick() {
       console.log("WON!");
       GameAction.accept(GS);
       updateHistory(GS);
+      addPoint();
       GS.tutorialLevel++;
       nextTutorial(GS.tutorialLevel);
     } else if (GS.tutorialLevel < 4) {
@@ -631,6 +655,7 @@ function acceptOnclick() {
 	GameAction.accept(GS);
   maintextarea.focus();
   updateHistory(GS);
+  addPoint();
 }
 function metaCommand(meta) {
     maintextarea.value = meta;
@@ -691,7 +716,7 @@ document.getElementById("reset").onclick = function() {
 }
 
 // Tutorial
-window.onload = function() {
+window.addEventListener("load", function() {
   var tutorial_token = localStorage.getItem("tutorial_token");
   if (!tutorial_token) {
     document.getElementById("tutorial").className = "tutorial active";
@@ -703,7 +728,7 @@ window.onload = function() {
   } else {
     document.getElementById("states").className = "states active";
   }
-}
+})
 
 function nextTutorial(i) {
   console.log(i);

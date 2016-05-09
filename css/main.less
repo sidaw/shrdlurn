@@ -490,11 +490,31 @@ img.emojione {
 
 #canvastarget,
 #goalblocks,
-.tutorial-s {
+.tutorial-s, {
   display: none;
   &.active { display: block; }
 }
 
 img.full {
   width: 95%;
+}
+
+#state_name {
+  display: none;
+  &.active { display: inline-block; }
+  font-family: 'Roboto Condensed', sans;
+  font-size: 14px;
+  appearance: none;
+  outline: none;
+  resize: none;
+  width: 100%;
+  border-radius: 5px;
+  padding: 3px 5px;
+  border: solid 3px #969696;
+  margin: 8px 5px;
+
+  &:focus {
+    outline: none;
+    border: solid 3px #000;
+  }
 }
