@@ -143,7 +143,7 @@ b {
     border-radius: 3px;
     outline: none;
     width: 100%;
-    height:70px;
+    height:auto;
     overflow:auto;
 }
 
@@ -156,8 +156,9 @@ b {
     visibility: visible;
     position: absolute;
     top: 230px;
-    left: 230px;
+    left: 215px;
     padding: 1px;
+    text-align: center;
 
     #solved {
         font-size: 35px;
@@ -169,15 +170,15 @@ b {
     overflow: hidden;
 }
 #maintextarea {
-  display: block;
+  display: inline-block;
   font-family: 'Roboto Condensed', sans;
   font-size: @fontSizeInput;
   appearance: none;
   outline: none;
   resize: none;
-  width: @width*0.75-15px;
+  width: @width*0.75-80px;
   border-radius: 5px;
-  padding: 3px;
+  padding: 3px 5px;
   border: solid 3px #969696;
   margin-bottom:12px;
 }
@@ -189,7 +190,8 @@ b {
  width: @width*0.75-15px;
 }
 #statusinfo {
- margin-bottom: 0.5em;
+  margin-top:25px;
+  margin-bottom: 0.5em;
 }
 .controlBox {
     text-align: center;
@@ -206,13 +208,15 @@ b {
 }
 
 .buttons {
+    display: inline-block;
     margin: -3px 0px;
 }
+
 
 .button {
     cursor: pointer;
     margin: 3px;
-    
+
     color: #000;
     font-size: 25px;
     text-decoration: none;
@@ -250,6 +254,16 @@ b {
     height: 30px;
 }
 
+.button--big {
+  width: auto;
+  font-size: 14px;
+}
+
+.button--modal {
+  font-size: 20px;
+  padding: 6px 10px;
+}
+
 .width-30px{
     width: 30px;
     display: inline-block;
@@ -269,6 +283,7 @@ button[ctitle]:hover:after {
   margin-top: 5px;
   white-space: nowrap;
   opacity: 1;
+  z-index: 100;
 }
 
 .divider{
@@ -383,4 +398,123 @@ img.emojione {
 #turker {
   font-size: 15px;
   color: blue;
+}
+
+.command-history-container {
+  width: @width*0.75-20px;
+  height: 200px;
+  box-sizing: border-box;
+}
+
+#command_history {
+  height: 170px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  > div {
+    height: 22px;
+    width: 100%;
+    padding: 2px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: #efefef;
+
+      &:after {
+        content: "⎌ go back to";
+        float: right;
+        padding: 0 5px;
+        background-color: inherit;
+      }
+    }
+
+    &.active {
+      background-color: rgb(0, 105, 217);
+      color: #fff;
+    }
+  }
+}
+
+.states {
+  margin-top: 10px;
+  display: none;
+  &.active { display: block; }
+}
+
+.tutorial {
+  display: none;
+  &.active { display: block; }
+}
+
+.modal-container {
+  position: fixed;
+  background-color: rgba(64,64,64,0.7);
+}
+
+.modal {
+  width: @width - 100px;
+  height: 360px;
+  background-color: #fff;
+  padding: 20px 30px;
+  overflow: hidden;
+  position: relative;
+
+  .half {
+    width: 50%;
+    padding-left: 10px;
+    box-sizing: border-box;
+    float: left;
+  }
+
+  .sticky-botright {
+    position: absolute;
+    right: 30px;
+    bottom: 50px;
+    text-transform: uppercase;
+  }
+}
+
+#tutorial-s1.active,
+#tutorial-s2.active,
+#tutorial-s3.active,
+#tutorial-s4.active,
+#tutorial-s5.active {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#canvastarget,
+#goalblocks,
+.tutorial-s, {
+  display: none;
+  &.active { display: block; }
+}
+
+img.full {
+  width: 95%;
+}
+
+#state_name {
+  display: none;
+  &.active { display: inline-block; }
+  font-family: 'Roboto Condensed', sans;
+  font-size: 14px;
+  appearance: none;
+  outline: none;
+  resize: none;
+  width: 100%;
+  border-radius: 5px;
+  padding: 3px 5px;
+  border: solid 3px #969696;
+  margin: 8px 5px;
+
+  &:focus {
+    outline: none;
+    border: solid 3px #000;
+  }
 }

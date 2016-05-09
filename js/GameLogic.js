@@ -5,10 +5,10 @@ function GameState() {
     this.targetWall = "[[]]";
     this.listWalls = [];
     this.listNBestInd = []; // for score keeping
-    
+
     this.NBest = []; // current answer list returned by sempre
     this.NBestInd = 0;
-    
+
     this.query = "";
     this.taskind = 0;
 
@@ -19,105 +19,110 @@ function GameState() {
     this.log.totalTokens = 0;
     this.log.numScrolls = 0;
     this.log.numStatus = 0;
-    
+
+    this.tutorialMode = false;
+    this.tutorialLevel = 2;
+
     // the only persistent states
     this.sessionId = "deadbeef";
     this.successCounts = {}
-    
+
     this.noAnswer = function() {
-	return this.NBest==undefined || this.NBest.length == 0 || this.NBest.length == undefined
+	     return this.NBest==undefined || this.NBest.length == 0 || this.NBest.length == undefined
     }
     this.noQuery = function() {
-	return this.query==undefined || this.query.trim().length==0
+	     return this.query==undefined || this.query.trim().length==0
     }
     this.currentCandidate = function() {
-	return this.NBest[this.NBestInd]
+	     return this.NBest[this.NBestInd]
     }
     this.resetNBest = function() {
-	this.NBest = []; // current answer list returned by sempre
-	this.NBestInd = 0;
-    }
-    
-    this.basicStatusMessage = function (mode) {
-	var def =  ""
-	if (this.query) {
-	    
-	}
-	if (mode == undefined)
-	    return def;
-	else if (mode == "exec") {
-	    if (this.query.trim() == "")
-		return "??"
-	    return "executed: " + this.query
-	} else if (mode == "accept") {
-	    if (this.noAnswer())
-		return "nothing to accept"
-	    return this.query + " # " + (this.NBestInd+1) + ": ✓"
-	}
-	else
-	    return mode + ', ' + def;
-    }
-    
-    this.saveGameState = function() {
+	     this.NBest = []; // current answer list returned by sempre
+       this.NBestInd = 0;
     }
 
-    this.loadGameState = function() {
+    this.basicStatusMessage = function (mode) {
+      var def =  ""
+      if (this.query) {
+
+      }
+      if (mode == undefined)
+          return def;
+      else if (mode == "exec") {
+          if (this.query.trim() == "")
+      	return "??"
+          return "executed: " + this.query
+      } else if (mode == "accept") {
+          if (this.noAnswer())
+      	return "nothing to accept"
+          return this.query + " # " + (this.NBestInd+1) + ": ✓"
+      }
+      else
+          return mode + ', ' + def;
+    }
+
+    this.saveGameState = function() { }
+
+    this.loadGameState = function() { }
+
+    this.setPastWall = function(wall) {
+      this.pastWall = wall;
     }
 
     this.setCurrentWall = function() {
-	if (this.NBest.length>0)
-	    this.currentWall = this.NBest[this.NBestInd].value;
-	else
-	    this.currentWall = '[[]]';
+    	if (this.NBest.length>0)
+    	    this.currentWall = this.NBest[this.NBestInd].value;
+    	else
+    	    this.currentWall = '[[]]';
     }
-    
+
     this.getCurrentWall = function() {
-	if ( this.currentWall && this.currentWall.length > 0)
-	{
-	    return this.currentWall;
-	}
-	return '[[]]';
+    	if ( this.currentWall && this.currentWall.length > 0)
+    	{
+    	    return this.currentWall;
+    	}
+    	return '[[]]';
     }
     this.nextIfPossible = function() {
-	if (this.noAnswer()) return false;
-	if (this.NBestInd < this.NBest.length-1) {
-	    this.NBestInd++;
-	    this.currentWall = this.NBest[this.NBestInd].value;
-	    return true;
-	}
-	return false;
+    	if (this.noAnswer()) return false;
+    	if (this.NBestInd < this.NBest.length-1) {
+    	    this.NBestInd++;
+    	    this.currentWall = this.NBest[this.NBestInd].value;
+    	    return true;
+    	}
+    	return false;
     }
     this.prevIfPossible = function() {
-	if (this.noAnswer()) return false;
-	if (this.NBestInd > 0) {
-	    this.NBestInd--;
-	    this.currentWall = this.NBest[this.NBestInd].value;
-	    return true;
-	}
-	return false;
+    	if (this.noAnswer()) return false;
+    	if (this.NBestInd > 0) {
+    	    this.NBestInd--;
+    	    this.currentWall = this.NBest[this.NBestInd].value;
+    	    return true;
+    	}
+    	return false;
     }
 
     this.getStandardQuery = function() {
-	return {q: this.query, sessionId:this.sessionId}
+	    return {q: this.query, sessionId:this.sessionId}
     }
 
     this.getSuccessCount = function(levelid) {
-	if (this.successCounts[levelid] == undefined)
-	    return 0;
-	return this.successCounts[levelid]
+    	if (this.successCounts[levelid] == undefined)
+    	    return 0;
+    	return this.successCounts[levelid]
     }
     this.incrementSuccessCount = function(levelid) {
-	if (this.successCounts[levelid] == undefined)
-	    this.successCounts[levelid] = 1;
-	else {
-	    this.successCounts[levelid] = parseInt(this.successCounts[levelid])+1;
-	}
-	util.setStore("successCounts", this.successCounts)
-	util.setStore("extraBits", this.extraBits)
+    	if (this.successCounts[levelid] == undefined)
+    	    this.successCounts[levelid] = 1;
+    	else {
+    	    this.successCounts[levelid] = parseInt(this.successCounts[levelid])+1;
+    	}
+    	util.setStore("successCounts", this.successCounts)
+    	util.setStore("extraBits", this.extraBits)
     }
     this.effectiveStepsNumber = function() {
-	if (this.noAnswer()) return this.listWalls.length-1;
-	else return this.listWalls.length;
+    	if (this.noAnswer()) return this.listWalls.length-1;
+    	else return this.listWalls.length;
     }
 }
 
@@ -129,20 +134,19 @@ function updateCanvas(gs) {
 
     var wlen = gs.listWalls.length;
     var maxWalls = configs.levels[gs.taskind].maxSteps;
-    
+
     // cut
     if (wlen <= maxWalls) {
 	walls = walls.concat(gs.listWalls)
     } else { // shift left when the sequences gets too long
 	walls = walls.concat(gs.listWalls.slice(wlen - maxWalls));
     }
-    
+
     walls.push(gs.getCurrentWall());
-    
+
     for (var i=0; i < maxWalls- wlen; i++)
 	walls.push('[[]]');
     PSMain.renderJSON('['+walls.join(',')+']')();
-    PSMain.renderTargetJSON('[' + gs.targetWall + ']')();
     // updateGoalTextPosition(gs);
     updateFormula(gs);
     updateReaction(gs);
@@ -156,7 +160,7 @@ function newWall(gs) {
     gs.query = '';
     gs.listWalls = [];
     gs.listNBestInd = [];
-    
+
     sempre.sempreQuery(cmds, function (jsonstr) {
 	if (jsonstr == "ERR_CONNECTION_REFUSED") {
 	    updateStatus("our server might be down...")
@@ -165,9 +169,10 @@ function newWall(gs) {
 	var jsresp = JSON.parse(jsonstr)['exValue'];
 	var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
 	gs.listWalls.push(wall);
-	gs.targetWall = wall;
+	//gs.targetWall = wall;
 	gs.setCurrentWall();
 	updateCanvas(gs);
+  wipeHistory(gs, wall);
     })
 }
 
@@ -193,7 +198,7 @@ var GameAction = {
 	});
     },
     _godScroll: function(gs) { // mess with the nbest list, and put the right answer earlier when enabled.
-	
+
     },
     _simpleaccept: function(gs) {
 	sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
@@ -215,7 +220,7 @@ var GameAction = {
 	var cmds = {q:contextcommand, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonrespcontext) {
 	    GameAction._candidates(gs);
-	});	
+	});
     },
     candidates: function(gs) {
 	updateStatus("use ↓ and ↑ to scroll, ⎌ to undo, and ✓ to take the action.")
@@ -227,29 +232,30 @@ var GameAction = {
 	});
     },
     undo: function(gs) {
-	if (gs.noAnswer()) { // not in scrolling mode
-	    gs.resetNBest();
-	    gs.setCurrentWall();
-	    if ( gs.listWalls.length == 1) {
-		newWall(gs)
-		updateStatus("⎌: already at the start, got a new one instead.")
-	    } else {
-		// else pop the top and set it as context
-		gs.listWalls.pop();
-		gs.listNBestInd.pop();
-		if ( gs.listWalls.length == 1)
-		    updateStatus("⎌: undo again for a new one.")
-		else
-		    updateStatus("⎌: at the previous one")
-		GameAction.checkAnswer(gs)
-		updateCanvas(gs);
-	    }
-	} else { // scrolling
-	    gs.resetNBest();
-	    gs.setCurrentWall();
-	    updateStatus("⎌: cleared current actions")
-	    updateCanvas(gs);
-	}
+    	if (gs.noAnswer()) { // not in scrolling mode
+    	    gs.resetNBest();
+    	    gs.setCurrentWall();
+    	    if ( gs.listWalls.length == 1) {
+    		newWall(gs)
+    		updateStatus("⎌: already at the start, got a new one instead.")
+    	    } else {
+    		// else pop the top and set it as context
+    		gs.listWalls.pop();
+    		gs.listNBestInd.pop();
+    		if ( gs.listWalls.length == 1)
+    		    updateStatus("⎌: undo again for a new one.")
+    		else
+    		    updateStatus("⎌: at the previous one")
+    		GameAction.checkAnswer(gs)
+    		updateCanvas(gs);
+        highlightHistory(gs, gs.listWalls.length);
+    	    }
+    	} else { // scrolling
+    	    gs.resetNBest();
+    	    gs.setCurrentWall();
+    	    updateStatus("⎌: cleared current actions")
+    	    updateCanvas(gs);
+    	}
     },
     nextLevel: function(gs) { // either the next random instance, or the next new level
 	GameAction._simpleaccept(gs);
@@ -260,14 +266,14 @@ var GameAction = {
 	showNextButton(false);
 	var curSucc = gs.getSuccessCount( configs.levels[gs.taskind].id );
 	var minSucc = configs.levels[gs.taskind].minSuccess;
-	
+
 	if (gs.getSuccessCount( configs.levels[gs.taskind].id ) < configs.levels[gs.taskind].minSuccess) {
 	    newWall(gs);
 	    updateStatus("you did it! solve this puzzle " + (minSucc - curSucc) + " more times to advance.");
 	    popTasks();
 	    return false;
 	}
-	    
+
 	if (gs.taskind+1 < configs.levels.length) {
 	    gs.taskind++;
 	    newWall(gs);
@@ -279,7 +285,7 @@ var GameAction = {
 	    popTasks();
 	    return false;
 	}
-	
+
     },
     prev: function(gs) {
 	if (gs.noAnswer()) {
@@ -339,7 +345,7 @@ var GameAction = {
 	    updateCanvas(gs);
 	} else {
 	    updateStatus("✓: can't accept nothing, say something first");
-	}	
+	}
     },
     checkAnswer: function(gs) {
 	if (gs.currentWall == gs.targetWall) {
@@ -359,7 +365,7 @@ function showNextButton(show) {
     } else {
 	document.getElementById("metaactions").style.visibility = "visible";
     }
-} 
+}
 function logh(strlog) {document.getElementById("history").innerHTML += strlog; }
 function updateStatus(strstatus)
 {
@@ -424,40 +430,170 @@ function updateGoalTextPosition(gs) {
     g.style.left=(initx + (configs.levels[gs.taskind].maxSteps+1)*space*1.717/2)+"px";
 }
 
+// State stuff
+
+function saveGameState(gs, name) {
+  var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
+  var states = localStorage.getItem("states");
+  if (states === null) { states = []; }
+  else { states = JSON.parse(states); }
+  states.push(state);
+  localStorage.setItem("states", JSON.stringify(states));
+  popTasks();
+}
+
+function loadGameState(gs, newState) {
+  gs.listWalls = [];
+  gs.listWalls.push(newState.data);
+  updateCanvas(gs);
+  wipeHistory(gs, newState.data);
+}
+
+function addElemToHistory(gs, history, text) {
+    var elem = document.createElement("div");
+    elem.setAttribute("data-index", gs.listWalls.length - 1);
+    elem.setAttribute("data-walls", gs.listWalls[gs.listWalls.length - 1]);
+    elem.innerHTML = text;
+    history.insertBefore(elem, history.firstChild);
+    elem.onclick = function() {
+      revertHistory(gs, elem.getAttribute("data-index"));
+    }
+}
+
+function updateHistory(gs) {
+  var history = document.getElementById("command_history");
+
+  for (var child = history.getElementsByTagName("div")[0]; !child || child.getAttribute("data-index") != gs.listWalls.length - 2; child = history.getElementsByTagName("div")[0]) {
+    if (!child) break;
+    history.removeChild(child);
+  }
+  highlightHistory(gs, -1);
+
+  addElemToHistory(gs, history, gs.query);
+}
+
+function wipeHistory(gs, wall) {
+  var history = document.getElementById("command_history");
+  history.innerHTML = "";
+
+  var elem = document.createElement("div");
+  elem.setAttribute("data-index", 0);
+  elem.setAttribute("data-walls", wall);
+  elem.innerHTML = "initial";
+  history.appendChild(elem);
+
+  elem.onclick = function() {
+    revertHistory(gs, elem.getAttribute("data-index"));
+  }
+}
+
+function highlightHistory(gs, index) {
+  var elems = document.querySelectorAll("#command_history > div");
+  for (var i = 0; i < elems.length; i++) {
+    if (elems[i].getAttribute("data-index") == index) {
+      elems[i].className = "active";
+    } else {
+      elems[i].className = "";
+    }
+  }
+}
+
+function revertHistory(gs, index) {
+  var elem;
+  if (index === "undo") {
+    elem = document.querySelectorAll("#command_history > div")[1];
+    index = elem.getAttribute("data-index");
+  } else {
+    elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
+  }
+
+  gs.listWalls = gs.listWalls.slice(0, index);
+  gs.listWalls.push(elem.getAttribute("data-walls"));
+  updateCanvas(gs);
+  highlightHistory(gs, index);
+}
+
 // DOM functions, and events
 // consider retriving this list from sempre
 function popTasks() {
-    var puzzles = configs.puzzles;
     var ps = document.getElementById("tasks");
     ps.options.length = 0;
-    for (var l in configs.levels) {
-	var p1 = document.createElement("option");
-	var numSucc = GS.getSuccessCount(configs.levels[l].id);
-	var minSucc = configs.levels[l].minSuccess;
-	var solved = numSucc >= minSucc? ' ✓' : '';
-	p1.text =  (parseInt(l)+1) + " " + configs.levels[l].name
-	    + " ({numSucc}/{minSucc})" 
-	    ._format({numSucc:numSucc, minSucc:minSucc}) + solved
-	p1.id = "level-" + configs.levels[l].id;
-	
-	ps.appendChild(p1);
+    console.log(JSON.parse(localStorage.getItem("states")));
+    var states = configs.levels.concat(JSON.parse(localStorage.getItem("states")));
+    for (var l in states) {
+      if (!states[l]) continue;
+  	  var p1 = document.createElement("option");
+      p1.value = states[l].name;
+    	p1.text =  (parseInt(l)+1) + " " + states[l].name;
+    	p1.id = "state-" + states[l].id;
+    	ps.appendChild(p1);
     }
     ps.selectedIndex = GS.taskind;
 }
 
 document.getElementById("tasks").onchange = function() {
-    var t = document.getElementById("tasks");
+    // var t = document.getElementById("tasks");
+    // var taskstr = configs.levels[t.selectedIndex].name;
+    // GS.taskind = t.selectedIndex;
+    // GameAction.checkAnswer(GS);
+    // newWall(GS);
+    // updateStatus("selected level {task}"._format({task:taskstr}));
+};
+
+document.getElementById("save_state").onclick = function() {
+  var state_name = document.getElementById("state_name");
+  if (state_name.value.length > 0) {
+    saveGameState(GS, state_name.value);
+    state_name.value = "";
+    state_name.className = "";
+    document.getElementById("save_state").innerHTML = "Save Current State";
+  } else {
+    state_name.className = "active";
+    document.getElementById("save_state").innerHTML = "Save This State";
+  }
+}
+
+document.getElementById("load_state").onclick = function() {
+  var t = document.getElementById("tasks");
+  var name = t.options[t.selectedIndex].value;
+  if (name == "random" || name == "empty") {
     var taskstr = configs.levels[t.selectedIndex].name;
     GS.taskind = t.selectedIndex;
     GameAction.checkAnswer(GS);
     newWall(GS);
     updateStatus("selected level {task}"._format({task:taskstr}));
-};
+  } else {
+    var states = JSON.parse(localStorage.getItem("states"));
+    updateStatus("selected state {state}"._format({state:name}));
+    for (var i = 0; i < states.length; i++) {
+      if (states[i].name == name) {
+        loadGameState(GS, states[i]);
+        break;
+      }
+    }
+  }
+}
+
+function addPoint() {
+  var points = localStorage.getItem("points");
+  if (!points) points = 0;
+  points++;
+  localStorage.setItem("points", points);
+  document.getElementById("game_points").innerHTML = points;
+}
+
+window.addEventListener("load", function() {
+  var points = localStorage.getItem("points");
+  if (!points) points = 0;
+  document.getElementById("game_points").innerHTML = points;
+})
+
+// Query stuff
 
 function runCurrentQuery(gs) {
     var querystr = document.getElementById("maintextarea").value.trim()
     document.getElementById("maintextarea").value = ''
-    
+
     if (querystr.length>0) {
 	gs.log.totalTokens += querystr.split(" ").length;
 	gs.log.numQueries++;
@@ -466,7 +602,7 @@ function runCurrentQuery(gs) {
 	    && gs.effectiveStepsNumber() >= configs.levels[gs.taskind].maxSteps) {
 	    updateStatus("entered \"" + querystr +"\", but used too many steps, ⎌ first.");
 	} else {
-	    
+
 	    logh(gs.numQueries + ' ' + querystr + '; ')
 	    gs.query = querystr;
 	    GameAction.candidates(gs);
@@ -481,10 +617,10 @@ document.getElementById("dobutton").onclick = function() {
     runCurrentQuery(GS);
     maintextarea.focus();
 };
-document.getElementById("undobutton").onclick = function() {
-    GameAction.undo(GS);
-    maintextarea.focus();
-};
+// document.getElementById("undobutton").onclick = function() {
+//     GameAction.undo(GS);
+//     maintextarea.focus();
+// };
 document.getElementById("prevbutton").onclick = function() {
     GameAction.prev(GS);
     maintextarea.focus();
@@ -495,22 +631,40 @@ document.getElementById("nextbutton").onclick = function() {
 };
 
 function acceptOnclick() {
-    if (GameAction.checkAnswer(GS)) {
-	GameAction.nextLevel(GS)
-	ga('send', 'event', "custom", "passedlevel", GS.taskInd);
-    } else {
-	GameAction.accept(GS);
+  //   if (GameAction.checkAnswer(GS)) {
+	// GameAction.nextLevel(GS)
+	// ga('send', 'event', "custom", "passedlevel", GS.taskInd);
+  //   } else {
+
+  if (GS.tutorialMode) {
+    console.log(GS.currentWall);
+    console.log(GS.targetWall);
+    if (GS.currentWall == GS.targetWall) {
+      console.log("WON!");
+      GameAction.accept(GS);
+      updateHistory(GS);
+      addPoint();
+      GS.tutorialLevel++;
+      nextTutorial(GS.tutorialLevel);
+    } else if (GS.tutorialLevel < 4) {
+      alert("Woops! That's not exactly right. Try again.");
+      return;
     }
-    maintextarea.focus();
+  }
+
+	GameAction.accept(GS);
+  maintextarea.focus();
+  updateHistory(GS);
+  addPoint();
 }
 function metaCommand(meta) {
     maintextarea.value = meta;
     maintextarea.focus();
 }
 
-document.getElementById("acceptbutton").onclick = function() {
-    acceptOnclick()
-};
+// document.getElementById("acceptbutton").onclick = function() {
+//     acceptOnclick()
+// };
 document.getElementById("flyingaccept").onclick = function() {
     metaCommand("!accept")
 };
@@ -546,7 +700,7 @@ document.onkeydown = function(e) {
     } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
 	runCurrentQuery(GS); return false;
     } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
-	GameAction.undo(GS); return false;
+	     revertHistory(GS, "undo"); return false;
     } return true;
 };
 
@@ -561,4 +715,61 @@ document.getElementById("reset").onclick = function() {
     document.getElementById("maintextarea").focus();
 }
 
+// Tutorial
+window.addEventListener("load", function() {
+  var tutorial_token = localStorage.getItem("tutorial_token");
+  if (!tutorial_token) {
+    document.getElementById("tutorial").className = "tutorial active";
+    document.getElementById("canvastarget").className = "active";
+    document.getElementById("goalblocks").className = "active";
+    document.getElementById("states").className = "states";
+    PS.Main.renderTargetJSON("[[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]]")();
+    GS.tutorialMode = true;
+  } else {
+    document.getElementById("states").className = "states active";
+  }
+})
 
+function nextTutorial(i) {
+  console.log(i);
+  document.getElementById("tutorial-s" + (i - 1)).className = "tutorial-s";
+  document.getElementById("tutorial-s" + i).className = "modal-container tutorial-s active";
+}
+
+document.getElementById("skip_tutorial").onclick = function() {
+  localStorage.setItem("tutorial_token", "true");
+  document.getElementById("tutorial").className = "tutorial";
+}
+
+document.getElementById("start_tutorial").onclick = function() { nextTutorial(2); }
+
+document.getElementById("next_tutorial1").onclick = function() {
+  document.getElementById("tutorial-s2").className = "tutorial-s";
+  document.getElementById("maintextarea").focus();
+  var taskstr = configs.levels[1].name;
+  GS.taskind = 1;
+  newWall(GS);
+  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
+}
+
+document.getElementById("next_tutorial2").onclick = function() {
+  document.getElementById("tutorial-s3").className = "tutorial-s";
+  document.getElementById("maintextarea").focus();
+  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
+}
+
+document.getElementById("next_tutorial3").onclick = function() {
+  document.getElementById("tutorial-s4").className = "tutorial-s";
+  document.getElementById("maintextarea").focus();
+  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
+}
+
+document.getElementById("finish_tutorial").onclick = function() {
+  localStorage.setItem("tutorial_token", true);
+  document.getElementById("tutorial").className = "tutorial";
+  document.getElementById("canvastarget").className = "";
+  document.getElementById("goalblocks").className = "";
+  document.getElementById("states").className = "";
+  GS.tutorialMode = false;
+  document.getElementById("states").className = "states active";
+}

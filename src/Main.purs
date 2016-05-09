@@ -46,7 +46,7 @@ traverseWithIndex_ :: forall a b m. (Applicative m) => (Int -> a -> m b) -> (Lis
 traverseWithIndex_ f xs = go xs 0
     where go Nil _         = return unit
           go (Cons x xs) i = f i x *> go xs (i + 1)
-          
+
 xPosition :: Number -> Number -> Number
 -- xPosition x y = (x+y*(spacing))
 xPosition x y = x
@@ -106,7 +106,7 @@ renderJSON jsonwalls = do
     -- print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
     -- modifyGameStateAndRender true (mod cmdsequence)
     --  where mod cmdsequence gs = gs { levelState = SM.insert gs.currentLevel cmdsequence gs.levelState }
-    
+
 renderTargetJSON :: String -> App
 renderTargetJSON jsonwalls = do
     doc <- getDocument
@@ -116,7 +116,7 @@ renderTargetJSON jsonwalls = do
     setIsomerConfig isomer 12.0 5.0 160.0
     renderWalls isomer $ jsonToWalls jsonwalls
     print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
-    
+
 main :: App
 main = do
     renderJSON "[[[]]]"
