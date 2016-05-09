@@ -13,10 +13,12 @@
 <div id="container">
 <div id="panel">
        <canvas id="canvastarget" width="200" height="200"></canvas>
-  <span>Saved States</span>
-	<select id="tasks" size="5"></select>
-  <button class="button button--big" id="load_state">Load Selected State</button>
-  <button class="button button--big" id="save_state">Save Current State</button>
+  <div id="states" class="states active">
+    <p class="states-title">Saved States</p>
+  	<select id="tasks" size="5"></select>
+    <button class="button button--big" id="load_state">Load Selected State</button>
+    <button class="button button--big" id="save_state">Save Current State</button>
+  </div>
 	<p/>
 	<div id="shortcuts">
 	<b>keyboard shortcuts:</b><br/>
@@ -53,7 +55,7 @@
 
       <div id="startblocks">before</div>
       <div id="currentblocks">current</div>
-      <div id="goalblocks">after</div>
+      <div id="goalblocks">target</div>
 
       <canvas id="canvas" width="1100" height="500"></canvas>
       <div id="chat" style="center">
@@ -89,7 +91,7 @@
 	  <a href="http://goo.gl/forms/Oxl09GJ9f3"
 	  target="_blank">comments</a>
 	</div> -->
-	<div id="turker" style="visibility:hidden;margin-top:2em">
+	<div id="turker" style="display:none;margin-top:2em">
 	  <hr>
 	  <p>Dear Turker, please click
 	  the button below after you are done, and paste the code back
@@ -109,6 +111,76 @@
 	  <div id="formula"> <b>No action</b> </div>
 	</div>
 	</div>
+      </div>
+    </div>
+
+    <div class="tutorial" id="tutorial">
+      <div class="modal-container tutorial-s active" id="tutorial-s1">
+        <div class="modal">
+          <h1>Welcome to SHRDLURN</h1>
+          <hr>
+          <div class="half">
+            <p>
+              In homage to the seminal work of Winograd (1972) and inspired by Wittgenstein's language games, SHRDLURN is an attempt to teach a computer the nuance of human language. But, we need your help to train and teach the computer. In return, you'll be able to interact and engage with a virtual world using nothing but natural language.
+            </p>
+            <p>
+              Given building blocks, SHRDLURN allows you to build anything you want on the setting, instructing the computer with simple and nuanced natural language.
+            </p>
+            <p>
+              <a href="" id="skip_tutorial">skip the tutorial</a>
+            </p>
+          </div>
+          <div class="half">
+            <img src="pyramid.png" />
+            <button class="button button--big button--modal sticky-botright" id="start_tutorial">Let's Get Started &rarr;</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-container tutorial-s" id="tutorial-s2">
+        <div class="modal">
+          <h1>Let's get started by making a pyramid.</h1>
+          <hr><br>
+          <div class="half">
+            <img class="full" src="pyramid.png" />
+          </div>
+          <div class="half">
+            <p>
+              To do so, you'll instruct the computer one step at a time.
+            </p>
+            <p>
+              Instruct the computer to add yellow blocks on the first layer by typing "add yellow" in the command prompt. Hit enter to execute and get the computer's interpretation. The computer's interpretation of your command will show up on the right under current. To accept it, hit shift-enter (or click ✓).
+            </p>
+            <button class="button button--big button--modal sticky-botright" id="next_tutorial1">Start</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-container tutorial-s" id="tutorial-s3">
+        <div class="modal">
+          <h1>Great job!</h1>
+          <hr><br>
+          <p>Let's add the next layer of orange blocks by entering "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" as the command.</p>
+          <button class="button button--big button--modal sticky-botright" id="next_tutorial2">Next</button>
+        </div>
+      </div>
+      <div class="modal-container tutorial-s" id="tutorial-s4">
+        <div class="modal">
+          <h1>Great job again!</h1>
+          <hr><br>
+          <p>Let's finish this up by adding the next two layers. I think you can figure out the right commands, though! Try to see if you can finish the pyramid. The next layer is "red", and the layer after that is "cyan".</p>
+          <button class="button button--big button--modal sticky-botright" id="next_tutorial3">Next</button>
+        </div>
+      </div>
+      <div class="modal-container tutorial-s" id="tutorial-s5">
+        <div class="modal">
+          <h1>You've done it! You completed the tutorial.</h1>
+          <hr>
+          <div class="half">
+            <p>Congratulations! Now, you can start building whatever structures you want using natural language.</p>
+            <p>Here are some handy things to know. If the computer doesn't immediately understand exactly what you want, try scrolling through the options using either the arrow keys or the &darr; button. Or, to help train the computer to understand you better, click the "~" button to try another phrasing to say the same thing you desired. Or, click the "..." button to describe what the computer thought you meant instead.</p>
+            <p>Have fun! P.S. You get more points the more structures you create!</p>
+          </div>
+          <button class="button button--big button--modal sticky-botright" id="finish_tutorial">Start building</button>
+        </div>
       </div>
     </div>
 

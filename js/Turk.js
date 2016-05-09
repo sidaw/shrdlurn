@@ -85,7 +85,7 @@ turk.token = function (gs) {
     var token = turk.XORCipher.encode(turk.page, JSON.stringify(tokeninfo))
     return token;
 };
-document.getElementById("turker").style.visibility="visible";
+document.getElementById("turker").style.display="block";
 turk.test = function(){return turk.XORCipher.decode(turk.page, turk.token(GS))}
 
 document.getElementById("turkbutton").onclick = function() {
@@ -102,7 +102,7 @@ document.getElementById("turkbutton").onclick = function() {
 	turkmsg.innerHTML = "it seems you've made some progress, and here is the code, but we are likely to reject your answer. keep trying!"
     } else {
 	turkmsg.innerHTML = "you will only get the code if you are done or made sufficient progress."
-    }	
+    }
 }
 
 // jack the simpleid function when mturkid is present

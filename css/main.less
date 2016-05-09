@@ -259,6 +259,11 @@ b {
   font-size: 14px;
 }
 
+.button--modal {
+  font-size: 20px;
+  padding: 6px 10px;
+}
+
 .width-30px{
     width: 30px;
     display: inline-block;
@@ -428,4 +433,68 @@ img.emojione {
       color: #fff;
     }
   }
+}
+
+.states {
+  margin-top: 10px;
+  display: none;
+  &.active { display: block; }
+}
+
+.tutorial {
+  display: none;
+  &.active { display: block; }
+}
+
+.modal-container {
+  position: fixed;
+  background-color: rgba(64,64,64,0.7);
+}
+
+.modal {
+  width: @width - 100px;
+  height: 360px;
+  background-color: #fff;
+  padding: 20px 30px;
+  overflow: hidden;
+  position: relative;
+
+  .half {
+    width: 50%;
+    padding-left: 10px;
+    box-sizing: border-box;
+    float: left;
+  }
+
+  .sticky-botright {
+    position: absolute;
+    right: 30px;
+    bottom: 50px;
+    text-transform: uppercase;
+  }
+}
+
+#tutorial-s1.active,
+#tutorial-s2.active,
+#tutorial-s3.active,
+#tutorial-s4.active,
+#tutorial-s5.active {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#canvastarget,
+#goalblocks,
+.tutorial-s {
+  display: none;
+  &.active { display: block; }
+}
+
+img.full {
+  width: 95%;
 }
