@@ -44,6 +44,11 @@
 	  ctitle="describe the current action">...</button>
 	<button class="button button--solved" id="paraphrase"
 	ctitle="provide another way to say this">~</button>
+  <br>
+  <button class="button button--solved" id="nextbutton"
+  ctitle="show next action (down key)">&darr; </button>
+  <button class="button button--solved (up key)" id="prevbutton"
+  ctitle="show previous action">&uarr; </button>
       </div>
 
       <div id="startblocks">before</div>
@@ -51,15 +56,15 @@
       <div id="goalblocks">after</div>
 
       <canvas id="canvas" width="1100" height="500"></canvas>
-      <div id="chat" style=center>
+      <div id="chat" style="center">
 	<div id="statusinfo">
 	  &nbsp; <span id="reaction"></span>
 	<span id="currentcmd"><b>No command</b> </span>,
 	<span id="status">type one!</span></div>
-	<input type="text" id="maintextarea" placeholder=" type a command here"></input>
+	<input type="text" id="maintextarea" placeholder="type a command here"  />
 	<div class="buttons">
 	  <button class="button" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
-	  <button class="button" id="undobutton" ctitle="undo (ctrl-z)">&#x238c;</button>
+	  <!-- <button class="button" id="undobutton" ctitle="undo (ctrl-z)">&#x238c;</button>
 	  <div class="divider"></div>
 
 	  <button class="button button--train" id="nextbutton"
@@ -67,17 +72,23 @@
 	  <button class="button button--train (up key)" id="prevbutton"
 	  ctitle="show previous action">&uarr; </button>
 	  <button class="button button--train" id="acceptbutton"
-	  ctitle="take this action (shift-enter)"> &#x2713; </button>
+	  ctitle="take this action (shift-enter)"> &#x2713; </button> -->
 	  </div>
+    <fieldset class="command-history-container">
+      <legend>Command History</legend>
+      <div id="command_history">
+
+      </div>
+    </fieldset>
 	  <p/>
-	<div id="helptext">
+	<!-- <div id="helptext">
 	  Teach the computer.
 	  <br/>
 	  <a href="https://github.com/sidaw/cubesem/blob/master/README.md"
 	  target="_blank">help</a>,
 	  <a href="http://goo.gl/forms/Oxl09GJ9f3"
 	  target="_blank">comments</a>
-	</div>
+	</div> -->
 	<div id="turker" style="visibility:hidden;margin-top:2em">
 	  <hr>
 	  <p>Dear Turker, please click

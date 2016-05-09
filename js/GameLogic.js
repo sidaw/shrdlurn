@@ -170,6 +170,7 @@ function newWall(gs) {
 	gs.targetWall = wall;
 	gs.setCurrentWall();
 	updateCanvas(gs);
+  wipeHistory(gs, wall);
     })
 }
 
@@ -245,6 +246,7 @@ var GameAction = {
     		    updateStatus("⎌: at the previous one")
     		GameAction.checkAnswer(gs)
     		updateCanvas(gs);
+        highlightHistory(gs, gs.listWalls.length);
     	    }
     	} else { // scrolling
     	    gs.resetNBest();
@@ -442,6 +444,71 @@ function loadGameState(gs, newState) {
   gs.listWalls = [];
   gs.listWalls.push(newState.data);
   updateCanvas(gs);
+  wipeHistory(gs, newState.data);
+}
+
+function addElemToHistory(gs, history, text) {
+    var elem = document.createElement("div");
+    elem.setAttribute("data-index", gs.listWalls.length - 1);
+    elem.setAttribute("data-walls", gs.listWalls[gs.listWalls.length - 1]);
+    elem.innerHTML = text;
+    history.insertBefore(elem, history.firstChild);
+    elem.onclick = function() {
+      revertHistory(gs, elem.getAttribute("data-index"));
+    }
+}
+
+function updateHistory(gs) {
+  var history = document.getElementById("command_history");
+
+  for (var child = history.getElementsByTagName("div")[0]; !child || child.getAttribute("data-index") != gs.listWalls.length - 2; child = history.getElementsByTagName("div")[0]) {
+    if (!child) break;
+    history.removeChild(child);
+  }
+  highlightHistory(gs, -1);
+
+  addElemToHistory(gs, history, gs.query);
+}
+
+function wipeHistory(gs, wall) {
+  var history = document.getElementById("command_history");
+  history.innerHTML = "";
+
+  var elem = document.createElement("div");
+  elem.setAttribute("data-index", 0);
+  elem.setAttribute("data-walls", wall);
+  elem.innerHTML = "initial";
+  history.appendChild(elem);
+
+  elem.onclick = function() {
+    revertHistory(gs, elem.getAttribute("data-index"));
+  }
+}
+
+function highlightHistory(gs, index) {
+  var elems = document.querySelectorAll("#command_history > div");
+  for (var i = 0; i < elems.length; i++) {
+    if (elems[i].getAttribute("data-index") == index) {
+      elems[i].className = "active";
+    } else {
+      elems[i].className = "";
+    }
+  }
+}
+
+function revertHistory(gs, index) {
+  var elem;
+  if (index === "undo") {
+    elem = document.querySelectorAll("#command_history > div")[1];
+    index = elem.getAttribute("data-index");
+  } else {
+    elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
+  }
+
+  gs.listWalls = gs.listWalls.slice(0, index);
+  gs.listWalls.push(elem.getAttribute("data-walls"));
+  updateCanvas(gs);
+  highlightHistory(gs, index);
 }
 
 // DOM functions, and events
@@ -496,6 +563,8 @@ document.getElementById("load_state").onclick = function() {
   }
 }
 
+// Query stuff
+
 function runCurrentQuery(gs) {
     var querystr = document.getElementById("maintextarea").value.trim()
     document.getElementById("maintextarea").value = ''
@@ -523,18 +592,18 @@ document.getElementById("dobutton").onclick = function() {
     runCurrentQuery(GS);
     maintextarea.focus();
 };
-document.getElementById("undobutton").onclick = function() {
-    GameAction.undo(GS);
-    maintextarea.focus();
-};
-document.getElementById("prevbutton").onclick = function() {
-    GameAction.prev(GS);
-    maintextarea.focus();
-};
-document.getElementById("nextbutton").onclick = function() {
-    GameAction.next(GS);
-    maintextarea.focus();
-};
+// document.getElementById("undobutton").onclick = function() {
+//     GameAction.undo(GS);
+//     maintextarea.focus();
+// };
+// document.getElementById("prevbutton").onclick = function() {
+//     GameAction.prev(GS);
+//     maintextarea.focus();
+// };
+// document.getElementById("nextbutton").onclick = function() {
+//     GameAction.next(GS);
+//     maintextarea.focus();
+// };
 
 function acceptOnclick() {
   //   if (GameAction.checkAnswer(GS)) {
@@ -542,17 +611,19 @@ function acceptOnclick() {
 	// ga('send', 'event', "custom", "passedlevel", GS.taskInd);
   //   } else {
 	GameAction.accept(GS);
+
   //  }
     maintextarea.focus();
+  updateHistory(GS);
 }
 function metaCommand(meta) {
     maintextarea.value = meta;
     maintextarea.focus();
 }
 
-document.getElementById("acceptbutton").onclick = function() {
-    acceptOnclick()
-};
+// document.getElementById("acceptbutton").onclick = function() {
+//     acceptOnclick()
+// };
 document.getElementById("flyingaccept").onclick = function() {
     metaCommand("!accept")
 };
@@ -588,7 +659,7 @@ document.onkeydown = function(e) {
     } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
 	runCurrentQuery(GS); return false;
     } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
-	GameAction.undo(GS); return false;
+	     revertHistory(GS, "undo"); return false;
     } return true;
 };
 

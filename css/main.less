@@ -143,7 +143,7 @@ b {
     border-radius: 3px;
     outline: none;
     width: 100%;
-    height:70px;
+    height:auto;
     overflow:auto;
 }
 
@@ -156,8 +156,9 @@ b {
     visibility: visible;
     position: absolute;
     top: 230px;
-    left: 230px;
+    left: 215px;
     padding: 1px;
+    text-align: center;
 
     #solved {
         font-size: 35px;
@@ -169,15 +170,15 @@ b {
     overflow: hidden;
 }
 #maintextarea {
-  display: block;
+  display: inline-block;
   font-family: 'Roboto Condensed', sans;
   font-size: @fontSizeInput;
   appearance: none;
   outline: none;
   resize: none;
-  width: @width*0.75-15px;
+  width: @width*0.75-80px;
   border-radius: 5px;
-  padding: 3px;
+  padding: 3px 5px;
   border: solid 3px #969696;
   margin-bottom:12px;
 }
@@ -189,7 +190,8 @@ b {
  width: @width*0.75-15px;
 }
 #statusinfo {
- margin-bottom: 0.5em;
+  margin-top:25px;
+  margin-bottom: 0.5em;
 }
 .controlBox {
     text-align: center;
@@ -206,8 +208,10 @@ b {
 }
 
 .buttons {
+    display: inline-block;
     margin: -3px 0px;
 }
+
 
 .button {
     cursor: pointer;
@@ -274,6 +278,7 @@ button[ctitle]:hover:after {
   margin-top: 5px;
   white-space: nowrap;
   opacity: 1;
+  z-index: 100;
 }
 
 .divider{
@@ -388,4 +393,39 @@ img.emojione {
 #turker {
   font-size: 15px;
   color: blue;
+}
+
+.command-history-container {
+  width: @width*0.75-20px;
+  height: 200px;
+  box-sizing: border-box;
+}
+
+#command_history {
+  height: 170px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  > div {
+    height: 22px;
+    width: 100%;
+    padding: 2px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: #efefef;
+
+      &:after {
+        content: "⎌ go back to";
+        float: right;
+        padding: 0 5px;
+        background-color: inherit;
+      }
+    }
+
+    &.active {
+      background-color: rgb(0, 105, 217);
+      color: #fff;
+    }
+  }
 }
