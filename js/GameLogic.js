@@ -621,14 +621,14 @@ document.getElementById("dobutton").onclick = function() {
 //     GameAction.undo(GS);
 //     maintextarea.focus();
 // };
-// document.getElementById("prevbutton").onclick = function() {
-//     GameAction.prev(GS);
-//     maintextarea.focus();
-// };
-// document.getElementById("nextbutton").onclick = function() {
-//     GameAction.next(GS);
-//     maintextarea.focus();
-// };
+document.getElementById("prevbutton").onclick = function() {
+    GameAction.prev(GS);
+    maintextarea.focus();
+};
+document.getElementById("nextbutton").onclick = function() {
+    GameAction.next(GS);
+    maintextarea.focus();
+};
 
 function acceptOnclick() {
   //   if (GameAction.checkAnswer(GS)) {

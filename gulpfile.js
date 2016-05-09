@@ -146,8 +146,8 @@ gulp.task("docs", ["clean-docs"], function () {
 gulp.task("webserver", function() {
   return gulp.src('./')
     .pipe(webserver({
-      livereload: false,
-      port: 8001,
+      livereload: true,
+      port: 8000,
     }));
 });
 
