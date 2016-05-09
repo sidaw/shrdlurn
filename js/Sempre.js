@@ -144,7 +144,7 @@ var sempre = {
 	for (var key in nbestdict) {
 	     listqadedup.push(nbestdict[key])
 	}
-	listqadedup.sort(function(a,b){return b.maxpprob - a.maxpprob});
+	listqadedup.sort(function(a,b){return b.score - a.score + 1e-3*(a.rank - b.rank)});
 	return listqadedup; 
     },
 

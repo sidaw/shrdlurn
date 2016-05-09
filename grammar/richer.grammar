@@ -18,6 +18,8 @@
 (def @not edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.not)
 (def @combine edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.combine)
 
+(def @get edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.get)
+
 # TO TEST
 # (context (graph NaiveKnowledgeGraph ((string [[1,2,3,4],[4,3,1],[2,2,1],[2,2,3],[3],[]]) (name b) (name c))))
 #  (set JavaExecutor.printStackTrace true)
@@ -33,7 +35,7 @@
 
 # basic actions
 (rule $Action (remove) (ConstantFn (call @remove)))
-(rule $Action (add $Type) (lambda t (call @add (var t))))
+(rule $Action (add $Color) (lambda t (call @add (var t))))
 
 # combo conditions
 (for @op (or and diff)
@@ -47,31 +49,27 @@
 
 # basic conditions
 
-(rule $Cond (top $Type) (lambda t
+(rule $Cond (top $Color) (lambda t
 			      (call @topColor (var t))))
-(rule $Cond (contains $Type) (lambda t
+(rule $Cond (contains $Color) (lambda t
 			      (call @contains (var t))))
      
-(for @numprop (col row height)
-     (rule $Cond (@numprop >  $NUM) (lambda n 
-				    (call @filter (string @numprop) (string >) (var n))))
-     (rule $Cond (@numprop >= $NUM)  (lambda n
-				    (call @filter (string @numprop) (string >=) (var n))))
-     (rule $Cond (@numprop =  $NUM)  (lambda n
-				    (call @filter (string @numprop) (string =) (var n))))
-     (rule $Cond (@numprop <  $NUM)  (lambda n
-				    (call @filter (string @numprop) (string <) (var n))))
-     (rule $Cond (@numprop <= $NUM)  (lambda n
-				    (call @filter (string @numprop) (string <=) (var n))))
-     )
+(for @property (col row height)
+     (rule $Getter (@property) (ConstantFn (call @get (string @property))))
+)
+
+(for @rel (> >= = < <= %=)
+(rule $Cond ($Getter @rel $NUM) (lambda g (lambda n
+(call @filter (var g) (string @rel) (var n)))))
+)
 
 (rule $NUM ($TOKEN) (NumberFn))
 # cyan brown red orange yellow
-(rule $Type (cyan) (ConstantFn (number 0 COLOR)))
-(rule $Type (brown) (ConstantFn (number 1 COLOR)))
-(rule $Type (red) (ConstantFn (number 2 COLOR)))
-(rule $Type (orange) (ConstantFn (number 3 COLOR)))
-(rule $Type (yellow) (ConstantFn (number 4 COLOR)))
+(rule $Color (cyan) (ConstantFn (number 0 COLOR)))
+(rule $Color (brown) (ConstantFn (number 1 COLOR)))
+(rule $Color (red) (ConstantFn (number 2 COLOR)))
+(rule $Color (orange) (ConstantFn (number 3 COLOR)))
+(rule $Color (yellow) (ConstantFn (number 4 COLOR)))
 
 # repeat add red 2 times then add cyan if height > 2
 # add red if col < 3 and row < 3
