@@ -144,10 +144,20 @@ gulp.task("docs", ["clean-docs"], function () {
 });
 
 gulp.task("webserver", function() {
-  return gulp.src('./')
+    return gulp.src('./')
     .pipe(webserver({
-      livereload: true,
-      port: 8000,
+     livereload: {
+        enable: true,
+        filter: function(fileName) {
+          if (fileName.match(/(examples)|(logs)/)) {
+            return false;
+          } else {
+            return true;
+          }
+        }
+      },
+	port: 8000,
+	
     }));
 });
 
@@ -157,3 +167,4 @@ gulp.task("debug", ["less", "psci", "bundle", "concatdebug"]);
 gulp.task("turk", ["less", "psci", "bundle", "concatturk", "compress"]);
 gulp.task("default", ["less", "psci", "bundle", "concat"]);
 gulp.task("serve", ["dev", "webserver"]);
+gulp.task("servedebug", ["debug", "webserver"]);

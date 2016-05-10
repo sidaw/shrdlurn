@@ -1,22 +1,23 @@
 # contextful top level functions
-(def @rootFn context:edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.rootFn)
-(def @condition edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.condition)
+(def @rootFn context:edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.root)
+
+(def @iff edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.iff)
 
 # actions
 (def @add edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.add)
 (def @remove edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.remove)
 
 # action combiners
-(def @serial edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.serial)
+(def @serial edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.seq)
 (def @repeat edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.repeat)
 
 # filters and their combiners
 (def @filter edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.filter)
-(def @contains edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.contains)
-(def @topColor edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.topColor)
+(def @topColor edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.top)
+(def @contains edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.has)
 
 (def @not edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.not)
-(def @combine edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.combine)
+(def @combine edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.logic)
 
 (def @get edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.get)
 
@@ -27,44 +28,41 @@
 ####### Start of the actual grammar
 
 (rule $ROOT ($ActionSeq) (lambda a (call @rootFn (var a)) )) # process for better
-(rule $Action ($ActionSeq $CondSeq) (lambda a (lambda c (call @condition (var a) (var c)))))
+(rule $Action ($CondSeq $ActionSeq) (lambda c (lambda a (call @iff (var c) (var a)))))
 
 # combo actions
-(rule $ActionSeq ($ActionSeq $Action2) (lambda a1 (lambda a2 (call @serial (var a1) (var a2)))))
-(rule $ActionSeq ($Action2) (IdentityFn))
-
-# Action2 exists to prevent consecutive repeats. Maybe do with a flag
-(rule $Action2 ($Action $NUM) (lambda a (lambda n (call @repeat (var n) (var a)))))
-(rule $Action2 ($Action) (IdentityFn))
-
-# basic actions
-(rule $Action (nothing) (ConstantFn (call @remove)))
-(rule $Action ($Color) (lambda t (call @add (var t))))
+(rule $ActionSeq ($ActionSeq $Action) (lambda a1 (lambda a2 (call @serial (var a1) (var a2)))))
+(rule $ActionSeq ($Action) (IdentityFn))
+(rule $Action ($Action $NUM) (lambda a (lambda n (call @repeat (var n) (var a)))))
 
 # combo conditions
 (for @op (or and diff)
-(rule $CondSeq ($CondSeq $Cond2) (lambda c1 (lambda c2
+(rule $CondSeq ($CondSeq $Cond) (lambda c1 (lambda c2
 					(call @combine (string @op) (var c1) (var c2)))))
 )
-(rule $CondSeq ($Cond2) (IdentityFn))
-(rule $Cond2 ($Cond) (lambda c (call @not (var c))))
-(rule $Cond2 ($Cond) (IdentityFn))
-
-# basic conditions
-(rule $Cond ($Color) (lambda t
-			      (call @topColor (var t))))
-(rule $Cond ($Color) (lambda t
-			      (call @contains (var t))))
-     
-(for @property (col row height)
-     (rule $Getter (@property) (ConstantFn (call @get (string @property))))
-)
+(rule $Cond (not $Cond) (lambda c (call @not (var c))))
+(rule $CondSeq ($Cond) (IdentityFn))
 
 # could remove some of these
 (for @rel (> >= = < <= %=)
 (rule $Cond ($Getter $NUM) (lambda g (lambda n
 (call @filter (var g) (string @rel) (var n)))))
 )
+
+# basic stuff, probalby all should be anchored
+(rule $Action (nothing) (ConstantFn (call @remove)))
+(for @property (col row height)
+     (rule $Getter (nothing) (ConstantFn (call @get (string @property))))
+)
+
+# anchored stuff
+(rule $Action ($Color) (lambda t (call @add (var t))) (anchored 1))
+# basic conditions
+(rule $Cond ($Color) (lambda t
+			      (call @contains (var t))) (anchored 1))
+(rule $Cond ($Color) (lambda t
+			      (call @topColor (var t))) (anchored 1))
+
 
 (rule $NUM ($TOKEN) (NumberFn) (anchored 1))
 # cyan brown red orange yellow

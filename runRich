@@ -2,9 +2,9 @@
 SEMPATH=../semparse
 GRAMMAR=../cubesem/grammar/richer.floating.grammar
 cd $SEMPATH
-PARSEROPTS="-Parser FloatingParser -FloatingParser.maxDepth 12 -FloatingParser.useSizeInsteadOfDepth true -FloatingParser.defaultIsFloating true"
+PARSEROPTS="-Parser FloatingParser -FloatingParser.maxDepth 12 -FloatingParser.useSizeInsteadOfDepth true -FloatingParser.defaultIsFloating true -FloatingParser.useAnchorsOnce true"
 LEARNOPTS="-Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -Params.initStepSize 0.1 -Params.adaptiveStepSize true -ParserState.customExpectedCounts UNIFORM"
-FEATOPTS="-FeatureExtractor.featureComputers cubeworld.RicherStacksWorldFeatureComputer -FeatureExtractor.featureDomains branch stats"
+FEATOPTS="-FeatureExtractor.featureComputers cubeworld.RicherStacksWorldFeatureComputer -FeatureExtractor.featureDomains stats subtree"
 SESSIONSTUFF="-Master.onlineLearnExamples false -Master.independentSessions true"
 
 TRAIN_IN="-Dataset.inPaths train1:../cubesem/data/turker_success/sidawangbaseline.lisp train2:../cubesem/data/turker_success/A2YJFCTJPPX66.lisp -Learner.maxTrainIters 1"
