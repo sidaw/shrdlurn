@@ -36,7 +36,7 @@
 (rule $Action ($Action $NUM) (lambda a (lambda n (call @repeat (var n) (var a)))))
 
 # combo conditions
-(for @op (or and diff)
+(for @op (or and)
 (rule $CondSeq ($CondSeq $Cond) (lambda c1 (lambda c2
 					(call @combine (string @op) (var c1) (var c2)))))
 )
@@ -50,6 +50,8 @@
 )
 
 # basic stuff, probalby all should be anchored
+# Yeah, lets not halluciate numbers
+# (rule $NUM (nothing) (ConstantFn (number 1 NUM1)))
 (rule $Action (nothing) (ConstantFn (call @remove)))
 (for @property (col row height)
      (rule $Getter (nothing) (ConstantFn (call @get (string @property))))
@@ -71,3 +73,4 @@
 (rule $Color (red) (ConstantFn (number 2 COLOR)) (anchored 1))
 (rule $Color (orange) (ConstantFn (number 3 COLOR)) (anchored 1))
 (rule $Color (yellow) (ConstantFn (number 4 COLOR)) (anchored 1))
+

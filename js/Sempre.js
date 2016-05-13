@@ -6,6 +6,7 @@ var sempre = {
 	    .replace(/edu.stanford.nlp.sempre.cubeworld.CubeWorld./g,'')
             .replace(/edu.stanford.nlp.sempre.cubeworld..*\./g,'')
 	    .replace(/edu.stanford.nlp.sempre./g,'')
+	    .replace(/context:root/g,'')
 	    .toLowerCase();
     },
     
@@ -112,7 +113,7 @@ var sempre = {
 		vs = {};
 		vs.value = v.value;
 		vs.formula = v.formula;
-		
+		vs.formulas = [vs.formula]
 		vs.prob = parseFloat(v.prob);
 		vs.probs = [v.prob];
 		vs.pprob = parseFloat(v.pprob);
@@ -132,6 +133,7 @@ var sempre = {
 		vs.maxpprob = Math.max(vs.maxpprob, parseFloat(v.pprob));
 		vs.rank = Math.min(vs.rank, v.rank);
 		vs.probs.push(v.prob);
+		vs.formulas.push(v.formula)
 		vs.count += 1;
 	    }
 	    return vs;

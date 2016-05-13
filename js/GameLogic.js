@@ -389,7 +389,7 @@ function writeSemAns(gs) {
     var formval = gs.NBest;
     for (var i in formval) {
 	mystr += "<tr><td>"+
-	(1+parseInt(i)) + "</td> <td>{rank}</td>  <td>{score} c:{count}</td> <td>{formula}</td>  <td> {value} </td></tr>"
+	(1+parseInt(i)) + "</td> <td>{rank}</td>  <td>{score} c:{count}</td> <td>{formulas}</td>  <td> {value} </td></tr>"
 	    ._format(formval[i]);
     }
     mystr += "</tbody> </table>"

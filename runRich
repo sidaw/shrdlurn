@@ -1,28 +1,29 @@
 #!/bin/sh
 SEMPATH=../semparse
 GRAMMAR=../cubesem/grammar/richer.floating.grammar
+EXAMPLEPATH=~/shrdlurn/examples/
 cd $SEMPATH
-PARSEROPTS="-Parser FloatingParser -FloatingParser.maxDepth 12 -FloatingParser.useSizeInsteadOfDepth true -FloatingParser.defaultIsFloating true -FloatingParser.useAnchorsOnce true"
+PARSEROPTS="-Parser FloatingParser -FloatingParser.maxDepth 12 -FloatingParser.useSizeInsteadOfDepth true -FloatingParser.defaultIsFloating true -FloatingParser.useAnchorsOnce true -Parser.pruneErrorValues true"
 LEARNOPTS="-Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -Params.initStepSize 0.1 -Params.adaptiveStepSize true -ParserState.customExpectedCounts UNIFORM"
-FEATOPTS="-FeatureExtractor.featureComputers cubeworld.RicherStacksWorldFeatureComputer -FeatureExtractor.featureDomains stats subtree"
-SESSIONSTUFF="-Master.onlineLearnExamples false -Master.independentSessions true"
+FEATOPTS="-FeatureExtractor.featureComputers cubeworld.RicherStacksWorldFeatureComputer -FeatureExtractor.featureDomains stats subtree RicherStacksWorldFeatureComputer.ngramN 4"
 
-TRAIN_IN="-Dataset.inPaths train1:../cubesem/data/turker_success/sidawangbaseline.lisp train2:../cubesem/data/turker_success/A2YJFCTJPPX66.lisp -Learner.maxTrainIters 1"
-#test:../cubesem/data/fullgame.json 
-TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/validation.lisp"
 
-OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main  -execDir _OUTPATH_/runFloat -overwriteExecDir -addToView 0 -Main.interactive -JavaExecutor.convertNumberValues false -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR  -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
+
+
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main  -execDir _OUTPATH_/runRichmoreparams -overwriteExecDir -addToView 0 -Main.interactive -JavaExecutor.convertNumberValues false -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Grammar.binarizeRules false -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
 
 # features are tree, heads, ngram
 DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
+TRAIN_OUTS_LOCAL_IND="-Master.newExamplesPath $EXAMPLEPATH  -Master.logPath ../cubesem/logs/"
+INDEP_SESSIONS="-Master.onlineLearnExamples false -Master.independentSessions true"
+SESSIONS="-Master.onlineLearnExamples true -Master.independentSessions false"
 
-if [ "$HOSTNAME" = "jonsson.stanford.edu" ]; then
-    echo "running on jonsson"
-    TRAIN_OUTS_SERVER="-Master.newExamplesPath /afs/cs.stanford.edu/u/sidaw/shrdlurn/examples -Master.logPath /afs/cs.stanford.edu/u/sidaw/shrdlurn/logs -server true -Server.port 8401"
-    echo rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS_LOCAL $SESSIONSTUFF -Server.numThreads 8 "$@"
-    rlwrap java $OPTIONS $LEARNOPTS $TRAIN_OUTS_LOCAL $SESSIONSTUFF -Server.numThreads 8 "$@"
+if [ "$1" = "train" ]; then
+    TRAIN_IN="-Dataset.inPaths train:$EXAMPLEPATH/sidaw.lisp -Learner.maxTrainIters 1"
 else
-    echo "not running on jonsson"
-    TRAIN_OUTS_LOCAL="-Master.newExamplesPath ../cubesem/examples/ -Master.logPath ../cubesem/logs/"
-    rlwrap java $OPTIONS $PARSEROPTS $LEARNOPTS $FEATOPTS $SESSIONSTUFF $TRAIN_OUTS_LOCAL -Server.numThreads 1 "$@"
+    TRAIN_IN=""
 fi
+   
+echo "not running on jonsson"
+rlwrap java $OPTIONS $PARSEROPTS $LEARNOPTS $FEATOPTS $SESSIONS $TRAIN_OUTS_LOCAL $TRAIN_IN -server true -Server.numThreads 1
+
