@@ -88,8 +88,8 @@ var sempre = {
 	return str
     },
 
-    parseSEMPRE: function (jsontext) {
-	var valid = JSON.parse(jsontext)['candidates'];
+    parseSEMPRE: function (valid) {
+	
 	// filter BADJAVA
 	// var valid = jsresp.filter(function (v) {return v['value'][0]!='error' && v['value'].length!=1})
 	//console.log(valid)

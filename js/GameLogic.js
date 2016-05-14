@@ -182,7 +182,9 @@ var GameAction = {
     _candidates: function(gs) {
 	var cmds = {q:gs.query, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
-	    var formval = sempre.parseSEMPRE(jsonstr);
+	    var jsonparse = JSON.parse(jsonstr);
+	    console.log(jsonparse["coverage"]);
+	    var formval = sempre.parseSEMPRE(jsonparse['candidates']);
 	    if (formval == undefined) {
 		console.log('undefined answer from sempre')
 		return;

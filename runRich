@@ -1,14 +1,13 @@
 #!/bin/sh
 SEMPATH=../semparse
-GRAMMAR=../cubesem/grammar/richer.floating.grammar
+GRAMMAR=../cubesem/grammar/richer.grammar
 EXAMPLEPATH=~/shrdlurn/examples/
 cd $SEMPATH
-PARSEROPTS="-Parser FloatingParser -FloatingParser.maxDepth 12 -FloatingParser.useSizeInsteadOfDepth true -FloatingParser.defaultIsFloating true -FloatingParser.useAnchorsOnce true -Parser.pruneErrorValues true"
+PARSEROPTS="-Parser.pruneErrorValues true -Parser BeamParser -Parser.trackedCats ROOT ActionSeq Getter CondSeq NUM Color"
+
+# -FloatingParser.maxDepth 12 -FloatingParser.useSizeInsteadOfDepth true -FloatingParser.defaultIsFloating true -FloatingParser.useAnchorsOnce true"
 LEARNOPTS="-Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -Params.initStepSize 0.1 -Params.adaptiveStepSize true -ParserState.customExpectedCounts UNIFORM"
 FEATOPTS="-FeatureExtractor.featureComputers cubeworld.RicherStacksWorldFeatureComputer -FeatureExtractor.featureDomains stats subtree RicherStacksWorldFeatureComputer.ngramN 4"
-
-
-
 
 OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main  -execDir _OUTPATH_/runRichmoreparams -overwriteExecDir -addToView 0 -Main.interactive -JavaExecutor.convertNumberValues false -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Grammar.binarizeRules false -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
 
