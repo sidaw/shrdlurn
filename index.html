@@ -45,12 +45,8 @@
       <div id="metaactions" class="buttons">
 	<button class="button button--solved" id="flyingaccept"
 	  ctitle="take this action (shift-enter)">&#x2713;</button>
-	<button class="button button--solved" id="describe"
-	  ctitle="describe the current action">...</button>
 	<button class="button button--solved" id="paraphrase"
-	ctitle="provide another way to say this">~</button>
-  <br>
-  <button class="button button--solved" id="nextbutton"
+	ctitle="provide another way to say this">~</button><br><button class="button button--solved" id="nextbutton"
   ctitle="show next action (down key)">&darr; </button>
   <button class="button button--solved (up key)" id="prevbutton"
   ctitle="show previous action">&uarr; </button>
@@ -66,8 +62,16 @@
 	  &nbsp; <span id="reaction"></span>
 	<span id="currentcmd"><b>No command</b> </span>,
 	<span id="status">type one!</span></div>
+  <div id="define_interface" class="hidden">
+    <span class="b-header">provide another way to say your phrase (define it!)</span>
+    <hr />
+    <span id="define_phrase">define `<code id="query_phrase"><span style="color:rgb(255,0,0);">add</span> yellow</code>` as</span>
+    <input type="text" id="definetextarea" placeholder="define the above here" />
+    <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">define</button>
+    <span class="helpertext">To define your phrase, use the simplest building blocks of language you can (i.e. define the phrase in terms of other things the computer already knows). For example, define `red tower at row 3 col 4` as `add red 3 times then move left then add red 3 times` or define `put yellow if stack taller than 3` as `yellow if height &gt; 3`. <a href="#">Click here for more examples.</a><br /><i>Hint:</i> The more red the word, the less the computer understood.</span>
+  </div>
 	<input type="text" id="maintextarea" placeholder="type a command here"  />
-	<div class="buttons">
+	<div class="buttons" id="mainbuttons">
 	  <button class="button" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
 	  <!-- <button class="button" id="undobutton" ctitle="undo (ctrl-z)">&#x238c;</button>
 	  <div class="divider"></div>

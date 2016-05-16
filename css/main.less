@@ -106,7 +106,7 @@ b {
 }
 
 #canvas {
-    margin: 0 auto;
+    margin: 40px auto -40px auto;
     width: @canvasWidth;
     height: @canvasHeight;
 }
@@ -517,4 +517,49 @@ img.full {
     outline: none;
     border: solid 3px #000;
   }
+}
+
+.hidden {
+  display: none !important;
+}
+
+#define_interface {
+  width: @width*0.75-20px;
+  min-height: 200px;
+  background-color: #efefef;
+  padding: 20px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: solid 3px lighten(#969696, 10%);
+  font-size: 16px;
+
+  > span {
+    display: block;
+  }
+
+  input, button {
+    display: inline-block;
+  }
+
+  .helpertext {
+    font-size: 14px;
+    padding: 20px;
+  }
+}
+
+#define_phrase {
+  margin: 20px;
+}
+
+.b-header {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+#definetextarea:extend(#maintextarea) {
+  margin: 0 20px;
+  box-sizing: border-box;
+  font-size: 16px;
+  width: 80%;
 }

@@ -23,6 +23,9 @@ function GameState() {
     this.tutorialMode = false;
     this.tutorialLevel = 2;
 
+    this.coverage = [];
+    this.defineState = false;
+
     // the only persistent states
     this.sessionId = "deadbeef";
     this.successCounts = {}
@@ -183,7 +186,7 @@ var GameAction = {
 	var cmds = {q:gs.query, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
 	    var jsonparse = JSON.parse(jsonstr);
-	    console.log(jsonparse["coverage"]);
+      gs.coverage = jsonparse["coverage"];
 	    var formval = sempre.parseSEMPRE(jsonparse['candidates']);
 	    if (formval == undefined) {
 		console.log('undefined answer from sempre')
@@ -313,7 +316,7 @@ var GameAction = {
 	    updateStatus("↓: showing the next one")
 	    GameAction.checkAnswer(gs)
 	} else {
-	    updateStatus("↓: already showing the last one")
+	    updateStatus("↓: already showing the last one; <a href='' class='define-this'>define this instead</a>")
 	}
 	gs.log.numScrolls++;
     },
@@ -670,11 +673,12 @@ function metaCommand(meta) {
 document.getElementById("flyingaccept").onclick = function() {
     metaCommand("!accept")
 };
-document.getElementById("describe").onclick = function() {
-    metaCommand("!instead_of [" + GS.query + "] you_did: ")
-};
+// document.getElementById("describe").onclick = function() {
+//     metaCommand("!instead_of [" + GS.query + "] you_did: ")
+// };
 document.getElementById("paraphrase").onclick = function() {
-    metaCommand("!define [" + GS.query + "] as: ")
+    //metaCommand("!define [" + GS.query + "] as: ");
+    defineInterface(GS);
 };
 
 var Hotkeys = {
@@ -700,6 +704,7 @@ document.onkeydown = function(e) {
 	acceptOnclick();
 	return false;
     } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
+      if (GS.defineState) { definePhrase(e, GS); return false; }
 	runCurrentQuery(GS); return false;
     } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
 	     revertHistory(GS, "undo"); return false;
@@ -774,4 +779,73 @@ document.getElementById("finish_tutorial").onclick = function() {
   document.getElementById("states").className = "";
   GS.tutorialMode = false;
   document.getElementById("states").className = "states active";
+}
+
+
+// Define interface
+
+function definePhrase(e, gs) {
+  var definetextarea = document.getElementById("definetextarea");
+  var maintextarea = document.getElementById("maintextarea");
+  var text = "!define [" + gs.query + "] as: " + definetextarea.value;
+  maintextarea.value = text;
+  runCurrentQuery(gs);
+  definetextarea.value = "";
+
+  var define_interface = document.getElementById("define_interface");
+  define_interface.className = "hidden";
+
+  maintextarea.className = "";
+  var mainbuttons = document.getElementById("mainbuttons");
+  mainbuttons.className = "buttons";
+
+  addPoint();
+  addElemToHistory(gs, document.getElementById("command_history"), text);
+
+  gs.defineState = false;
+}
+
+
+function defineInterface(gs) {
+  if (!gs.query) {
+    updateStatus("no query to define, enter a query:");
+    return;
+  }
+
+  // Hide maintextarea
+  var maintextarea = document.getElementById("maintextarea");
+  maintextarea.className = "hidden";
+  var mainbuttons = document.getElementById("mainbuttons");
+  mainbuttons.className = "hidden";
+
+  // Normalize coverages
+  var max = 0;
+  for (var i = 0; i < gs.coverage.length; i++) {
+    if (gs.coverage[i] > max) max = gs.coverage[i];
+  }
+
+  var normalized_coverages = [];
+  for (var i = 0; i < gs.coverage.length; i++) {
+    normalized_coverages[i] = Math.floor(255 - ((gs.coverage[i] / max) * 255));
+  }
+
+  // Color the query
+  var colored_query = gs.query.split(" ");
+  for (var i = 0; i < colored_query.length; i++) {
+    colored_query[i] = "<span style='color:rgb(" + normalized_coverages[i] + ",0,0)' >" + colored_query[i] + "</span>";
+  }
+
+  var query_phrase = document.getElementById("query_phrase");
+  query_phrase.innerHTML = colored_query.join(" ");
+  console.log(gs.coverage);
+
+  // Unhide define interface.
+  var define_interface = document.getElementById("define_interface");
+  define_interface.className = "";
+
+  gs.defineState = true;
+
+  document.getElementById("define_phrase_button").addEventListener("click", function(e) {
+    definePhrase(e, gs);
+  });
 }
