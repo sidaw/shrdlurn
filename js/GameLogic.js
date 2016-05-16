@@ -515,6 +515,7 @@ function revertHistory(gs, index) {
     var elems = document.querySelectorAll("#command_history > div");
     var active = false;
     for (index = 1; elems[index].getAttribute("data-index") != 0; index++) {
+      if (elems[index].getAttribute("data-index") == elems[index+1].getAttribute("data-index")) continue;
       if (hasClass(elems[index], "active")) {
         active = true;
         break;
@@ -813,7 +814,7 @@ document.getElementById("finish_tutorial").onclick = function() {
 function definePhrase(e, gs) {
   var definetextarea = document.getElementById("definetextarea");
   var maintextarea = document.getElementById("maintextarea");
-  var text = "!define [" + gs.query + "] as: " + definetextarea.value;
+  var text = "(uttdef \"" definetextarea.value "\")";
   maintextarea.value = text;
   runCurrentQuery(gs);
   definetextarea.value = "";
