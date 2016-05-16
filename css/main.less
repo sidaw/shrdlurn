@@ -127,7 +127,7 @@ b {
 }
 
 #shortcuts {
-    height: 110px;
+    min-height: 110px;
     width: 100%;
 }
 #history {
@@ -562,4 +562,18 @@ img.full {
   box-sizing: border-box;
   font-size: 16px;
   width: 80%;
+}
+
+.row-info {
+  position: absolute;
+  top: 235px;
+  left: 380px;
+  font-size: 16px;
+  transform: rotateZ(-50deg);
+}
+
+.col-info:extend(.row-info) {
+  top: 220px;
+  left: 440px;
+  transform: rotateZ(20deg);
 }
