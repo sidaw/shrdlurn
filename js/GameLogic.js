@@ -316,8 +316,12 @@ var GameAction = {
 	    updateStatus("↓: showing the next one")
 	    GameAction.checkAnswer(gs)
 	} else {
-	    updateStatus("↓: already showing the last one; <a href='' class='define-this'>define this instead</a>")
-	}
+	    updateStatus("↓: already showing the last one; <a href='' id='define_instead' class='define-this'>define this instead</a>")
+      document.getElementById("define_instead").addEventListener("click", function(e) {
+        e.preventDefault();
+        defineInterface(gs);
+      });
+  }
 	gs.log.numScrolls++;
     },
     accept: function(gs) {
@@ -528,8 +532,8 @@ function revertHistory(gs, index) {
       index = elem.getAttribute("data-index");
     } else {
       if (testI === "undo") { index = 1; }
-      index = elems[index].getAttribute("data-index");
       elem = elems[index];
+      index = elems[index].getAttribute("data-index");
     }
   } else {
     elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
@@ -713,6 +717,7 @@ var Hotkeys = {
     UP: 38,
     DOWN: 40,
     Z : 90,
+    D: 68,
 };
 
 document.getElementById("maintextarea").onkeydown = function(e) {
@@ -735,6 +740,9 @@ document.onkeydown = function(e) {
       revertHistory(GS, "redo"); return false;
     } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
 	     revertHistory(GS, "undo"); return false;
+    } else if (e.keyCode == Hotkeys.D && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      defineInterface(GS);
     } return true;
 };
 
@@ -813,22 +821,33 @@ document.getElementById("finish_tutorial").onclick = function() {
 
 function definePhrase(e, gs) {
   var definetextarea = document.getElementById("definetextarea");
-  var maintextarea = document.getElementById("maintextarea");
-  var text = "(uttdef \"" definetextarea.value "\")";
-  maintextarea.value = text;
-  runCurrentQuery(gs);
-  definetextarea.value = "";
+  var text = "(uttdef \"" + definetextarea.value + "\")";
+  sempre.sempreQuery(text, function(jsonstr) {
+    var jsonparse = JSON.parse(jsonstr);
+    if (jsonparse["candidates"].length == 0) {
+      gs.query = text.substr(9).slice(0,-2);
+      defineInterface(gs);
+      return;
+    }
+  });
 
+  addPoint();
+  addElemToHistory(gs, document.getElementById("command_history"), "defined `" + gs.query + "` as `" + text.substr(9).slice(0,-2) + "`");
+
+  closeDefineInterface(gs);
+}
+
+function closeDefineInterface(gs) {
+  var definetextarea = document.getElementById("definetextarea");
+  var maintextarea = document.getElementById("maintextarea");
+  definetextarea.value = "";
+  maintextarea.value = "";
   var define_interface = document.getElementById("define_interface");
   define_interface.className = "hidden";
-
   maintextarea.className = "";
   var mainbuttons = document.getElementById("mainbuttons");
   mainbuttons.className = "buttons";
-
-  addPoint();
-  addElemToHistory(gs, document.getElementById("command_history"), text);
-
+  maintextarea.focus();
   gs.defineState = false;
 }
 
@@ -850,6 +869,7 @@ function defineInterface(gs) {
   for (var i = 0; i < gs.coverage.length; i++) {
     if (gs.coverage[i] > max) max = gs.coverage[i];
   }
+  if (max == 0) max = 1;
 
   var normalized_coverages = [];
   for (var i = 0; i < gs.coverage.length; i++) {
@@ -869,6 +889,7 @@ function defineInterface(gs) {
   // Unhide define interface.
   var define_interface = document.getElementById("define_interface");
   define_interface.className = "";
+  document.getElementById("definetextarea").focus();
 
   gs.defineState = true;
 
@@ -876,3 +897,7 @@ function defineInterface(gs) {
     definePhrase(e, gs);
   });
 }
+
+document.getElementById("close_define_interface").addEventListener("click", function(e) {
+  closeDefineInterface(GS);
+});
