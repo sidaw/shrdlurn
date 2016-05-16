@@ -503,11 +503,33 @@ function highlightHistory(gs, index) {
   }
 }
 
+// http://stackoverflow.com/questions/5898656/test-if-an-element-contains-a-class
+function hasClass(element, cls) {
+    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+}
+
 function revertHistory(gs, index) {
   var elem;
-  if (index === "undo") {
-    elem = document.querySelectorAll("#command_history > div")[1];
-    index = elem.getAttribute("data-index");
+  var testI = index;
+  if (testI === "undo" || testI === "redo") {
+    var elems = document.querySelectorAll("#command_history > div");
+    var active = false;
+    for (index = 1; elems[index].getAttribute("data-index") != 0; index++) {
+      if (hasClass(elems[index], "active")) {
+        active = true;
+        break;
+      }
+    }
+    if (testI === "undo") { index++; }
+    if (testI === "redo") { index--; }
+    if (active) {
+      elem = elems[index];
+      index = elem.getAttribute("data-index");
+    } else {
+      if (testI === "undo") { index = 1; }
+      index = elems[index].getAttribute("data-index");
+      elem = elems[index];
+    }
   } else {
     elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
   }
@@ -623,8 +645,10 @@ document.getElementById("dobutton").onclick = function() {
     maintextarea.focus();
 };
 // document.getElementById("undobutton").onclick = function() {
-//     GameAction.undo(GS);
-//     maintextarea.focus();
+//     revertHistory(GS, "undo");
+// };
+// document.getElementById("redobutton").onclick = function() {
+//     revertHistory(GS, "redo");
 // };
 document.getElementById("prevbutton").onclick = function() {
     GameAction.prev(GS);
@@ -687,7 +711,7 @@ var Hotkeys = {
     RIGHT: 39,
     UP: 38,
     DOWN: 40,
-    Z : 90
+    Z : 90,
 };
 
 document.getElementById("maintextarea").onkeydown = function(e) {
@@ -706,6 +730,8 @@ document.onkeydown = function(e) {
     } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
       if (GS.defineState) { definePhrase(e, GS); return false; }
 	runCurrentQuery(GS); return false;
+    } else if (e.keyCode == Hotkeys.Z && e.shiftKey && (e.ctrlKey || e.metaKey)) {
+      revertHistory(GS, "redo"); return false;
     } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
 	     revertHistory(GS, "undo"); return false;
     } return true;
