@@ -316,8 +316,12 @@ var GameAction = {
 	    updateStatus("↓: showing the next one")
 	    GameAction.checkAnswer(gs)
 	} else {
-	    updateStatus("↓: already showing the last one; <a href='' class='define-this'>define this instead</a>")
-	}
+	    updateStatus("↓: already showing the last one; <a href='' id='define_instead' class='define-this'>define this instead</a>")
+      document.getElementById("define_instead").addEventListener("click", function(e) {
+        e.preventDefault();
+        defineInterface(gs);
+      });
+  }
 	gs.log.numScrolls++;
     },
     accept: function(gs) {
@@ -528,8 +532,8 @@ function revertHistory(gs, index) {
       index = elem.getAttribute("data-index");
     } else {
       if (testI === "undo") { index = 1; }
-      index = elems[index].getAttribute("data-index");
       elem = elems[index];
+      index = elems[index].getAttribute("data-index");
     }
   } else {
     elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
@@ -896,4 +900,4 @@ function defineInterface(gs) {
 
 document.getElementById("close_define_interface").addEventListener("click", function(e) {
   closeDefineInterface(GS);
-})
+});
