@@ -182,11 +182,11 @@ function newWall(gs) {
 
 var GameAction = {
     // functions starting with _ are internal, and should not modify status messages.
-    _candidates: function(gs) {
+  _candidates: function(gs) {
 	var cmds = {q:gs.query, sessionId:gs.sessionId};
 	sempre.sempreQuery(cmds , function(jsonstr) {
 	    var jsonparse = JSON.parse(jsonstr);
-      gs.coverage = jsonparse["coverage"];
+	    gs.coverage = jsonparse["coverage"];
 	    var formval = sempre.parseSEMPRE(jsonparse['candidates']);
 	    if (formval == undefined) {
 		console.log('undefined answer from sempre')
@@ -197,7 +197,7 @@ var GameAction = {
 		gs.setCurrentWall();
 	    }
 	    if (configs.debugMode)
-		writeSemAns(gs);
+		  writeSemAns(gs);
 	    updateCanvas(gs);
 	    GameAction.checkAnswer(gs);
 	});
@@ -319,7 +319,7 @@ var GameAction = {
 	    updateStatus("↓: already showing the last one; <a href='' id='define_instead' class='define-this'>define this instead</a>")
       document.getElementById("define_instead").addEventListener("click", function(e) {
         e.preventDefault();
-        defineInterface(gs);
+        defineInterface(gs, gs.query);
       });
   }
 	gs.log.numScrolls++;
@@ -538,7 +538,6 @@ function revertHistory(gs, index) {
   } else {
     elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
   }
-
   gs.listWalls = gs.listWalls.slice(0, index);
   gs.listWalls.push(elem.getAttribute("data-walls"));
   updateCanvas(gs);
@@ -578,10 +577,8 @@ document.getElementById("save_state").onclick = function() {
     saveGameState(GS, state_name.value);
     state_name.value = "";
     state_name.className = "";
-    document.getElementById("save_state").innerHTML = "Save Current State";
   } else {
     state_name.className = "active";
-    document.getElementById("save_state").innerHTML = "Save This State";
   }
 }
 
@@ -634,7 +631,6 @@ function runCurrentQuery(gs) {
 	    && gs.effectiveStepsNumber() >= configs.levels[gs.taskind].maxSteps) {
 	    updateStatus("entered \"" + querystr +"\", but used too many steps, ⎌ first.");
 	} else {
-
 	    logh(gs.numQueries + ' ' + querystr + '; ')
 	    gs.query = querystr;
 	    GameAction.candidates(gs);
@@ -686,7 +682,7 @@ function acceptOnclick() {
     }
   }
 
-	GameAction.accept(GS);
+  GameAction.accept(GS);
   maintextarea.focus();
   updateHistory(GS);
   addPoint();
@@ -696,18 +692,8 @@ function metaCommand(meta) {
     maintextarea.focus();
 }
 
-// document.getElementById("acceptbutton").onclick = function() {
-//     acceptOnclick()
-// };
-document.getElementById("flyingaccept").onclick = function() {
-    metaCommand("!accept")
-};
-// document.getElementById("describe").onclick = function() {
-//     metaCommand("!instead_of [" + GS.query + "] you_did: ")
-// };
 document.getElementById("paraphrase").onclick = function() {
-    //metaCommand("!define [" + GS.query + "] as: ");
-    defineInterface(GS);
+  defineInterface(GS, GS.query);
 };
 
 var Hotkeys = {
@@ -735,14 +721,14 @@ document.onkeydown = function(e) {
 	return false;
     } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
       if (GS.defineState) { definePhrase(e, GS); return false; }
-	runCurrentQuery(GS); return false;
+	    runCurrentQuery(GS); return false;
     } else if (e.keyCode == Hotkeys.Z && e.shiftKey && (e.ctrlKey || e.metaKey)) {
       revertHistory(GS, "redo"); return false;
     } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
 	     revertHistory(GS, "undo"); return false;
     } else if (e.keyCode == Hotkeys.D && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      defineInterface(GS);
+      defineInterface(GS, GS.query);
     } return true;
 };
 
@@ -822,28 +808,36 @@ document.getElementById("finish_tutorial").onclick = function() {
 function definePhrase(e, gs) {
   var definetextarea = document.getElementById("definetextarea");
   var text = "(uttdef \"" + definetextarea.value + "\")";
-  sempre.sempreQuery(text, function(jsonstr) {
+  var cmds = {q:text, sessionId:gs.sessionId};
+  sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
+
     if (jsonparse["candidates"].length == 0) {
-      gs.query = text.substr(9).slice(0,-2);
-      defineInterface(gs);
+      gs.coverage = jsonparse["coverage"];
+      defineInterface(gs, definetextarea.value);
       return;
+    } else {
+      addPoint();
+      addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
+    		   + gs.query + '" as "' + definetextarea.value + '"');
+      closeDefineInterface(gs, true);
     }
+    // consider populating the candidates list
   });
-
-  addPoint();
-  addElemToHistory(gs, document.getElementById("command_history"), "defined `" + gs.query + "` as `" + text.substr(9).slice(0,-2) + "`");
-
-  closeDefineInterface(gs);
 }
 
-function closeDefineInterface(gs) {
+function closeDefineInterface(gs, success) {
+  // probably good to just run the query here
+  if (success)
+    GameAction._candidates(gs);
+
   var definetextarea = document.getElementById("definetextarea");
   var maintextarea = document.getElementById("maintextarea");
   definetextarea.value = "";
   maintextarea.value = "";
   var define_interface = document.getElementById("define_interface");
   define_interface.className = "hidden";
+
   maintextarea.className = "";
   var mainbuttons = document.getElementById("mainbuttons");
   mainbuttons.className = "buttons";
@@ -851,19 +845,7 @@ function closeDefineInterface(gs) {
   gs.defineState = false;
 }
 
-
-function defineInterface(gs) {
-  if (!gs.query) {
-    updateStatus("no query to define, enter a query:");
-    return;
-  }
-
-  // Hide maintextarea
-  var maintextarea = document.getElementById("maintextarea");
-  maintextarea.className = "hidden";
-  var mainbuttons = document.getElementById("mainbuttons");
-  mainbuttons.className = "hidden";
-
+function getColoredSpan(gs, utt) {
   // Normalize coverages
   var max = 0;
   for (var i = 0; i < gs.coverage.length; i++) {
@@ -873,31 +855,55 @@ function defineInterface(gs) {
 
   var normalized_coverages = [];
   for (var i = 0; i < gs.coverage.length; i++) {
-    normalized_coverages[i] = Math.floor(255 - ((gs.coverage[i] / max) * 255));
+    normalized_coverages[i] = gs.coverage[i]==0? 255 : 0;
+      // Math.floor(255 - ((gs.coverage[i] / max) * 255));
   }
 
   // Color the query
-  var colored_query = gs.query.split(" ");
+  var colored_query = utt.split(" ");
   for (var i = 0; i < colored_query.length; i++) {
     colored_query[i] = "<span style='color:rgb(" + normalized_coverages[i] + ",0,0)' >" + colored_query[i] + "</span>";
   }
-
-  var query_phrase = document.getElementById("query_phrase");
-  query_phrase.innerHTML = colored_query.join(" ");
-  console.log(gs.coverage);
-
-  // Unhide define interface.
-  var define_interface = document.getElementById("define_interface");
-  define_interface.className = "";
-  document.getElementById("definetextarea").focus();
-
-  gs.defineState = true;
-
-  document.getElementById("define_phrase_button").addEventListener("click", function(e) {
-    definePhrase(e, gs);
-  });
+  return colored_query.join(" ");
 }
 
+function defineInterface(gs, utt) {
+  if (!gs.query) {
+    updateStatus("nothing to define, enter a command.");
+    return;
+  }
+  var query_phrase = document.getElementById("query_phrase");
+  var define_phrase = document.getElementById("define_phrase");
+  if (gs.defineState) {
+    updateStatus("unfortunately, SHRDLURN still does not understand you.");
+    query_phrase.innerHTML = getColoredSpan(gs, utt);
+  } else {
+    var original_utt = document.getElementById("original_utt");
+    original_utt.innerHTML = getColoredSpan(gs, utt);
+    if (!gs.noAnswer())
+      updateStatus("SHRDLURN already understands " + gs.query + "!");
+  }
+
+  // Hide maintextarea
+  var maintextarea = document.getElementById("maintextarea");
+  maintextarea.className = "hidden";
+  var mainbuttons = document.getElementById("mainbuttons");
+  mainbuttons.className = "hidden";
+
+  console.log(gs.coverage);
+  // Unhide define interface
+  var define_interface = document.getElementById("define_interface");
+  define_interface.className = "";
+  var definetextarea = document.getElementById("definetextarea");
+  definetextarea.placeholder = 'write the meaning of "' + gs.query + '" here!';
+  definetextarea.focus();
+
+  gs.defineState = true;
+}
+
+document.getElementById("define_phrase_button").addEventListener("click", function(e) {
+  definePhrase(e, GS);
+});
 document.getElementById("close_define_interface").addEventListener("click", function(e) {
-  closeDefineInterface(GS);
+  closeDefineInterface(GS, false);
 });

@@ -96,7 +96,7 @@ renderJSON jsonwalls = do
     isomer <- getIsomerInstance "canvas"
     -- On-canvas rendering
     clearCanvas isomer
-    setIsomerConfig isomer 35.0 30.0 350.0
+    setIsomerConfig isomer 35.0 30.0 (350.0+248.0)
     renderWalls isomer $ jsonToWalls jsonwalls
     -- renderTarget isomer $ jsonToWall jsontarget
     -- parsedJSON <- readJSON cmdsequence :: F (Array (Array Int))

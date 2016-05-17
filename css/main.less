@@ -17,7 +17,7 @@
 @width:               800px;
 
 @canvasWidth:         0.75 * @width;
-@canvasRatio :        500/1100; // equals the numbers in HTML
+@canvasRatio :        750/1100; // equals the numbers in HTML
 @canvasHeight:        @canvasWidth * @canvasRatio;
 
 @logoWidth:           216px;
@@ -155,7 +155,7 @@ b {
 #metaactions {
     visibility: visible;
     position: absolute;
-    top: 230px;
+    top: 230px+250px*0.75*750/1100;
     left: 215px;
     padding: 1px;
     text-align: center;
@@ -550,7 +550,7 @@ img.full {
 }
 
 #define_phrase {
-  margin: 20px;
+  margin: 0px;
 }
 
 .b-header {
@@ -559,22 +559,22 @@ img.full {
 }
 
 #definetextarea:extend(#maintextarea) {
-  margin: 0 20px;
+  margin: 0 0px;
   box-sizing: border-box;
   font-size: 16px;
-  width: 80%;
+  width: 87%;
 }
 
 .row-info {
   position: absolute;
-  top: 235px;
+  top: 235px+250px*0.75*750/1100;
   left: 380px;
   font-size: 16px;
   transform: rotateZ(-50deg);
 }
 
 .col-info:extend(.row-info) {
-  top: 220px;
+  top: 220px+250px*0.75*750/1100;
   left: 440px;
   transform: rotateZ(20deg);
 }
@@ -583,4 +583,19 @@ img.full {
   position: absolute;
   right: 10px;
   top: 10px;
+}
+
+// stands for utterance
+.utt {
+font-style: italic;
+}
+
+.utt:before
+{
+content: open-quote;
+}
+
+.utt:after
+{
+content: close-quote;
 }
