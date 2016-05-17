@@ -2,6 +2,8 @@
 SEMPATH=../semparse
 GRAMMAR=../cubesem/grammar/richer.grammar
 EXAMPLEPATH=~/shrdlurn/examples/
+NEWGRAMMARPATH=~/shrdlurn/grammar/
+LOGPATH= ~/shrdlrun/logs/
 cd $SEMPATH
 PARSEROPTS="-Parser.pruneErrorValues true -Parser BeamParser -Parser.trackedCats ROOT ActionSeq Getter CondSeq NUM Color"
 
@@ -9,11 +11,11 @@ PARSEROPTS="-Parser.pruneErrorValues true -Parser BeamParser -Parser.trackedCats
 LEARNOPTS="-Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -Params.initStepSize 0.1 -Params.adaptiveStepSize true -ParserState.customExpectedCounts UNIFORM"
 FEATOPTS="-FeatureExtractor.featureComputers cubeworld.RicherStacksWorldFeatureComputer -FeatureExtractor.featureDomains stats subtree RicherStacksWorldFeatureComputer.ngramN 4"
 
-OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main  -execDir _OUTPATH_/runRichmoreparams -overwriteExecDir -addToView 0 -Main.interactive -JavaExecutor.convertNumberValues false -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Grammar.binarizeRules false -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
+OPTIONS="-Dmodules=core,cubeworld -cp libsempre/*:lib/* -ea edu.stanford.nlp.sempre.Main  -execDir _OUTPATH_/runRichmoreparams -overwriteExecDir -addToView 0 -Main.interactive -JavaExecutor.convertNumberValues false -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Grammar.binarizeRules false -Grammar.useApplyFn true -LanguageAnalyzer.lowerCaseTokens true"
 
 # features are tree, heads, ngram
 DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
-TRAIN_OUTS_LOCAL_IND="-Master.newExamplesPath $EXAMPLEPATH  -Master.logPath ../cubesem/logs/"
+TRAIN_OUTS_LOCAL="-Master.newExamplesPath $EXAMPLEPATH -Master.logPath $LOGPATH -Master.newGrammarPath $NEWGRAMMARPATH"
 INDEP_SESSIONS="-Master.onlineLearnExamples false -Master.independentSessions true"
 SESSIONS="-Master.onlineLearnExamples true -Master.independentSessions false"
 
