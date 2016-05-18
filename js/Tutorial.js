@@ -63,7 +63,7 @@ function mitmDefine() {
 
 document.getElementById("next_tutorial2").onclick = function() {
   document.getElementById("tutorial-s3").className = "tutorial-s";
-  document.getElementById("maintextarea").value = "add orange 1 square from the edge";
+  document.getElementById("maintextarea").value = "add orange except the border";
   document.getElementById("maintextarea").focus();
   GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
 
@@ -126,7 +126,7 @@ document.getElementById("next_tutorial3").onclick = function() {
 document.getElementById("next_tutorial4").onclick = function() {
   document.getElementById("tutorial-s5").className = "tutorial-s";
   document.getElementById("maintextarea").focus();
-  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
+  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
 }
 
 document.getElementById("finish_tutorial").onclick = function() {
@@ -138,3 +138,15 @@ document.getElementById("finish_tutorial").onclick = function() {
   GS.tutorialMode = false;
   document.getElementById("states").className = "states active";
 }
+
+var reference_links = document.getElementsByClassName("reference_link");
+for (var i = 0; i < reference_links.length; i++) {
+  reference_links[i].addEventListener("click", function(e) {
+    e.preventDefault();
+    document.getElementById("reference").className = "modal-container";
+  });
+}
+
+document.getElementById("reference_close").addEventListener("click", function() {
+  document.getElementById("reference").className = "modal-container hidden";
+});
