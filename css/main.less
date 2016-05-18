@@ -155,7 +155,7 @@ b {
 #metaactions {
     visibility: visible;
     position: absolute;
-    top: 230px+250px*0.75*750/1100;
+    top: @canvasHeight - 50px;
     left: 215px;
     padding: 1px;
     text-align: center;
@@ -575,16 +575,16 @@ img.full {
 
 .row-info {
   position: absolute;
-  top: 235px+250px*0.75*750/1100;
-  left: 380px;
+  top: @canvasHeight + 2px;
+  left: 415px;
   font-size: 16px;
-  transform: rotateZ(-50deg);
+  transform: rotateZ(-60deg);
 }
 
 .col-info:extend(.row-info) {
-  top: 220px+250px*0.75*750/1100;
-  left: 440px;
-  transform: rotateZ(20deg);
+  top: @canvasHeight -  10px;
+  left: 450px;
+  transform: rotateZ(30deg);
 }
 
 .button--closed {

@@ -13,10 +13,12 @@ import Data.Foreign
 import Data.Foreign.Class
 import DOMHelper
 import Isomer
+
 -- import Transformer
 import Types
 import Helper
 
+import Math (sin)
 import Data.String.Regex (regex, parseFlags, replace)
 
 -- | Type synonyms for different combinations of effects
@@ -59,8 +61,11 @@ renderStack isomer y x stack = do
 -- | Render a wall (multiple stacks)
 renderWall :: IsomerInstance -> Number -> Number -> Wall -> EffIsomer
 renderWall isomer initlen y wall  = do
-    renderBlock isomer (1.0 + spacing*y) (-spacing*y - worldsize + 1.0) (-0.1) worldsize worldsize 0.1 gray
-    traverseWithIndex_ (\x -> renderStack isomer (-spacing*y - advance x) (worldsize - advanceCol x + spacing*y)) (reverse wall)
+    renderBlock isomer (1.0 + (spacing)*y - y*factor) (-spacing*y - worldsize + 1.0 - y*factor) (-0.1) worldsize worldsize 0.1 gray
+    traverseWithIndex_ (\x -> renderStack isomer (-spacing*y - advance x - y*factor) (worldsize - advanceCol x + spacing*y - y*factor)) (reverse wall)
+        where
+        factor = 2.25 --sin (75.0/180.0*3.14159)
+        
     --if wallNotEmpty wall
     --then traverseWithIndex_ (\x -> renderStack isomer y (toNumber (length wall - x))) (reverse wall)
     --else renderBlock isomer (xPosition 1.0 y) (-spacing * y) (-0.1) (initlen-0.1) 0.9 0.1 (colorFromRGB 100 100 100)

@@ -23,6 +23,7 @@ function GameState() {
   this.tutorialLevel = 2;
 
   this.coverage = [];
+  this.define_coverage = [];
   this.defineState = false;
 
   // the only persistent states
@@ -195,9 +196,10 @@ var GameAction = {
     sempre.sempreQuery(cmds , function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
       gs.coverage = jsonparse["coverage"];
+      gs.define_coverage = gs.coverage;
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
-      if (formval == undefined) {
-	console.log('undefined answer from sempre')
+      if (formval == null) {
+	console.log('no answer from sempre')
         gs.resetNBest();
 	gs.setCurrentWall();
       } else {
@@ -646,7 +648,7 @@ function definePhrase(e, gs) {
     var jsonparse = JSON.parse(jsonstr);
 
     if (jsonparse["candidates"].length == 0) {
-      gs.coverage = jsonparse["coverage"];
+      gs.define_coverage = jsonparse["coverage"];
       defineInterface(gs, definetextarea.value);
       return;
     } else {
@@ -654,10 +656,11 @@ function definePhrase(e, gs) {
       addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
     		       + gs.query + '" as "' + definetextarea.value + '"');
       closeDefineInterface(gs);
+      // consider populate the candidate list quietly,
       GameAction._candidates(gs);
       updateStatus("definition accepted. thanks for teaching!");
     }
-    // consider populating the candidates list
+    
   });
 }
 
@@ -678,18 +681,18 @@ function closeDefineInterface(gs) {
   gs.defineState = false;
 }
 
-function getColoredSpan(gs, utt) {
+function getColoredSpan(coverage, utt) {
   // Normalize coverages
   var max = 0;
-  for (var i = 0; i < gs.coverage.length; i++) {
-    if (gs.coverage[i] > max) max = gs.coverage[i];
+  for (var i = 0; i < coverage; i++) {
+    if (coverage > max) max = coverage[i];
   }
   if (max == 0) max = 1;
 
   var normalized_coverages = [];
-  for (var i = 0; i < gs.coverage.length; i++) {
-    normalized_coverages[i] = gs.coverage[i]==0? 255 : 0;
-    // Math.floor(255 - ((gs.coverage[i] / max) * 255));
+  for (var i = 0; i < coverage.length; i++) {
+    normalized_coverages[i] = coverage[i]==0? 255 : 0;
+    // Math.floor(255 - ((coverage[i] / max) * 255));
   }
 
   // Color the query
@@ -706,23 +709,21 @@ function defineInterface(gs, utt) {
     return;
   }
  
-  if (gs.defineState) {
-    updateStatus("SHRDLURN still does not understand you.");
-  } else {
-    var original_utt = document.getElementById("original_utt");
-    original_utt.innerHTML = getColoredSpan(gs, gs.query);
-  }
+  var original_utt = document.getElementById("original_utt");
+  original_utt.innerHTML = getColoredSpan(gs.coverage, gs.query);
 
   var query_phrase = document.getElementById("query_phrase");
-  var define_phrase = document.getElementById("define_phrase");
-  
-  
-  if (!gs.noAnswer()) {
-    updateStatus("SHRDLURN already understands " + gs.query + "!");
-    query_phrase.innerHTML = "SHRDLURN already understands \""
-      + gs.query + "\", but you can teach another meaning."
-  } else {
-    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs, utt) +'"';
+  if (!gs.defineState) { // first time openning, or close and open
+     if (!gs.noAnswer()) {
+      updateStatus("SHRDLURN already understands " + gs.query + "!");
+      query_phrase.innerHTML = "SHRDLURN already understands \""
+	+ gs.query + "\", but you can teach another meaning."
+    } else {
+      query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.coverage, utt) +'"';
+    }
+  } else { // refinement
+    updateStatus("SHRDLURN still does not understand you.");
+    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.define_coverage, utt) +'"';
   }
 
   // Hide maintextarea
