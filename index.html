@@ -71,9 +71,11 @@
       &nbsp; <span id="reaction"></span>
       <span id="currentcmd"><b>No command</b> </span>,
       <span id="status">type one!</span>
+      <span id="show_define_status" class="hidden">
+        <a href='' id='define_instead' class='define-this'> Please teach it (ctrl-D)!</a></span>
     </div>
     <div id="define_interface" class="hidden">
-      <span class="b-header">Teaching <span id="original_utt" class="utt"></span>
+      <span class="b-header">Teach <span id="original_utt" class="utt"></span>
       </span>
       <button class="button--solved button--closed" id="close_define_interface">&#10006;</button>
       <hr/>
@@ -82,9 +84,8 @@
 
       <span class="helpertext">
         <span id="define_phrase">
-         SHRDLURN did not understand
-          <span class="utt" id="query_phrase">
-            <span style="color:rgb(255,0,0);">add</span> <span> yellow</span>
+          <span id="query_phrase">
+            what you said
           </span>.
           It has trouble with the <span style="color:rgb(255,0,0);">red</span> words.
           Please teach in a way that is already understood by SHRDLRUN! <a href="#"> HELP </a>
@@ -109,10 +110,10 @@
   </div>
   </div>
 
-  <div id="debugdiv">
-    <span id="history" style="visibility:hidden;"></span>
+  <div id="debugdiv" class="hidden">
     <div id="formula"> <b>No action</b> </div>
     <div id="nbestlist"> </div>
+    <div id="history"> </div>
   </div>
 
   <div id="turker" style="display:none;margin-top:2em">
