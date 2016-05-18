@@ -172,7 +172,7 @@ function newWall(gs) {
   gs.resetNBest();
   gs.query = "";
   gs.listWalls = [];
-  
+
   sempre.sempreQuery(cmds, function (jsonstr) {
     if (jsonstr == "ERR_CONNECTION_REFUSED") {
       updateStatus("our server might be down...")
@@ -216,7 +216,7 @@ var GameAction = {
     sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
   },
   candidates: function(gs) {
-    
+
     var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
 	._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
     var cmds = {q:contextcommand, sessionId:gs.sessionId};
@@ -265,7 +265,7 @@ var GameAction = {
   },
   _accept_commit: function(gs) {
     if (!gs.noAnswer()) {
-      GameAction._simpleaccept(gs); 
+      GameAction._simpleaccept(gs);
       gs.listWalls.push(gs.currentWall);
       gs.resetNBest();
       gs.query = "";
@@ -524,6 +524,7 @@ window.addEventListener("load", function() {
 // Query stuff
 
 function runCurrentQuery(gs) {
+  console.log("RUNNING CURRENT QUERY!");
   var querystr = document.getElementById("maintextarea").value.trim()
   document.getElementById("maintextarea").value = ''
 
@@ -545,10 +546,13 @@ function runCurrentQuery(gs) {
 }
 
 var maintextarea = document.getElementById("maintextarea");
-document.getElementById("dobutton").onclick = function() {
+
+function doQuery(e) {
   runCurrentQuery(GS);
   maintextarea.focus();
-};
+}
+
+document.getElementById("dobutton").addEventListener("click", doQuery, false);
 
 document.getElementById("prevbutton").onclick = function() {
   GameAction.prev(GS);
@@ -568,14 +572,15 @@ function acceptOnclick() {
       GameAction.accept(GS);
       updateHistory(GS);
       addPoint();
+      if (GS.tutorialLevel == 3) { GS.tutorialLevel++; }
       GS.tutorialLevel++;
       nextTutorial(GS.tutorialLevel);
-    } else if (GS.tutorialLevel < 4) {
+    } else if (GS.tutorialLevel < 5) {
       alert("Woops! That's not exactly right. Try again.");
       return;
     }
   }
- 
+
   updateHistory(GS);
   GameAction.accept(GS);
   addPoint();
@@ -603,7 +608,8 @@ var Hotkeys = {
 document.getElementById("maintextarea").onkeydown = function(e) {
   return true;
 }
-document.onkeydown = function(e) {
+
+function parseKeys(e) {
   if (e.keyCode == Hotkeys.UP && e.target.id!="tasks") { // consider capture this in doc
     GameAction.prev(GS);
     return false;
@@ -614,6 +620,7 @@ document.onkeydown = function(e) {
     acceptOnclick();
     return false;
   } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
+    console.log("REGULAR ENTER!");
     if (GS.defineState) { definePhrase(e, GS); return false; }
     runCurrentQuery(GS); return false;
   } else if (e.keyCode == Hotkeys.Z && e.shiftKey && (e.ctrlKey || e.metaKey)) {
@@ -624,7 +631,9 @@ document.onkeydown = function(e) {
     e.preventDefault();
     defineInterface(GS, GS.query);
   } return true;
-};
+}
+
+document.addEventListener("keydown", parseKeys, false);
 
 document.getElementById("reset").onclick = function() {
   console.log("resetting!!")
@@ -660,13 +669,13 @@ function definePhrase(e, gs) {
       GameAction._candidates(gs);
       updateStatus("definition accepted. thanks for teaching!");
     }
-    
+
   });
 }
 
 function closeDefineInterface(gs) {
   // probably good to just run the query here
-  
+
   var definetextarea = document.getElementById("definetextarea");
   var maintextarea = document.getElementById("maintextarea");
   definetextarea.value = "";
@@ -704,11 +713,16 @@ function getColoredSpan(coverage, utt) {
 }
 
 function defineInterface(gs, utt) {
+  console.log(gs.tutorialLevel);
+  if (gs.tutorialMode && gs.tutorialLevel == 3) {
+   document.getElementById("tutorial-d2").className = "modal-container tutorial-s active";
+ }
+
   if (!gs.query) {
     updateStatus("nothing to define, enter a command.");
     return;
   }
- 
+
   var original_utt = document.getElementById("original_utt");
   original_utt.innerHTML = getColoredSpan(gs.coverage, gs.query);
 
@@ -743,9 +757,12 @@ function defineInterface(gs, utt) {
   gs.defineState = true;
 }
 
-document.getElementById("define_phrase_button").addEventListener("click", function(e) {
+function definePhraseClicked(e) {
   definePhrase(e, GS);
-});
+}
+
+document.getElementById("define_phrase_button").addEventListener("click", definePhraseClicked, false);
+
 document.getElementById("define_instead").addEventListener("click", function(e) {
   e.preventDefault();
   defineInterface(GS, GS.query);
