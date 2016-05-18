@@ -44,6 +44,9 @@
       <div>
         <a id="reset"
         href="">reset ALL progress</a>
+        <br>
+        <br>
+        <a href="" class="reference_link">Basic Grammar Reference Guide</a>
       </div>
     </div>
 
@@ -93,7 +96,7 @@
             what you said
           </span>.
           It has trouble with the <span style="color:rgb(255,0,0);">red</span> words.
-          Please rephrase in a way that's already understood by SHRDLRUN! <a href="#"> HELP </a>
+          Please rephrase in a way that's already understood by SHRDLRUN! <a href="" class="reference_link">Click here for HELP (reference to the basic grammar).</a>
         </span>
 
         <!-- For example,
@@ -180,28 +183,67 @@
       <div class="modal">
         <h1>Great job!</h1>
         <hr><br>
-        <p>Let's add the next layer of orange blocks by entering "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" as the command.</p>
+        <p>You just saw how you can use natural language to build. But, sometimes queries are very complicated and the computer hasn't learned the language yet. That's where you come in. You have to teach the computer building concepts.</p>
+        <p>Let's try to add the next layer of orange blocks by typing "add orange except the border".</p>
         <button class="button button--big button--modal sticky-botright" id="next_tutorial2">Next</button>
+      </div>
+    </div>
+    <div class="modal-container tutorial-s" id="tutorial-d1">
+      <div class="modal">
+        <h1>Yikes! The computer doesn't seem to recognize this complex utterance. Let's train it.</h1>
+        <hr /><br />
+        <p>So, you entered a phrase that the computer hadn't learned yet (this will happen a lot). Rather than just moving on, let's define the advanced phrase, so that the next time you use it, the computer understands.</p>
+        <p>Hit ctrl+d or press the define button.</p>
+        <button class="button button--big button--modal sticky-botright" id="next_tutoriald2">Try it</button>
+      </div>
+    </div>
+    <div class="modal-container tutorial-s" id="tutorial-d2">
+      <div class="modal">
+        <h1>Here's how to define complex phrases!</h1>
+        <hr><br>
+        <p>Behind the scenes, the computer uses a basic grammar that, although cumbersome, can be composed to complete basically any action. <a href="" class="reference_link" target="_blank">You can click here for a basic reference guide.</a> You can define any undefined complex phrase with anything the computer already knows. But, a sure-fire way to get it to learn is to use this basic grammar.</p>
+        <p>In this case, define "add orange except the border" as "add orange if row &gt; 1 and col &gt; 1 and row &lt; 7 and col &lt; 7" (might be easiest to copy this and paste it).</p>
+        <p>See how the computer will then learn that "add orange except the border" means adding the blocks everyone except the border.</p>
+        <button class="button button--big button--modal sticky-botright" id="next_tutoriald3">Try it</button>
       </div>
     </div>
     <div class="modal-container tutorial-s" id="tutorial-s4">
       <div class="modal">
         <h1>Great job again!</h1>
         <hr><br>
-        <p>Let's finish this up by adding the next two layers. I think you can figure out the right commands, though! Try to see if you can finish the pyramid. The next layer is "red", and the layer after that is "cyan".</p>
+        <p>Now you can use the phrase "add orange except the border" to add the next orange layer.</p>
         <button class="button button--big button--modal sticky-botright" id="next_tutorial3">Next</button>
       </div>
     </div>
     <div class="modal-container tutorial-s" id="tutorial-s5">
       <div class="modal">
+        <h1>Now let's finish it up!</h1>
+        <hr><br>
+        <p>Before we finish the pyramid, let's just try something simple first. Let's define a new phrase "add 2 red if row = 4". The computer might not understand this. So, in the basic grammar, this would be equivalent to "repeat add red if row = 4 2 times".</p>
+        <button class="button button--big button--modal sticky-botright" id="next_tutorial4">Next</button>
+      </div>
+    </div>
+    <div class="modal-container tutorial-s" id="tutorial-s6">
+      <div class="modal">
         <h1>You've done it! You completed the tutorial.</h1>
         <hr>
         <div class="half">
           <p>Congratulations! Now, you can start building whatever structures you want using natural language.</p>
-          <p>Here are some handy things to know. If the computer doesn't immediately understand exactly what you want, try scrolling through the options using either the arrow keys or the &darr; button. Or, to help train the computer to understand you better, click the "~" button to try another phrasing to say the same thing you desired. Or, click the "..." button to describe what the computer thought you meant instead.</p>
+          <p>Here are some handy things to know. If the computer doesn't immediately understand exactly what you want, try scrolling through the options using either the arrow keys or the &darr; button. Or, to help train the computer to understand you better, click the "~" button to try another phrasing to say the same thing you desired.</p>
           <p>Have fun! P.S. You get more points the more structures you create!</p>
         </div>
         <button class="button button--big button--modal sticky-botright" id="finish_tutorial">Start building</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="modal-container hidden" id="reference">
+      <div class="modal">
+        <h1>Basic Grammar Reference Guide</h1>
+        <button class="button--solved button--closed" id="reference_close">&#10006;</button>
+        <hr><br>
+        <p>Deserunt velit esse excepteur adipisicing culpa voluptate et irure deserunt excepteur esse laboris. Laboris esse officia quis proident officia deserunt aute mollit dolor. Nostrud ullamco adipisicing dolor cupidatat occaecat ad cillum elit exercitation esse minim ullamco. Fugiat amet nostrud Lorem et eu voluptate et laborum ipsum nisi est officia aliqua deserunt. Tempor laboris sit duis do ullamco ullamco anim nostrud exercitation.</p>
       </div>
     </div>
   </div>
