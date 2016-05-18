@@ -76,7 +76,8 @@ gulp.task("concat", ["bundle"], function() {
 	"js/Util.js",
 	"js/Config.js",
 	"js/Sempre.js",
-	"js/GameLogic.js",
+        "js/GameLogic.js",
+        "js/Tutorial.js",
 	"js/GameSetup.js"
         ])
         .pipe(concat("main.js"))
@@ -91,7 +92,8 @@ gulp.task("concatdebug", ["bundle"], function() {
 	"js/Config.js",
 	"js/Debug.js",
 	"js/Sempre.js",
-	"js/GameLogic.js",
+        "js/GameLogic.js",
+        "js/Tutorial.js",
 	"js/GameSetup.js"
         ])
         .pipe(concat("main.js"))
@@ -106,7 +108,8 @@ gulp.task("concatturk", ["bundle"], function() {
 	"js/Util.js",
 	"js/TurkConfig.js",
 	"js/Sempre.js",
-	"js/GameLogic.js",
+        "js/GameLogic.js",
+        "js/Tutorial.js",
 	"js/Turk.js",
 	"js/GameSetup.js",
         ])

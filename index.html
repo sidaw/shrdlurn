@@ -66,13 +66,17 @@
   <div class="col-info">col 1</div>
 
   <canvas id="canvas" width="1100" height="750"></canvas>
+  <span id="show_define_status" class="hidden">
+    not understood. <br/>
+    <a href='' id='define_instead' class='define-this'>
+      please teach (ctrl-D)!</a>
+  </span>
+
   <div id="chat" style="center">
     <div id="statusinfo">
       &nbsp; <span id="reaction"></span>
       <span id="currentcmd"><b>No command</b> </span>,
       <span id="status">type one!</span>
-      <span id="show_define_status" class="hidden">
-        <a href='' id='define_instead' class='define-this'> Please teach it (ctrl-D)!</a></span>
     </div>
     <div id="define_interface" class="hidden">
       <span class="b-header">Teach <span id="original_utt" class="utt"></span>
@@ -88,7 +92,7 @@
             what you said
           </span>.
           It has trouble with the <span style="color:rgb(255,0,0);">red</span> words.
-          Please teach in a way that is already understood by SHRDLRUN! <a href="#"> HELP </a>
+          Please rephrase in a way that's already understood by SHRDLRUN! <a href="#"> HELP </a>
         </span>
 
         <!-- For example,
