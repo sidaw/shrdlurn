@@ -366,6 +366,8 @@ function loadGameState(gs, newState) {
 }
 
 function addElemToHistory(gs, history, text) {
+  if (gs.currentWall == "[[]]") { return; }
+
   var elem = document.createElement("div");
   elem.setAttribute("data-index", gs.listWalls.length - 1);
   elem.setAttribute("data-walls", gs.currentWall);
