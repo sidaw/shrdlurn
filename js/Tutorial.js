@@ -9,6 +9,7 @@ window.addEventListener("load", function() {
     document.getElementById("canvastarget").className = "active";
     document.getElementById("goalblocks").className = "active";
     document.getElementById("states").className = "states";
+    document.getElementById("quit_tutorial").className = "";
     PS.Main.renderTargetJSON("[[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]]")();
     GS.tutorialMode = true;
   } else {
@@ -83,16 +84,12 @@ document.getElementById("next_tutoriald2").addEventListener("click", function() 
 
 function mitmDefineEnter(e) {
   if (e.keyCode == Hotkeys.ENTER) {
-    e.preventDefault();
-    e.stopPropagation();
     mitmDefinePhrase();
   }
   return true;
 }
 
 function mitmDefinePhraseClicked(e) {
-  e.preventDefault();
-  e.stopPropagation();
   mitmDefinePhrase();
 }
 
@@ -113,30 +110,48 @@ document.getElementById("next_tutoriald3").addEventListener("click", function() 
   document.removeEventListener("keydown", parseKeys);
   document.addEventListener("keydown", mitmDefineEnter, false);
   document.getElementById("define_phrase_button").addEventListener("click", mitmDefinePhraseClicked, false);
-  document.getElementById("definetextarea").setAttribute("value", "add orange if row > 1 and col > 1 and row < 7 and col < 7");
+  document.getElementById("definetextarea").setAttribute("value", "add orange if row > 1 and col > 1 and row < 8 and col < 8");
   document.getElementById("definetextarea").focus();
 })
 
 document.getElementById("next_tutorial3").onclick = function() {
   document.getElementById("tutorial-s4").className = "tutorial-s";
+  document.getElementById("maintextarea").value = "add orange except the border";
   document.getElementById("maintextarea").focus();
   GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
 }
 
 document.getElementById("next_tutorial4").onclick = function() {
   document.getElementById("tutorial-s5").className = "tutorial-s";
+  document.getElementById("maintextarea").value = "add 2 red if row = 4 or row = 5";
   document.getElementById("maintextarea").focus();
-  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
+  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
 }
 
-document.getElementById("finish_tutorial").onclick = function() {
+document.getElementById("quit_tutorial").addEventListener("click", function() {
+  document.removeEventListener("keydown", mitmEnter);
+  document.getElementById("dobutton").removeEventListener("click", mitmDoButton);
+  document.removeEventListener("keydown", mitmDefineEnter);
+  document.getElementById("define_phrase_button").removeEventListener("click", mitmDefinePhraseClicked);
+  document.addEventListener("keydown", parseKeys, false);
+  document.getElementById("dobutton").addEventListener("click", doQuery, false);
+  document.getElementById("define_phrase_button").addEventListener("click", definePhraseClicked, false);
+  finishTutorial();
+});
+
+function finishTutorial() {
   localStorage.setItem("tutorial_token", true);
   document.getElementById("tutorial").className = "tutorial";
   document.getElementById("canvastarget").className = "";
   document.getElementById("goalblocks").className = "";
   document.getElementById("states").className = "";
+  document.getElementById("quit_tutorial").className = "hidden";
   GS.tutorialMode = false;
   document.getElementById("states").className = "states active";
+}
+
+document.getElementById("finish_tutorial").onclick = function() {
+  finishTutorial();
 }
 
 var reference_links = document.getElementsByClassName("reference_link");

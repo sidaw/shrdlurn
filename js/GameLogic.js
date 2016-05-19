@@ -25,6 +25,7 @@ function GameState() {
   this.coverage = [];
   this.define_coverage = [];
   this.defineState = false;
+  this.reverting = -1;
 
   // the only persistent states
   this.sessionId = "deadbeef";
@@ -158,6 +159,7 @@ function updateCanvas(gs) {
 
   for (var i=0; i < maxWalls- wlen; i++)
     walls.push('[[]]');
+
   PSMain.renderJSON('['+walls.join(',')+']')();
   // updateGoalTextPosition(gs);
   updateFormula(gs);
@@ -364,9 +366,11 @@ function loadGameState(gs, newState) {
 }
 
 function addElemToHistory(gs, history, text) {
+  if (gs.currentWall == "[[]]") { return; }
+
   var elem = document.createElement("div");
   elem.setAttribute("data-index", gs.listWalls.length - 1);
-  elem.setAttribute("data-walls", gs.listWalls[gs.listWalls.length - 1]);
+  elem.setAttribute("data-walls", gs.currentWall);
   elem.innerHTML = text;
   history.insertBefore(elem, history.firstChild);
   elem.onclick = function() {
@@ -374,16 +378,35 @@ function addElemToHistory(gs, history, text) {
   }
 }
 
+Element.prototype.remove = function() {
+  this.parentElement.removeChild(this);
+}
+
 function updateHistory(gs) {
   var history = document.getElementById("command_history");
+  var elems = history.childNodes;
 
-  for (var child = history.getElementsByTagName("div")[0]; !child || child.getAttribute("data-index") != gs.listWalls.length - 2; child = history.getElementsByTagName("div")[0]) {
-    if (!child) break;
-    history.removeChild(child);
+  if (gs.reverting >= 0) {
+    var found = false;
+    while (found == false) {
+      found = true;
+      history = document.getElementById("command_history");
+      elems = history.childNodes;
+      for (var i = 0; i < elems.length; i++) {
+        if (parseInt(elems[i].getAttribute("data-index")) > gs.reverting) {
+          history.removeChild(elems[i]);
+          found = false;
+          break;
+        }
+      }
+    }
+
+    gs.reverting = -1;
   }
-  highlightHistory(gs, -1);
 
   addElemToHistory(gs, history, gs.query);
+
+  highlightHistory(gs, -2);
 }
 
 function wipeHistory(gs, wall) {
@@ -391,7 +414,7 @@ function wipeHistory(gs, wall) {
   history.innerHTML = "";
 
   var elem = document.createElement("div");
-  elem.setAttribute("data-index", 0);
+  elem.setAttribute("data-index", -1);
   elem.setAttribute("data-walls", wall);
   elem.innerHTML = "initial";
   history.appendChild(elem);
@@ -417,35 +440,40 @@ function hasClass(element, cls) {
   return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
 
-function revertHistory(gs, index) {
-  var elem;
-  var testI = index;
-  if (testI === "undo" || testI === "redo") {
-    var elems = document.querySelectorAll("#command_history > div");
-    var active = false;
-    for (index = 1; elems[index].getAttribute("data-index") != 0; index++) {
-      if (elems[index].getAttribute("data-index") == elems[index+1].getAttribute("data-index")) continue;
-      if (hasClass(elems[index], "active")) {
-        active = true;
-        break;
-      }
+function undoHistory(gs) {
+  var elems = document.querySelectorAll("#command_history > div");
+  var index = elems[1].getAttribute("data-index");
+  for (var i = 0; i < elems.length; i++) {
+    if (hasClass(elems[i], "active")) {
+      console.log(i);
+      console.log(elems[i].getAttribute("data-index"));
+      if (elems[i].getAttribute("data-index") == "-1") { return; }
+      index = elems[i+1].getAttribute("data-index");
     }
-    if (testI === "undo") { index++; }
-    if (testI === "redo") { index--; }
-    if (active) {
-      elem = elems[index];
-      index = elem.getAttribute("data-index");
-    } else {
-      if (testI === "undo") { index = 1; }
-      elem = elems[index];
-      index = elems[index].getAttribute("data-index");
-    }
-  } else {
-    elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
   }
-  gs.listWalls = gs.listWalls.slice(0, index);
-  gs.listWalls.push(elem.getAttribute("data-walls"));
-  updateCanvas(gs);
+  revertHistory(gs, index);
+}
+
+function redoHistory(gs) {
+  var elems = document.querySelectorAll("#command_history > div");
+  var index = elems[0].getAttribute("data-index");
+  for (var i = elems.length - 1; i > 0; i--) {
+    if (hasClass(elems[i], "active")) {
+      index = elems[i-1].getAttribute("data-index");
+    }
+  }
+  revertHistory(gs, index);
+}
+
+function revertHistory(gs, index) {
+  var elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
+  var wall = elem.getAttribute("data-walls");
+  PS.Main.renderJSON("[" + wall + ",[[]]]")();
+
+  if (gs.reverting >= 0) { gs.listWalls.pop(); }
+  gs.listWalls.push(wall);
+  gs.reverting = index;
+
   highlightHistory(gs, index);
 }
 
@@ -617,6 +645,7 @@ function parseKeys(e) {
     GameAction.next(GS);
     return false;
   } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
+    console.log("SHIFTING!");
     acceptOnclick();
     return false;
   } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
@@ -624,9 +653,9 @@ function parseKeys(e) {
     if (GS.defineState) { definePhrase(e, GS); return false; }
     runCurrentQuery(GS); return false;
   } else if (e.keyCode == Hotkeys.Z && e.shiftKey && (e.ctrlKey || e.metaKey)) {
-    revertHistory(GS, "redo"); return false;
+    redoHistory(GS); e.preventDefault(); return false;
   } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
-    revertHistory(GS, "undo"); return false;
+    undoHistory(GS); e.preventDefault(); return false;
   } else if (e.keyCode == Hotkeys.D && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
     defineInterface(GS, GS.query);
