@@ -83,16 +83,12 @@ document.getElementById("next_tutoriald2").addEventListener("click", function() 
 
 function mitmDefineEnter(e) {
   if (e.keyCode == Hotkeys.ENTER) {
-    e.preventDefault();
-    e.stopPropagation();
     mitmDefinePhrase();
   }
   return true;
 }
 
 function mitmDefinePhraseClicked(e) {
-  e.preventDefault();
-  e.stopPropagation();
   mitmDefinePhrase();
 }
 
@@ -113,12 +109,13 @@ document.getElementById("next_tutoriald3").addEventListener("click", function() 
   document.removeEventListener("keydown", parseKeys);
   document.addEventListener("keydown", mitmDefineEnter, false);
   document.getElementById("define_phrase_button").addEventListener("click", mitmDefinePhraseClicked, false);
-  document.getElementById("definetextarea").setAttribute("value", "add orange if row > 1 and col > 1 and row < 7 and col < 7");
+  document.getElementById("definetextarea").setAttribute("value", "add orange if row > 1 and col > 1 and row < 8 and col < 8");
   document.getElementById("definetextarea").focus();
 })
 
 document.getElementById("next_tutorial3").onclick = function() {
   document.getElementById("tutorial-s4").className = "tutorial-s";
+  document.getElementById("maintextarea").value = "add orange except the border";
   document.getElementById("maintextarea").focus();
   GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
 }
@@ -126,7 +123,7 @@ document.getElementById("next_tutorial3").onclick = function() {
 document.getElementById("next_tutorial4").onclick = function() {
   document.getElementById("tutorial-s5").className = "tutorial-s";
   document.getElementById("maintextarea").focus();
-  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
+  GS.targetWall = "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]";
 }
 
 document.getElementById("finish_tutorial").onclick = function() {
