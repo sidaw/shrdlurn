@@ -14,10 +14,8 @@ function GameState() {
   this.extraBits = 0;
   this.log = {};
   this.log.numQueries = 0;
-  this.log.totalChars = 0;
   this.log.totalTokens = 0;
   this.log.numScrolls = 0;
-  this.log.numStatus = 0;
 
   this.tutorialMode = false;
   this.tutorialLevel = 2;
@@ -115,18 +113,13 @@ function GameState() {
       return 0;
     return this.successCounts[levelid]
   }
-  this.incrementSuccessCount = function(levelid) {
+  this.incrementSuccessCount = function(levelid, amount) {
     if (this.successCounts[levelid] == undefined)
-      this.successCounts[levelid] = 1;
+      this.successCounts[levelid] = amount;
     else {
-      this.successCounts[levelid] = parseInt(this.successCounts[levelid])+1;
+      this.successCounts[levelid] = parseInt(this.successCounts[levelid])+amount;
     }
     util.setStore("successCounts", this.successCounts)
-    util.setStore("extraBits", this.extraBits)
-  }
-  this.effectiveStepsNumber = function() {
-    if (this.noAnswer()) return this.listWalls.length-1;
-    else return this.listWalls.length;
   }
 }
 
@@ -164,7 +157,6 @@ function updateCanvas(gs) {
   // updateGoalTextPosition(gs);
   updateFormula(gs);
   updateReaction(gs);
-
 }
 
 function newWall(gs) {
@@ -180,8 +172,9 @@ function newWall(gs) {
       updateStatus("our server might be down...")
       return
     }
-    var jsresp = JSON.parse(jsonstr)['exValue'];
-    var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
+    var wall = JSON.parse(jsonstr)['commandResponse'];
+    // var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
+    console.log("got this wall: " + wall);
     gs.listWalls.push(wall);
     //gs.targetWall = wall;
     gs.setCurrentWall();
@@ -272,6 +265,7 @@ var GameAction = {
       gs.resetNBest();
       gs.query = "";
       gs.setCurrentWall();
+      addPoint("accept");
       updateCanvas(gs);
       updateStatus("✓: accepted (#{accept}/{length}), enter another command"
 		   ._format({accept:gs.NBestInd, length:gs.NBest.length}))
@@ -285,8 +279,7 @@ var GameAction = {
 function logh(strlog) {document.getElementById("history").innerHTML += strlog; }
 function updateStatus(strstatus)
 {
-  document.getElementById("status").innerHTML = strstatus
-  GS.log.numStatus++;
+  document.getElementById("status").innerHTML = strstatus;
   if (GS.query && GS.query.length>0) {
     var stateinfo = "<b>↵: {query}</b>"._format({query:GS.query});
     if (!GS.noAnswer()) {
@@ -350,11 +343,11 @@ function updateGoalTextPosition(gs) {
 
 function saveGameState(gs, name) {
   var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
-  var states = localStorage.getItem("states");
+  var states = util.store.getItem("states");
   if (states === null) { states = []; }
   else { states = JSON.parse(states); }
   states.push(state);
-  localStorage.setItem("states", JSON.stringify(states));
+  util.store.setItem("states", JSON.stringify(states));
   popTasks();
 }
 
@@ -482,8 +475,8 @@ function revertHistory(gs, index) {
 function popTasks() {
   var ps = document.getElementById("tasks");
   ps.options.length = 0;
-  console.log(JSON.parse(localStorage.getItem("states")));
-  var states = configs.levels.concat(JSON.parse(localStorage.getItem("states")));
+  console.log(JSON.parse(util.store.getItem("states")));
+  var states = configs.levels.concat(JSON.parse(util.store.getItem("states")));
   for (var l in states) {
     if (!states[l]) continue;
     var p1 = document.createElement("option");
@@ -524,7 +517,7 @@ document.getElementById("load_state").onclick = function() {
     newWall(GS);
     updateStatus("selected level {task}"._format({task:taskstr}));
   } else {
-    var states = JSON.parse(localStorage.getItem("states"));
+    var states = JSON.parse(util.store.getItem("states"));
     updateStatus("selected state {state}"._format({state:name}));
     for (var i = 0; i < states.length; i++) {
       if (states[i].name == name) {
@@ -535,17 +528,21 @@ document.getElementById("load_state").onclick = function() {
   }
 }
 
-function addPoint() {
-  var points = localStorage.getItem("points");
-  if (!points) points = 0;
+function addPoint(status) {
+  var points = util.getStore("points", 0);
   points++;
-  localStorage.setItem("points", points);
+  GS.incrementSuccessCount(status, 1);
+  if (status=="success") {
+    points+=10;
+    GS.incrementSuccessCount(status, 10);
+  }
+  
+  util.setStore("points", points);
   document.getElementById("game_points").innerHTML = points;
 }
 
 window.addEventListener("load", function() {
-  var points = localStorage.getItem("points");
-  if (!points) points = 0;
+  var points = util.getStore("points", 0);
   document.getElementById("game_points").innerHTML = points;
 })
 
@@ -559,15 +556,11 @@ function runCurrentQuery(gs) {
   if (querystr.length>0) {
     gs.log.totalTokens += querystr.split(" ").length;
     gs.log.numQueries++;
-    gs.log.totalChars += querystr.length;
-    if (configs.hardMaxSteps
-	&& gs.effectiveStepsNumber() >= configs.levels[gs.taskind].maxSteps) {
-      updateStatus("entered \"" + querystr +"\", but used too many steps, ⎌ first.");
-    } else {
-      logh(gs.numQueries + ' ' + querystr + '; ')
-      gs.query = querystr;
-      GameAction.candidates(gs);
-    }
+  
+    logh(gs.numQueries + ' ' + querystr + '; ')
+    gs.query = querystr;
+    GameAction.candidates(gs);
+    
   } else {
     updateStatus("enter a command");
   }
@@ -599,19 +592,17 @@ function acceptOnclick() {
       console.log("WON!");
       GameAction.accept(GS);
       updateHistory(GS);
-      addPoint();
       if (GS.tutorialLevel == 3) { GS.tutorialLevel++; }
       GS.tutorialLevel++;
       nextTutorial(GS.tutorialLevel);
     } else if (GS.tutorialLevel < 5) {
-      alert("Woops! That's not exactly right. Try again.");
+      updateStatus("Woops! That's not exactly right. Try again.");
       return;
     }
   }
 
   updateHistory(GS);
   GameAction.accept(GS);
-  addPoint();
   maintextarea.focus();
 }
 function metaCommand(meta) {
@@ -664,20 +655,7 @@ function parseKeys(e) {
 
 document.addEventListener("keydown", parseKeys, false);
 
-document.getElementById("reset").onclick = function() {
-  console.log("resetting!!")
-  util.resetStore();
-  GS.sessionId = util.getId();
-  GS.successCounts = util.getStore("successCounts", {});
-  GS.extraBits = util.getStore("extraBits", 0);
-  popTasks();
-  newWall(GS);
-  document.getElementById("maintextarea").focus();
-}
-
-
 // Define interface
-
 function definePhrase(e, gs) {
   var definetextarea = document.getElementById("definetextarea");
   var text = "(uttdef \"" + definetextarea.value + "\")";
@@ -688,9 +666,14 @@ function definePhrase(e, gs) {
     if (jsonparse["candidates"].length == 0) {
       gs.define_coverage = jsonparse["coverage"];
       defineInterface(gs, definetextarea.value);
+      addPoint("fail");
       return;
     } else {
-      addPoint();
+      var commandResponse = jsonparse['commandResponse'];
+      var numans = parseInt(commandResponse);
+      console.log("got this many rules: " + numans)
+      if (numans == 0) addPoint("fail");
+      else addPoint("success");
       addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
     		       + gs.query + '" as "' + definetextarea.value + '"');
       closeDefineInterface(gs);
@@ -799,3 +782,18 @@ document.getElementById("define_instead").addEventListener("click", function(e) 
 document.getElementById("close_define_interface").addEventListener("click", function(e) {
   closeDefineInterface(GS, false);
 });
+
+function simplereset() {
+  GS.sessionId = util.getId();
+  GS.successCounts = util.getStore("successCounts", {})
+  popTasks();
+  newWall(GS);
+  document.getElementById("maintextarea").focus();
+}
+
+document.getElementById("reset").onclick = function() {
+  console.log("resetting!!")
+  util.resetStore();
+  simplereset();
+}
+simplereset();

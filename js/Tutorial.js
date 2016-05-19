@@ -3,7 +3,7 @@
  */
 
 window.addEventListener("load", function() {
-  var tutorial_token = localStorage.getItem("tutorial_token");
+  var tutorial_token = util.store.getItem("tutorial_token");
   if (!tutorial_token) {
     document.getElementById("tutorial").className = "tutorial active";
     document.getElementById("canvastarget").className = "active";
@@ -24,7 +24,7 @@ function nextTutorial(i) {
 }
 
 document.getElementById("skip_tutorial").onclick = function() {
-  localStorage.setItem("tutorial_token", "true");
+  util.store.setItem("tutorial_token", "true");
   document.getElementById("tutorial").className = "tutorial";
 }
 
@@ -140,7 +140,7 @@ document.getElementById("quit_tutorial").addEventListener("click", function() {
 });
 
 function finishTutorial() {
-  localStorage.setItem("tutorial_token", true);
+  util.store.setItem("tutorial_token", true);
   document.getElementById("tutorial").className = "tutorial";
   document.getElementById("canvastarget").className = "";
   document.getElementById("goalblocks").className = "";

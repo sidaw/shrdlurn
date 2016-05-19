@@ -33,7 +33,9 @@
 (rule $Action (do $ActionSeq if $CondSeq) (lambda a (lambda c (call @iff (var c) (var a)))))
 # (rule $Action ($ActionSeq $CondSeq) (lambda a (lambda c (call @iff (var c) (var a)))) (floating 1))
 
-(rule $Action ({ $Action }) (IdentityFn))
+(rule $Action ([ $ActionSeq ]) (IdentityFn))
+(rule $Action ([ $Action ]) (IdentityFn))
+
 # combo actions
 (rule $ActionSeq ($ActionSeq then $Action) (lambda a1 (lambda a2 (call @serial (var a1) (var a2)))))
 # (rule $ActionSeq ($ActionSeq $Action) (lambda a1 (lambda a2 (call @serial (var a1) (var a2)))) (floating 1))
@@ -49,6 +51,10 @@
 # (rule $CondSeq ($CondSeq $Cond) (lambda c1 (lambda c2
 #					(call @combine (string @op) (var c1) (var c2)))) (floating 1))
 )
+
+(rule $Cond ([ $CondSeq ]) (IdentityFn))
+(rule $Cond ([ $Cond ]) (IdentityFn))
+
 (rule $Cond (not $Cond) (lambda c (call @not (var c))))
 (rule $CondSeq ($Cond) (IdentityFn))
 
@@ -57,10 +63,6 @@
 (rule $Cond ($Getter @rel $NUM) (lambda g (lambda n
 (call @filter (var g) (string @rel) (var n)))))
 )
-
-# basic stuff, probalby all should be anchored
-# Yeah, lets not halluciate numbers
-# (rule $NUM (nothing) (ConstantFn (number 1 NUM1)))
 
 (rule $Action (remove) (ConstantFn (call @remove)))
 (rule $Action (add $Color) (lambda t (call @add (var t))))
@@ -76,7 +78,7 @@
 			      (call @topColor (var t))) (anchored 1))
 
 
-(rule $NUM ($TOKEN) (NumberFn) (anchored 1))
+(rule $NUM ($TOKEN) (NumberFn))
 # cyan brown red orange yellow
 (rule $Color (cyan) (ConstantFn (number 0 COLOR)) (anchored 1))
 (rule $Color (brown) (ConstantFn (number 1 COLOR)) (anchored 1))

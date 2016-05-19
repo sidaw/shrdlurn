@@ -25,19 +25,20 @@
       <br />
       <div id="shortcuts">
         <b>keyboard shortcuts:</b><br/>
-        &crarr;: enter
+        &crarr;: enter (try)
         <br/>
-        &#x2713;: shift-enter
+        &#x2713;: shift-enter (accept)
         <br/>
-        &#x238c;: ctrl-z
+        ~: crtl-d (teach)
+        <br/>
+        &uarr;: up
+        <br/>
+        &darr;: down
+        <br/>
+        &#x238c;: ctrl-z (undo)
         <br />
-        &#8618;: ctrl-z-shift
-        <br/>
-        &darr;: next try
-        <br/>
-        &uarr;: previous try
-        <br/>
-        ~: crtl-d
+        &#8618;: ctrl-z-shift (redo)
+
         <br/>
       </div>
       <p/>
@@ -46,10 +47,10 @@
         href="">reset ALL progress</a>
         <br>
         <br>
-        <a href="" class="reference_link">Basic Grammar Reference Guide</a>
+        <a href="" class="reference_link">help me</a>
         <br>
         <br>
-        <a href="" class="hidden" id="quit_tutorial">Quit Tutorial</a>
+        <a href="" class="hidden" id="quit_tutorial">quit tutorial</a>
       </div>
     </div>
 
@@ -69,8 +70,8 @@
   <div id="currentblocks">after action</div>
   <div id="goalblocks">target</div>
 
-  <div class="row-info">row 1</div>
-  <div class="col-info">col 1</div>
+  <div class="row-info">col 1</div>
+  <div class="col-info">row 1</div>
 
   <canvas id="canvas" width="1100" height="750"></canvas>
   <span id="show_define_status" class="hidden">
@@ -99,7 +100,7 @@
             what you said
           </span>.
           It has trouble with the <span style="color:rgb(255,0,0);">red</span> words.
-          Please rephrase in a way that's already understood by SHRDLRUN! <a href="" class="reference_link">Click here for HELP (reference to the basic grammar).</a>
+          Please rephrase in a way that's already understood by SHRDLRUN! <a href="" class="reference_link">Click here for HELP.</a>
         </span>
 
         <!-- For example,
@@ -107,7 +108,7 @@
         <span class="utt">put yellow on stacks taller than 3</span>.
         <a href="#"> see more examples. </a> <br/> -->
     </div>
-    <input type="text" id="maintextarea" placeholder="add red if top yellow"  />
+    <input type="text" id="maintextarea" placeholder="type a command, e.g.: add red if top yellow"/>
     <div class="buttons" id="mainbuttons">
       <button class="button" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
     </div>
@@ -127,17 +128,15 @@
     <div id="history"> </div>
   </div>
 
-  <div id="turker" style="display:none;margin-top:2em">
+  <div id="turker" style="display:none;margin-top:2em;center;">
     <hr>
     <p>Dear Turker, please click
-      the button below after you are done, and paste the code back
-      to AMT.
+      the "code" button below after you reach 100 points and paste the code back to AMT.
       <span id="turkmsg"></span>
     </p>
     <button id="turkbutton" class="button"
-    style="width:80px;">done</button>
+    style="width:80px;">code</button> <span id="turkcode">(code to appear here)</span>
     <p/>
-    <div id="turkcode">XXXXXX(to appear)</div>
     <div>
     </div>
   </div>
@@ -204,7 +203,7 @@
       <div class="modal">
         <h1>Here's how to define complex phrases!</h1>
         <hr><br>
-        <p>Behind the scenes, the computer uses a basic grammar that, although cumbersome, can be composed to complete basically any action. <a href="" class="reference_link" target="_blank">You can click here for a basic reference guide.</a> You can define any undefined complex phrase with anything the computer already knows. But, a sure-fire way to get it to learn is to use this basic grammar.</p>
+        <p>Behind the scenes, the computer uses a basic grammar that, although cumbersome, can be composed to complete basically any action. <a href="" class="reference_link" target="_blank">Click here for a guide.</a> You can define any undefined complex phrase with anything the computer already knows. But, a sure-fire way to get it to learn is to use this basic grammar.</p>
         <p>In this case, define "add orange except the border" as "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" (don't worry about remembering this -- it'll be on the next page).</p>
         <p>See how the computer will then learn that "add orange except the border" means adding the blocks everyone except the border.</p>
         <button class="button button--big button--modal sticky-botright" id="next_tutoriald3">Try it</button>
@@ -243,10 +242,22 @@
   <div>
     <div class="modal-container hidden" id="reference">
       <div class="modal">
-        <h1>Basic Grammar Reference Guide</h1>
+        <h1>Help for SHRDLURN</h1>
         <button class="button--solved button--closed" id="reference_close">&#10006;</button>
         <hr><br>
-        <p>Deserunt velit esse excepteur adipisicing culpa voluptate et irure deserunt excepteur esse laboris. Laboris esse officia quis proident officia deserunt aute mollit dolor. Nostrud ullamco adipisicing dolor cupidatat occaecat ad cillum elit exercitation esse minim ullamco. Fugiat amet nostrud Lorem et eu voluptate et laborum ipsum nisi est officia aliqua deserunt. Tempor laboris sit duis do ullamco ullamco anim nostrud exercitation.</p>
+        <p> The goal is to teach SHRDLURN (the computer) to understand more English. You have to define things in a way that can already be understood by SHRDLURN.
+          This includes anything that you or others have already taught it,
+          as well as the core SHRDLURN language below, which it always understands:
+          <ul>
+            <li><b>colors: </b> red, cyan, brown, yellow, orange</li>
+            <li><b>numbers: </b> 0, 1, 2, ..., 9, many</li>
+            <li><b>actions: </b> remove, add red</li>
+            <li><b>conditional: </b> add red if top yellow, add brown if col = 3, remove if top red, add if has red or row = 3 </li>
+            <li><b>combinations: </b> add yellow then add cyan then add red, repeat add cyan 3 times </li>
+            <li><b>logic: </b> add yellow if row > 1 and row < 8, repeat add red 2 times if row = 3 or col = 3, [add red then add yellow] if row > 2 if col > 2</li>
+          </ul>
+        </p>
+        <p> English is hard, which is why we need your help teaching SHRDLURN. Thanks and have fun!</p>
       </div>
     </div>
   </div>

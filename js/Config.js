@@ -6,7 +6,6 @@ if (configs.SEMPRE_URL==undefined)
 
 configs.costPerStep = 3;
 configs.costPerScroll = 1;
-
 configs.defaultMaxSteps = 3;
 configs.hardMaxSteps = false; // not allowing num steps to exceed this
 
