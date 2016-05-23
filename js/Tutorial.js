@@ -12,8 +12,6 @@ window.addEventListener("load", function() {
     document.getElementById("quit_tutorial").className = "";
     PS.Main.renderTargetJSON("[[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]]")();
     GS.tutorialMode = true;
-  } else {
-    document.getElementById("states").className = "states active";
   }
 })
 
@@ -147,7 +145,6 @@ function finishTutorial() {
   document.getElementById("states").className = "";
   document.getElementById("quit_tutorial").className = "hidden";
   GS.tutorialMode = false;
-  document.getElementById("states").className = "states active";
 }
 
 document.getElementById("finish_tutorial").onclick = function() {

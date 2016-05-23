@@ -13,13 +13,9 @@
   <div id="container">
     <div id="panel">
       <canvas id="canvastarget" width="200" height="200"></canvas>
-      <div id="states" class="states active">
-        <span class="states-title">Saved States</span>
-        <select id="tasks" size="5"></select>
-        <button class="button button--big" id="load_state">Load</button>
-        <input type="text" id="state_name" placeholder="Name this state...">
-        <button class="button button--big" id="save_state">Save</button>
-      </div>
+      <button id="prev_state" class="button button--big">&larr; prev</button>
+      <button id="load_state" class="button button--big">load</button>
+      <button id="next_state" class="button button--big">next &rarr;</button>
       <p/>
       <div><b>game points:</b> <span id="game_points"></span></div>
       <br />
@@ -73,6 +69,8 @@
   <div class="row-info">col 1</div>
   <div class="col-info">row 1</div>
 
+  <button id="clear_button" class="button button--big">clear</button>
+
   <canvas id="canvas" width="1100" height="750"></canvas>
   <span id="show_define_status" class="hidden">
     SHRDLRUN does not understand. <br/>
@@ -114,7 +112,7 @@
     </div>
 
     <fieldset class="command-history-container">
-      <legend>Command History</legend>
+      <legend>Recipe Steps</legend>
       <div id="command_history">
 
       </div>
@@ -148,10 +146,7 @@
         <hr>
         <div class="half">
           <p>
-            In homage to the seminal work of Winograd (1972) and inspired by Wittgenstein's language games, SHRDLURN is an attempt to teach a computer the nuance of human language. But, we need your help to train and teach the computer. In return, you'll be able to interact and engage with a virtual world using nothing but natural language.
-          </p>
-          <p>
-            Given building blocks, SHRDLURN allows you to build anything you want on the setting, instructing the computer with simple and nuanced natural language.
+            In homage to the seminal work of Winograd (1972) and inspired by Wittgenstein's language games, SHRDLURN is an attempt to teach a computer the nuance of human language. To do so, we need your help to train and teach the computer. In return, you'll be able to interact and engage with a virtual world using nothing but natural language.
           </p>
           <p>
             <a href="" id="skip_tutorial">skip the tutorial</a>
@@ -163,6 +158,7 @@
         </div>
       </div>
     </div>
+
     <div class="modal-container tutorial-s" id="tutorial-s2">
       <div class="modal">
         <h1>Let's get started by making a cool structure.</h1>

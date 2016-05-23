@@ -342,20 +342,13 @@ function updateGoalTextPosition(gs) {
 // State stuff
 
 function saveGameState(gs, name) {
-  var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
-  var states = util.store.getItem("states");
-  if (states === null) { states = []; }
-  else { states = JSON.parse(states); }
-  states.push(state);
-  util.store.setItem("states", JSON.stringify(states));
-  popTasks();
-}
-
-function loadGameState(gs, newState) {
-  gs.listWalls = [];
-  gs.listWalls.push(newState.data);
-  updateCanvas(gs);
-  wipeHistory(gs, newState.data);
+  // var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
+  // var states = util.store.getItem("states");
+  // if (states === null) { states = []; }
+  // else { states = JSON.parse(states); }
+  // states.push(state);
+  // util.store.setItem("states", JSON.stringify(states));
+  // popTasks();
 }
 
 function addElemToHistory(gs, history, text) {
@@ -470,63 +463,111 @@ function revertHistory(gs, index) {
   highlightHistory(gs, index);
 }
 
-// DOM functions, and events
-// consider retriving this list from sempre
-function popTasks() {
-  var ps = document.getElementById("tasks");
-  ps.options.length = 0;
-  console.log(JSON.parse(util.store.getItem("states")));
-  var states = configs.levels.concat(JSON.parse(util.store.getItem("states")));
-  for (var l in states) {
-    if (!states[l]) continue;
-    var p1 = document.createElement("option");
-    p1.value = states[l].name;
-    p1.text =  (parseInt(l)+1) + " " + states[l].name;
-    p1.id = "state-" + states[l].id;
-    ps.appendChild(p1);
-  }
-  ps.selectedIndex = GS.taskind;
+/* States */
+var STATES = [
+  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
+  "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]",
+  "[[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4]]",
+  "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]",
+  "[[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2]]",
+  "random"
+];
+
+/* Render the target state initially. */
+window.addEventListener("load", function() {
+  updateTarget(0);
+});
+
+function loadGameState(gs, newWall) {
+  gs.listWalls = [newWall];
+  updateCanvas(gs);
+  wipeHistory(gs, newWall);
 }
 
-document.getElementById("tasks").onchange = function() {
-  // var t = document.getElementById("tasks");
-  // var taskstr = configs.levels[t.selectedIndex].name;
-  // GS.taskind = t.selectedIndex;
-  // GameAction.checkAnswer(GS);
-  // newWall(GS);
-  // updateStatus("selected level {task}"._format({task:taskstr}));
-};
+document.getElementById("prev_state").addEventListener("click", function() {
+  var index = document.getElementById("canvastarget").getAttribute("data-index");
+  index--;
 
-document.getElementById("save_state").onclick = function() {
-  var state_name = document.getElementById("state_name");
-  if (state_name.value.length > 0) {
-    saveGameState(GS, state_name.value);
-    state_name.value = "";
-    state_name.className = "";
+  if (index >= 0)
+    updateTarget(index);
+});
+
+document.getElementById("load_state").addEventListener("click", function() {
+  var canvas_target = document.getElementById("canvastarget")
+  var index = canvas_target.getAttribute("data-index");
+  var wall = canvas_target.getAttribute("data-wall");
+  loadGameState(GS, wall);
+  updateStatus("loaded a new state");
+});
+
+document.getElementById("next_state").addEventListener("click", function() {
+  var index = document.getElementById("canvastarget").getAttribute("data-index");
+  index++;
+  if (index != STATES.length) {
+    updateTarget(index);
   } else {
-    state_name.className = "active";
+    updateTarget(index - 1);
   }
+});
+
+document.getElementById("clear_button").addEventListener("click", function() {
+  loadGameState(GS, "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]");
+});
+
+function updateTarget(index) {
+  var wall = STATES[index];
+  if (wall == "random")
+    wall = randomWall();
+
+  PS.Main.renderTargetJSON("[" + wall + "]")();
+
+  var canvas_target = document.getElementById("canvastarget");
+  canvas_target.setAttribute("data-wall", wall);
+  canvas_target.setAttribute("data-index", index);
 }
 
-document.getElementById("load_state").onclick = function() {
-  var t = document.getElementById("tasks");
-  var name = t.options[t.selectedIndex].value;
-  if (name == "random" || name == "empty") {
-    var taskstr = configs.levels[t.selectedIndex].name;
-    GS.taskind = t.selectedIndex;
-    newWall(GS);
-    updateStatus("selected level {task}"._format({task:taskstr}));
-  } else {
-    var states = JSON.parse(util.store.getItem("states"));
-    updateStatus("selected state {state}"._format({state:name}));
-    for (var i = 0; i < states.length; i++) {
-      if (states[i].name == name) {
-        loadGameState(GS, states[i]);
-        break;
-      }
-    }
+function randomWall() {
+  var wall = "[";
+  for (var i = 0; i < 64; i++) {
+    var color = Math.floor(Math.random() * 10);
+    if (color > 4) color = "";
+    wall += "[" + color + "]";
+    if (i != 63) wall += ",";
   }
+  wall += "]";
+  return wall;
 }
+
+// document.getElementById("save_state").onclick = function() {
+//   var state_name = document.getElementById("state_name");
+//   if (state_name.value.length > 0) {
+//     saveGameState(GS, state_name.value);
+//     state_name.value = "";
+//     state_name.className = "";
+//   } else {
+//     state_name.className = "active";
+//   }
+// }
+//
+// document.getElementById("load_state").onclick = function() {
+//   var t = document.getElementById("tasks");
+//   var name = t.options[t.selectedIndex].value;
+//   if (name == "random" || name == "empty") {
+//     var taskstr = configs.levels[t.selectedIndex].name;
+//     GS.taskind = t.selectedIndex;
+//     newWall(GS);
+//     updateStatus("selected level {task}"._format({task:taskstr}));
+//   } else {
+//     var states = JSON.parse(util.store.getItem("states"));
+//     updateStatus("selected state {state}"._format({state:name}));
+//     for (var i = 0; i < states.length; i++) {
+//       if (states[i].name == name) {
+//         loadGameState(GS, states[i]);
+//         break;
+//       }
+//     }
+//   }
+// }
 
 function addPoint(status) {
   var points = util.getStore("points", 0);
@@ -536,7 +577,7 @@ function addPoint(status) {
     points+=10;
     GS.incrementSuccessCount(status, 10);
   }
-  
+
   util.setStore("points", points);
   document.getElementById("game_points").innerHTML = points;
 }
@@ -556,11 +597,11 @@ function runCurrentQuery(gs) {
   if (querystr.length>0) {
     gs.log.totalTokens += querystr.split(" ").length;
     gs.log.numQueries++;
-  
+
     logh(gs.numQueries + ' ' + querystr + '; ')
     gs.query = querystr;
     GameAction.candidates(gs);
-    
+
   } else {
     updateStatus("enter a command");
   }
@@ -662,6 +703,7 @@ function definePhrase(e, gs) {
   var cmds = {q:text, sessionId:gs.sessionId};
   sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
+    console.log(jsonparse);
 
     if (jsonparse["candidates"].length == 0) {
       gs.define_coverage = jsonparse["coverage"];
@@ -786,7 +828,7 @@ document.getElementById("close_define_interface").addEventListener("click", func
 function simplereset() {
   GS.sessionId = util.getId();
   GS.successCounts = util.getStore("successCounts", {})
-  popTasks();
+  // popTasks();
   newWall(GS);
   document.getElementById("maintextarea").focus();
 }
