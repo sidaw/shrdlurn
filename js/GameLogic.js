@@ -22,6 +22,8 @@ function GameState() {
 
   this.coverage = [];
   this.define_coverage = [];
+  this.taggedCover = [];
+  this.taggedDefineCover = [];
   this.defineState = false;
   this.reverting = -1;
 
@@ -187,11 +189,10 @@ function newWall(gs) {
 var GameAction = {
   // functions starting with _ are internal, and should not modify status messages.
   _candidates: function(gs) {
-    console.log(gs.tutorialLevel);
     if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 11)) {
-      if (gs.tutorialLevel == 6) gs.coverage = [1, 1, 0, 0, 0];
-      if (gs.tutorialLevel == 11) gs.coverage = [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-      gs.define_coverage = gs.coverage;
+      if (gs.tutorialLevel == 6) gs.taggedCover = [["$Action", "add orange"], ["$UNK", "except", "the", "border"]];
+      if (gs.tutorialLevel == 11) gs.taggedCover = [["$UNK", "add", "2"], ["$Color", "red"], ["$Cond", "if", "col", "=", "4", "or", "col", "=", "5"]];
+      gs.taggedDefineCover = gs.taggedCover;
       gs.resetNBest();
       gs.setCurrentWall();
       updateCanvas(gs);
@@ -201,8 +202,11 @@ var GameAction = {
     var cmds = {q:gs.query, sessionId:gs.sessionId};
     sempre.sempreQuery(cmds , function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
+      console.log(jsonparse);
       gs.coverage = jsonparse["coverage"];
+      gs.taggedCover = jsonparse["taggedcover"];
       gs.define_coverage = gs.coverage;
+      gs.taggedDefineCover = gs.taggedCover;
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
       if (formval == null) {
 	console.log('no answer from sempre')
@@ -217,6 +221,9 @@ var GameAction = {
 	writeSemAns(gs);
       updateCanvas(gs);
     });
+
+    // Update random utterances
+    updateRandomUtterances(gs);
   },
   _simpleaccept: function(gs) {
     sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
@@ -352,6 +359,17 @@ function updateGoalTextPosition(gs) {
 
 // State stuff
 
+function updateRandomUtterances(gs) {
+  sempre.sempreQuery({q:'(autocomplete "")', sessionId:gs.sessionId}, function(jsonstr) {
+    var autocompletes = JSON.parse(jsonstr).autocompletes;
+    var random_strings = "";
+    for (var i = 0; i < 4 && i < autocompletes.length; i++) {
+      random_strings += "<span>" + autocompletes[i] + "</span><hr>";
+    }
+    document.getElementById("random_utterances").innerHTML = random_strings;
+  });
+}
+
 function saveGameState(gs, name) {
   // var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
   // var states = util.store.getItem("states");
@@ -482,12 +500,14 @@ var STATES = [
   "[[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4]]",
   "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]",
   "[[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2]]",
+  "[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]",
   "random"
 ];
 
 /* Render the target state initially. */
 window.addEventListener("load", function() {
   updateTarget(0);
+  updateRandomUtterances(GS);
 });
 
 function loadGameState(gs, newWall) {
@@ -674,6 +694,7 @@ var Hotkeys = {
   DOWN: 40,
   Z : 90,
   D: 68,
+  ESC: 27,
 };
 
 document.getElementById("maintextarea").onkeydown = function(e) {
@@ -699,9 +720,15 @@ function parseKeys(e) {
     undoHistory(GS); e.preventDefault(); return false;
   } else if (e.keyCode == Hotkeys.D && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
-    if (GS.defineState) { closeDefineInterface(GS); return false; }
+    if (GS.defineState && !(GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))) {
+      closeDefineInterface(GS); return false; }
     defineInterface(GS, GS.query);
-  } return true;
+  } else if (e.keyCode == Hotkeys.ESC) {
+    var close_links = document.getElementsByClassName("button--closed");
+    for (var i = 0; i < close_links.length; i++)
+      close_links[i].click();
+    return true;
+  }
 }
 
 document.addEventListener("keydown", parseKeys, false);
@@ -720,6 +747,7 @@ function definePhrase(e, gs) {
 
     if (jsonparse["candidates"].length == 0) {
       gs.define_coverage = jsonparse["coverage"];
+      gs.taggedDefineCover = jsonparse["taggedcover"];
       defineInterface(gs, definetextarea.value);
       addPoint("fail");
       return;
@@ -758,25 +786,42 @@ function closeDefineInterface(gs) {
 }
 
 function getColoredSpan(coverage, utt) {
-  // Normalize coverages
-  var max = 0;
-  for (var i = 0; i < coverage; i++) {
-    if (coverage > max) max = coverage[i];
-  }
-  if (max == 0) max = 1;
-
-  var normalized_coverages = [];
+  var colored_query = "";
   for (var i = 0; i < coverage.length; i++) {
-    normalized_coverages[i] = coverage[i]==0? 255 : 0;
-    // Math.floor(255 - ((coverage[i] / max) * 255));
+    var type = coverage[i][0];
+    switch (type) {
+      case "$Action":
+        colored_query += "<span style='color:green;'>";
+        break;
+      case "$Cond":
+        colored_query += "<span style='color:green;'>";
+        break;
+      case "$NUM":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$Color":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$Getter":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$UNK":
+        colored_query += "<span style='color:red;'>";
+        break;
+      case "$Keyword":
+        colored_query += "<span style='color:blue;';>"
+        break;
+      default:
+        colored_query += "<span style='color:red;'>";
+    }
+    for (var j = 1; j < coverage[i].length; j++) {
+      console.log(coverage[i][j]);
+      colored_query += " " + coverage[i][j] + " ";
+    }
+    colored_query += "</span>";
+    console.log(colored_query);
   }
-
-  // Color the query
-  var colored_query = utt.split(" ");
-  for (var i = 0; i < colored_query.length; i++) {
-    colored_query[i] = "<span style='color:rgb(" + normalized_coverages[i] + ",0,0)' >" + colored_query[i] + "</span>";
-  }
-  return colored_query.join(" ");
+  return colored_query;
 }
 
 function defineInterface(gs, utt) {
@@ -786,7 +831,9 @@ function defineInterface(gs, utt) {
   }
 
   var original_utt = document.getElementById("original_utt");
-  original_utt.innerHTML = getColoredSpan(gs.coverage, gs.query);
+  console.log(gs.taggedCover);
+  console.log(getColoredSpan(gs.taggedCover, gs.query));
+  original_utt.innerHTML = getColoredSpan(gs.taggedCover, gs.query);
 
   var query_phrase = document.getElementById("query_phrase");
   if (!gs.defineState) { // first time openning, or close and open
@@ -795,11 +842,11 @@ function defineInterface(gs, utt) {
       query_phrase.innerHTML = "SHRDLURN already understands \""
 	+ gs.query + "\", but you can teach another meaning."
     } else {
-      query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.coverage, utt) +'"';
+      query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedCover, utt) +'"';
     }
   } else { // refinement
     updateStatus("SHRDLURN still does not understand you.");
-    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.define_coverage, utt) +'"';
+    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'"';
   }
 
   // Hide maintextarea

@@ -484,9 +484,21 @@ img.emojione {
   }
 }
 
-#reference .modal {
-  width: 700px;
-  height: 600px;
+#reference {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+
+  .modal {
+    width: 700px;
+    height: 600px;
+  }
 }
 
 .tutorial-s, {

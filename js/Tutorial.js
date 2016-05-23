@@ -44,6 +44,7 @@ document.getElementById("start_tutorial").onclick = function() {
   addCover("maintextarea");
   addCover("mainbuttons");
   addCover("canvastarget");
+  addCover("quit_tutorial");
   nextTutorial(2);
   document.getElementById("dobutton").addEventListener("click", prepNextTutorial);
   window.addEventListener("keydown", keyTutorial);
@@ -147,9 +148,11 @@ function prepNextTutorial(e) {
       addAbsCover("metaactions");
       addAbsCover("show_define_status");
       document.getElementById("paraphrase").addEventListener("click", prepNextTutorial);
+      document.getElementById("define_instead").addEventListener("click", prepNextTutorial);
       break;
     case 6:
       document.getElementById("paraphrase").removeEventListener("click", prepNextTutorial);
+      document.getElementById("define_instead").removeEventListener("click", prepNextTutorial);
       removeCover("canvas");
       removeCover("metaactions");
       removeCover("show_define_status");
@@ -196,7 +199,7 @@ function prepNextTutorial(e) {
       document.getElementById("dobutton").addEventListener("click", prepNextTutorial);
       break;
     case 10:
-      if (GS.query != "add 2 red if row = 4 or row = 5") {
+      if (GS.query != "add 2 red if col = 4 or col = 5") {
         alert("Oops! You typed the wrong query. Check for typos.");
         return true;
       }
@@ -208,9 +211,11 @@ function prepNextTutorial(e) {
       addAbsCover("metaactions");
       addAbsCover("show_define_status");
       document.getElementById("paraphrase").addEventListener("click", prepNextTutorial);
+      document.getElementById("define_instead").addEventListener("click", prepNextTutorial);
       break;
     case 11:
       document.getElementById("paraphrase").removeEventListener("click", prepNextTutorial);
+      document.getElementById("define_instead").removeEventListener("click", prepNextTutorial);
       removeCover("canvas");
       removeCover("metaactions");
       removeCover("show_define_status");
@@ -219,7 +224,7 @@ function prepNextTutorial(e) {
       document.getElementById("define_phrase_button").addEventListener("click", prepNextTutorial);
       break;
     case 12:
-      if (document.getElementById("definetextarea").value != "repeat add red if row = 4 or row = 5 2 times") {
+      if (document.getElementById("definetextarea").value != "repeat add red if col = 4 or col = 5 2 times") {
         alert("Oops! You typed the wrong query. Check for typos.");
         return true;
       }
@@ -235,7 +240,7 @@ function prepNextTutorial(e) {
       document.getElementById("dobutton").addEventListener("click", prepNextTutorial);
       break;
     case 13:
-      if (GS.query != "add 2 red if row = 4 or row = 5") {
+      if (GS.query != "add 2 red if col = 4 or col = 5") {
         alert("Oops! You typed the wrong query. Check for typos.");
         return true;
       }
@@ -251,6 +256,7 @@ function prepNextTutorial(e) {
       document.getElementById("flyingaccept").removeEventListener("click", prepNextTutorial);
       removeCover("canvas");
       removeCover("metaactions");
+      removeCover("quit_tutorial");
       window.removeEventListener("keydown", keyTutorial);
       document.getElementById("tutorial_overlay").className = "hidden";
       document.getElementById("tutorial-s13").className = "tutorial-s";
@@ -264,23 +270,17 @@ function prepNextTutorial(e) {
   return true;
 }
 
-//
-// document.getElementById("quit_tutorial").addEventListener("click", function() {
-//   document.removeEventListener("keydown", mitmEnter);
-//   document.getElementById("dobutton").removeEventListener("click", mitmDoButton);
-//   document.removeEventListener("keydown", mitmDefineEnter);
-//   document.getElementById("define_phrase_button").removeEventListener("click", mitmDefinePhraseClicked);
-//   document.addEventListener("keydown", parseKeys, false);
-//   document.getElementById("dobutton").addEventListener("click", doQuery, false);
-//   document.getElementById("define_phrase_button").addEventListener("click", definePhraseClicked, false);
-//   finishTutorial();
-// });
-//
+
+document.getElementById("quit_tutorial").addEventListener("click", function() {
+  finishTutorial();
+});
+
 function finishTutorial() {
   util.store.setItem("tutorial_token", true);
   document.getElementById("tutorial").className = "tutorial";
   document.getElementById("canvastarget").className = "";
   document.getElementById("goalblocks").className = "";
+  removeCover("quit_tutorial");
   document.getElementById("quit_tutorial").className = "hidden";
   GS.tutorialMode = false;
 }
