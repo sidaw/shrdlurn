@@ -37,7 +37,7 @@ util.simpleid = function()
     return text;
 }
 
-util.store = localStorage;
+util.store = sessionStorage;
 
 util.setStore = function(name, value) {
     var jsonvalue = JSON.stringify(value)

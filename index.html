@@ -77,7 +77,7 @@
 
   <canvas id="canvas" width="1100" height="750"></canvas>
   <span id="show_define_status" class="hidden">
-    SHRDLURN does not understand. <br/>
+    SHRDLURN didn't understand. <br/>
     <a href='' id='define_instead' class='define-this'>
       please teach (ctrl-d)!</a>
   </span>
@@ -89,11 +89,11 @@
       <span id="status">type one!</span>
     </div>
     <div id="define_interface" class="hidden">
-      <span class="b-header">Teach <span id="original_utt" class="utt"></span>
+      <span class="b-header">Didn't understand <span id="original_utt" class="utt"></span>, rephrase:
       </span>
       <button class="button--solved button--closed" id="close_define_interface">&#10006;</button>
       <hr/>
-      <input type="text" id="definetextarea" placeholder="write a definition here" />
+      <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" />
       <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">enter</button>
 
       <span class="helpertext">
@@ -118,7 +118,6 @@
     <fieldset class="command-history-container">
       <legend>Recipe Steps</legend>
       <div id="command_history">
-
       </div>
     </fieldset>
   </div>

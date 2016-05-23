@@ -203,10 +203,9 @@ var GameAction = {
     sempre.sempreQuery(cmds , function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
       console.log(jsonparse);
-      gs.coverage = jsonparse["coverage"];
       gs.taggedCover = jsonparse["taggedcover"];
-      gs.define_coverage = gs.coverage;
       gs.taggedDefineCover = gs.taggedCover;
+      if (configs.debugMode) console.log(jsonparse);
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
       if (formval == null) {
 	console.log('no answer from sempre')
@@ -217,8 +216,10 @@ var GameAction = {
 	gs.NBest = formval;
 	gs.setCurrentWall();
       }
-      if (configs.debugMode)
+      if (configs.debugMode) {
+	console.log(jsonparse);
 	writeSemAns(gs);
+      }
       updateCanvas(gs);
     });
 
@@ -895,4 +896,28 @@ document.getElementById("reset").onclick = function() {
   util.resetStore();
   simplereset();
 }
+
 simplereset();
+
+var input = document.getElementById("definetextarea");
+input.oninput = function() {
+  if (input.value.endsWith(' '))
+      autocomplete(GS, input.value)
+};
+var awesomplete = new Awesomplete(input, { minChars: 0,
+  list: ["remove if top red", "add yellow", "add yellow if row = 3", "repeat add yellow 3 times"]
+});
+
+function autocomplete(gs, prefix) {
+  var cmdautocomp = '(autocomplete "' + prefix + '")';
+  var cmds = {q:cmdautocomp, sessionId:gs.sessionId};
+ 
+  sempre.sempreQuery(cmds, function (jsonstr) {
+    var autocomps = JSON.parse(jsonstr)['autocompletes'];
+    // var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
+    console.log("got these suggestions: " + autocomps);
+    awesomplete.list = autocomps;
+    // call awesomplete
+    awesomplete.evaluate();
+  })
+}

@@ -61,8 +61,8 @@ gulp.task("psci", function () {
 });
 
 gulp.task("less", function() {
-    return gulp.src("css/*.less")
-        .pipe(less({}))
+  return gulp.src(["css/awesomplete.css", "css/*.less"])
+        .pipe(less({})).pipe(concat("main.css"))
         .pipe(gulp.dest("dist"));
 });
 
@@ -70,6 +70,7 @@ gulp.task("concat", ["bundle"], function() {
     return gulp.src([
         "bower_components/isomer/dist/isomer.min.js",
         "js/underscore.js",
+        "js/awesomplete.js",
         "dist/mainps.js",
         "js/Config.js",
 	"js/Util.js",
