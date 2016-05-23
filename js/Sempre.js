@@ -3,8 +3,10 @@ var sempre = {
     cleanValue: function (valuestring) {
 	if (!valuestring) return '';
 	return valuestring
-            .replace(/edu.stanford.nlp.sempre.cubeworld.CubeWorld./g,'')
+	    .replace(/edu.stanford.nlp.sempre.cubeworld.CubeWorld./g,'')
+            .replace(/edu.stanford.nlp.sempre.cubeworld..*\./g,'')
 	    .replace(/edu.stanford.nlp.sempre./g,'')
+	    .replace(/context:root/g,'')
 	    .toLowerCase();
     },
     
@@ -86,8 +88,8 @@ var sempre = {
 	return str
     },
 
-    parseSEMPRE: function (jsontext) {
-	var valid = JSON.parse(jsontext)['candidates'];
+    parseSEMPRE: function (valid) {
+	
 	// filter BADJAVA
 	// var valid = jsresp.filter(function (v) {return v['value'][0]!='error' && v['value'].length!=1})
 	//console.log(valid)
@@ -97,11 +99,11 @@ var sempre = {
 	for (var i=0; i<valid.length; i++) {
 	    var qapair = {};
 	    qapair.value = this.formatValue(valid[i]['value']);
-	    // qapair.formula = this.formatFormula(valid[i]['formula']);
+	    qapair.formula = this.formatFormula(valid[i]['formula']);
 	    //qapair.raw = valid[i];
 	    qapair.score = valid[i].score.toFixed(7);
 	    qapair.rank = i;
-	    qapair.prob = valid[i].prob.toFixed(7);
+	    qapair.prob = valid[i].prob;
 	    qapair.pprob = valid[i].pprob;
 	    lstqapairs.push(qapair);
 	}
@@ -110,6 +112,8 @@ var sempre = {
 	    if (vs == undefined) {
 		vs = {};
 		vs.value = v.value;
+		vs.formula = v.formula;
+		vs.formulas = [vs.formula]
 		vs.prob = parseFloat(v.prob);
 		vs.probs = [v.prob];
 		vs.pprob = parseFloat(v.pprob);
@@ -129,6 +133,7 @@ var sempre = {
 		vs.maxpprob = Math.max(vs.maxpprob, parseFloat(v.pprob));
 		vs.rank = Math.min(vs.rank, v.rank);
 		vs.probs.push(v.prob);
+		vs.formulas.push(v.formula)
 		vs.count += 1;
 	    }
 	    return vs;
@@ -141,7 +146,7 @@ var sempre = {
 	for (var key in nbestdict) {
 	     listqadedup.push(nbestdict[key])
 	}
-	listqadedup.sort(function(a,b){return b.maxpprob - a.maxpprob});
+	listqadedup.sort(function(a,b){return b.score - a.score + 1e-3*(a.rank - b.rank)});
 	return listqadedup; 
     },
 

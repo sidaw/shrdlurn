@@ -17,7 +17,7 @@ exports.getIsomerInstance = (function () {
 exports._renderBlock = function (isomer, x, y, z, dx, dy, dz, color) {
   return function() {
     isomer.add(
-      new Isomer.Shape.Prism(new Isomer.Point(x, y, z), dx, dy, dz),
+      new Isomer.Shape.Prism(new Isomer.Point(x, y, z), dx, dy, dz).rotateZ(new Isomer.Point(0, 0, 0), 1 * Math.PI / 12),
       color
       );
     return {};

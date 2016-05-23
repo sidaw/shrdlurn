@@ -1,562 +1,898 @@
 "use strict"
 function GameState() {
-    // the walls, just json strings
-    this.currentWall = "[[]]";
-    this.targetWall = "[[]]";
-    this.listWalls = [];
-    this.listNBestInd = []; // for score keeping
-    
+  // the walls, just json strings
+  this.currentWall = "[[]]";
+  this.targetWall = "[[]]";
+  this.listWalls = [];
+
+  this.NBest = []; // current answer list returned by sempre
+  this.NBestInd = 0;
+
+  this.query = "";
+  this.taskind = 0;
+
+  this.extraBits = 0;
+  this.log = {};
+  this.log.numQueries = 0;
+  this.log.totalTokens = 0;
+  this.log.numScrolls = 0;
+
+  this.tutorialMode = false;
+  this.tutorialLevel = 2;
+
+  this.coverage = [];
+  this.define_coverage = [];
+  this.taggedCover = [];
+  this.taggedDefineCover = [];
+  this.defineState = false;
+  this.reverting = -1;
+
+  // the only persistent states
+  this.sessionId = "deadbeef";
+  this.successCounts = {}
+
+  this.noAnswer = function() {
+    return this.NBest==undefined || this.NBest.length == 0 || this.NBest.length == undefined
+  }
+  this.noQuery = function() {
+    return this.query==undefined || this.query.trim().length==0
+  }
+  this.currentCandidate = function() {
+    return this.NBest[this.NBestInd]
+  }
+  this.resetNBest = function() {
     this.NBest = []; // current answer list returned by sempre
     this.NBestInd = 0;
-    
-    this.query = "";
-    this.taskind = 0;
+  }
 
-    this.extraBits = 0;
-    this.log = {};
-    this.log.numQueries = 0;
-    this.log.totalChars = 0;
-    this.log.totalTokens = 0;
-    this.log.numScrolls = 0;
-    this.log.numStatus = 0;
-    
-    // the only persistent states
-    this.sessionId = "deadbeef";
-    this.successCounts = {}
-    
-    this.noAnswer = function() {
-	return this.NBest==undefined || this.NBest.length == 0 || this.NBest.length == undefined
-    }
-    this.noQuery = function() {
-	return this.query==undefined || this.query.trim().length==0
-    }
-    this.currentCandidate = function() {
-	return this.NBest[this.NBestInd]
-    }
-    this.resetNBest = function() {
-	this.NBest = []; // current answer list returned by sempre
-	this.NBestInd = 0;
-    }
-    
-    this.basicStatusMessage = function (mode) {
-	var def =  ""
-	if (this.query) {
-	    
-	}
-	if (mode == undefined)
-	    return def;
-	else if (mode == "exec") {
-	    if (this.query.trim() == "")
-		return "??"
-	    return "executed: " + this.query
-	} else if (mode == "accept") {
-	    if (this.noAnswer())
-		return "nothing to accept"
-	    return this.query + " # " + (this.NBestInd+1) + ": ✓"
-	}
-	else
-	    return mode + ', ' + def;
-    }
-    
-    this.saveGameState = function() {
-    }
+  this.basicStatusMessage = function (mode) {
+    var def =  ""
+    if (this.query) {
 
-    this.loadGameState = function() {
     }
+    if (mode == undefined)
+      return def;
+    else if (mode == "exec") {
+      if (this.query.trim() == "")
+      	return "??"
+      return "executed: " + this.query
+    } else if (mode == "accept") {
+      if (this.noAnswer())
+      	return "nothing to accept"
+      return this.query + " # " + (this.NBestInd+1) + ": ✓"
+    }
+    else
+      return mode + ', ' + def;
+  }
 
-    this.setCurrentWall = function() {
-	if (this.NBest.length>0)
-	    this.currentWall = this.NBest[this.NBestInd].value;
-	else
-	    this.currentWall = '[[]]';
-    }
-    
-    this.getCurrentWall = function() {
-	if ( this.currentWall && this.currentWall.length > 0)
-	{
-	    return this.currentWall;
-	}
-	return '[[]]';
-    }
-    this.nextIfPossible = function() {
-	if (this.noAnswer()) return false;
-	if (this.NBestInd < this.NBest.length-1) {
-	    this.NBestInd++;
-	    this.currentWall = this.NBest[this.NBestInd].value;
-	    return true;
-	}
-	return false;
-    }
-    this.prevIfPossible = function() {
-	if (this.noAnswer()) return false;
-	if (this.NBestInd > 0) {
-	    this.NBestInd--;
-	    this.currentWall = this.NBest[this.NBestInd].value;
-	    return true;
-	}
-	return false;
-    }
+  this.saveGameState = function() { }
 
-    this.getStandardQuery = function() {
-	return {q: this.query, sessionId:this.sessionId}
-    }
+  this.loadGameState = function() { }
 
-    this.getSuccessCount = function(levelid) {
-	if (this.successCounts[levelid] == undefined)
-	    return 0;
-	return this.successCounts[levelid]
+  this.setPastWall = function(wall) {
+    this.pastWall = wall;
+  }
+
+  this.setCurrentWall = function() {
+    if (this.NBest.length>0)
+      this.currentWall = this.NBest[this.NBestInd].value;
+    else
+      this.currentWall = '[[]]';
+  }
+
+  this.getCurrentWall = function() {
+    if ( this.currentWall && this.currentWall.length > 0)
+    {
+      return this.currentWall;
     }
-    this.incrementSuccessCount = function(levelid) {
-	if (this.successCounts[levelid] == undefined)
-	    this.successCounts[levelid] = 1;
-	else {
-	    this.successCounts[levelid] = parseInt(this.successCounts[levelid])+1;
-	}
-	util.setStore("successCounts", this.successCounts)
-	util.setStore("extraBits", this.extraBits)
+    return '[[]]';
+  }
+  this.nextIfPossible = function() {
+    if (this.noAnswer()) return false;
+    if (this.NBestInd < this.NBest.length-1) {
+      this.NBestInd++;
+      this.currentWall = this.NBest[this.NBestInd].value;
+      return true;
     }
-    this.effectiveStepsNumber = function() {
-	if (this.noAnswer()) return this.listWalls.length-1;
-	else return this.listWalls.length;
+    return false;
+  }
+  this.prevIfPossible = function() {
+    if (this.noAnswer()) return false;
+    if (this.NBestInd > 0) {
+      this.NBestInd--;
+      this.currentWall = this.NBest[this.NBestInd].value;
+      return true;
     }
+    return false;
+  }
+
+  this.getStandardQuery = function() {
+    return {q: this.query, sessionId:this.sessionId}
+  }
+
+  this.getSuccessCount = function(levelid) {
+    if (this.successCounts[levelid] == undefined)
+      return 0;
+    return this.successCounts[levelid]
+  }
+  this.incrementSuccessCount = function(levelid, amount) {
+    if (this.successCounts[levelid] == undefined)
+      this.successCounts[levelid] = amount;
+    else {
+      this.successCounts[levelid] = parseInt(this.successCounts[levelid])+amount;
+    }
+    util.setStore("successCounts", this.successCounts)
+  }
 }
 
 var GS = new GameState();
 
 function updateCanvas(gs) {
-    var PSMain = PS.Main;
-    var walls = [];
+  var PSMain = PS.Main;
+  var walls = [];
 
-    var wlen = gs.listWalls.length;
-    var maxWalls = configs.levels[gs.taskind].maxSteps;
-    
-    // cut
-    if (wlen <= maxWalls) {
-	walls = walls.concat(gs.listWalls)
-    } else { // shift left when the sequences gets too long
-	walls = walls.concat(gs.listWalls.slice(wlen - maxWalls));
-    }
-    
-    walls.push(gs.getCurrentWall())
-	
-    for (var i=0; i < maxWalls- wlen; i++)
-	walls.push('[[]]');
-    // pad
-    walls.push(gs.targetWall);
-    updateGoalTextPosition(gs);
-    updateReaction(gs);
-    updatePenaltyPoints(gs);
-    updateScrollingStatus(gs);
-    PSMain.renderJSON('['+walls.join(',')+']')();
+  if (!gs.noQuery() && gs.noAnswer()) {
+    document.getElementById("show_define_status").className = "";
+    updateStatus("SHRDLURN did not understand.");
+  } else { document.getElementById("show_define_status").className = "hidden"}
+
+  if (!gs.noAnswer()) {
+    updateStatus("got " + gs.NBest.length + " options. use ↓ and ↑ to scroll, and ✓ to confirm.");
+  }
+
+  var wlen = gs.listWalls.length;
+  var maxWalls = configs.levels[gs.taskind].maxSteps;
+
+  // cut
+  if (wlen <= maxWalls) {
+    walls = walls.concat(gs.listWalls)
+  } else { // shift left when the sequences gets too long
+    walls = walls.concat(gs.listWalls.slice(wlen - maxWalls));
+  }
+
+  walls.push(gs.getCurrentWall());
+
+  for (var i=0; i < maxWalls- wlen; i++)
+    walls.push('[[]]');
+
+  PSMain.renderJSON('['+walls.join(',')+']')();
+  // updateGoalTextPosition(gs);
+  updateFormula(gs);
+  updateReaction(gs);
 }
 
 function newWall(gs) {
-    var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.StacksWorld.getLevel (string {task})))"
-	._format({task: configs.levels[gs.taskind].id}); // attach arguments here!
-    var cmds = {q:wallcommand, sessionId:gs.sessionId};
-    gs.resetNBest();
-    gs.query = '';
-    gs.listWalls = [];
-    gs.listNBestInd = [];
-    
-    sempre.sempreQuery(cmds, function (jsonstr) {
-	if (jsonstr == "ERR_CONNECTION_REFUSED") {
-	    updateStatus("our server might be down...")
-	    return
-	}
-	var jsresp = JSON.parse(jsonstr)['exValue'];
-	var walls = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '').split('|');
-	gs.listWalls.push(walls[0]);
-	gs.targetWall = walls[1];
-	gs.setCurrentWall();
-	updateCanvas(gs);
-    })
+  var wallcommand = "(execute (call edu.stanford.nlp.sempre.cubeworld.RicherStacksWorld.getWorld (string {task})))"
+      ._format({task: configs.levels[gs.taskind].id}); // attach arguments here!
+  var cmds = {q:wallcommand, sessionId:gs.sessionId};
+  gs.resetNBest();
+  gs.query = "";
+  gs.listWalls = [];
+
+  sempre.sempreQuery(cmds, function (jsonstr) {
+    if (jsonstr == "ERR_CONNECTION_REFUSED") {
+      updateStatus("our server might be down...")
+      return
+    }
+    var wall = JSON.parse(jsonstr)['commandResponse'];
+    // var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
+    console.log("got this wall: " + wall);
+    gs.listWalls.push(wall);
+    //gs.targetWall = wall;
+    gs.setCurrentWall();
+    updateCanvas(gs);
+    wipeHistory(gs, wall);
+  })
 }
 
 
 var GameAction = {
-    // functions starting with _ are internal, and should not modify status messages.
-    _candidates: function(gs) {
-	var cmds = {q:gs.query, sessionId:gs.sessionId};
-	sempre.sempreQuery(cmds , function(jsonstr) {
-	    var formval = sempre.parseSEMPRE(jsonstr);
-	    if (formval == undefined) {
-		console.log('undefined answer from sempre')
-		return;
-	    } else {
-		gs.NBestInd = 0;
-		gs.NBest = formval;
-		gs.setCurrentWall();
-	    }
-	    if (configs.debugMode)
-		writeSemAns(gs);
-	    updateCanvas(gs);
-	    GameAction.checkAnswer(gs);
-	});
-    },
-    _godScroll: function(gs) { // mess with the nbest list, and put the right answer earlier when enabled.
-	
-    },
-    _simpleaccept: function(gs) {
-	sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
-    },
-    commitandcandidates: function(gs) { // implicit accept, might get junk data
-	if (!gs.noAnswer()) {
-	    updateStatus("accepted previous wall. use ↓ and ↑ to scroll.");
-	    GameAction._simpleaccept(gs);
-	    gs.listWalls.push(gs.currentWall);
-	    gs.listNBestInd.push(gs.NBestInd);
-	    gs.resetNBest();
-	    gs.setCurrentWall();
-	} else {
-	    updateStatus("use ↓ and ↑ to scroll, ⎌ to undo, and ✓ to express approval");
-	}
-
-	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
-	    ._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
-	var cmds = {q:contextcommand, sessionId:gs.sessionId};
-	sempre.sempreQuery(cmds , function(jsonrespcontext) {
-	    GameAction._candidates(gs);
-	});	
-    },
-    candidates: function(gs) {
-	updateStatus("use ↓ and ↑ to scroll, ⎌ to undo, and ✓ to take the action.")
-	var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
-	    ._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
-	var cmds = {q:contextcommand, sessionId:gs.sessionId};
-	sempre.sempreQuery(cmds , function(jsonrespcontext) {
-	    GameAction._candidates(gs);
-	});
-    },
-    undo: function(gs) {
-	if (gs.noAnswer()) { // not in scrolling mode
-	    gs.resetNBest();
-	    gs.setCurrentWall();
-	    if ( gs.listWalls.length == 1) {
-		newWall(gs)
-		updateStatus("⎌: already at the start, got a new one instead.")
-	    } else {
-		// else pop the top and set it as context
-		gs.listWalls.pop();
-		gs.listNBestInd.pop();
-		if ( gs.listWalls.length == 1)
-		    updateStatus("⎌: undo again for a new one.")
-		else
-		    updateStatus("⎌: at the previous one")
-		GameAction.checkAnswer(gs)
-		updateCanvas(gs);
-	    }
-	} else { // scrolling
-	    gs.resetNBest();
-	    gs.setCurrentWall();
-	    updateStatus("⎌: cleared current actions")
-	    updateCanvas(gs);
-	}
-    },
-    nextLevel: function(gs) { // either the next random instance, or the next new level
-	GameAction._simpleaccept(gs);
-	gs.extraBits += gs.listNBestInd.reduce(function(a,b){return util.log2int(a)+util.log2int(b)},0) + util.log2int(gs.NBestInd);
-	gs.resetNBest();
-	gs.setCurrentWall();
-	gs.incrementSuccessCount( configs.levels[gs.taskind].id );
-	showNextButton(false);
-	var curSucc = gs.getSuccessCount( configs.levels[gs.taskind].id );
-	var minSucc = configs.levels[gs.taskind].minSuccess;
-	
-	if (gs.getSuccessCount( configs.levels[gs.taskind].id ) < configs.levels[gs.taskind].minSuccess) {
-	    newWall(gs);
-	    updateStatus("you did it! solve this puzzle " + (minSucc - curSucc) + " more times to advance.");
-	    popTasks();
-	    return false;
-	}
-	    
-	if (gs.taskind+1 < configs.levels.length) {
-	    gs.taskind++;
-	    newWall(gs);
-	    updateStatus("the new level is: {levelname}"._format({levelname:configs.levels[gs.taskind].name}))
-	    popTasks();
-	    return true;
-	} else {
-	    updateStatus("You finished the game! Thanks for playing.");
-	    popTasks();
-	    return false;
-	}
-	
-    },
-    prev: function(gs) {
-	if (gs.noAnswer()) {
-	    updateStatus("↑: can't scroll, say something or or ⎌");
-	    return;
-	}
-	if (gs.prevIfPossible()) {
-	    updateCanvas(gs)
-	    updateStatus("↑: showing the previous one")
-	    GameAction.checkAnswer(gs)
-	} else {
-	    updateStatus("↑: already showing the first one")
-	}
-	gs.log.numScrolls++;
-    },
-    next: function(gs) {
-	if (gs.noAnswer()) {
-	    updateStatus("↓: can't scroll, say something or ⎌");
-	    return;
-	}
-	if (GS.nextIfPossible()) {
-	    updateCanvas(gs)
-	    updateStatus("↓: showing the next one")
-	    GameAction.checkAnswer(gs)
-	} else {
-	    updateStatus("↓: already showing the last one")
-	}
-	gs.log.numScrolls++;
-    },
-    accept: function(gs) {
-	GameAction._accept_commit(gs);
-    },
-    _accept_with_message: function(gs) {
-	if (gs.noAnswer()) {
-	    updateStatus("✓: can't accept, say something first");
-	    return;
-	}
-	GameAction._simpleaccept(gs);
-	//updateCanvas(GS)
-	updateStatus("✓: confirmed (#{accept}/{length})"
-		     ._format({accept:gs.NBestInd, length:gs.NBest.length}))
-    },
-    _accept_commit: function(gs) {
-	if (!gs.noAnswer()) {
-	    GameAction._simpleaccept(gs);
-	    if (configs.hardMaxSteps
-	    && gs.effectiveStepsNumber() >= configs.levels[gs.taskind].maxSteps) {
-		updateStatus("accepted, but this is the last step, use ⎌ to go back, or ↑ ↓ to scroll.");
-		return;
-	    }
-	    updateStatus("✓: accepted (#{accept}/{length}), enter another command"
-		     ._format({accept:gs.NBestInd, length:gs.NBest.length}))
-	    gs.listWalls.push(gs.currentWall);
-	    gs.listNBestInd.push(gs.NBestInd);
-	    gs.resetNBest();
-	    gs.setCurrentWall();
-	    updateCanvas(gs);
-	} else {
-	    updateStatus("✓: can't accept nothing, say something first");
-	}	
-    },
-    checkAnswer: function(gs) {
-	if (gs.currentWall == gs.targetWall) {
-	    showNextButton(true);
-	    updateStatus("shift-enter or ✓ if this is what you want");
-	    return true;
-	} else {
-	    showNextButton(false); return false;
-	}
+  // functions starting with _ are internal, and should not modify status messages.
+  _candidates: function(gs) {
+    if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 11)) {
+      if (gs.tutorialLevel == 6) gs.taggedCover = [["$Action", "add orange"], ["$UNK", "except", "the", "border"]];
+      if (gs.tutorialLevel == 11) gs.taggedCover = [["$UNK", "add", "2"], ["$Color", "red"], ["$Cond", "if", "col", "=", "4", "or", "col", "=", "5"]];
+      gs.taggedDefineCover = gs.taggedCover;
+      gs.resetNBest();
+      gs.setCurrentWall();
+      updateCanvas(gs);
+      return;
     }
+
+    var cmds = {q:gs.query, sessionId:gs.sessionId};
+    sempre.sempreQuery(cmds , function(jsonstr) {
+      var jsonparse = JSON.parse(jsonstr);
+      console.log(jsonparse);
+      gs.coverage = jsonparse["coverage"];
+      gs.taggedCover = jsonparse["taggedcover"];
+      gs.define_coverage = gs.coverage;
+      gs.taggedDefineCover = gs.taggedCover;
+      var formval = sempre.parseSEMPRE(jsonparse['candidates']);
+      if (formval == null) {
+	console.log('no answer from sempre')
+        gs.resetNBest();
+	gs.setCurrentWall();
+      } else {
+	gs.NBestInd = 0;
+	gs.NBest = formval;
+	gs.setCurrentWall();
+      }
+      if (configs.debugMode)
+	writeSemAns(gs);
+      updateCanvas(gs);
+    });
+
+    // Update random utterances
+    updateRandomUtterances(gs);
+  },
+  _simpleaccept: function(gs) {
+    sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
+  },
+  candidates: function(gs) {
+
+    var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
+	._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
+    var cmds = {q:contextcommand, sessionId:gs.sessionId};
+    sempre.sempreQuery(cmds , function(jsonrespcontext) {
+      GameAction._candidates(gs);
+    });
+  },
+  prev: function(gs) {
+    if (gs.noAnswer()) {
+      updateStatus("↑: can't scroll, say something or or ⎌");
+      return;
+    }
+    if (gs.prevIfPossible()) {
+      updateCanvas(gs)
+      updateStatus("↑: showing the previous one")
+    } else {
+      updateStatus("↑: already showing the first one")
+    }
+    gs.log.numScrolls++;
+  },
+  next: function(gs) {
+    if (gs.noAnswer()) {
+      updateStatus("↓: can't scroll, say something or ⎌");
+      return;
+    }
+    if (GS.nextIfPossible()) {
+      updateCanvas(gs)
+      updateStatus("↓: showing the next one")
+    } else {
+      updateStatus("↓: already showing the last one");
+    }
+    gs.log.numScrolls++;
+  },
+  accept: function(gs) {
+    GameAction._accept_commit(gs);
+  },
+  _accept_with_message: function(gs) {
+    if (gs.noAnswer()) {
+      updateStatus("✓: can't accept, say something first");
+      return;
+    }
+    GameAction._simpleaccept(gs);
+    //updateCanvas(GS)
+    updateStatus("✓: confirmed (#{accept}/{length})"
+		 ._format({accept:gs.NBestInd, length:gs.NBest.length}))
+  },
+  _accept_commit: function(gs) {
+    if (!gs.noAnswer()) {
+      GameAction._simpleaccept(gs);
+      gs.listWalls.push(gs.currentWall);
+      gs.resetNBest();
+      gs.query = "";
+      gs.setCurrentWall();
+      addPoint("accept");
+      updateCanvas(gs);
+      updateStatus("✓: accepted (#{accept}/{length}), enter another command"
+		   ._format({accept:gs.NBestInd, length:gs.NBest.length}))
+    } else {
+      updateStatus("✓: can't accept nothing, say something first");
+    }
+  }
 };
 //*************** DOM stuff
 
-function showNextButton(show) {
-    if (show) {
-	document.getElementById("message").style.visibility = "visible";
-    } else {
-	document.getElementById("message").style.visibility = "hidden";
-    }
-} 
 function logh(strlog) {document.getElementById("history").innerHTML += strlog; }
 function updateStatus(strstatus)
 {
-    document.getElementById("status").innerHTML = strstatus
-    GS.log.numStatus++;
-    if (GS.query && GS.query.length>0) {
-	var stateinfo = "<b>↵: {query}</b>"._format({query:GS.query});
-	if (!GS.noAnswer()) {
-	    stateinfo = "<b>↵: {query} (#{NBestInd}/{NBestlen})</b>"
-		._format({query:GS.query, NBestInd:GS.NBestInd+1, NBestlen: GS.NBest.length});
-	}
-	document.getElementById("currentcmd").innerHTML = stateinfo;
+  document.getElementById("status").innerHTML = strstatus;
+  if (GS.query && GS.query.length>0) {
+    var stateinfo = "<b>↵: {query}</b>"._format({query:GS.query});
+    if (!GS.noAnswer()) {
+      stateinfo = "<b>↵: {query} (#{NBestInd}/{NBestlen})</b>"
+	._format({query:GS.query, NBestInd:GS.NBestInd+1, NBestlen: GS.NBest.length});
     }
-    else
-	document.getElementById("currentcmd").innerHTML = "<b>enter a command</b>";
+    document.getElementById("currentcmd").innerHTML = stateinfo;
+  }
+  else
+    document.getElementById("currentcmd").innerHTML = "<b>enter a command</b>";
 }
 
 function writeSemAns(gs) {
-    var sempreret = document.getElementById("sempreret");
-    var mystr = "<table> <tbody>"
-    var formval = gs.NBest;
-    for (var i in formval) {
-	mystr += "<tr><td>"+
-	(1+parseInt(i)) + "</td> <td>{rank}</td>  <td>{prob}</td> <td>{maxprob}</td> <td>{maxpprob}</td> <td>s:{score} c:{count} {value} </td></tr>"
-	    ._format(formval[i]);
-    }
-    mystr += "</tbody> </table>"
-    sempreret.innerHTML = mystr;
+  var sempreret = document.getElementById("nbestlist");
+  var mystr = "<table> <tbody>"
+  var formval = gs.NBest;
+  for (var i in formval) {
+    mystr += "<tr><td>"+
+      (1+parseInt(i)) + "</td> <td>{rank}</td>  <td>{score} c:{count}</td> <td>{formulas}</td>  <td> {value} </td></tr>"
+      ._format(formval[i]);
+  }
+  mystr += "</tbody> </table>"
+  sempreret.innerHTML = mystr;
 }
 
 function updateReaction(gs) {
-    var reaction =  document.getElementById('reaction');
-    if (gs.noAnswer()) {
-	reaction.innerHTML = util.emojione.numToImg(3);
-    }
-    else {
-	var cc = gs.currentCandidate().maxprob;
-	var cutoffs = [0.5, 0.1, 0.05, 0.01, 0.001, 0.00001, -1];
-	reaction.innerHTML = util.emojione.numToImg(cutoffs.findIndex(function(val){
-	    return cc >= val;
-	}));
-    }
+  var reaction =  document.getElementById('reaction');
+  if (gs.noAnswer()) {
+    reaction.innerHTML = util.emojione.numToImg(3);
+  }
+  else {
+    var cc = gs.currentCandidate().maxprob;
+    if (!cc) {cc = 0};
+    var cutoffs = [0.5, 0.1, 0.05, 0.01, 0.001, 0.00001, -1];
+    reaction.innerHTML = util.emojione.numToImg(cutoffs.findIndex(function(val){
+      return cc >= val;
+    }));
+  }
 }
 
-function updatePenaltyPoints(gs) {
-    var pts = gs.extraBits + gs.listNBestInd.reduce(function(a,b){return util.log2int(a) + util.log2int(b)},0) + util.log2int(gs.NBestInd);
-    document.getElementById("penalty").innerHTML = pts.toFixed(1);
-    console.log("updating "+pts);
+function updateFormula(gs) {
+  var formula =  document.getElementById('formula');
+  if (gs.noAnswer()) {
+    formula.innerHTML = "<b>No formula</b>";
+  }
+  else {
+    formula.innerHTML = gs.currentCandidate().formula;
+  }
 }
+
 function updateGoalTextPosition(gs) {
-    var initx = 25; var inity = 180;
-    var g = document.getElementById("goalblocks");
-    var scalefactor = 800*0.75/1100.0; // this is radio of the widths of canvas in html vs stylesheet
-    var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
-    g.style.top=(inity + (configs.levels[gs.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
-    g.style.left=(initx + (configs.levels[gs.taskind].maxSteps+1)*space*1.717/2)+"px";
-
-    var cb = document.getElementById("flyingdiv");
-    var stepnum = gs.listWalls.length;
-    cb.style.top=(inity + (stepnum)*space*0.5)+"px"; //sin 30 and 60 due to isometry
-    cb.style.left=(initx -10 + (stepnum)*space*1.717/2)+"px";
+  var initx = 100; var inity = 280;
+  var g = document.getElementById("goalblocks");
+  var scalefactor = 800*0.75/1100.0; // this is radio of the widths of canvas in html vs stylesheet
+  var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
+  g.style.top=(inity + (configs.levels[gs.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
+  g.style.left=(initx + (configs.levels[gs.taskind].maxSteps+1)*space*1.717/2)+"px";
 }
-function updateScrollingStatus(gs) {
-    if (gs.noAnswer()) {
-	document.getElementById("flyingaccept").disabled=true;
+
+// State stuff
+
+function updateRandomUtterances(gs) {
+  sempre.sempreQuery({q:'(autocomplete "")', sessionId:gs.sessionId}, function(jsonstr) {
+    var autocompletes = JSON.parse(jsonstr).autocompletes;
+    var random_strings = "";
+    for (var i = 0; i < 4 && i < autocompletes.length; i++) {
+      random_strings += "<span>" + autocompletes[i] + "</span><hr>";
+    }
+    document.getElementById("random_utterances").innerHTML = random_strings;
+  });
+}
+
+function saveGameState(gs, name) {
+  // var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
+  // var states = util.store.getItem("states");
+  // if (states === null) { states = []; }
+  // else { states = JSON.parse(states); }
+  // states.push(state);
+  // util.store.setItem("states", JSON.stringify(states));
+  // popTasks();
+}
+
+function addElemToHistory(gs, history, text) {
+  if (gs.currentWall == "[[]]") { return; }
+
+  var elem = document.createElement("div");
+  elem.setAttribute("data-index", gs.listWalls.length - 1);
+  elem.setAttribute("data-walls", gs.currentWall);
+  elem.innerHTML = text;
+  history.insertBefore(elem, history.firstChild);
+  elem.onclick = function() {
+    revertHistory(gs, elem.getAttribute("data-index"));
+  }
+}
+
+Element.prototype.remove = function() {
+  this.parentElement.removeChild(this);
+}
+
+function updateHistory(gs) {
+  var history = document.getElementById("command_history");
+  var elems = history.childNodes;
+
+  if (gs.reverting >= 0) {
+    var found = false;
+    while (found == false) {
+      found = true;
+      history = document.getElementById("command_history");
+      elems = history.childNodes;
+      for (var i = 0; i < elems.length; i++) {
+        if (parseInt(elems[i].getAttribute("data-index")) > gs.reverting) {
+          history.removeChild(elems[i]);
+          found = false;
+          break;
+        }
+      }
+    }
+
+    gs.reverting = -1;
+  }
+
+  addElemToHistory(gs, history, gs.query);
+
+  highlightHistory(gs, -2);
+}
+
+function wipeHistory(gs, wall) {
+  var history = document.getElementById("command_history");
+  history.innerHTML = "";
+
+  var elem = document.createElement("div");
+  elem.setAttribute("data-index", -1);
+  elem.setAttribute("data-walls", wall);
+  elem.innerHTML = "initial";
+  history.appendChild(elem);
+
+  elem.onclick = function() {
+    revertHistory(gs, elem.getAttribute("data-index"));
+  }
+}
+
+function highlightHistory(gs, index) {
+  var elems = document.querySelectorAll("#command_history > div");
+  for (var i = 0; i < elems.length; i++) {
+    if (elems[i].getAttribute("data-index") == index) {
+      elems[i].className = "active";
     } else {
-	document.getElementById("flyingaccept").disabled=false;
+      elems[i].className = "";
     }
+  }
 }
 
-// DOM functions, and events
-// consider retriving this list from sempre
-function popTasks() {
-    var puzzles = configs.puzzles;
-    var ps = document.getElementById("tasks");
-    ps.options.length = 0;
-    for (var l in configs.levels) {
-	var p1 = document.createElement("option");
-	var numSucc = GS.getSuccessCount(configs.levels[l].id);
-	var minSucc = configs.levels[l].minSuccess;
-	var solved = numSucc >= minSucc? ' ✓' : '';
-	p1.text =  (parseInt(l)+1) + " " + configs.levels[l].name
-	    + " ({numSucc}/{minSucc})" 
-	    ._format({numSucc:numSucc, minSucc:minSucc}) + solved
-	p1.id = "level-" + configs.levels[l].id;
-	
-	ps.appendChild(p1);
-    }
-    ps.selectedIndex = GS.taskind;
+// http://stackoverflow.com/questions/5898656/test-if-an-element-contains-a-class
+function hasClass(element, cls) {
+  return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
 
-document.getElementById("tasks").onchange = function() {
-    var t = document.getElementById("tasks");
-    var taskstr = configs.levels[t.selectedIndex].name;
-    GS.taskind = t.selectedIndex;
-    GameAction.checkAnswer(GS);
-    newWall(GS);
-    updateStatus("selected level {task}"._format({task:taskstr}));
-};
+function undoHistory(gs) {
+  var elems = document.querySelectorAll("#command_history > div");
+  var index = elems[1].getAttribute("data-index");
+  for (var i = 0; i < elems.length; i++) {
+    if (hasClass(elems[i], "active")) {
+      console.log(i);
+      console.log(elems[i].getAttribute("data-index"));
+      if (elems[i].getAttribute("data-index") == "-1") { return; }
+      index = elems[i+1].getAttribute("data-index");
+    }
+  }
+  revertHistory(gs, index);
+}
+
+function redoHistory(gs) {
+  var elems = document.querySelectorAll("#command_history > div");
+  var index = elems[0].getAttribute("data-index");
+  for (var i = elems.length - 1; i > 0; i--) {
+    if (hasClass(elems[i], "active")) {
+      index = elems[i-1].getAttribute("data-index");
+    }
+  }
+  revertHistory(gs, index);
+}
+
+function revertHistory(gs, index) {
+  var elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
+  var wall = elem.getAttribute("data-walls");
+  PS.Main.renderJSON("[" + wall + ",[[]]]")();
+
+  if (gs.reverting >= 0) { gs.listWalls.pop(); }
+  gs.listWalls.push(wall);
+  gs.reverting = index;
+
+  highlightHistory(gs, index);
+}
+
+/* States */
+var STATES = [
+  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
+  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
+  "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]",
+  "[[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4]]",
+  "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]",
+  "[[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2]]",
+  "[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]",
+  "random"
+];
+
+/* Render the target state initially. */
+window.addEventListener("load", function() {
+  updateTarget(0);
+  updateRandomUtterances(GS);
+});
+
+function loadGameState(gs, newWall) {
+  gs.listWalls = [newWall];
+  updateCanvas(gs);
+  wipeHistory(gs, newWall);
+}
+
+document.getElementById("prev_state").addEventListener("click", function() {
+  var index = document.getElementById("canvastarget").getAttribute("data-index");
+  index--;
+
+  if (index >= 0)
+    updateTarget(index);
+});
+
+document.getElementById("load_state").addEventListener("click", function() {
+  var canvas_target = document.getElementById("canvastarget")
+  var index = canvas_target.getAttribute("data-index");
+  var wall = canvas_target.getAttribute("data-wall");
+  loadGameState(GS, wall);
+  updateStatus("loaded a new state");
+});
+
+document.getElementById("next_state").addEventListener("click", function() {
+  var index = document.getElementById("canvastarget").getAttribute("data-index");
+  index++;
+  if (index != STATES.length) {
+    updateTarget(index);
+  } else {
+    updateTarget(index - 1);
+  }
+});
+
+document.getElementById("clear_button").addEventListener("click", function() {
+  loadGameState(GS, "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]");
+});
+
+function updateTarget(index) {
+  var wall = STATES[index];
+  if (wall == "random")
+    wall = randomWall();
+
+  PS.Main.renderTargetJSON("[" + wall + "]")();
+
+  var canvas_target = document.getElementById("canvastarget");
+  canvas_target.setAttribute("data-wall", wall);
+  canvas_target.setAttribute("data-index", index);
+}
+
+function randomWall() {
+  var wall = "[";
+  for (var i = 0; i < 64; i++) {
+    var color = Math.floor(Math.random() * 10);
+    if (color > 4) color = "";
+    wall += "[" + color + "]";
+    if (i != 63) wall += ",";
+  }
+  wall += "]";
+  return wall;
+}
+
+// document.getElementById("save_state").onclick = function() {
+//   var state_name = document.getElementById("state_name");
+//   if (state_name.value.length > 0) {
+//     saveGameState(GS, state_name.value);
+//     state_name.value = "";
+//     state_name.className = "";
+//   } else {
+//     state_name.className = "active";
+//   }
+// }
+//
+// document.getElementById("load_state").onclick = function() {
+//   var t = document.getElementById("tasks");
+//   var name = t.options[t.selectedIndex].value;
+//   if (name == "random" || name == "empty") {
+//     var taskstr = configs.levels[t.selectedIndex].name;
+//     GS.taskind = t.selectedIndex;
+//     newWall(GS);
+//     updateStatus("selected level {task}"._format({task:taskstr}));
+//   } else {
+//     var states = JSON.parse(util.store.getItem("states"));
+//     updateStatus("selected state {state}"._format({state:name}));
+//     for (var i = 0; i < states.length; i++) {
+//       if (states[i].name == name) {
+//         loadGameState(GS, states[i]);
+//         break;
+//       }
+//     }
+//   }
+// }
+
+function addPoint(status) {
+  var points = util.getStore("points", 0);
+  points++;
+  GS.incrementSuccessCount(status, 1);
+  if (status=="success") {
+    points+=10;
+    GS.incrementSuccessCount(status, 10);
+  }
+
+  util.setStore("points", points);
+  document.getElementById("game_points").innerHTML = points;
+}
+
+window.addEventListener("load", function() {
+  var points = util.getStore("points", 0);
+  document.getElementById("game_points").innerHTML = points;
+})
+
+// Query stuff
 
 function runCurrentQuery(gs) {
-    var querystr = document.getElementById("maintextarea").value.trim()
-    document.getElementById("maintextarea").value = ''
-    
-    if (querystr.length>0) {
-	gs.log.totalTokens += querystr.split(" ").length;
-	gs.log.numQueries++;
-	gs.log.totalChars += querystr.length;
-	if (configs.hardMaxSteps
-	    && gs.effectiveStepsNumber() >= configs.levels[gs.taskind].maxSteps) {
-	    updateStatus("entered \"" + querystr +"\", but used too many steps, ⎌ first.");
-	} else {
-	    
-	    logh(gs.numQueries + ' ' + querystr + '; ')
-	    gs.query = querystr;
-	    GameAction.candidates(gs);
-	}
-    } else {
-	updateStatus("enter a command");
-    }
+  var querystr = document.getElementById("maintextarea").value.trim()
+  document.getElementById("maintextarea").value = ''
+
+  if (querystr.length>0) {
+    gs.log.totalTokens += querystr.split(" ").length;
+    gs.log.numQueries++;
+
+    logh(gs.numQueries + ' ' + querystr + '; ')
+    gs.query = querystr;
+    GameAction.candidates(gs);
+
+  } else {
+    updateStatus("enter a command");
+  }
 }
 
 var maintextarea = document.getElementById("maintextarea");
-document.getElementById("dobutton").onclick = function() {
-    runCurrentQuery(GS);
-    maintextarea.focus();
-};
-document.getElementById("undobutton").onclick = function() {
-    GameAction.undo(GS);
-    maintextarea.focus();
-};
+
+function doQuery(e) {
+  runCurrentQuery(GS);
+  maintextarea.focus();
+}
+
+document.getElementById("dobutton").addEventListener("click", doQuery, false);
+
 document.getElementById("prevbutton").onclick = function() {
-    GameAction.prev(GS);
-    maintextarea.focus();
+  GameAction.prev(GS);
+  maintextarea.focus();
 };
 document.getElementById("nextbutton").onclick = function() {
-    GameAction.next(GS);
-    maintextarea.focus();
-};
-
-function acceptOnclick() {
-    if (GameAction.checkAnswer(GS)) {
-	GameAction.nextLevel(GS)
-	ga('send', 'event', "custom", "passedlevel", GS.taskInd);
-    } else {
-	GameAction.accept(GS);
-    }
-    maintextarea.focus();
-}
-document.getElementById("acceptbutton").onclick = function() {
-    acceptOnclick()
+  GameAction.next(GS);
+  maintextarea.focus();
 };
 
 document.getElementById("flyingaccept").onclick = function() {
-    acceptOnclick()
+  acceptOnclick();
+};
+
+function acceptOnclick() {
+  // if (GS.tutorialMode) {
+  //   if (GS.currentWall == GS.targetWall) {
+  //     GameAction.accept(GS);
+  //     updateHistory(GS);
+  //   } else if (GS.tutorialLevel < 5) {
+  //     updateStatus("Woops! That's not exactly right. Try again.");
+  //     return;
+  //   }
+  // }
+
+  if (GS.defineState)
+    closeDefineInterface(GS);
+  updateHistory(GS);
+  GameAction.accept(GS);
+  maintextarea.focus();
+}
+function metaCommand(meta) {
+  maintextarea.value = meta;
+  maintextarea.focus();
+}
+
+document.getElementById("paraphrase").onclick = function() {
+  defineInterface(GS, GS.query);
 };
 
 var Hotkeys = {
-    ENTER: 13,
-    LEFT: 37,
-    RIGHT: 39,
-    UP: 38,
-    DOWN: 40,
-    Z : 90
+  ENTER: 13,
+  LEFT: 37,
+  RIGHT: 39,
+  UP: 38,
+  DOWN: 40,
+  Z : 90,
+  D: 68,
+  ESC: 27,
 };
 
 document.getElementById("maintextarea").onkeydown = function(e) {
-    return true;
+  return true;
 }
-document.onkeydown = function(e) {
-    if (e.keyCode == Hotkeys.UP && e.target.id!="tasks") { // consider capture this in doc
-	GameAction.prev(GS);
-	return false;
-    } else if (e.keyCode == Hotkeys.DOWN && e.target.id!="tasks") {
-	GameAction.next(GS);
-	return false;
-    } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
-	acceptOnclick();
-	return false;
-    } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
-	runCurrentQuery(GS); return false;
-    } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
-	GameAction.undo(GS); return false;
-    } return true;
-};
+
+function parseKeys(e) {
+  if (e.keyCode == Hotkeys.UP && e.target.id!="tasks") { // consider capture this in doc
+    GameAction.prev(GS);
+    return false;
+  } else if (e.keyCode == Hotkeys.DOWN && e.target.id!="tasks") {
+    GameAction.next(GS);
+    return false;
+  } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
+    acceptOnclick();
+    return false;
+  } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
+    if (GS.defineState) { definePhrase(e, GS); return false; }
+    runCurrentQuery(GS); return false;
+  } else if (e.keyCode == Hotkeys.Z && e.shiftKey && (e.ctrlKey || e.metaKey)) {
+    redoHistory(GS); e.preventDefault(); return false;
+  } else if (e.keyCode == Hotkeys.Z && (e.ctrlKey || e.metaKey)) {
+    undoHistory(GS); e.preventDefault(); return false;
+  } else if (e.keyCode == Hotkeys.D && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    if (GS.defineState && !(GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))) {
+      closeDefineInterface(GS); return false; }
+    defineInterface(GS, GS.query);
+  } else if (e.keyCode == Hotkeys.ESC) {
+    var close_links = document.getElementsByClassName("button--closed");
+    for (var i = 0; i < close_links.length; i++)
+      close_links[i].click();
+    return true;
+  }
+}
+
+document.addEventListener("keydown", parseKeys, false);
+
+// Define interface
+function definePhrase(e, gs) {
+  if (gs.tutorialMode)
+    return;
+
+  var definetextarea = document.getElementById("definetextarea");
+  var text = "(uttdef \"" + definetextarea.value + "\")";
+  var cmds = {q:text, sessionId:gs.sessionId};
+  sempre.sempreQuery(cmds, function(jsonstr) {
+    var jsonparse = JSON.parse(jsonstr);
+    console.log(jsonparse);
+
+    if (jsonparse["candidates"].length == 0) {
+      gs.define_coverage = jsonparse["coverage"];
+      gs.taggedDefineCover = jsonparse["taggedcover"];
+      defineInterface(gs, definetextarea.value);
+      addPoint("fail");
+      return;
+    } else {
+      var commandResponse = jsonparse['commandResponse'];
+      var numans = parseInt(commandResponse);
+      console.log("got this many rules: " + numans)
+      if (numans == 0) addPoint("fail");
+      else addPoint("success");
+      addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
+    		       + gs.query + '" as "' + definetextarea.value + '"');
+      closeDefineInterface(gs);
+      // consider populate the candidate list quietly,
+      GameAction._candidates(gs);
+      updateStatus("definition accepted. thanks for teaching!");
+    }
+
+  });
+}
+
+function closeDefineInterface(gs) {
+  // probably good to just run the query here
+
+  var definetextarea = document.getElementById("definetextarea");
+  var maintextarea = document.getElementById("maintextarea");
+  definetextarea.value = "";
+  maintextarea.value = "";
+  var define_interface = document.getElementById("define_interface");
+  define_interface.className = "hidden";
+
+  maintextarea.className = "";
+  var mainbuttons = document.getElementById("mainbuttons");
+  mainbuttons.className = "buttons";
+  maintextarea.focus();
+  gs.defineState = false;
+}
+
+function getColoredSpan(coverage, utt) {
+  var colored_query = "";
+  for (var i = 0; i < coverage.length; i++) {
+    var type = coverage[i][0];
+    switch (type) {
+      case "$Action":
+        colored_query += "<span style='color:green;'>";
+        break;
+      case "$Cond":
+        colored_query += "<span style='color:green;'>";
+        break;
+      case "$NUM":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$Color":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$Getter":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$UNK":
+        colored_query += "<span style='color:red;'>";
+        break;
+      case "$Keyword":
+        colored_query += "<span style='color:blue;';>"
+        break;
+      default:
+        colored_query += "<span style='color:red;'>";
+    }
+    for (var j = 1; j < coverage[i].length; j++) {
+      console.log(coverage[i][j]);
+      colored_query += " " + coverage[i][j] + " ";
+    }
+    colored_query += "</span>";
+    console.log(colored_query);
+  }
+  return colored_query;
+}
+
+function defineInterface(gs, utt) {
+  if (!gs.query) {
+    updateStatus("nothing to define, enter a command.");
+    return;
+  }
+
+  var original_utt = document.getElementById("original_utt");
+  console.log(gs.taggedCover);
+  console.log(getColoredSpan(gs.taggedCover, gs.query));
+  original_utt.innerHTML = getColoredSpan(gs.taggedCover, gs.query);
+
+  var query_phrase = document.getElementById("query_phrase");
+  if (!gs.defineState) { // first time openning, or close and open
+     if (!gs.noAnswer()) {
+      updateStatus("SHRDLURN already understands " + gs.query + "!");
+      query_phrase.innerHTML = "SHRDLURN already understands \""
+	+ gs.query + "\", but you can teach another meaning."
+    } else {
+      query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedCover, utt) +'"';
+    }
+  } else { // refinement
+    updateStatus("SHRDLURN still does not understand you.");
+    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'"';
+  }
+
+  // Hide maintextarea
+  var maintextarea = document.getElementById("maintextarea");
+  maintextarea.className = "hidden";
+  var mainbuttons = document.getElementById("mainbuttons");
+  mainbuttons.className = "hidden";
+
+  console.log(gs.coverage);
+  // Unhide define interface
+  var define_interface = document.getElementById("define_interface");
+  define_interface.className = "";
+  var definetextarea = document.getElementById("definetextarea");
+  definetextarea.placeholder = 'write the meaning of "' + gs.query + '" here!';
+  definetextarea.focus();
+
+  gs.defineState = true;
+}
+
+function definePhraseClicked(e) {
+  definePhrase(e, GS);
+}
+
+document.getElementById("define_phrase_button").addEventListener("click", definePhraseClicked, false);
+
+document.getElementById("define_instead").addEventListener("click", function(e) {
+  e.preventDefault();
+  defineInterface(GS, GS.query);
+});
+document.getElementById("close_define_interface").addEventListener("click", function(e) {
+  if (GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))
+    return;
+  closeDefineInterface(GS, false);
+});
+
+function simplereset() {
+  GS.sessionId = util.getId();
+  GS.successCounts = util.getStore("successCounts", {})
+  // popTasks();
+  newWall(GS);
+  document.getElementById("maintextarea").focus();
+}
 
 document.getElementById("reset").onclick = function() {
-    console.log("resetting!!")
-    util.resetStore();
-    GS.sessionId = util.getId();
-    GS.successCounts = util.getStore("successCounts", {});
-    GS.extraBits = util.getStore("extraBits", 0);
-    popTasks();
-    newWall(GS);
-    document.getElementById("maintextarea").focus();
+  console.log("resetting!!")
+  util.resetStore();
+  simplereset();
 }
-
-
+simplereset();

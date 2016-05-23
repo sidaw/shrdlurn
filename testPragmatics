@@ -1,62 +1,23 @@
 #!/bin/sh
 SEMPATH=../semparse
-GRAMMAR=../cubesem/grammar/stacks.grammar
+GRAMMAR=../semparse/shrdlurn/stacks.grammar
 cd $SEMPATH
-# elif [ $1 = "cube" ]; then  -FloatingParser.useSizeInsteadOfDepth true 
-LEARNOPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -StacksWorldFeatureComputer.ngramN 3 -Params.initStepSize 0.1 -Params.adaptiveStepSize true"
+LEARNOPTS="-Parser FloatingParser -FloatingParser.maxDepth 8 -FloatingParser.useSizeInsteadOfDepth true -Params.l1Reg lazy -Params.l1RegCoeff 0.001 -Parser.beamSize 100 -StacksWorldFeatureComputer.ngramN 2 -Params.initStepSize 0.1 -Params.adaptiveStepSize true -FeatureExtractor.featureDomains tree"
 
 SESSIONSTUFF="-Master.onlineLearnExamples false -Master.independentSessions true"
 
-PRAG="-Master.bePragmatic true -PragmaticListener.addModelProb true -PragmaticListener.smoothAlpha 1.0 -PragmaticListener.uniformWeight 0.001 -PragmaticListener.lambda 3.0 -Learner.onlineEvaluation true -Derivation.comparePragmatically true -PragmaticListener.skipSeen true"
+PRAG="-Master.bePragmatic true -PragmaticListener.addModelProb true -PragmaticListener.smoothAlpha 1.0 -PragmaticListener.uniformWeight 0.001 -PragmaticListener.lambda 3.0 -Learner.onlineEvaluation true -Derivation.comparePragmatically true"
 
-# A2YJFCTJPPX66.lisp 70
-# A1HKYY6XI2OHO1.lisp 63
-# AK3H5QRAROFGP.lisp 56
-# AB9OKOQAD8OSP.lisp 107
-# sidawangbaseline.lisp  62
-
-#test:../cubesem/data/fullgame.json 
-TRAIN_OUTS="-Master.newExamplesPath ../cubesem/data/validation.lisp"
-
-# -Master.newParamsPath ../cubesem/validation.params
-# -Dataset.inPaths train:../cubesem/examples"
-OPTIONS="-JavaExecutor.convertNumberValues false -FeatureExtractor.featureDomains tree -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer  -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
+OPTIONS="-JavaExecutor.convertNumberValues false  -FeatureExtractor.featureComputers cubeworld.StacksWorldFeatureComputer  -Params.initWeightsRandomly false -Grammar.inPaths $GRAMMAR -Parser.pruneErrorValues true -JoinFn.typeInference true -LanguageAnalyzer.lowerCaseTokens true"
 
 # features are tree, heads, ngram
-DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
+# DEBUG="-Xdebug -Xrunjdwp:server=y,transport=dt_socket,suspend=n,address=8898"
 
-if [ $1 = "analyze" ]; then
- 
-    for turkid in $(<../cubesem/data/topturker.txt)
-    do
-	egrep -e "(-train.pragBetter.mean|-train.pragWorse.mean)" _OUTPATH_stdprag/${turkid}/output.map | paste -d "\t" - - | sed -e "s/$/$(echo '\t')${turkid}/"
-    done
-    echo "\n\n"
-    
+if [ $1 == "analyze" ]; then
     for turkid in $(<../cubesem/data/topturker.txt)
     do
 	egrep -e "(-train.correct.mean|-train.correctBaseline.mean)" _OUTPATH_/${turkid}/output.map | paste -d "\t" - - | sed -e "s/$/$(echo '\t')${turkid}/"
     done
-
-    echo "\n\n"
-    
-    for turkid in $(<../cubesem/data/topturker.txt)
-    do
-	egrep -e "(-train.correctIndexAfterParsePrag.mean|-train.correctIndexAfterParse.mean|-train.correctIndexAfterParse.count|-train.correctIndexAfterParsePrag.count)" _OUTPATH_stdprag/${turkid}/output.map | paste -d "\t" - - - - | sed -e "s/$/$(echo '\t')${turkid}/"
-    done
-
-    # echo "top\n"
-    # for turkid in $(<../cubesem/data/topturker.txt)
-    # do
-    # 	egrep -e "(-train.Top3Prag.mean|-train.Top3Normal.mean)" _OUTPATH_/${turkid}/output.map | paste  -d "\t" - -
-	
-    # done
-
-    # echo "top\n"
-    # for turkid in $(<../cubesem/data/topturker.txt)
-    # do
-    # 	egrep -e "(-train.Top5Prag.mean|-train.Top5Normal.mean)" _OUTPATH_/${turkid}/output.map | paste  -d "\t"  - -
-    # done
 else
     for turkid in $(<../cubesem/data/topturker.txt)
     do
