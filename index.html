@@ -13,13 +13,9 @@
   <div id="container">
     <div id="panel">
       <canvas id="canvastarget" width="200" height="200"></canvas>
-      <div id="states" class="states active">
-        <span class="states-title">Saved States</span>
-        <select id="tasks" size="5"></select>
-        <button class="button button--big" id="load_state">Load</button>
-        <input type="text" id="state_name" placeholder="Name this state...">
-        <button class="button button--big" id="save_state">Save</button>
-      </div>
+      <button id="prev_state" class="button button--big">&larr; prev</button>
+      <button id="load_state" class="button button--big">load</button>
+      <button id="next_state" class="button button--big">next &rarr;</button>
       <p/>
       <div><b>game points:</b> <span id="game_points"></span></div>
       <br />
@@ -52,6 +48,10 @@
         <br>
         <a href="" class="hidden" id="quit_tutorial">quit tutorial</a>
       </div>
+      <div>
+        <p style="font-weight:bold;">example instructions</p>
+        <div id="random_utterances"></div>
+      </div>
     </div>
 
 
@@ -73,9 +73,11 @@
   <div class="row-info">col 1</div>
   <div class="col-info">row 1</div>
 
+  <button id="clear_button" class="button button--big">clear</button>
+
   <canvas id="canvas" width="1100" height="750"></canvas>
   <span id="show_define_status" class="hidden">
-    SHRDLRUN does not understand. <br/>
+    SHRDLURN does not understand. <br/>
     <a href='' id='define_instead' class='define-this'>
       please teach (ctrl-d)!</a>
   </span>
@@ -100,7 +102,7 @@
             what you said
           </span>.
           It has trouble with the <span style="color:rgb(255,0,0);">red</span> words.
-          Please rephrase in a way that's already understood by SHRDLRUN! <a href="" class="reference_link">Click here for HELP.</a>
+          Please rephrase in a way that's already understood by SHRDLURN! <a href="" class="reference_link">Click here for HELP.</a>
         </span>
 
         <!-- For example,
@@ -114,13 +116,176 @@
     </div>
 
     <fieldset class="command-history-container">
-      <legend>Command History</legend>
+      <legend>Recipe Steps</legend>
       <div id="command_history">
 
       </div>
     </fieldset>
   </div>
+
+  <div class="tutorial" id="tutorial">
+    <div class="modal-container tutorial-s active" id="tutorial-s1">
+      <div class="modal">
+        <h1>Welcome to SHRDLURN</h1>
+        <hr>
+        <div class="half">
+          <p>
+            In homage to the seminal work of Winograd (1972) and inspired by Wittgenstein's language games, SHRDLURN is an attempt to teach a computer the nuance of human language. To do so, we need your help to train and teach the computer. In return, you'll be able to interact and engage with a virtual world using nothing but natural language.
+          </p>
+          <p>
+            <a href="" id="skip_tutorial">skip the tutorial</a>
+          </p>
+        </div>
+        <div class="half">
+          <img src="pyramid.png" />
+          <button class="button button--big button--modal sticky-botright" id="start_tutorial">Let's Get Started &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s2">
+      <div class="cover-text">
+          <div class="cover-info">
+            <h1>Let's get started by making a cool structure!</h1>
+            <hr />
+            <p>Like any good student, SHRDLURN works by being instructed one step at a time. You can instruct SHRDLURN to build by entering a "recipe step" in normal English in the box below. This will update the "current" blocks with what SHRDLURN thinks you meant by your "recipe step".</p>
+            <p>To get started, type "add yellow" in the box below to tell SHRDLURN to add yellow to every square. Then, either hit the enter key or click on the "&crarr;" button.</p>
+          </div>
+        </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s3">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Awesome!</h1>
+          <hr>
+          <p>You can see how SHRDLURN interpreted your "recipe step" to mean adding yellow to every square on the first level. But, note, that you must "accept" this intepretation to build upon it in the next step. If SHRDLURN's interpretation was not what you intended, you can either scroll to see if SHRDLURN has an alternative (by using the arrow keys or the &uarr; or &darr; buttons).</p>
+          <p>So, accept this interpretation by hitting "shift-enter" or clicking on the highlighted "&#x2713;" button.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s4">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Great job!</h1>
+          <hr>
+          <p>You just saw how you can use natural language to instruct SHRDLURN. But, sometimes you want to give SHRDLURN a "recipe step" that it hasn't learned yet. That's where you come in. You have to teach SHRDLURN the more nuanced language.</p>
+          <p>Let's try to add the next layer of orange blocks by typing "add orange except the border".</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s5">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Yikes! SHRDLURN didn't understand what you meant.</h1>
+          <hr>
+          <p>Let's teach it what "add orange except the border means". You'll have to do this a lot, but hopefully, SHRDLURN will soon get a good working knowledge of language and recipe steps; so, the more you teach it new steps, the smarter it becomes!</p>
+          <p>To open the "teaching interface", either hit "ctrl+d" or click on the highlighted "~" button.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s6">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Let's teach SHRDLURN by defining this complex step!</h1>
+          <hr />
+          <p>Whenever SHRDLURN doesn't understand your instruction, you will need to define it for SHRDLURN. Behind the scenes, SHRDLURN uses a basic grammar that, although at times cumbersome, can be composed to complete basically any action. <a href="" class="reference_link">Click here for a guide.</a> In essence, every time you give SHRDLURN an instruction, it converts your instruction to its grammar. Therefore, in order to teach SHRDLURN a new instruction, the easiest way is to define your instruction in terms of its basic grammar.</p>
+          <p>Type "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" into the box below to teach it the meaning of the phrase.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s7">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Amazing! SHRDLURN just learned what "... except the border" means!</h1>
+          <hr>
+          <p>You just defined the phrase. Now, try it out by typing "add orange except the border" in the highlighted textbox to add the next orange layer of the target structure.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s8">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>SHRDLURN understands! Now accept it to move on.</h1>
+          <hr>
+          <p>Wow, this is pretty cool. SHRDLURN can learn complex phrases. As you'll continue to train SHRDLURN after the tutorial, SHRDLURN's potential is unlimited, you just have to teach it step by step. In the future, you can even define new phrases in terms of other things you've taught it.</p>
+          <p>For now, let's accept this interpretation of SHRDLURN's (remember if it was wrong, you could either scroll for other interpretations, or define it again).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s9">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Now, let's finish it up!</h1>
+          <hr>
+          <p>To finish up building the target structure, let's define another phrase. Type "add 2 red if col = 4 or col = 5" in the textbox below and hit enter.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s10">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>As predicted, SHRDLURN doesn't quite understand this instruction.</h1>
+          <hr>
+          <p>Hit ctrl+d to define it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s11">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>This is a pretty powerful tool. Let's define what we mean.</h1>
+          <hr />
+          <p>In the basic grammar, "add 2 red if col = 4 or col = 5" means "repeat add red if col = 4 or col = 5 2 times". Notice the construction there. Type this in the textbox below and hit enter to teach SHRDLURN.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s12">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Great! SHRDLURN learned something new.</h1>
+          <hr />
+          <p>Let's go ahead and complete the structure by typing "add 2 red if col = 4 or col = 5" in the textbox.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s13">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Nifty</h1>
+          <hr />
+          <p>If this intrepetation is correct, accept it by hitting shift+enter (if not, scroll until it matches the target structure).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-container tutorial-s" id="tutorial-s14">
+      <div class="modal">
+        <h1>You've done it! You completed the tutorial.</h1>
+        <hr>
+        <div class="half">
+          <p>Congratulations! Now, you can start building whatever structures you want using natural language.</p>
+          <p>Take a look at example structures in the top right corner (scroll through by hitting next) to see if you can come up with a set of recipe instructions to create them. Try to teach SHRDLURN to come as close to natural language as possible.</p>
+          <p>Have fun! P.S. You get more points the more structures you create and the more phrases you define!</p>
+        </div>
+        <button class="button button--big button--modal sticky-botright" id="finish_tutorial">Start building</button>
+      </div>
+    </div>
   </div>
+
+  </div>
+
+  <div class="hidden" id="tutorial_overlay"></div>
 
   <div id="debugdiv" class="hidden">
     <div id="formula"> <b>No action</b> </div>
@@ -138,104 +303,6 @@
     style="width:80px;">code</button> <span id="turkcode">(code to appear here)</span>
     <p/>
     <div>
-    </div>
-  </div>
-
-  <div class="tutorial" id="tutorial">
-    <div class="modal-container tutorial-s active" id="tutorial-s1">
-      <div class="modal">
-        <h1>Welcome to SHRDLURN</h1>
-        <hr>
-        <div class="half">
-          <p>
-            In homage to the seminal work of Winograd (1972) and inspired by Wittgenstein's language games, SHRDLURN is an attempt to teach a computer the nuance of human language. But, we need your help to train and teach the computer. In return, you'll be able to interact and engage with a virtual world using nothing but natural language.
-          </p>
-          <p>
-            Given building blocks, SHRDLURN allows you to build anything you want on the setting, instructing the computer with simple and nuanced natural language.
-          </p>
-          <p>
-            <a href="" id="skip_tutorial">skip the tutorial</a>
-          </p>
-        </div>
-        <div class="half">
-          <img src="pyramid.png" />
-          <button class="button button--big button--modal sticky-botright" id="start_tutorial">Let's Get Started &rarr;</button>
-        </div>
-      </div>
-    </div>
-    <div class="modal-container tutorial-s" id="tutorial-s2">
-      <div class="modal">
-        <h1>Let's get started by making a cool structure.</h1>
-        <hr><br>
-        <div class="half">
-          <img class="full" src="structure.png" />
-        </div>
-        <div class="half">
-          <p>
-            To do so, you'll instruct the computer one step at a time.
-          </p>
-          <p>
-            Instruct the computer to add yellow blocks on the first layer by typing "add yellow" in the command prompt. Hit enter to execute and get the computer's interpretation. The computer's interpretation of your command will show up on the right under current. To accept it, hit shift-enter (or click ✓).
-          </p>
-          <button class="button button--big button--modal sticky-botright" id="next_tutorial1">Start</button>
-        </div>
-      </div>
-    </div>
-    <div class="modal-container tutorial-s" id="tutorial-s3">
-      <div class="modal">
-        <h1>Great job!</h1>
-        <hr><br>
-        <p>You just saw how you can use natural language to build. But, sometimes queries are very complicated and the computer hasn't learned the language yet. That's where you come in. You have to teach the computer building concepts.</p>
-        <p>Let's try to add the next layer of orange blocks by typing "add orange except the border".</p>
-        <button class="button button--big button--modal sticky-botright" id="next_tutorial2">Next</button>
-      </div>
-    </div>
-    <div class="modal-container tutorial-s" id="tutorial-d1">
-      <div class="modal">
-        <h1>Yikes! The computer doesn't seem to recognize this complex utterance. Let's train it.</h1>
-        <hr /><br />
-        <p>So, you entered a phrase that the computer hadn't learned yet (this will happen a lot). Rather than just moving on, let's define the advanced phrase, so that the next time you use it, the computer understands.</p>
-        <p>Hit ctrl+d or press the define button.</p>
-        <button class="button button--big button--modal sticky-botright" id="next_tutoriald2">Try it</button>
-      </div>
-    </div>
-    <div class="modal-container tutorial-s" id="tutorial-d2">
-      <div class="modal">
-        <h1>Here's how to define complex phrases!</h1>
-        <hr><br>
-        <p>Behind the scenes, the computer uses a basic grammar that, although cumbersome, can be composed to complete basically any action. <a href="" class="reference_link" target="_blank">Click here for a guide.</a> You can define any undefined complex phrase with anything the computer already knows. But, a sure-fire way to get it to learn is to use this basic grammar.</p>
-        <p>In this case, define "add orange except the border" as "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" (don't worry about remembering this -- it'll be on the next page).</p>
-        <p>See how the computer will then learn that "add orange except the border" means adding the blocks everyone except the border.</p>
-        <button class="button button--big button--modal sticky-botright" id="next_tutoriald3">Try it</button>
-      </div>
-    </div>
-    <div class="modal-container tutorial-s" id="tutorial-s4">
-      <div class="modal">
-        <h1>Great job again!</h1>
-        <hr><br>
-        <p>Now you can use the phrase "add orange except the border" to add the next orange layer.</p>
-        <button class="button button--big button--modal sticky-botright" id="next_tutorial3">Next</button>
-      </div>
-    </div>
-    <div class="modal-container tutorial-s" id="tutorial-s5">
-      <div class="modal">
-        <h1>Now let's finish it up!</h1>
-        <hr><br>
-        <p>Let's define a new phrase "add 2 red if row = 4 or row = 5". The computer might not understand this. So, we will have to define it. In the basic grammar, this would be equivalent to "repeat add red if row = 4 or row = 5 2 times". I suggest copy-and-pasting this so you can use it to define the new phrase exactly.</p>
-        <button class="button button--big button--modal sticky-botright" id="next_tutorial4">Next</button>
-      </div>
-    </div>
-    <div class="modal-container tutorial-s" id="tutorial-s6">
-      <div class="modal">
-        <h1>You've done it! You completed the tutorial.</h1>
-        <hr>
-        <div class="half">
-          <p>Congratulations! Now, you can start building whatever structures you want using natural language.</p>
-          <p>Here are some handy things to know. If the computer doesn't immediately understand exactly what you want, try scrolling through the options using either the arrow keys or the &darr; button. Or, to help train the computer to understand you better, click the "~" button to try another phrasing to say the same thing you desired.</p>
-          <p>Have fun! P.S. You get more points the more structures you create!</p>
-        </div>
-        <button class="button button--big button--modal sticky-botright" id="finish_tutorial">Start building</button>
-      </div>
     </div>
   </div>
 

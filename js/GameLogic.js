@@ -22,6 +22,8 @@ function GameState() {
 
   this.coverage = [];
   this.define_coverage = [];
+  this.taggedCover = [];
+  this.taggedDefineCover = [];
   this.defineState = false;
   this.reverting = -1;
 
@@ -187,11 +189,24 @@ function newWall(gs) {
 var GameAction = {
   // functions starting with _ are internal, and should not modify status messages.
   _candidates: function(gs) {
+    if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 11)) {
+      if (gs.tutorialLevel == 6) gs.taggedCover = [["$Action", "add orange"], ["$UNK", "except", "the", "border"]];
+      if (gs.tutorialLevel == 11) gs.taggedCover = [["$UNK", "add", "2"], ["$Color", "red"], ["$Cond", "if", "col", "=", "4", "or", "col", "=", "5"]];
+      gs.taggedDefineCover = gs.taggedCover;
+      gs.resetNBest();
+      gs.setCurrentWall();
+      updateCanvas(gs);
+      return;
+    }
+
     var cmds = {q:gs.query, sessionId:gs.sessionId};
     sempre.sempreQuery(cmds , function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
+      console.log(jsonparse);
       gs.coverage = jsonparse["coverage"];
+      gs.taggedCover = jsonparse["taggedcover"];
       gs.define_coverage = gs.coverage;
+      gs.taggedDefineCover = gs.taggedCover;
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
       if (formval == null) {
 	console.log('no answer from sempre')
@@ -206,6 +221,9 @@ var GameAction = {
 	writeSemAns(gs);
       updateCanvas(gs);
     });
+
+    // Update random utterances
+    updateRandomUtterances(gs);
   },
   _simpleaccept: function(gs) {
     sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
@@ -341,21 +359,25 @@ function updateGoalTextPosition(gs) {
 
 // State stuff
 
-function saveGameState(gs, name) {
-  var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
-  var states = util.store.getItem("states");
-  if (states === null) { states = []; }
-  else { states = JSON.parse(states); }
-  states.push(state);
-  util.store.setItem("states", JSON.stringify(states));
-  popTasks();
+function updateRandomUtterances(gs) {
+  sempre.sempreQuery({q:'(autocomplete "")', sessionId:gs.sessionId}, function(jsonstr) {
+    var autocompletes = JSON.parse(jsonstr).autocompletes;
+    var random_strings = "";
+    for (var i = 0; i < 4 && i < autocompletes.length; i++) {
+      random_strings += "<span>" + autocompletes[i] + "</span><hr>";
+    }
+    document.getElementById("random_utterances").innerHTML = random_strings;
+  });
 }
 
-function loadGameState(gs, newState) {
-  gs.listWalls = [];
-  gs.listWalls.push(newState.data);
-  updateCanvas(gs);
-  wipeHistory(gs, newState.data);
+function saveGameState(gs, name) {
+  // var state = { name: name, data: gs.listWalls[gs.listWalls.length - 1] };
+  // var states = util.store.getItem("states");
+  // if (states === null) { states = []; }
+  // else { states = JSON.parse(states); }
+  // states.push(state);
+  // util.store.setItem("states", JSON.stringify(states));
+  // popTasks();
 }
 
 function addElemToHistory(gs, history, text) {
@@ -470,63 +492,114 @@ function revertHistory(gs, index) {
   highlightHistory(gs, index);
 }
 
-// DOM functions, and events
-// consider retriving this list from sempre
-function popTasks() {
-  var ps = document.getElementById("tasks");
-  ps.options.length = 0;
-  console.log(JSON.parse(util.store.getItem("states")));
-  var states = configs.levels.concat(JSON.parse(util.store.getItem("states")));
-  for (var l in states) {
-    if (!states[l]) continue;
-    var p1 = document.createElement("option");
-    p1.value = states[l].name;
-    p1.text =  (parseInt(l)+1) + " " + states[l].name;
-    p1.id = "state-" + states[l].id;
-    ps.appendChild(p1);
-  }
-  ps.selectedIndex = GS.taskind;
+/* States */
+var STATES = [
+  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
+  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
+  "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]",
+  "[[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4]]",
+  "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]",
+  "[[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2]]",
+  "[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]",
+  "random"
+];
+
+/* Render the target state initially. */
+window.addEventListener("load", function() {
+  updateTarget(0);
+  updateRandomUtterances(GS);
+});
+
+function loadGameState(gs, newWall) {
+  gs.listWalls = [newWall];
+  updateCanvas(gs);
+  wipeHistory(gs, newWall);
 }
 
-document.getElementById("tasks").onchange = function() {
-  // var t = document.getElementById("tasks");
-  // var taskstr = configs.levels[t.selectedIndex].name;
-  // GS.taskind = t.selectedIndex;
-  // GameAction.checkAnswer(GS);
-  // newWall(GS);
-  // updateStatus("selected level {task}"._format({task:taskstr}));
-};
+document.getElementById("prev_state").addEventListener("click", function() {
+  var index = document.getElementById("canvastarget").getAttribute("data-index");
+  index--;
 
-document.getElementById("save_state").onclick = function() {
-  var state_name = document.getElementById("state_name");
-  if (state_name.value.length > 0) {
-    saveGameState(GS, state_name.value);
-    state_name.value = "";
-    state_name.className = "";
+  if (index >= 0)
+    updateTarget(index);
+});
+
+document.getElementById("load_state").addEventListener("click", function() {
+  var canvas_target = document.getElementById("canvastarget")
+  var index = canvas_target.getAttribute("data-index");
+  var wall = canvas_target.getAttribute("data-wall");
+  loadGameState(GS, wall);
+  updateStatus("loaded a new state");
+});
+
+document.getElementById("next_state").addEventListener("click", function() {
+  var index = document.getElementById("canvastarget").getAttribute("data-index");
+  index++;
+  if (index != STATES.length) {
+    updateTarget(index);
   } else {
-    state_name.className = "active";
+    updateTarget(index - 1);
   }
+});
+
+document.getElementById("clear_button").addEventListener("click", function() {
+  loadGameState(GS, "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]");
+});
+
+function updateTarget(index) {
+  var wall = STATES[index];
+  if (wall == "random")
+    wall = randomWall();
+
+  PS.Main.renderTargetJSON("[" + wall + "]")();
+
+  var canvas_target = document.getElementById("canvastarget");
+  canvas_target.setAttribute("data-wall", wall);
+  canvas_target.setAttribute("data-index", index);
 }
 
-document.getElementById("load_state").onclick = function() {
-  var t = document.getElementById("tasks");
-  var name = t.options[t.selectedIndex].value;
-  if (name == "random" || name == "empty") {
-    var taskstr = configs.levels[t.selectedIndex].name;
-    GS.taskind = t.selectedIndex;
-    newWall(GS);
-    updateStatus("selected level {task}"._format({task:taskstr}));
-  } else {
-    var states = JSON.parse(util.store.getItem("states"));
-    updateStatus("selected state {state}"._format({state:name}));
-    for (var i = 0; i < states.length; i++) {
-      if (states[i].name == name) {
-        loadGameState(GS, states[i]);
-        break;
-      }
-    }
+function randomWall() {
+  var wall = "[";
+  for (var i = 0; i < 64; i++) {
+    var color = Math.floor(Math.random() * 10);
+    if (color > 4) color = "";
+    wall += "[" + color + "]";
+    if (i != 63) wall += ",";
   }
+  wall += "]";
+  return wall;
 }
+
+// document.getElementById("save_state").onclick = function() {
+//   var state_name = document.getElementById("state_name");
+//   if (state_name.value.length > 0) {
+//     saveGameState(GS, state_name.value);
+//     state_name.value = "";
+//     state_name.className = "";
+//   } else {
+//     state_name.className = "active";
+//   }
+// }
+//
+// document.getElementById("load_state").onclick = function() {
+//   var t = document.getElementById("tasks");
+//   var name = t.options[t.selectedIndex].value;
+//   if (name == "random" || name == "empty") {
+//     var taskstr = configs.levels[t.selectedIndex].name;
+//     GS.taskind = t.selectedIndex;
+//     newWall(GS);
+//     updateStatus("selected level {task}"._format({task:taskstr}));
+//   } else {
+//     var states = JSON.parse(util.store.getItem("states"));
+//     updateStatus("selected state {state}"._format({state:name}));
+//     for (var i = 0; i < states.length; i++) {
+//       if (states[i].name == name) {
+//         loadGameState(GS, states[i]);
+//         break;
+//       }
+//     }
+//   }
+// }
 
 function addPoint(status) {
   var points = util.getStore("points", 0);
@@ -536,7 +609,7 @@ function addPoint(status) {
     points+=10;
     GS.incrementSuccessCount(status, 10);
   }
-  
+
   util.setStore("points", points);
   document.getElementById("game_points").innerHTML = points;
 }
@@ -549,18 +622,17 @@ window.addEventListener("load", function() {
 // Query stuff
 
 function runCurrentQuery(gs) {
-  console.log("RUNNING CURRENT QUERY!");
   var querystr = document.getElementById("maintextarea").value.trim()
   document.getElementById("maintextarea").value = ''
 
   if (querystr.length>0) {
     gs.log.totalTokens += querystr.split(" ").length;
     gs.log.numQueries++;
-  
+
     logh(gs.numQueries + ' ' + querystr + '; ')
     gs.query = querystr;
     GameAction.candidates(gs);
-    
+
   } else {
     updateStatus("enter a command");
   }
@@ -584,23 +656,23 @@ document.getElementById("nextbutton").onclick = function() {
   maintextarea.focus();
 };
 
-function acceptOnclick() {
-  if (GS.tutorialMode) {
-    console.log(GS.currentWall);
-    console.log(GS.targetWall);
-    if (GS.currentWall == GS.targetWall) {
-      console.log("WON!");
-      GameAction.accept(GS);
-      updateHistory(GS);
-      if (GS.tutorialLevel == 3) { GS.tutorialLevel++; }
-      GS.tutorialLevel++;
-      nextTutorial(GS.tutorialLevel);
-    } else if (GS.tutorialLevel < 5) {
-      updateStatus("Woops! That's not exactly right. Try again.");
-      return;
-    }
-  }
+document.getElementById("flyingaccept").onclick = function() {
+  acceptOnclick();
+};
 
+function acceptOnclick() {
+  // if (GS.tutorialMode) {
+  //   if (GS.currentWall == GS.targetWall) {
+  //     GameAction.accept(GS);
+  //     updateHistory(GS);
+  //   } else if (GS.tutorialLevel < 5) {
+  //     updateStatus("Woops! That's not exactly right. Try again.");
+  //     return;
+  //   }
+  // }
+
+  if (GS.defineState)
+    closeDefineInterface(GS);
   updateHistory(GS);
   GameAction.accept(GS);
   maintextarea.focus();
@@ -622,6 +694,7 @@ var Hotkeys = {
   DOWN: 40,
   Z : 90,
   D: 68,
+  ESC: 27,
 };
 
 document.getElementById("maintextarea").onkeydown = function(e) {
@@ -636,11 +709,9 @@ function parseKeys(e) {
     GameAction.next(GS);
     return false;
   } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
-    console.log("SHIFTING!");
     acceptOnclick();
     return false;
   } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
-    console.log("REGULAR ENTER!");
     if (GS.defineState) { definePhrase(e, GS); return false; }
     runCurrentQuery(GS); return false;
   } else if (e.keyCode == Hotkeys.Z && e.shiftKey && (e.ctrlKey || e.metaKey)) {
@@ -649,22 +720,34 @@ function parseKeys(e) {
     undoHistory(GS); e.preventDefault(); return false;
   } else if (e.keyCode == Hotkeys.D && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
+    if (GS.defineState && !(GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))) {
+      closeDefineInterface(GS); return false; }
     defineInterface(GS, GS.query);
-  } return true;
+  } else if (e.keyCode == Hotkeys.ESC) {
+    var close_links = document.getElementsByClassName("button--closed");
+    for (var i = 0; i < close_links.length; i++)
+      close_links[i].click();
+    return true;
+  }
 }
 
 document.addEventListener("keydown", parseKeys, false);
 
 // Define interface
 function definePhrase(e, gs) {
+  if (gs.tutorialMode)
+    return;
+
   var definetextarea = document.getElementById("definetextarea");
   var text = "(uttdef \"" + definetextarea.value + "\")";
   var cmds = {q:text, sessionId:gs.sessionId};
   sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
+    console.log(jsonparse);
 
     if (jsonparse["candidates"].length == 0) {
       gs.define_coverage = jsonparse["coverage"];
+      gs.taggedDefineCover = jsonparse["taggedcover"];
       defineInterface(gs, definetextarea.value);
       addPoint("fail");
       return;
@@ -703,40 +786,54 @@ function closeDefineInterface(gs) {
 }
 
 function getColoredSpan(coverage, utt) {
-  // Normalize coverages
-  var max = 0;
-  for (var i = 0; i < coverage; i++) {
-    if (coverage > max) max = coverage[i];
-  }
-  if (max == 0) max = 1;
-
-  var normalized_coverages = [];
+  var colored_query = "";
   for (var i = 0; i < coverage.length; i++) {
-    normalized_coverages[i] = coverage[i]==0? 255 : 0;
-    // Math.floor(255 - ((coverage[i] / max) * 255));
+    var type = coverage[i][0];
+    switch (type) {
+      case "$Action":
+        colored_query += "<span style='color:green;'>";
+        break;
+      case "$Cond":
+        colored_query += "<span style='color:green;'>";
+        break;
+      case "$NUM":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$Color":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$Getter":
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$UNK":
+        colored_query += "<span style='color:red;'>";
+        break;
+      case "$Keyword":
+        colored_query += "<span style='color:blue;';>"
+        break;
+      default:
+        colored_query += "<span style='color:red;'>";
+    }
+    for (var j = 1; j < coverage[i].length; j++) {
+      console.log(coverage[i][j]);
+      colored_query += " " + coverage[i][j] + " ";
+    }
+    colored_query += "</span>";
+    console.log(colored_query);
   }
-
-  // Color the query
-  var colored_query = utt.split(" ");
-  for (var i = 0; i < colored_query.length; i++) {
-    colored_query[i] = "<span style='color:rgb(" + normalized_coverages[i] + ",0,0)' >" + colored_query[i] + "</span>";
-  }
-  return colored_query.join(" ");
+  return colored_query;
 }
 
 function defineInterface(gs, utt) {
-  console.log(gs.tutorialLevel);
-  if (gs.tutorialMode && gs.tutorialLevel == 3) {
-   document.getElementById("tutorial-d2").className = "modal-container tutorial-s active";
- }
-
   if (!gs.query) {
     updateStatus("nothing to define, enter a command.");
     return;
   }
 
   var original_utt = document.getElementById("original_utt");
-  original_utt.innerHTML = getColoredSpan(gs.coverage, gs.query);
+  console.log(gs.taggedCover);
+  console.log(getColoredSpan(gs.taggedCover, gs.query));
+  original_utt.innerHTML = getColoredSpan(gs.taggedCover, gs.query);
 
   var query_phrase = document.getElementById("query_phrase");
   if (!gs.defineState) { // first time openning, or close and open
@@ -745,11 +842,11 @@ function defineInterface(gs, utt) {
       query_phrase.innerHTML = "SHRDLURN already understands \""
 	+ gs.query + "\", but you can teach another meaning."
     } else {
-      query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.coverage, utt) +'"';
+      query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedCover, utt) +'"';
     }
   } else { // refinement
     updateStatus("SHRDLURN still does not understand you.");
-    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.define_coverage, utt) +'"';
+    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'"';
   }
 
   // Hide maintextarea
@@ -780,13 +877,15 @@ document.getElementById("define_instead").addEventListener("click", function(e) 
   defineInterface(GS, GS.query);
 });
 document.getElementById("close_define_interface").addEventListener("click", function(e) {
+  if (GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))
+    return;
   closeDefineInterface(GS, false);
 });
 
 function simplereset() {
   GS.sessionId = util.getId();
   GS.successCounts = util.getStore("successCounts", {})
-  popTasks();
+  // popTasks();
   newWall(GS);
   document.getElementById("maintextarea").focus();
 }
