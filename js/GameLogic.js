@@ -187,6 +187,17 @@ function newWall(gs) {
 var GameAction = {
   // functions starting with _ are internal, and should not modify status messages.
   _candidates: function(gs) {
+    console.log(gs.tutorialLevel);
+    if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 11)) {
+      if (gs.tutorialLevel == 6) gs.coverage = [1, 1, 0, 0, 0];
+      if (gs.tutorialLevel == 11) gs.coverage = [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+      gs.define_coverage = gs.coverage;
+      gs.resetNBest();
+      gs.setCurrentWall();
+      updateCanvas(gs);
+      return;
+    }
+
     var cmds = {q:gs.query, sessionId:gs.sessionId};
     sempre.sempreQuery(cmds , function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
@@ -465,6 +476,7 @@ function revertHistory(gs, index) {
 
 /* States */
 var STATES = [
+  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
   "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
   "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]",
   "[[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4]]",
@@ -590,7 +602,6 @@ window.addEventListener("load", function() {
 // Query stuff
 
 function runCurrentQuery(gs) {
-  console.log("RUNNING CURRENT QUERY!");
   var querystr = document.getElementById("maintextarea").value.trim()
   document.getElementById("maintextarea").value = ''
 
@@ -625,23 +636,23 @@ document.getElementById("nextbutton").onclick = function() {
   maintextarea.focus();
 };
 
-function acceptOnclick() {
-  if (GS.tutorialMode) {
-    console.log(GS.currentWall);
-    console.log(GS.targetWall);
-    if (GS.currentWall == GS.targetWall) {
-      console.log("WON!");
-      GameAction.accept(GS);
-      updateHistory(GS);
-      if (GS.tutorialLevel == 3) { GS.tutorialLevel++; }
-      GS.tutorialLevel++;
-      nextTutorial(GS.tutorialLevel);
-    } else if (GS.tutorialLevel < 5) {
-      updateStatus("Woops! That's not exactly right. Try again.");
-      return;
-    }
-  }
+document.getElementById("flyingaccept").onclick = function() {
+  acceptOnclick();
+};
 
+function acceptOnclick() {
+  // if (GS.tutorialMode) {
+  //   if (GS.currentWall == GS.targetWall) {
+  //     GameAction.accept(GS);
+  //     updateHistory(GS);
+  //   } else if (GS.tutorialLevel < 5) {
+  //     updateStatus("Woops! That's not exactly right. Try again.");
+  //     return;
+  //   }
+  // }
+
+  if (GS.defineState)
+    closeDefineInterface(GS);
   updateHistory(GS);
   GameAction.accept(GS);
   maintextarea.focus();
@@ -677,11 +688,9 @@ function parseKeys(e) {
     GameAction.next(GS);
     return false;
   } else if (e.keyCode == Hotkeys.ENTER && e.shiftKey ) {
-    console.log("SHIFTING!");
     acceptOnclick();
     return false;
   } else if (e.keyCode == Hotkeys.ENTER && !e.shiftKey) {
-    console.log("REGULAR ENTER!");
     if (GS.defineState) { definePhrase(e, GS); return false; }
     runCurrentQuery(GS); return false;
   } else if (e.keyCode == Hotkeys.Z && e.shiftKey && (e.ctrlKey || e.metaKey)) {
@@ -690,6 +699,7 @@ function parseKeys(e) {
     undoHistory(GS); e.preventDefault(); return false;
   } else if (e.keyCode == Hotkeys.D && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
+    if (GS.defineState) { closeDefineInterface(GS); return false; }
     defineInterface(GS, GS.query);
   } return true;
 }
@@ -698,6 +708,9 @@ document.addEventListener("keydown", parseKeys, false);
 
 // Define interface
 function definePhrase(e, gs) {
+  if (gs.tutorialMode)
+    return;
+
   var definetextarea = document.getElementById("definetextarea");
   var text = "(uttdef \"" + definetextarea.value + "\")";
   var cmds = {q:text, sessionId:gs.sessionId};
@@ -767,11 +780,6 @@ function getColoredSpan(coverage, utt) {
 }
 
 function defineInterface(gs, utt) {
-  console.log(gs.tutorialLevel);
-  if (gs.tutorialMode && gs.tutorialLevel == 3) {
-   document.getElementById("tutorial-d2").className = "modal-container tutorial-s active";
- }
-
   if (!gs.query) {
     updateStatus("nothing to define, enter a command.");
     return;
@@ -822,6 +830,8 @@ document.getElementById("define_instead").addEventListener("click", function(e) 
   defineInterface(GS, GS.query);
 });
 document.getElementById("close_define_interface").addEventListener("click", function(e) {
+  if (GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))
+    return;
   closeDefineInterface(GS, false);
 });
 

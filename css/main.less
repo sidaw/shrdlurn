@@ -31,6 +31,8 @@
 
 @cubeSize:            11px;
 
+@overlay-color:       rgba(60,60,60,0.75);
+
 html, body {
     margin: 0;
     padding: 0;
@@ -103,6 +105,8 @@ b {
     position: relative;
     margin: 0 auto;
     width: @width;
+    z-index: 1000;
+    background-color: #fff;
 }
 
 #canvas {
@@ -442,13 +446,19 @@ img.emojione {
 }
 
 .tutorial {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
   display: none;
   &.active { display: block; }
 }
 
 .modal-container {
   position: fixed;
-  background-color: rgba(64,64,64,0.7);
+  background-color: @overlay-color;
 }
 
 .modal {
@@ -472,24 +482,6 @@ img.emojione {
     bottom: 50px;
     text-transform: uppercase;
   }
-}
-
-#tutorial-s1.active,
-#tutorial-s2.active,
-#tutorial-s3.active,
-#tutorial-s4.active,
-#tutorial-s5.active,
-#tutorial-d1.active,
-#tutorial-d2.active,
-#tutorial-s6.active,
-#reference {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 #reference .modal {
@@ -625,4 +617,123 @@ content: close-quote;
 #clear_button {
   position: absolute;
   top: 380px;
+}
+
+.modal-container.active {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cover-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  .cover-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 580px;
+    height: 300px;
+    border: 3000px solid @overlay-color;
+
+    .cover-info {
+      box-sizing: border-box;
+      background-color: #fff;
+      padding: 20px;
+      height: 100%;
+      width: 100%;
+
+      h1 { font-size: 24px; }
+    }
+  }
+}
+
+#tutorial-s2 .cover-text {
+  border-top-width: 200px;
+  height: 250px;
+  border-left-width: 0;
+}
+
+#tutorial-s3 .cover-text {
+  height: 260px;
+  border-top-width: 450px;
+  border-left-width: 0;
+}
+
+#tutorial-s4 .cover-text {
+  height: 280px;
+  border-top-width: 170px;
+  border-left-width: 0;
+}
+
+#tutorial-s5 .cover-text {
+  height: 250px;
+  border-top-width: 450px;
+  border-left-width: 0;
+}
+
+#tutorial-s6 .cover-text {
+  height: 300px;
+  border-top-width: 100px;
+  border-left-width: 0;
+}
+
+#tutorial-s7 .cover-text {
+  border-top-width: 200px;
+  height: 250px;
+  border-left-width: 0;
+}
+
+#tutorial-s8 .cover-text {
+  height: 250px;
+  border-top-width: 20px;
+  border-left-width: 0;
+}
+
+#tutorial-s9 .cover-text {
+  border-top-width: 200px;
+  height: 250px;
+  border-left-width: 0;
+}
+
+#tutorial-s10 .cover-text {
+  height: 250px;
+  border-top-width: 450px;
+  border-left-width: 0;
+}
+
+#tutorial-s11 .cover-text {
+  height: 300px;
+  border-top-width: 100px;
+  border-left-width: 0;
+}
+
+#tutorial-s12 .cover-text {
+  border-top-width: 200px;
+  height: 250px;
+  border-left-width: 0;
+}
+
+#tutorial-s13 .cover-text {
+  height: 260px;
+  border-top-width: 450px;
+  border-left-width: 0;
+}
+
+#tutorial_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: @overlay-color;
 }

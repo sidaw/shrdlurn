@@ -82,6 +82,7 @@ gulp.task("concat", ["bundle"], function() {
         .pipe(gulp.dest("dist"));
 });
 
+
 gulp.task("compress", ["concat"], function() {
     return gulp.src("dist/main.js")
         .pipe(uglify().on('error', function(e){
@@ -102,7 +103,7 @@ gulp.task("webserver", function() {
     return gulp.src('./')
     .pipe(webserver({
      livereload: {
-        enable: true,
+        enable: false,
         filter: function(fileName) {
           if (fileName.match(/(examples)|(logs)/)) {
             return false;
