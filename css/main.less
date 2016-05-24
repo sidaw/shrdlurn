@@ -159,8 +159,8 @@ b {
 #metaactions {
     visibility: visible;
     position: absolute;
-    top: @canvasHeight - 50px;
-    left: 215px;
+    top: @canvasHeight - 10px;
+    left: 200px;
     padding: 1px;
     text-align: center;
 
@@ -177,7 +177,7 @@ b {
   display: inline-block;
   //font-family: 'monaco',  monospace;
   font-family: 'Roboto Condensed', sans;
-  font-size: @fontSizeInput;
+  font-size: 18px;
   appearance: none;
   outline: none;
   resize: none;
@@ -223,7 +223,7 @@ b {
     margin: 3px;
 
     color: #000;
-    font-size: 25px;
+    font-size: 23px;
     text-decoration: none;
 
     @bgCol: #fefefe;
@@ -254,9 +254,9 @@ b {
 }
 .button--solved {
     color: #000;
-    font-size: 20px;
-    width: 35px;
-    height: 30px;
+    font-size: 18px;
+    width: 34px;
+    height: 29px;
 }
 
 .button--big {
@@ -467,7 +467,7 @@ img.emojione {
   height: 360px;
   background-color: #fff;
   padding: 20px 30px;
-  overflow: scroll;
+  overflow: none;
   position: relative;
 
   .half {
@@ -567,7 +567,7 @@ img.full {
 
 .b-header {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 #definetextarea:extend(#maintextarea) {
@@ -589,18 +589,27 @@ img.full {
   font-size: 20px;
 }
 
-.row-info {
+.col-info {
   position: absolute;
   top: @canvasHeight + 2px;
   left: 415px;
   font-size: 16px;
-  transform: rotateZ(-60deg);
+  transform: rotateZ(-68deg);
 }
 
-.col-info:extend(.row-info) {
-  top: @canvasHeight -  10px;
+.row-info:extend(.col-info) {
+  top: @canvasHeight -  5px;
   left: 450px;
-  transform: rotateZ(30deg);
+  transform: rotateZ(38deg);
+}
+
+.col-info-8:extend(.col-info) {
+  top: @canvasHeight - 44px;
+  left: 265px;
+}
+.row-info-8:extend(.row-info) {
+  top: @canvasHeight -  90px;
+  left: 535px;
 }
 
 .button--closed {

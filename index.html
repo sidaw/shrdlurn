@@ -39,11 +39,11 @@
       </div>
       <p/>
       <div>
+        <a href="" class="reference_link">help me</a>
+        <br>
+        <br>
         <a id="reset"
         href="">reset ALL progress</a>
-        <br>
-        <br>
-        <a href="" class="reference_link">help me</a>
         <br>
         <br>
         <a href="" class="hidden" id="quit_tutorial">quit tutorial</a>
@@ -58,10 +58,10 @@
   <div id="metaactions" class="buttons">
     <button class="button button--solved" id="flyingaccept"
     ctitle="take this action (shift-enter)">&#x2713;</button>
-    <button class="button button--solved (up key)" id="prevbutton"
-    ctitle="show previous action">&uarr; </button><br>
     <button class="button button--solved" id="paraphrase"
     ctitle="teach SHRDLURN what you mean">~</button>
+    <button class="button button--solved (up key)" id="prevbutton"
+    ctitle="show previous action">&uarr; </button>
     <button class="button button--solved" id="nextbutton"
     ctitle="show next action (down key)">&darr; </button>
   </div>
@@ -70,8 +70,10 @@
   <div id="currentblocks">after action</div>
   <div id="goalblocks">target</div>
 
-  <div class="row-info">col 1</div>
-  <div class="col-info">row 1</div>
+  <div class="col-info">col 1</div>
+  <div class="row-info">row 1</div>
+  <div class="col-info-8">col 8</div>
+  <div class="row-info-8">row 8</div>
 
   <button id="clear_button" class="button button--big">clear</button>
 
@@ -105,7 +107,7 @@
     </div>
     <input type="text" id="maintextarea" placeholder="type your command here! e.g. add red if top yellow" maxlength="100"/>
     <div class="buttons" id="mainbuttons">
-      <button class="button" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
+      <button class="button button--solved" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
     </div>
 
     <fieldset class="command-history-container">
@@ -117,7 +119,7 @@
 
   <div class="tutorial" id="tutorial">
     <div class="modal-container tutorial-s active" id="tutorial-s1">
-      <div class="modal">
+      <div class="modal" style="overflow:scroll;">
         <h1>Welcome to SHRDLURN</h1>
         <hr>
         <div class="half">
@@ -354,7 +356,7 @@
         <h3>But it's not accepting my teachings! </h3>
         <ul>
           <li>
-            It understands everything in green boxes, blue are words it knows but not used correctly, red are unknowns.</li>
+            SHRDLURN understands everything in green boxes, blue are words it knows but not used correctly, red are unknowns.</li>
           <li> <span style="color:red;">blah </span>
           <span class="color-good">add red if height &lt; 1 </span>
           <span style="color:blue;" ;="">then </span>
