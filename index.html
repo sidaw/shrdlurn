@@ -77,7 +77,7 @@
 
   <canvas id="canvas" width="1100" height="750"></canvas>
   <span id="show_define_status" class="hidden">
-    SHRDLURN didn't understand. <br/>
+    didn't understand. <br/>
     <a href='' id='define_instead' class='define-this'>
       please teach (ctrl-d)!</a>
   </span>
@@ -89,26 +89,18 @@
       <span id="status">type one!</span>
     </div>
     <div id="define_interface" class="hidden">
-      <span class="b-header">Didn't understand <span id="original_utt" class="utt"></span>, rephrase:
+      <span class="b-header"><span id="define_header"></span>
       </span>
       <button class="button--solved button--closed" id="close_define_interface">&#10006;</button>
       <hr/>
       <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" />
       <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">enter</button>
-
       <span class="helpertext">
-        <span id="define_phrase">
-          <span id="query_phrase">
+          <span id="define_status">
             what you said
-          </span>.
-          It has trouble with the <span style="color:rgb(255,0,0);">red</span> words.
-          Please rephrase in a way that's already understood by SHRDLURN! <a href="" class="reference_link">Click here for HELP.</a>
-        </span>
-
-        <!-- For example,
-        <span class="utt">yellow if height &gt; 3</span> is another way to say
-        <span class="utt">put yellow on stacks taller than 3</span>.
-        <a href="#"> see more examples. </a> <br/> -->
+      </span>
+      <a href="" class="reference_link">It doesn't work, help me!</a>
+      </span>
     </div>
     <input type="text" id="maintextarea" placeholder="type a command, e.g.: add red if top yellow"/>
     <div class="buttons" id="mainbuttons">
@@ -129,7 +121,7 @@
         <hr>
         <div class="half">
           <p>
-            In homage to the seminal work of Winograd (1972) and inspired by Wittgenstein's language games, SHRDLURN is an attempt to teach a computer the nuance of human language. To do so, we need your help to train and teach the computer. In return, you'll be able to interact and engage with a virtual world using nothing but natural language.
+	  SHRDLURN is a project to teach computers to understand English, and we need your help!
           </p>
           <p>
             <a href="" id="skip_tutorial">skip the tutorial</a>
@@ -147,8 +139,9 @@
           <div class="cover-info">
             <h1>Let's get started by making a cool structure!</h1>
             <hr />
-            <p>Like any good student, SHRDLURN works by being instructed one step at a time. You can instruct SHRDLURN to build by entering a "recipe step" in normal English in the box below. This will update the "current" blocks with what SHRDLURN thinks you meant by your "recipe step".</p>
-            <p>To get started, type "add yellow" in the box below to tell SHRDLURN to add yellow to every square. Then, either hit the enter key or click on the "&crarr;" button.</p>
+            <p>You can instruct SHRDLURN to build by entering a command in the box.</p>
+            <p>To get started, type "add yellow". Then, click on the
+      "&crarr;" button (or hit the enter key).</p>
           </div>
         </div>
     </div>
@@ -158,8 +151,11 @@
         <div class="cover-info">
           <h1>Awesome!</h1>
           <hr>
-          <p>You can see how SHRDLURN interpreted your "recipe step" to mean adding yellow to every square on the first level. But, note, that you must "accept" this intepretation to build upon it in the next step. If SHRDLURN's interpretation was not what you intended, you can either scroll to see if SHRDLURN has an alternative (by using the arrow keys or the &uarr; or &darr; buttons).</p>
-          <p>So, accept this interpretation by hitting "shift-enter" or clicking on the highlighted "&#x2713;" button.</p>
+          <p>Now "add yellow" is shown on the right.
+	  You must "accept" this action if you want to use it in the next step.
+	  Accept by clicking on the highlighted "&#x2713;" button (or press
+      "shift-enter").
+	  </p>
         </div>
       </div>
     </div>
@@ -169,7 +165,9 @@
         <div class="cover-info">
           <h1>Great job!</h1>
           <hr>
-          <p>You just saw how you can use natural language to instruct SHRDLURN. But, sometimes you want to give SHRDLURN a "recipe step" that it hasn't learned yet. That's where you come in. You have to teach SHRDLURN the more nuanced language.</p>
+          <p>While SHRDLURN understands a few simple commands, there
+	  are many useful commands that it does not understand.
+	  That's where you come in: teach SHRDLURN.</p>
           <p>Let's try to add the next layer of orange blocks by typing "add orange except the border".</p>
         </div>
       </div>
@@ -180,7 +178,10 @@
         <div class="cover-info">
           <h1>Yikes! SHRDLURN didn't understand what you meant.</h1>
           <hr>
-          <p>Let's teach it what "add orange except the border means". You'll have to do this a lot, but hopefully, SHRDLURN will soon get a good working knowledge of language and recipe steps; so, the more you teach it new steps, the smarter it becomes!</p>
+          <p>Let's teach it what "add orange except the border"
+      means. You'll have to do this a lot, but hopefully, SHRDLURN
+      will soon learn more from you and others, and understand
+      English better!</p>
           <p>To open the "teaching interface", either hit "ctrl+d" or click on the highlighted "~" button.</p>
         </div>
       </div>
@@ -191,8 +192,15 @@
         <div class="cover-info">
           <h1>Let's teach SHRDLURN by defining this complex step!</h1>
           <hr />
-          <p>Whenever SHRDLURN doesn't understand your instruction, you will need to define it for SHRDLURN. Behind the scenes, SHRDLURN uses a basic grammar that, although at times cumbersome, can be composed to complete basically any action. <a href="" class="reference_link">Click here for a guide.</a> In essence, every time you give SHRDLURN an instruction, it converts your instruction to its grammar. Therefore, in order to teach SHRDLURN a new instruction, the easiest way is to define your instruction in terms of its basic grammar.</p>
-          <p>Type "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" into the box below to teach it the meaning of the phrase.</p>
+          <p>Whenever SHRDLURN doesn't understand your instruction,
+      you will need to define it for SHRDLURN in terms what it already
+      understands. SHRDLURN already understands what others taught it
+      (see bottom right), as
+	  well as a
+	  <a href=""
+      class="reference_link">basic language</a>
+	  <p>Type (or copy/paste)
+	  "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" into the box below to teach it the meaning of the phrase.</p>
         </div>
       </div>
     </div>
@@ -202,7 +210,7 @@
         <div class="cover-info">
           <h1>Amazing! SHRDLURN just learned what "... except the border" means!</h1>
           <hr>
-          <p>You just defined the phrase. Now, try it out by typing "add orange except the border" in the highlighted textbox to add the next orange layer of the target structure.</p>
+          <p>You just defined the phrase. Now, try it out by typing "add orange except the border" in the highlighted textbox.</p>
         </div>
       </div>
     </div>
@@ -210,10 +218,11 @@
     <div class="cover-container tutorial-s" id="tutorial-s8">
       <div class="cover-text">
         <div class="cover-info">
-          <h1>SHRDLURN understands! Now accept it to move on.</h1>
+          <h1>SHRDLURN understands!</h1>
           <hr>
-          <p>Wow, this is pretty cool. SHRDLURN can learn complex phrases. As you'll continue to train SHRDLURN after the tutorial, SHRDLURN's potential is unlimited, you just have to teach it step by step. In the future, you can even define new phrases in terms of other things you've taught it.</p>
-          <p>For now, let's accept this interpretation of SHRDLURN's (remember if it was wrong, you could either scroll for other interpretations, or define it again).</p>
+          <p>Sometimes SHRDLURN returns multiple interpretations, and
+      you can scroll to pick the right one. Remember that you have to
+      accept the action (shift-enter) to move on.</p>
         </div>
       </div>
     </div>
@@ -241,9 +250,9 @@
     <div class="cover-container tutorial-s" id="tutorial-s11">
       <div class="cover-text">
         <div class="cover-info">
-          <h1>This is a pretty powerful tool. Let's define what we mean.</h1>
+          <h1>Let's define what we mean.</h1>
           <hr />
-          <p>In the basic grammar, "add 2 red if col = 4 or col = 5" means "repeat add red if col = 4 or col = 5 2 times". Notice the construction there. Type this in the textbox below and hit enter to teach SHRDLURN.</p>
+          <p>In the basic grammar, "add 2 red if col = 4 or col = 5" means "repeat add red if col = 4 or col = 5 2 times". Type "repeat add red if col = 4 or col = 5 2 times" in the textbox below and hit enter to teach SHRDLURN.</p>
         </div>
       </div>
     </div>
@@ -273,8 +282,11 @@
         <h1>You've done it! You completed the tutorial.</h1>
         <hr>
         <div class="half">
-          <p>Congratulations! Now, you can start building whatever structures you want using natural language.</p>
-          <p>Take a look at example structures in the top right corner (scroll through by hitting next) to see if you can come up with a set of recipe instructions to create them. Try to teach SHRDLURN to come as close to natural language as possible.</p>
+          <p>Now, you can start building whatever structures you want.</p>
+          <p>You can find some examples at the top right corner
+      (scroll through by hitting next). Think about what you want to
+      say to create them and teach SHRDLURN what
+      you meant. </p>
           <p>Have fun! P.S. You get more points the more structures you create and the more phrases you define!</p>
         </div>
         <button class="button button--big button--modal sticky-botright" id="finish_tutorial">Start building</button>

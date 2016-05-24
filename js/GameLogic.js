@@ -205,7 +205,7 @@ var GameAction = {
       console.log(jsonparse);
       gs.taggedCover = jsonparse["taggedcover"];
       gs.taggedDefineCover = gs.taggedCover;
-      if (configs.debugMode) console.log(jsonparse);
+
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
       if (formval == null) {
 	console.log('no answer from sempre')
@@ -798,19 +798,19 @@ function getColoredSpan(coverage, utt) {
         colored_query += "<span style='color:green;'>";
         break;
       case "$NUM":
-        colored_query += "<span style='color:blue;'>";
+        colored_query += "<span style='color:green;'>";
         break;
       case "$Color":
-        colored_query += "<span style='color:blue;'>";
+        colored_query += "<span style='color:green;'>";
         break;
       case "$Getter":
-        colored_query += "<span style='color:blue;'>";
+        colored_query += "<span style='color:green;'>";
         break;
       case "$UNK":
         colored_query += "<span style='color:red;'>";
         break;
       case "$Keyword":
-        colored_query += "<span style='color:blue;';>"
+        colored_query += "<span style='color:green;';>"
         break;
       default:
         colored_query += "<span style='color:red;'>";
@@ -831,23 +831,24 @@ function defineInterface(gs, utt) {
     return;
   }
 
-  var original_utt = document.getElementById("original_utt");
+  var define_header = document.getElementById("define_header");
   console.log(gs.taggedCover);
   console.log(getColoredSpan(gs.taggedCover, gs.query));
-  original_utt.innerHTML = getColoredSpan(gs.taggedCover, gs.query);
+  var define_status = document.getElementById("define_status");
+  define_status.innerHTML = 'Defining "' + gs.query + '".';
 
-  var query_phrase = document.getElementById("query_phrase");
+  
   if (!gs.defineState) { // first time openning, or close and open
      if (!gs.noAnswer()) {
-      updateStatus("SHRDLURN already understands " + gs.query + "!");
-      query_phrase.innerHTML = "SHRDLURN already understands \""
-	+ gs.query + "\", but you can teach another meaning."
+      updateStatus("SHRDLURN already understands " + gs.query + "! Try scrolling too.");
+      define_header.innerHTML = "Already understand \""
+	+ gs.query + "\", teach another meaning?"
     } else {
-      query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedCover, utt) +'"';
+      define_header.innerHTML = 'Didn\'t understand "' + getColoredSpan(gs.taggedCover, utt) +'". Please rephrase below:';
     }
   } else { // refinement
     updateStatus("SHRDLURN still does not understand you.");
-    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'"';
+    define_header.innerHTML = 'Still don\'t understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'".Please rephrase below:';
   }
 
   // Hide maintextarea
@@ -861,7 +862,7 @@ function defineInterface(gs, utt) {
   var define_interface = document.getElementById("define_interface");
   define_interface.className = "";
   var definetextarea = document.getElementById("definetextarea");
-  definetextarea.placeholder = 'write the meaning of "' + gs.query + '" here!';
+  definetextarea.placeholder = 'define "' + gs.query + '" here.';
   definetextarea.focus();
 
   gs.defineState = true;
@@ -900,13 +901,23 @@ document.getElementById("reset").onclick = function() {
 simplereset();
 
 var input = document.getElementById("definetextarea");
-input.oninput = function() {
+input.addEventListener('oninput', onautocomplete, false);
+input.addEventListener('onfocus', onautocomplete, false);
+var onautocomplete = function() {
   if (input.value.endsWith(' '))
-      autocomplete(GS, input.value)
+    autocomplete(GS, input.value);
+  else if (input.value.length <= 3)
+    autocomplete(GS, "");
 };
-var awesomplete = new Awesomplete(input, { minChars: 0,
-  list: ["remove if top red", "add yellow", "add yellow if row = 3", "repeat add yellow 3 times"]
-});
+
+// make sure something happens even when autocomplete returns nothing
+var awesomplete = new Awesomplete(input,
+				  { minChars: 0,
+				    list: ["remove if top red", "add yellow",
+					   "add brown if has red or row = 3",
+					   "add yellow if row = 3",
+					   "repeat add yellow 3 times"]
+				  });
 
 function autocomplete(gs, prefix) {
   var cmdautocomp = '(autocomplete "' + prefix + '")';
@@ -915,7 +926,8 @@ function autocomplete(gs, prefix) {
   sempre.sempreQuery(cmds, function (jsonstr) {
     var autocomps = JSON.parse(jsonstr)['autocompletes'];
     // var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
-    console.log("got these suggestions: " + autocomps);
+    if (configs.debugMode)
+      console.log("got these suggestions: " + autocomps);
     awesomplete.list = autocomps;
     // call awesomplete
     awesomplete.evaluate();
