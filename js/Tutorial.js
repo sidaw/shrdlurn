@@ -297,6 +297,7 @@ for (var i = 0; i < reference_links.length; i++) {
   });
 }
 
-document.getElementById("reference_close").addEventListener("click", function() {
+document.getElementById("reference_close").addEventListener("click", function(e) {
+  e.preventDefault();
   document.getElementById("reference").className = "modal-container hidden";
 });
