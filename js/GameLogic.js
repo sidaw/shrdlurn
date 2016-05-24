@@ -365,7 +365,7 @@ function updateRandomUtterances(gs) {
     var autocompletes = JSON.parse(jsonstr).autocompletes;
     var random_strings = "";
     for (var i = 0; i < 4 && i < autocompletes.length; i++) {
-      random_strings += "<span>" + autocompletes[i] + "</span><hr>";
+      random_strings += "<span>" + autocompletes[i] + "</span><br/>";
     }
     document.getElementById("random_utterances").innerHTML = random_strings;
   });
@@ -791,33 +791,39 @@ function getColoredSpan(coverage, utt) {
   for (var i = 0; i < coverage.length; i++) {
     var type = coverage[i][0];
     switch (type) {
+      case "$ActionSeq":
+        colored_query += "<span style='color:green;'>";
+        break;
       case "$Action":
+        colored_query += "<span style='color:green;'>";
+        break;
+      case "$CondSeq":
         colored_query += "<span style='color:green;'>";
         break;
       case "$Cond":
         colored_query += "<span style='color:green;'>";
         break;
       case "$NUM":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span style='color:blue;'>";
         break;
       case "$Color":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span style='color:blue;'>";
         break;
       case "$Getter":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span style='color:blue;'>";
+        break;
+      case "$Keyword":
+        colored_query += "<span style='color:blue;';>";
         break;
       case "$UNK":
         colored_query += "<span style='color:red;'>";
-        break;
-      case "$Keyword":
-        colored_query += "<span style='color:green;';>"
         break;
       default:
         colored_query += "<span style='color:red;'>";
     }
     for (var j = 1; j < coverage[i].length; j++) {
       console.log(coverage[i][j]);
-      colored_query += " " + coverage[i][j] + " ";
+      colored_query += coverage[i][j] + " ";
     }
     colored_query += "</span>";
     console.log(colored_query);
@@ -835,7 +841,7 @@ function defineInterface(gs, utt) {
   console.log(gs.taggedCover);
   console.log(getColoredSpan(gs.taggedCover, gs.query));
   var define_status = document.getElementById("define_status");
-  define_status.innerHTML = 'Defining "' + gs.query + '".';
+  define_status.innerHTML = 'Teach SHRDLURN "' + gs.query + '". ';
 
   
   if (!gs.defineState) { // first time openning, or close and open
@@ -844,11 +850,11 @@ function defineInterface(gs, utt) {
       define_header.innerHTML = "Already understand \""
 	+ gs.query + "\", teach another meaning?"
     } else {
-      define_header.innerHTML = 'Didn\'t understand "' + getColoredSpan(gs.taggedCover, utt) +'". Please rephrase below:';
+      define_header.innerHTML = 'Didn\'t understand "' + getColoredSpan(gs.taggedCover, utt) +'". Please rephrase:';
     }
   } else { // refinement
     updateStatus("SHRDLURN still does not understand you.");
-    define_header.innerHTML = 'Still don\'t understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'".Please rephrase below:';
+    define_header.innerHTML = 'Still don\'t understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'". Please rephrase:';
   }
 
   // Hide maintextarea
@@ -901,14 +907,17 @@ document.getElementById("reset").onclick = function() {
 simplereset();
 
 var input = document.getElementById("definetextarea");
-input.addEventListener('oninput', onautocomplete, false);
-input.addEventListener('onfocus', onautocomplete, false);
-var onautocomplete = function() {
+var onautocomplete = function(e) {
+  if (configs.debugMode) console.log(e);
   if (input.value.endsWith(' '))
     autocomplete(GS, input.value);
-  else if (input.value.length <= 3)
+  else if (input.value.length == 0)
     autocomplete(GS, "");
+  e.stopPropagation();
 };
+input.addEventListener('input', onautocomplete, false);
+input.addEventListener('focus', onautocomplete, false);
+
 
 // make sure something happens even when autocomplete returns nothing
 var awesomplete = new Awesomplete(input,
@@ -916,7 +925,8 @@ var awesomplete = new Awesomplete(input,
 				    list: ["remove if top red", "add yellow",
 					   "add brown if has red or row = 3",
 					   "add yellow if row = 3",
-					   "repeat add yellow 3 times"]
+					   "repeat add yellow 3 times"],
+				    filter : function() {return true}
 				  });
 
 function autocomplete(gs, prefix) {
@@ -930,6 +940,7 @@ function autocomplete(gs, prefix) {
       console.log("got these suggestions: " + autocomps);
     awesomplete.list = autocomps;
     // call awesomplete
+    awesomplete.open();
     awesomplete.evaluate();
   })
 }

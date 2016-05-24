@@ -49,7 +49,7 @@
         <a href="" class="hidden" id="quit_tutorial">quit tutorial</a>
       </div>
       <div>
-        <p style="font-weight:bold;">example instructions</p>
+        <p style="font-weight:bold;">SHRDLURN already learned:</p>
         <div id="random_utterances"></div>
       </div>
     </div>
@@ -91,15 +91,16 @@
     <div id="define_interface" class="hidden">
       <span class="b-header"><span id="define_header"></span>
       </span>
-      <button class="button--solved button--closed" id="close_define_interface">&#10006;</button>
+
       <hr/>
       <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" />
       <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">enter</button>
+      <button class="button button--big button--closed" id="close_define_interface"  ctitle="close the teaching panel (esc or ctrl-d)">close</button>
       <span class="helpertext">
           <span id="define_status">
             what you said
       </span>
-      <a href="" class="reference_link">It doesn't work, help me!</a>
+      <a href="" class="reference_link">But it doesn't work, I need help...</a>
       </span>
     </div>
     <input type="text" id="maintextarea" placeholder="type a command, e.g.: add red if top yellow"/>
@@ -108,7 +109,7 @@
     </div>
 
     <fieldset class="command-history-container">
-      <legend>Recipe Steps</legend>
+      <legend>recipe steps</legend>
       <div id="command_history">
       </div>
     </fieldset>
@@ -320,8 +321,8 @@
   <div>
     <div class="modal-container hidden" id="reference">
       <div class="modal">
-        <h1>Help for SHRDLURN</h1>
-        <button class="button--solved button--closed" id="reference_close">&#10006;</button>
+        <h1>Help for SHRDLURN (esc to close)</h1>
+
         <hr><br>
         <p> The goal is to teach SHRDLURN (the computer) to understand more English. You have to define things in a way that can already be understood by SHRDLURN.
           This includes anything that you or others have already taught it,
@@ -330,12 +331,13 @@
             <li><b>colors: </b> red, cyan, brown, yellow, orange</li>
             <li><b>numbers: </b> 0, 1, 2, ..., 9, many</li>
             <li><b>actions: </b> remove, add red</li>
-            <li><b>conditional: </b> add red if top yellow, add brown if col = 3, remove if top red, add if has red or row = 3 </li>
-            <li><b>combinations: </b> add yellow then add cyan then add red, repeat add cyan 3 times </li>
-            <li><b>logic: </b> add yellow if row > 1 and row < 8, repeat add red 2 times if row = 3 or col = 3, [add red then add yellow] if row > 2 if col > 2</li>
+            <li><b>if: </b> action if top yellow, action if col = 3 or top red or row > 3</li>
+            <li><b>combos: </b> action then action, repeat action 3 times </li>
+            <li><b>relative: </b> left 3 of col = 3 </li>
           </ul>
         </p>
         <p> English is hard, which is why we need your help teaching SHRDLURN. Thanks and have fun!</p>
+        <a class="button--closed" id="reference_close" href="" >Okay, got it! (close this window, esc)</a>
       </div>
     </div>
   </div>
