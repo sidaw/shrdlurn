@@ -725,9 +725,13 @@ function parseKeys(e) {
       closeDefineInterface(GS); return false; }
     defineInterface(GS, GS.query);
   } else if (e.keyCode == Hotkeys.ESC) {
-    var close_links = document.getElementsByClassName("button--closed");
-    for (var i = 0; i < close_links.length; i++)
-      close_links[i].click();
+    e.preventDefault();
+    var help_reference = document.getElementById("reference");
+    if (help_reference.className == "modal-container") {
+      help_reference.className = "modal-container hidden";
+    } else if (GS.defineState) {
+      closeDefineInterface(GS);
+    }
     return true;
   }
 }
@@ -843,7 +847,7 @@ function defineInterface(gs, utt) {
   var define_status = document.getElementById("define_status");
   define_status.innerHTML = 'Teach SHRDLURN "' + gs.query + '". ';
 
-  
+
   if (!gs.defineState) { // first time openning, or close and open
      if (!gs.noAnswer()) {
       updateStatus("SHRDLURN already understands " + gs.query + "! Try scrolling too.");
@@ -932,7 +936,7 @@ var awesomplete = new Awesomplete(input,
 function autocomplete(gs, prefix) {
   var cmdautocomp = '(autocomplete "' + prefix + '")';
   var cmds = {q:cmdautocomp, sessionId:gs.sessionId};
- 
+
   sempre.sempreQuery(cmds, function (jsonstr) {
     var autocomps = JSON.parse(jsonstr)['autocompletes'];
     // var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
