@@ -796,16 +796,16 @@ function getColoredSpan(coverage, utt) {
     var type = coverage[i][0];
     switch (type) {
       case "$ActionSeq":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span class='color-good'>";
         break;
       case "$Action":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span class='color-good'>";
         break;
       case "$CondSeq":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span class='color-good'>";
         break;
       case "$Cond":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span style='color-good'>";
         break;
       case "$NUM":
         colored_query += "<span style='color:blue;'>";
@@ -817,7 +817,7 @@ function getColoredSpan(coverage, utt) {
         colored_query += "<span style='color:blue;'>";
         break;
       case "$Keyword":
-        colored_query += "<span style='color:blue;';>";
+        colored_query += "<span style='color:blue;'>";
         break;
       case "$UNK":
         colored_query += "<span style='color:red;'>";

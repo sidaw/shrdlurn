@@ -93,7 +93,7 @@
       </span>
 
       <hr/>
-      <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" />
+      <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" maxlength="100"/>
       <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">enter</button>
       <button class="button button--big button--closed" id="close_define_interface"  ctitle="close the teaching panel (esc or ctrl-d)">close</button>
       <span class="helpertext">
@@ -103,7 +103,7 @@
       <a href="" class="reference_link">But it doesn't work, I need help...</a>
       </span>
     </div>
-    <input type="text" id="maintextarea" placeholder="type a command, e.g.: add red if top yellow"/>
+    <input type="text" id="maintextarea" placeholder="type your command here! e.g. add red if top yellow" maxlength="100"/>
     <div class="buttons" id="mainbuttons">
       <button class="button" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
     </div>
@@ -326,18 +326,47 @@
         <hr><br>
         <p> The goal is to teach SHRDLURN (the computer) to understand more English. You have to define things in a way that can already be understood by SHRDLURN.
           This includes anything that you or others have already taught it,
-          as well as the core SHRDLURN language below, which it always understands:
+          as well as the core language below, which it always understands:
           <ul>
-            <li><b>colors: </b> red, cyan, brown, yellow, orange</li>
-            <li><b>numbers: </b> 0, 1, 2, ..., 9, many</li>
-            <li><b>actions: </b> remove, add red</li>
-            <li><b>if: </b> action if top yellow, action if col = 3 or top red or row > 3</li>
-            <li><b>combos: </b> action then action, repeat action 3 times </li>
-            <li><b>relative: </b> left 3 of col = 3 </li>
+            <li><b>number: </b> 0, 1, 2, ..., 9, many</li>
+            <li><b>color: </b> red, cyan, brown, yellow, orange</li>
+            <li><b>action: </b> remove, add [color]/li>
+            <li><b>condition: </b> top [color], row <= [number], height > [number], has [color], etc. </li>
+            <li><b>if: </b> [action] if [condition]
+              <ul>
+                <li>add red if col = 1 or col = 8 or row = 1 or row = 8</li>
+                <li>add red if row < 3</li>
+                <li>remove if top red</li>
+              </ul>
+            </li>
+            <li><b>control: </b> [action] then [action], repeat [action] 3 times
+              <ul>
+                <li>repeat remove if has red many times</li>
+                <li>remove then add red if top yellow </li>
+                <li>repeat add red 3 times if top yellow or row < 3 </li>
+                <li>[remove then add red then add red] if height < 1</li>
+                <li>repeat add red then add yellow 5 times if height > 0 </li>
+              </ul>
+            </li>
+            <li><b>relative condition: </b> left 3 of col = 3, front 3 of top red</li>
           </ul>
         </p>
-        <p> English is hard, which is why we need your help teaching SHRDLURN. Thanks and have fun!</p>
-        <a class="button--closed" id="reference_close" href="" >Okay, got it! (close this window, esc)</a>
+        <h3>But it's not accepting my teachings! </h3>
+        <ul>
+          <li>
+            It understands everything in green boxes, blue are words it knows but not used correctly, red are unknowns.</li>
+          <li> <span style="color:red;">blah </span>
+          <span class="color-good">add red if height &lt; 1 </span>
+          <span style="color:blue;" ;="">then </span>
+          <span style="color:blue;" ;="">if </span><span style="color:red;">someblah </span>
+          <span class="color-good">add red </span>
+          <span class="color-good">remove red </span> </li>
+          <li> If there are several green boxes, then it understands each box, but not how they are combined. For example, <span class="color-good">add red </span>
+          <span class="color-good">remove red </span> needs to be changed to <span class="color-good">add red then remove red </span></li>
+          <li> Still, if nothing works, close the definition window and teach something else!</li>
+        </ul>
+        <p> English is hard for beginners, which is why we need your help teaching SHRDLURN!</p>
+        <a class="button--closed" id="reference_close" href="" >Okay, got it! (click here or press ESC key to close this window)</a>
       </div>
     </div>
   </div>

@@ -264,9 +264,7 @@ function prepNextTutorial(e) {
       GS.tutorialLevel++;
       break;
     default:
-
   }
-
   return true;
 }
 

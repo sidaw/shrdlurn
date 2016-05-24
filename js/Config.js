@@ -10,7 +10,10 @@ configs.defaultMaxSteps = 3;
 configs.hardMaxSteps = false; // not allowing num steps to exceed this
 
 configs.maximumNbest = 42;
+configs.maxChar = 42;
+
 configs.debugMode = false;
+
 
 configs.levels = []
 

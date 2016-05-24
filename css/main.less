@@ -11,7 +11,7 @@
 @fontSize:      16px;
 @fontSizeSmall: 14px;
 @fontSizeLarge: 25px;
-@fontSizeInput:            24px;
+@fontSizeInput:            18px;
 
 // Dimensions
 @width:               800px;
@@ -175,6 +175,7 @@ b {
 }
 #maintextarea {
   display: inline-block;
+  //font-family: 'monaco',  monospace;
   font-family: 'Roboto Condensed', sans;
   font-size: @fontSizeInput;
   appearance: none;
@@ -466,7 +467,7 @@ img.emojione {
   height: 360px;
   background-color: #fff;
   padding: 20px 30px;
-  overflow: hidden;
+  overflow: scroll;
   position: relative;
 
   .half {
@@ -575,6 +576,10 @@ img.full {
   font-size: 16px;
   width: 400px;
 }
+#definetextarea:focus {
+  outline: none;
+  border: solid 3px #000;
+}
 
 
 #show_define_status {
@@ -605,19 +610,10 @@ img.full {
   width: auto;
 }
 
-// stands for utterance
-.utt {
-font-style: italic;
-}
-
-.utt:before
-{
-content: open-quote;
-}
-
-.utt:after
-{
-content: close-quote;
+// underline
+.color-good {
+color: green;
+border: 2px solid green;
 }
 
 #turker {
