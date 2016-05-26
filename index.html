@@ -31,10 +31,9 @@
         <br/>
         &darr;: down
         <br/>
-        &#x238c;: ctrl-z (undo)
+        undo: ctrl-z
         <br />
-        &#8618;: ctrl-z-shift (redo)
-
+        redo: shift-ctrl-z
         <br/>
       </div>
       <p/>
@@ -119,7 +118,7 @@
 
   <div class="tutorial" id="tutorial">
     <div class="modal-container tutorial-s active" id="tutorial-s1">
-      <div class="modal" style="overflow:scroll;">
+      <div class="modal">
         <h1>Welcome to SHRDLURN</h1>
         <hr>
         <div class="half">
@@ -322,7 +321,7 @@
 
   <div>
     <div class="modal-container hidden" id="reference">
-      <div class="modal">
+      <div class="modal" style="overflow-y:scroll;">
         <h1>Help for SHRDLURN (esc to close)</h1>
 
         <hr><br>
@@ -332,7 +331,7 @@
           <ul>
             <li><b>number: </b> 0, 1, 2, ..., 9, many</li>
             <li><b>color: </b> red, cyan, brown, yellow, orange</li>
-            <li><b>action: </b> remove, add [color]/li>
+            <li><b>action: </b> remove, add [color] </li>
             <li><b>condition: </b> top [color], row <= [number], height > [number], has [color], etc. </li>
             <li><b>if: </b> [action] if [condition]
               <ul>
