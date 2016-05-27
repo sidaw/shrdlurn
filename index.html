@@ -13,9 +13,11 @@
   <div id="container">
     <div id="panel">
       <canvas id="canvastarget" width="200" height="200"></canvas>
-      <button id="prev_state" class="button button--big">&larr; prev</button>
-      <button id="load_state" class="button button--big">load</button>
-      <button id="next_state" class="button button--big">next &rarr;</button>
+      <!-- <button id="prev_state" class="button button--big">&larr; prev</button>
+      <button id="load_state" class="button button--big">load</button> -->
+      <span id="possible_steps">possible in <span id="possible_steps_n">3</span> steps</span>
+      <span id="max_steps">must be completed in <span id="max_steps_n">9</span> steps</span>
+      <button id="skip_target" class="button button--big">skip (1 left) &rarr;</button>
       <p/>
       <div><b>game points:</b> <span id="game_points"></span></div>
       <br />
@@ -44,6 +46,9 @@
         <a id="reset"
         href="">reset ALL progress</a>
         <br>
+        <br />
+        <a id="start_tutorial2"
+        href="">go back to tutorial</a>
         <br>
         <a href="" class="hidden" id="quit_tutorial">quit tutorial</a>
       </div>
@@ -75,6 +80,7 @@
   <div class="row-info-8">row 8</div>
 
   <button id="clear_button" class="button button--big">clear</button>
+  <button id="reject_button" class="button button--big">reject</button>
 
   <canvas id="canvas" width="1100" height="750"></canvas>
   <span id="show_define_status" class="hidden">
@@ -94,9 +100,12 @@
       </span>
 
       <hr/>
-      <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" maxlength="100"/>
-      <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">enter</button>
-      <button class="button button--big button--closed" id="close_define_interface"  ctitle="close the teaching panel (esc or ctrl-d)">close</button>
+      <div class="define-inputs">
+        <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" maxlength="100"/>
+        <button class="button button--big hidden" id="define_phrase_button" ctitle="enter definition (enter key)">define</button>
+        <button class="button button--big" id="define_try" ctitle="try definition">try it</button>
+        <button class="button button--big button--closed" id="close_define_interface"  ctitle="close the teaching panel (esc or ctrl-d)">close</button>
+      </div>
       <span class="helpertext">
           <span id="define_status">
             what you said
@@ -110,7 +119,7 @@
     </div>
 
     <fieldset class="command-history-container">
-      <legend>recipe steps</legend>
+      <legend>recipe steps <span id="recipe_steps">(0/100)</span></legend>
       <div id="command_history">
       </div>
     </fieldset>
@@ -202,12 +211,22 @@
 	  <a href=""
       class="reference_link">basic language</a>
 	  <p>Type (or copy/paste)
-	  "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" into the box below to teach it the meaning of the phrase.</p>
+	  "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" into the box below to teach it the meaning of the phrase. Then, hit "try it" to see SHRDLURN's intepretation of your definition.</p>
         </div>
       </div>
     </div>
 
     <div class="cover-container tutorial-s" id="tutorial-s7">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Great! SHRDLURN understood this definition.</h1>
+          <p>Before you actually define it, you have to verify that your attempted definition was correctly interpreted by SHRDLURN. If it wasn't, rephrase your definition and click "try it" again until SHRDLURN understands. Or, scroll to see other interpretations.</p>
+          <p>But, since the interpretation was correct, you can go ahead and hit enter or click "define" to define this term.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s8">
       <div class="cover-text">
         <div class="cover-info">
           <h1>Amazing! SHRDLURN just learned what "... except the border" means!</h1>
@@ -217,7 +236,7 @@
       </div>
     </div>
 
-    <div class="cover-container tutorial-s" id="tutorial-s8">
+    <div class="cover-container tutorial-s" id="tutorial-s9">
       <div class="cover-text">
         <div class="cover-info">
           <h1>SHRDLURN understands!</h1>
@@ -225,11 +244,12 @@
           <p>Sometimes SHRDLURN returns multiple interpretations, and
       you can scroll to pick the right one. Remember that you have to
       accept the action (shift-enter) to move on.</p>
+      <p>Alternatively, if the interpretation is really wrong, you can click the "reject" button to tell SHRDLURN that is wrong.</p>
         </div>
       </div>
     </div>
 
-    <div class="cover-container tutorial-s" id="tutorial-s9">
+    <div class="cover-container tutorial-s" id="tutorial-s10">
       <div class="cover-text">
         <div class="cover-info">
           <h1>Now, let's finish it up!</h1>
@@ -239,7 +259,7 @@
       </div>
     </div>
 
-    <div class="cover-container tutorial-s" id="tutorial-s10">
+    <div class="cover-container tutorial-s" id="tutorial-s11">
       <div class="cover-text">
         <div class="cover-info">
           <h1>As predicted, SHRDLURN doesn't quite understand this instruction.</h1>
@@ -249,7 +269,7 @@
       </div>
     </div>
 
-    <div class="cover-container tutorial-s" id="tutorial-s11">
+    <div class="cover-container tutorial-s" id="tutorial-s12">
       <div class="cover-text">
         <div class="cover-info">
           <h1>Let's define what we mean.</h1>
@@ -259,7 +279,17 @@
       </div>
     </div>
 
-    <div class="cover-container tutorial-s" id="tutorial-s12">
+    <div class="cover-container tutorial-s" id="tutorial-s13">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>SHRDLURN understood your definition!</h1>
+          <hr />
+          <p>Now, hit enter or click on "define" to confirm this definition for SHRDLURN.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s14">
       <div class="cover-text">
         <div class="cover-info">
           <h1>Great! SHRDLURN learned something new.</h1>
@@ -269,7 +299,7 @@
       </div>
     </div>
 
-    <div class="cover-container tutorial-s" id="tutorial-s13">
+    <div class="cover-container tutorial-s" id="tutorial-s15">
       <div class="cover-text">
         <div class="cover-info">
           <h1>Nifty</h1>
@@ -279,20 +309,27 @@
       </div>
     </div>
 
-    <div class="modal-container tutorial-s" id="tutorial-s14">
+    <div class="modal-container tutorial-s" id="tutorial-s16">
       <div class="modal">
         <h1>You've done it! You completed the tutorial.</h1>
         <hr>
         <div class="half">
-          <p>Now, you can start building whatever structures you want.</p>
-          <p>You can find some examples at the top right corner
-      (scroll through by hitting next). Think about what you want to
-      say to create them and teach SHRDLURN what
-      you meant. </p>
-          <p>Have fun! P.S. You get more points the more structures you create and the more phrases you define!</p>
+          <p>Now that you have completed the tutorial, we want you to try to build complex structures yourself!</p>
+          <p>In the top right corner you will find a target structure to build. Try to come up with a way to build the structure as close as possible to the number of possible steps it took to build (you must build it in less than the maxinum number of steps allowed). Do this by defining complex phrases, for example: instead of "add red if row &lt;= 2 and col &lt;= 2", define "add red square" and then use that.</p>
+          <p>The goal is to teach SHRDLURN as much as possible. You are allowed unlimited defines!</p>
+          <p>Have fun!</p>
         </div>
-        <button class="button button--big button--modal sticky-botright" id="finish_tutorial">Start building</button>
+        <button class="button button--big button--modal sticky-botright" id="finish_tutorial">start building</button>
       </div>
+    </div>
+  </div>
+
+  <div class="modal-container hidden" id="target_completed">
+    <div class="modal">
+      <h1>Congratulations! You built the target!</h1>
+      <br />
+      <p>Great job! You successfully built the target using natural language. Thank you for helping to teach SHRDLURN. Feel free to try to build another target.</p>
+      <button class="button button--big button--modal sticky-botright" id="next_target">try another target</button>
     </div>
   </div>
 
