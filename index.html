@@ -332,7 +332,7 @@
             <li><b>number: </b> 0, 1, 2, ..., 9, many</li>
             <li><b>color: </b> red, cyan, brown, yellow, orange</li>
             <li><b>action: </b> remove, add [color] </li>
-            <li><b>condition: </b> top [color], row <= [number], height > [number], has [color], etc. </li>
+            <li><b>condition: </b> top [color], row = [number], height > [number], has [color], etc. </li>
             <li><b>if: </b> [action] if [condition]
               <ul>
                 <li>add red if col = 1 or col = 8 or row = 1 or row = 8</li>
@@ -349,7 +349,27 @@
                 <li>repeat add red then add yellow 5 times if height > 0 </li>
               </ul>
             </li>
-            <li><b>relative condition: </b> left 3 of col = 3, front 3 of top red</li>
+            <li><b>(advanced) relative condition: </b> relativepos_of [condition]
+            <ul>
+              <li>add yellow if leftof top red</li>
+              <li>add yellow if rightof col = 3</li>
+              <li>add yellow if backof col = row </li>
+              <li>add yellow if rightof frontof [row = 4 and col = 4]</li>
+            </ul>
+            </li>
+            <li><b>(advanced) extremes: </b> largest X in [condition]
+            <ul>
+              <li>add yellow if largest row in all</li>
+              <li>add yellow if smallest col in top red</li>
+            </ul>
+            </li>
+            <li><b>(advanced) inside: </b> inside [[condition]]
+            <ul>
+              <li>add red if inside [top red]</li>
+              <li>add red if inside [col = 1 or col = 4]</li>
+              <li>add cyan if inside [ [ row = 1 or row = 4 ] and [col = 1 or col = 4] ] </li>
+            </ul>
+            </li>
           </ul>
         </p>
         <h3>But it's not accepting my teachings! </h3>

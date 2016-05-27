@@ -634,7 +634,7 @@ function runCurrentQuery(gs) {
     gs.log.numQueries++;
 
     logh(gs.numQueries + ' ' + querystr + '; ')
-    gs.query = querystr;
+    gs.query = sempre.formatQuery(querystr);
     GameAction.candidates(gs);
 
   } else {
@@ -808,15 +808,15 @@ function getColoredSpan(coverage, utt) {
         colored_query += "<span class='color-good'>";
         break;
       case "$Cond":
-        colored_query += "<span style='color-good'>";
+        colored_query += "<span class='color-good'>";
         break;
-      case "$NUM":
-        colored_query += "<span style='color:blue;'>";
+      case "$NumberSeq":
+        colored_query += "<span class='color-good'>";
+      break;
+      case "$Number":
+        colored_query += "<span class='color-good'>";
         break;
       case "$Color":
-        colored_query += "<span style='color:blue;'>";
-        break;
-      case "$Getter":
         colored_query += "<span style='color:blue;'>";
         break;
       case "$Keyword":
