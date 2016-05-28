@@ -19,7 +19,7 @@ function GameState() {
   this.nSteps = 1;
   this.maxSteps = 100;
   this.targetIndex = -1;
-  this.skipsLeft = 1;
+  this.skipsLeft = 2;
 
   this.tutorialMode = false;
   this.tutorialLevel = 2;
@@ -542,7 +542,7 @@ var STATES = [
   [8, "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]"],
   [4, "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]"],
   [2, "[[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[4],[4],[4],[4],[4],[4],[4],[4],[3],[3],[3],[3],[3],[3],[3],[3],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]"],
-  [2, "[[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2]]"],
+  [4, "[[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2]]"],
   [6, "[[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[],[0,2],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[],[],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[0,2],[],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0]]"],
   [4, "[[2],[2],[2],[2],[2],[2],[2],[2],[2],[3],[3],[3],[3],[3],[3],[2],[2],[3],[0],[0],[0],[0],[3],[2],[2],[3],[0],[4],[4],[0],[3],[2],[2],[3],[0],[4],[4],[0],[3],[2],[2],[3],[0],[0],[0],[0],[3],[2],[2],[3],[3],[3],[3],[3],[3],[2],[2],[2],[2],[2],[2],[2],[2],[2]]"],
   [6, "[[1,2],[1,2],[1,2],[1,2],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[3,2],[3,2],[3,2],[4,2]]"],
@@ -612,13 +612,13 @@ function updateTarget(index) {
   PS.Main.renderTargetJSON("[" + wall + "]")();
   GS.targetWall = wall;
   GS.targetIndex = index;
-  GS.maxSteps = state[0] * 2;
+  GS.maxSteps = Math.round(state[0] * 2.5);
 
   var canvas_target = document.getElementById("canvastarget");
   canvas_target.setAttribute("data-wall", wall);
   canvas_target.setAttribute("data-index", index);
   document.getElementById("possible_steps_n").innerHTML = state[0];
-  document.getElementById("max_steps_n").innerHTML = state[0] * 2;
+  document.getElementById("max_steps_n").innerHTML = GS.maxSteps;
   document.getElementById("recipe_steps").innerHTML = "(" + 0 + "/" + GS.maxSteps + ")";
 }
 
@@ -830,11 +830,11 @@ function definePhrase(e, gs) {
       var jsonparse = JSON.parse(jsonstr);
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
       var commandResponse = jsonparse['commandResponse'];
-      
+
       var defCore = commandResponse.indexOf("Core") != -1;
       var defNoCover = commandResponse.indexOf("NoCover") != -1;
       var defNoParse = commandResponse.indexOf("NoParse") != -1;
-      
+
       if (defCore || defNoCover || defNoParse) {
         gs.define_coverage= jsonparse["coverage"];
         gs.taggedDefineCover = jsonparse["taggedcover"];
@@ -847,7 +847,7 @@ function definePhrase(e, gs) {
         gs.setCurrentWall();
         updateCanvas(gs);
         defineInterface(gs);
-        document.getElementById("define_phrase_button").className = "button button--big";
+        document.getElementById("define_phrase_button").innerHTML = "define";
       }
     });
     return;
@@ -861,27 +861,19 @@ function definePhrase(e, gs) {
   var cmds = {q:text, sessionId:gs.sessionId};
   sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
-    if (jsonparse["candidates"].length == 0) { // sidaw: this should not happen anymore right?
-      gs.define_coverage = jsonparse["coverage"];
-      gs.taggedDefineCover = jsonparse["taggedcover"];
-      defineInterface(gs);
-      return;
-    } else {
-      addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
-    		       + gs.query + '" as "' + gs.defineSuccess + '"', true);
-      closeDefineInterface(gs);
-      // consider populate the candidate list quietly,
-      //GameAction._candidates(gs);
-      gs.currentWall = "[[]]";
-      gs.resetNBest();
-      gs.setCurrentWall();
-      updateCanvas(gs);
-      document.getElementById("maintextarea").value = gs.query;
-      updateStatus("definition accepted. thanks for teaching!");
-      document.getElementById("show_define_status").className = "hidden";
-      document.getElementById("define_phrase_button").className = "button button--big hidden";
-    }
-
+    addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
+  		       + gs.query + '" as "' + gs.defineSuccess + '"', true);
+    closeDefineInterface(gs);
+    // consider populate the candidate list quietly,
+    //GameAction._candidates(gs);
+    gs.currentWall = "[[]]";
+    gs.resetNBest();
+    gs.setCurrentWall();
+    updateCanvas(gs);
+    document.getElementById("maintextarea").value = gs.query;
+    updateStatus("definition accepted. thanks for teaching!");
+    document.getElementById("show_define_status").className = "hidden";
+    document.getElementById("define_phrase_button").innerHTML = "try it";
   });
 }
 
@@ -1013,13 +1005,20 @@ function definePhraseClicked(e) {
   definePhrase(e, GS);
 }
 
-function defineTryClicked(e) {
-  GS.defineSuccess = "";
-  definePhrase(e, GS);
-}
+// function defineTryClicked(e) {
+//   GS.defineSuccess = "";
+//   definePhrase(e, GS);
+// }
 
 document.getElementById("define_phrase_button").addEventListener("click", definePhraseClicked, false);
-document.getElementById("define_try").addEventListener("click", defineTryClicked, false);
+//document.getElementById("define_try").addEventListener("click", defineTryClicked, false);
+document.getElementById("definetextarea").oninput = function(e) {
+  if (GS.defineSuccess.length > 0) {
+    console.log("HEI!");
+    document.getElementById("define_phrase_button").innerHTML = "try it";
+    GS.defineSuccess = "";
+  }
+};
 
 document.getElementById("define_instead").addEventListener("click", function(e) {
   e.preventDefault();
@@ -1112,6 +1111,7 @@ function completed_target() {
 
 document.getElementById("next_target").addEventListener("click", function(e) {
   document.getElementById("target_completed").className = "modal-container hidden";
+  document.getElementById("clear_button").click();
   new_target();
 });
 
@@ -1127,6 +1127,10 @@ document.getElementById("skip_target").addEventListener("click", function(e) {
   if (GS.skipsLeft <= 0) {
     skip.parentNode.removeChild(skip);
   } else {
-    skip.innerHTML = "skip (" + Gs.skipsLeft + " left) &rarr;";
+    skip.innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
   }
+});
+
+window.addEventListener("load", function(e) {
+  document.getElementById("skip_target").innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
 });
