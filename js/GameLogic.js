@@ -16,6 +16,10 @@ function GameState() {
   this.log.numQueries = 0;
   this.log.totalTokens = 0;
   this.log.numScrolls = 0;
+  this.nSteps = 1;
+  this.maxSteps = 100;
+  this.targetIndex = -1;
+  this.skipsLeft = 1;
 
   this.tutorialMode = false;
   this.tutorialLevel = 2;
@@ -25,6 +29,7 @@ function GameState() {
   this.taggedCover = [];
   this.taggedDefineCover = [];
   this.defineState = false;
+  this.defineSuccess = "";
   this.reverting = -1;
 
   // the only persistent states
@@ -131,7 +136,7 @@ function updateCanvas(gs) {
   var PSMain = PS.Main;
   var walls = [];
 
-  if (!gs.noQuery() && gs.noAnswer()) {
+  if (!gs.noQuery() && gs.noAnswer() && !(gs.defineSuccess.length > 0)) {
     document.getElementById("show_define_status").className = "";
     updateStatus("SHRDLURN did not understand.");
   } else { document.getElementById("show_define_status").className = "hidden"}
@@ -189,17 +194,18 @@ function newWall(gs) {
 var GameAction = {
   // functions starting with _ are internal, and should not modify status messages.
   _candidates: function(gs) {
-    if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 11)) {
-      if (gs.tutorialLevel == 6) gs.taggedCover = [["$Action", "add orange"], ["$UNK", "except", "the", "border"]];
-      if (gs.tutorialLevel == 11) gs.taggedCover = [["$UNK", "add", "2"], ["$Color", "red"], ["$Cond", "if", "col", "=", "4", "or", "col", "=", "5"]];
-      gs.taggedDefineCover = gs.taggedCover;
-      gs.resetNBest();
-      gs.setCurrentWall();
-      updateCanvas(gs);
-      return;
-    }
+    // if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 12)) {
+    //   if (gs.tutorialLevel == 6) gs.taggedCover = [["$Action", "add orange"], ["$UNK", "except", "the", "border"]];
+    //   if (gs.tutorialLevel == 11) gs.taggedCover = [["$UNK", "add", "2"], ["$Color", "red"], ["$Cond", "if", "col", "=", "4", "or", "col", "=", "5"]];
+    //   gs.taggedDefineCover = gs.taggedCover;
+    //   gs.resetNBest();
+    //   gs.setCurrentWall();
+    //   updateCanvas(gs);
+    //   return;
+    // }
 
     var cmds = {q:gs.query, sessionId:gs.sessionId};
+
     sempre.sempreQuery(cmds , function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
       console.log(jsonparse);
@@ -221,6 +227,11 @@ var GameAction = {
 	writeSemAns(gs);
       }
       updateCanvas(gs);
+      if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 12)) {
+        GS.resetNBest();
+        GS.setCurrentWall();
+        updateCanvas(GS);
+      }
     });
 
     // Update random utterances
@@ -280,10 +291,16 @@ var GameAction = {
   _accept_commit: function(gs) {
     if (!gs.noAnswer()) {
       GameAction._simpleaccept(gs);
+
+      if (gs.currentWall == gs.targetWall) {
+        completed_target();
+      }
+
       gs.listWalls.push(gs.currentWall);
       gs.resetNBest();
       gs.query = "";
       gs.setCurrentWall();
+      gs.nSteps++;
       addPoint("accept");
       updateCanvas(gs);
       updateStatus("✓: accepted (#{accept}/{length}), enter another command"
@@ -381,12 +398,17 @@ function saveGameState(gs, name) {
   // popTasks();
 }
 
-function addElemToHistory(gs, history, text) {
+function addElemToHistory(gs, history, text, definition = false) {
   if (gs.currentWall == "[[]]") { return; }
 
   var elem = document.createElement("div");
   elem.setAttribute("data-index", gs.listWalls.length - 1);
   elem.setAttribute("data-walls", gs.currentWall);
+  if (!definition) {
+    elem.setAttribute("data-steps", gs.nSteps);
+    document.getElementById("recipe_steps").innerHTML = "(" + gs.nSteps + "/" + gs.maxSteps + ")";
+    text = gs.nSteps + ". " + text;
+  }
   elem.innerHTML = text;
   history.insertBefore(elem, history.firstChild);
   elem.onclick = function() {
@@ -490,76 +512,114 @@ function revertHistory(gs, index) {
   gs.listWalls.push(wall);
   gs.reverting = index;
 
+  var steps = elem.getAttribute("data-steps");
+  if (steps) {
+    gs.nSteps = parseInt(steps) + 1;
+  }
+
   highlightHistory(gs, index);
 }
 
 /* States */
+// var STATES = [
+//   "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[2,4,4,0,0,0,2,3,3],[2,4,4,0,0,0,2,3,3,4,4],[2,4,4,0,0,0,2,3,3],[],[],[],[],[],[2,4,4,0,0,0,3,3,0,0,0],[2,4,4,0,0,0,3,3,0,0,0,4,4],[2,4,4,0,0,0,3,3,0,0,0],[],[],[],[],[],[2,4,4,0,0,0,1,3,3],[2,4,4,0,0,0,1,3,3,4,4],[2,4,4,0,0,0,1,3,3],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]",
+//   "[[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[3,3,3,3,3,3,3],[0],[0],[0],[0],[0],[0],[2,2,2],[0,0,0,0,0,0],[0],[0],[0],[0],[0],[0],[4,4,4,4],[1,1,1,1,1],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]]",
+//   "[[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0]]",
+//   "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
+//   "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
+//   "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]",
+//   "[[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4]]",
+//   "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]",
+//   "[[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2]]",
+//   "[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]",
+//   "random"
+// ];
+
+// Possible in nSteps, Maximum alloted nSteps, Target Wall
 var STATES = [
-  "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[2,4,4,0,0,0,2,3,3],[2,4,4,0,0,0,2,3,3,4,4],[2,4,4,0,0,0,2,3,3],[],[],[],[],[],[2,4,4,0,0,0,3,3,0,0,0],[2,4,4,0,0,0,3,3,0,0,0,4,4],[2,4,4,0,0,0,3,3,0,0,0],[],[],[],[],[],[2,4,4,0,0,0,1,3,3],[2,4,4,0,0,0,1,3,3,4,4],[2,4,4,0,0,0,1,3,3],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]",
-  "[[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[3,3,3,3,3,3,3],[0],[0],[0],[0],[0],[0],[2,2,2],[0,0,0,0,0,0],[0],[0],[0],[0],[0],[0],[4,4,4,4],[1,1,1,1,1],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]]",
-  "[[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0]]",
-  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
-  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
-  "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]",
-  "[[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4]]",
-  "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]",
-  "[[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2]]",
-  "[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]",
-  "random"
-];
+  [5, "[[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[4,4,4],[1],[1],[1],[1],[1],[1],[1,3],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0],[2,2,2],[2,2,2,0]]"],
+  [4, "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]"],
+  [8, "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]"],
+  [4, "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]"],
+  [2, "[[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[4],[4],[4],[4],[4],[4],[4],[4],[3],[3],[3],[3],[3],[3],[3],[3],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]"],
+  [2, "[[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2]]"],
+  [6, "[[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[],[0,2],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[],[],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[0,2],[],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0]]"],
+  [4, "[[2],[2],[2],[2],[2],[2],[2],[2],[2],[3],[3],[3],[3],[3],[3],[2],[2],[3],[0],[0],[0],[0],[3],[2],[2],[3],[0],[4],[4],[0],[3],[2],[2],[3],[0],[4],[4],[0],[3],[2],[2],[3],[0],[0],[0],[0],[3],[2],[2],[3],[3],[3],[3],[3],[3],[2],[2],[2],[2],[2],[2],[2],[2],[2]]"],
+  [6, "[[1,2],[1,2],[1,2],[1,2],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[3,2],[3,2],[3,2],[4,2]]"],
+  [8, "[[1,1,1],[],[],[],[],[],[],[1,1,1],[],[2],[],[],[],[],[2],[],[],[],[2],[],[],[2],[],[],[],[],[],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[],[],[],[],[],[],[0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0],[],[],[],[],[],[2],[],[],[2],[],[],[],[2],[],[],[],[],[2],[],[1,1,1],[],[],[],[],[],[],[1,1,1]]"],
+]
 
 /* Render the target state initially. */
-window.addEventListener("load", function() {
-  updateTarget(0);
+window.addEventListener("load", new_target);
+
+function new_target() {
+  var index = 0;
+  var completedTargets = JSON.parse(util.getStore("completed_targets", "[]"));
+  if (completedTargets.length == STATES.length) {
+    alert("No more targets.");
+    return;
+  }
+  do {
+    index = Math.floor(Math.random()*STATES.length);
+  } while (completedTargets.indexOf(index) !== -1 && index !== GS.targetIndex);
+  updateTarget(index);
   updateRandomUtterances(GS);
-});
+}
 
 function loadGameState(gs, newWall) {
   gs.listWalls = [newWall];
   updateCanvas(gs);
   wipeHistory(gs, newWall);
 }
-
-document.getElementById("prev_state").addEventListener("click", function() {
-  var index = document.getElementById("canvastarget").getAttribute("data-index");
-  index--;
-
-  if (index >= 0)
-    updateTarget(index);
-});
-
-document.getElementById("load_state").addEventListener("click", function() {
-  var canvas_target = document.getElementById("canvastarget")
-  var index = canvas_target.getAttribute("data-index");
-  var wall = canvas_target.getAttribute("data-wall");
-  loadGameState(GS, wall);
-  updateStatus("loaded a new state");
-});
-
-document.getElementById("next_state").addEventListener("click", function() {
-  var index = document.getElementById("canvastarget").getAttribute("data-index");
-  index++;
-  if (index != STATES.length) {
-    updateTarget(index);
-  } else {
-    updateTarget(index - 1);
-  }
-});
+//
+// document.getElementById("prev_state").addEventListener("click", function() {
+//   var index = document.getElementById("canvastarget").getAttribute("data-index");
+//   index--;
+//
+//   if (index >= 0)
+//     updateTarget(index);
+// });
+//
+// document.getElementById("load_state").addEventListener("click", function() {
+//   var canvas_target = document.getElementById("canvastarget")
+//   var index = canvas_target.getAttribute("data-index");
+//   var wall = canvas_target.getAttribute("data-wall");
+//   loadGameState(GS, wall);
+//   updateStatus("loaded a new state");
+// });
+//
+// document.getElementById("next_state").addEventListener("click", function() {
+//   var index = document.getElementById("canvastarget").getAttribute("data-index");
+//   index++;
+//   if (index != STATES.length) {
+//     updateTarget(index);
+//   } else {
+//     updateTarget(index - 1);
+//   }
+// });
 
 document.getElementById("clear_button").addEventListener("click", function() {
+  GS.nSteps = 1;
   loadGameState(GS, "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]");
 });
 
 function updateTarget(index) {
-  var wall = STATES[index];
-  if (wall == "random")
-    wall = randomWall();
+  var state = STATES[index];
+  var wall = state[1];
+  // if (wall == "random")
+  //   wall = randomWall();
 
   PS.Main.renderTargetJSON("[" + wall + "]")();
+  GS.targetWall = wall;
+  GS.targetIndex = index;
+  GS.maxSteps = state[0] * 2;
 
   var canvas_target = document.getElementById("canvastarget");
   canvas_target.setAttribute("data-wall", wall);
   canvas_target.setAttribute("data-index", index);
+  document.getElementById("possible_steps_n").innerHTML = state[0];
+  document.getElementById("max_steps_n").innerHTML = state[0] * 2;
+  document.getElementById("recipe_steps").innerHTML = "(" + 0 + "/" + GS.maxSteps + ")";
 }
 
 function randomWall() {
@@ -630,6 +690,10 @@ function runCurrentQuery(gs) {
   document.getElementById("maintextarea").value = ''
 
   if (querystr.length>0) {
+    // if (querystr.length > 50) {
+    //   alert("Instruction length is " + querystr.length + " characters. Please limit it to less than 50 characters. Try to define concepts and use those instead of one long instruction.");
+    //   return;
+    // }
     gs.log.totalTokens += querystr.split(" ").length;
     gs.log.numQueries++;
 
@@ -675,8 +739,16 @@ function acceptOnclick() {
   //   }
   // }
 
-  if (GS.defineState)
-    closeDefineInterface(GS);
+  if (GS.defineState) {
+    alert("You must submit this definition first, then you can accept it!");
+    return;
+  }
+
+  if (GS.nSteps > GS.maxSteps) {
+    alert("You have used the maximum number of steps. Undo some of your steps or clear to start over. You need to build the structure in less than the maxinum number of steps allowed. Try to define more complex phrases and use those rather than being overly specific.");
+    return;
+  }
+
   updateHistory(GS);
   GameAction.accept(GS);
   maintextarea.focus();
@@ -743,15 +815,48 @@ document.addEventListener("keydown", parseKeys, false);
 
 // Define interface
 function definePhrase(e, gs) {
-  if (gs.tutorialMode)
-    return;
-
   var definetextarea = document.getElementById("definetextarea");
-  var text = "(uttdef \"" + definetextarea.value + "\")";
+
+  if (definetextarea.value.length > 90) {
+    alert("Definition length is " + definetextarea.value.length + " characters. Please limit it to less than 90 characters. Check out the help page for example commands, or try to define other phrases that would be building blocks to this one.");
+    return;
+  }
+
+  /* If just trying, update current Wall */
+  if (gs.defineSuccess.length == 0 || definetextarea.value != gs.defineSuccess) {
+    var cmds = {q: sempre.formatQuery(definetextarea.value), sessionId: gs.sessionId };//{ q: "(uttdef \"" + sempre.formatQuery(definetextarea.value) + "\" -1)", sessionId: gs.sessionId };
+
+    sempre.sempreQuery(cmds, function(jsonstr) {
+      var jsonparse = JSON.parse(jsonstr);
+      var candidates = jsonparse['candidates'];
+      if (candidates.length == 0) {
+        gs.define_coverage= jsonparse["coverage"];
+        gs.taggedDefineCover = jsonparse["taggedcover"];
+        defineInterface(gs, definetextarea.value);
+        addPoint("fail");
+      } else {
+        var formval = sempre.parseSEMPRE(jsonparse['candidates']);
+        gs.NBestInd = 0;
+        gs.NBest = formval;
+        gs.setCurrentWall();
+        gs.defineSuccess = definetextarea.value;
+        updateCanvas(gs);
+        defineInterface(gs);
+        document.getElementById("define_phrase_button").className = "button button--big";
+      }
+    });
+    return;
+  }
+
+  /* If already tried, submit definition */
+  sempre.sempreQuery({q: sempre.formatQuery(gs.query), sessionId: gs.sessionId }, function(jsonstr) {
+
+  });
+
+  var text = "(uttdef \"" + sempre.formatQuery(gs.defineSuccess) + "\")";//"(uttdef \"" + sempre.formatQuery(gs.defineSuccess) + "\" " + gs.NBest[gs.NBestInd].rank + ")";
   var cmds = {q:text, sessionId:gs.sessionId};
   sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
-    console.log(jsonparse);
 
     if (jsonparse["candidates"].length == 0) {
       gs.define_coverage = jsonparse["coverage"];
@@ -766,11 +871,18 @@ function definePhrase(e, gs) {
       if (numans == 0) addPoint("fail");
       else addPoint("success");
       addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
-    		       + gs.query + '" as "' + definetextarea.value + '"');
+    		       + gs.query + '" as "' + gs.defineSuccess + '"', true);
       closeDefineInterface(gs);
       // consider populate the candidate list quietly,
-      GameAction._candidates(gs);
+      //GameAction._candidates(gs);
+      gs.currentWall = "[[]]";
+      gs.resetNBest();
+      gs.setCurrentWall();
+      updateCanvas(gs);
+      document.getElementById("maintextarea").value = gs.query;
       updateStatus("definition accepted. thanks for teaching!");
+      document.getElementById("show_define_status").className = "hidden";
+      document.getElementById("define_phrase_button").className = "button button--big hidden";
     }
 
   });
@@ -790,6 +902,7 @@ function closeDefineInterface(gs) {
   var mainbuttons = document.getElementById("mainbuttons");
   mainbuttons.className = "buttons";
   maintextarea.focus();
+  gs.defineSuccess = "";
   gs.defineState = false;
 }
 
@@ -845,8 +958,6 @@ function defineInterface(gs, utt) {
   }
 
   var define_header = document.getElementById("define_header");
-  console.log(gs.taggedCover);
-  console.log(getColoredSpan(gs.taggedCover, gs.query));
   var define_status = document.getElementById("define_status");
   define_status.innerHTML = 'Teach SHRDLURN "' + gs.query + '". ';
 
@@ -860,8 +971,13 @@ function defineInterface(gs, utt) {
       define_header.innerHTML = 'Didn\'t understand "' + getColoredSpan(gs.taggedCover, utt) +'". Please rephrase:';
     }
   } else { // refinement
-    updateStatus("SHRDLURN still does not understand you.");
-    define_header.innerHTML = 'Still don\'t understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'". Please rephrase:';
+    if (gs.defineSuccess.length > 0 || gs.tutorialMode) {
+      updateStatus("SHRDLURN understands this! Click 'define' to submit or enter a different definition and click 'try it'.");
+      define_header.innerHTML = 'SHRDLURN understands the definition, "' + gs.defineSuccess +'". If its interpretation is correct, click "define" to submit the definition.';
+    } else {
+      updateStatus("SHRDLURN still does not understand you.");
+      define_header.innerHTML = 'Still don\'t understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'". Please rephrase:';
+    }
   }
 
   // Hide maintextarea
@@ -885,7 +1001,13 @@ function definePhraseClicked(e) {
   definePhrase(e, GS);
 }
 
+function defineTryClicked(e) {
+  GS.defineSuccess = "";
+  definePhrase(e, GS);
+}
+
 document.getElementById("define_phrase_button").addEventListener("click", definePhraseClicked, false);
+document.getElementById("define_try").addEventListener("click", defineTryClicked, false);
 
 document.getElementById("define_instead").addEventListener("click", function(e) {
   e.preventDefault();
@@ -951,3 +1073,48 @@ function autocomplete(gs, prefix) {
     awesomplete.evaluate();
   })
 }
+
+document.getElementById("reject_button").addEventListener("click", function(e) {
+  if (GS.NBest.length == 0) {
+    alert("Nothing to reject.");
+    return;
+  }
+  var cmds = {q: "(reject " + GS.NBestInd + ")", sessionId: GS.sessionId};
+  sempre.sempreQuery(cmds, function(jsonstr) {
+    var jsonparse = JSON.parse(jsonstr);
+    GS.NBest.splice(GS.NBestInd, 1);
+    GameAction.prev(GS);
+  });
+});
+
+function completed_target() {
+  if (GS.nSteps <= GS.maxSteps) {
+    var completed_targets = JSON.parse(util.getStore("completed_targets", "[]"));
+    completed_targets.push(GS.targetIndex);
+    util.setStore("completed_targets", JSON.stringify(completed_targets));
+    document.getElementById("target_completed").className = "modal-container";
+  } else {
+    alert("You used too many steps to build the target. Undo some steps and try again. Try to define some of the concepts you used and use those more complex phrases rather than being very specific.");
+  }
+}
+
+document.getElementById("next_target").addEventListener("click", function(e) {
+  document.getElementById("target_completed").className = "modal-container hidden";
+  new_target();
+});
+
+document.getElementById("skip_target").addEventListener("click", function(e) {
+  var completedTargets = JSON.parse(util.getStore("completed_targets", "[]"));
+  if (completedTargets.length >= STATES.length - 1) {
+    alert("No more targets.");
+    return;
+  }
+  new_target();
+  GS.skipsLeft--;
+  var skip = document.getElementById("skip_target");
+  if (GS.skipsLeft <= 0) {
+    skip.parentNode.removeChild(skip);
+  } else {
+    skip.innerHTML = "skip (" + Gs.skipsLeft + " left) &rarr;";
+  }
+});
