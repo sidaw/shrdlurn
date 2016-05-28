@@ -156,7 +156,7 @@ var sempre = {
   },
 
   formatQuery: function (ques) {
-    var sanity = ques.replace(/(\+|-|%)/g, ' $1 ').replace(/^\(/g, '')
+    var sanity = ques.replace(/(\+|-|%)/g, ' $1 ').replace(/(\(|\))/g, '').replace(/"/g,"")
 	.replace(/=/g, '= ').replace(/(>|<)/g, ' $1')
 	.replace(/(>|<)(?!=)/g, '$1 ').replace(/([^><])=/g, '$1 =')
     if (configs.debugMode)

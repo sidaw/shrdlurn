@@ -759,7 +759,7 @@ function metaCommand(meta) {
 }
 
 document.getElementById("paraphrase").onclick = function() {
-  defineInterface(GS, GS.query);
+  defineInterface(GS);
 };
 
 var Hotkeys = {
@@ -798,7 +798,7 @@ function parseKeys(e) {
     e.preventDefault();
     if (GS.defineState && !(GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))) {
       closeDefineInterface(GS); return false; }
-    defineInterface(GS, GS.query);
+    defineInterface(GS);
   } else if (e.keyCode == Hotkeys.ESC) {
     e.preventDefault();
     var help_reference = document.getElementById("reference");
@@ -824,22 +824,27 @@ function definePhrase(e, gs) {
 
   /* If just trying, update current Wall */
   if (gs.defineSuccess.length == 0 || definetextarea.value != gs.defineSuccess) {
-    var cmds = {q: sempre.formatQuery(definetextarea.value), sessionId: gs.sessionId };//{ q: "(uttdef \"" + sempre.formatQuery(definetextarea.value) + "\" -1)", sessionId: gs.sessionId };
+    var cmds = {q: "(uttdef \"" + sempre.formatQuery(definetextarea.value) + "\" -1)", sessionId: gs.sessionId };
 
     sempre.sempreQuery(cmds, function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
-      var candidates = jsonparse['candidates'];
-      if (candidates.length == 0) {
+      var formval = sempre.parseSEMPRE(jsonparse['candidates']);
+      var commandResponse = jsonparse['commandResponse'];
+      
+      var defCore = commandResponse.indexOf("Core") != -1;
+      var defNoCover = commandResponse.indexOf("NoCover") != -1;
+      var defNoParse = commandResponse.indexOf("NoParse") != -1;
+      
+      if (defCore || defNoCover || defNoParse) {
         gs.define_coverage= jsonparse["coverage"];
         gs.taggedDefineCover = jsonparse["taggedcover"];
-        defineInterface(gs, definetextarea.value);
+        defineInterface(gs, commandResponse);
         addPoint("fail");
       } else {
-        var formval = sempre.parseSEMPRE(jsonparse['candidates']);
+	gs.defineSuccess = definetextarea.value;
         gs.NBestInd = 0;
         gs.NBest = formval;
         gs.setCurrentWall();
-        gs.defineSuccess = definetextarea.value;
         updateCanvas(gs);
         defineInterface(gs);
         document.getElementById("define_phrase_button").className = "button button--big";
@@ -849,27 +854,19 @@ function definePhrase(e, gs) {
   }
 
   /* If already tried, submit definition */
-  sempre.sempreQuery({q: sempre.formatQuery(gs.query), sessionId: gs.sessionId }, function(jsonstr) {
+  //sempre.sempreQuery({q: sempre.formatQuery(gs.query), sessionId: gs.sessionId }, function(jsonstr) {
+  //});
 
-  });
-
-  var text = "(uttdef \"" + sempre.formatQuery(gs.defineSuccess) + "\")";//"(uttdef \"" + sempre.formatQuery(gs.defineSuccess) + "\" " + gs.NBest[gs.NBestInd].rank + ")";
+  var text = "(uttdef \"" + sempre.formatQuery(gs.defineSuccess) + "\" " + gs.NBest[gs.NBestInd].rank + ")";
   var cmds = {q:text, sessionId:gs.sessionId};
   sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
-
-    if (jsonparse["candidates"].length == 0) {
+    if (jsonparse["candidates"].length == 0) { // sidaw: this should not happen anymore right?
       gs.define_coverage = jsonparse["coverage"];
       gs.taggedDefineCover = jsonparse["taggedcover"];
-      defineInterface(gs, definetextarea.value);
-      addPoint("fail");
+      defineInterface(gs);
       return;
     } else {
-      var commandResponse = jsonparse['commandResponse'];
-      var numans = parseInt(commandResponse);
-      console.log("got this many rules: " + numans)
-      if (numans == 0) addPoint("fail");
-      else addPoint("success");
       addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
     		       + gs.query + '" as "' + gs.defineSuccess + '"', true);
       closeDefineInterface(gs);
@@ -906,7 +903,7 @@ function closeDefineInterface(gs) {
   gs.defineState = false;
 }
 
-function getColoredSpan(coverage, utt) {
+function getColoredSpan(coverage) {
   var colored_query = "";
   for (var i = 0; i < coverage.length; i++) {
     var type = coverage[i][0];
@@ -951,7 +948,7 @@ function getColoredSpan(coverage, utt) {
   return colored_query;
 }
 
-function defineInterface(gs, utt) {
+function defineInterface(gs, status) {
   if (!gs.query) {
     updateStatus("nothing to define, enter a command.");
     return;
@@ -961,22 +958,37 @@ function defineInterface(gs, utt) {
   var define_status = document.getElementById("define_status");
   define_status.innerHTML = 'Teach SHRDLURN "' + gs.query + '". ';
 
-
   if (!gs.defineState) { // first time openning, or close and open
      if (!gs.noAnswer()) {
-      updateStatus("SHRDLURN already understands " + gs.query + "! Try scrolling too.");
+      // updateStatus("SHRDLURN already understands " + gs.query + "! Try scrolling too.");
       define_header.innerHTML = "Already understand \""
 	+ gs.query + "\", teach another meaning?"
     } else {
-      define_header.innerHTML = 'Didn\'t understand "' + getColoredSpan(gs.taggedCover, utt) +'". Please rephrase:';
+      define_header.innerHTML = 'Didn\'t understand "' + getColoredSpan(gs.taggedCover) +'". Please rephrase:';
     }
   } else { // refinement
     if (gs.defineSuccess.length > 0 || gs.tutorialMode) {
-      updateStatus("SHRDLURN understands this! Click 'define' to submit or enter a different definition and click 'try it'.");
-      define_header.innerHTML = 'SHRDLURN understands the definition, "' + gs.defineSuccess +'". If its interpretation is correct, click "define" to submit the definition.';
+      //updateStatus("SHRDLURN understands this!");
+      define_header.innerHTML = 'SHRDLURN understands the definition, "' + gs.defineSuccess +'". If this is correct, click "define" to submit the definition.';
     } else {
-      updateStatus("SHRDLURN still does not understand you.");
-      define_header.innerHTML = 'Still don\'t understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'". Please rephrase:';
+      //updateStatus("SHRDLURN still does not understand you.");
+      define_header.innerHTML = 'Still don\'t understand "' + getColoredSpan(gs.taggedDefineCover) +'". Please rephrase:';
+    }
+
+    // handle special status...
+    if (status!=undefined) {
+      var defCore = status.indexOf("Core") != -1;
+      var defNoCover = status.indexOf("NoCover") != -1;
+      console.log(status)
+      if (defCore) {
+	//updateStatus("cannot redefine the core language!");
+	define_header.innerHTML = '"' + gs.query + '" is precisely understood, and cannot be redefined by "'+getColoredSpan(gs.taggedDefineCover)+'".';
+      }
+      else if (defNoCover) {
+	//updateStatus("SHRDLRUN cannot learn from this definition");
+	define_header.innerHTML = 'Nothing (colors, numbers, etc) in "' + getColoredSpan(gs.taggedDefineCover) + '" matches "' + gs.query
+	  + '", so SHRDLURN cannot learn from this.';
+      }
     }
   }
 
@@ -1011,7 +1023,7 @@ document.getElementById("define_try").addEventListener("click", defineTryClicked
 
 document.getElementById("define_instead").addEventListener("click", function(e) {
   e.preventDefault();
-  defineInterface(GS, GS.query);
+  defineInterface(GS);
 });
 document.getElementById("close_define_interface").addEventListener("click", function(e) {
   if (GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))
