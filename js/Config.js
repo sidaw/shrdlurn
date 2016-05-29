@@ -15,7 +15,7 @@ configs.maxChar = 42;
 configs.debugMode = false;
 
 
-configs.levels = []
+configs.levels = [];
 
 configs.levels.push({
     id: "randomworld",
@@ -23,7 +23,7 @@ configs.levels.push({
     maxSteps: 1,
     description: "",
     minSuccess: 5
-})
+});
 
 configs.levels.push({
     id: "emptyworld",
@@ -31,4 +31,6 @@ configs.levels.push({
     maxSteps: 1,
     description: "",
     minSuccess: 5
-})
+});
+
+configs.loggerServer = "ws://hydrogen.samginn.com:4000/socket";

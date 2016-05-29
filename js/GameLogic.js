@@ -255,8 +255,9 @@ var GameAction = {
       return;
     }
     if (gs.prevIfPossible()) {
-      updateCanvas(gs)
-      updateStatus("↑: showing the previous one")
+      updateCanvas(gs);
+      updateStatus("↑: showing the previous one");
+      Logger.log({type: "scroll", msg: "prev"});
     } else {
       updateStatus("↑: already showing the first one")
     }
@@ -268,8 +269,9 @@ var GameAction = {
       return;
     }
     if (GS.nextIfPossible()) {
-      updateCanvas(gs)
-      updateStatus("↓: showing the next one")
+      updateCanvas(gs);
+      updateStatus("↓: showing the next one");
+      Logger.log({ type: "scroll", msg: "next" });
     } else {
       updateStatus("↓: already showing the last one");
     }
@@ -296,11 +298,12 @@ var GameAction = {
         completed_target();
       }
 
+      var count = (gs.query.match(/then/g) || []).length;
+      gs.nSteps += count + 1;
       gs.listWalls.push(gs.currentWall);
       gs.resetNBest();
       gs.query = "";
       gs.setCurrentWall();
-      gs.nSteps++;
       addPoint("accept");
       updateCanvas(gs);
       updateStatus("✓: accepted (#{accept}/{length}), enter another command"
@@ -310,6 +313,7 @@ var GameAction = {
     }
   }
 };
+
 //*************** DOM stuff
 
 function logh(strlog) {document.getElementById("history").innerHTML += strlog; }
@@ -414,6 +418,7 @@ function addElemToHistory(gs, history, text, definition = false) {
   elem.onclick = function() {
     revertHistory(gs, elem.getAttribute("data-index"));
   }
+  Logger.log({type: "action", msg: text});
 }
 
 Element.prototype.remove = function() {
@@ -460,6 +465,8 @@ function wipeHistory(gs, wall) {
   elem.onclick = function() {
     revertHistory(gs, elem.getAttribute("data-index"));
   }
+
+  Logger.log({type: "history", msg: "clear"});
 }
 
 function highlightHistory(gs, index) {
@@ -490,6 +497,8 @@ function undoHistory(gs) {
     }
   }
   revertHistory(gs, index);
+
+  Logger.log({type: "history", msg: "undo"});
 }
 
 function redoHistory(gs) {
@@ -501,6 +510,8 @@ function redoHistory(gs) {
     }
   }
   revertHistory(gs, index);
+
+  Logger.log({type: "history", msg: "redo"});
 }
 
 function revertHistory(gs, index) {
@@ -518,6 +529,9 @@ function revertHistory(gs, index) {
   }
 
   highlightHistory(gs, index);
+
+
+  Logger.log({type: "history", msg: "revert " + index});
 }
 
 /* States */
@@ -690,16 +704,18 @@ function runCurrentQuery(gs) {
   document.getElementById("maintextarea").value = ''
 
   if (querystr.length>0) {
-    // if (querystr.length > 50) {
-    //   alert("Instruction length is " + querystr.length + " characters. Please limit it to less than 50 characters. Try to define concepts and use those instead of one long instruction.");
-    //   return;
-    // }
+    if (querystr.length > 50) {
+      alert("Instruction length is " + querystr.length + " characters. Please limit it to less than 50 characters. Try to define concepts and use those instead of one long instruction.");
+      return;
+    }
     gs.log.totalTokens += querystr.split(" ").length;
     gs.log.numQueries++;
 
     logh(gs.numQueries + ' ' + querystr + '; ')
     gs.query = sempre.formatQuery(querystr);
     GameAction.candidates(gs);
+
+    Logger.log({ type: "query", msg: gs.query });
 
   } else {
     updateStatus("enter a command");
@@ -752,6 +768,7 @@ function acceptOnclick() {
   updateHistory(GS);
   GameAction.accept(GS);
   maintextarea.focus();
+  Logger.log({type: "metaaction", msg: "accept"});
 }
 function metaCommand(meta) {
   maintextarea.value = meta;
@@ -825,7 +842,7 @@ function definePhrase(e, gs) {
   /* If just trying, update current Wall */
   if (gs.defineSuccess.length == 0 || definetextarea.value != gs.defineSuccess) {
     var cmds = {q: "(uttdef \"" + sempre.formatQuery(definetextarea.value) + "\" -1)", sessionId: gs.sessionId };
-
+    Logger.log({type: "try_define", msg: definetextarea.value });
     sempre.sempreQuery(cmds, function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
@@ -859,6 +876,7 @@ function definePhrase(e, gs) {
 
   var text = "(uttdef \"" + sempre.formatQuery(gs.defineSuccess) + "\" " + gs.NBest[gs.NBestInd].rank + ")";
   var cmds = {q:text, sessionId:gs.sessionId};
+  Logger.log({type: "define", msg: gs.defineSuccess });
   sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
     addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
@@ -1014,7 +1032,6 @@ document.getElementById("define_phrase_button").addEventListener("click", define
 //document.getElementById("define_try").addEventListener("click", defineTryClicked, false);
 document.getElementById("definetextarea").oninput = function(e) {
   if (GS.defineSuccess.length > 0) {
-    console.log("HEI!");
     document.getElementById("define_phrase_button").innerHTML = "try it";
     GS.defineSuccess = "";
   }
@@ -1129,8 +1146,12 @@ document.getElementById("skip_target").addEventListener("click", function(e) {
   } else {
     skip.innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
   }
+  Logger.log({type: "metaaction", msg: "skip"});
 });
 
 window.addEventListener("load", function(e) {
   document.getElementById("skip_target").innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
 });
+
+var Logger = new Logger();
+Logger.init(GS);
