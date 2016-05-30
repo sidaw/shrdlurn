@@ -77,17 +77,17 @@ var turk = {};
 turk.page = "turkube.html";
 turk.token = function (gs) {
   var mturkid = util.parseQueryString()["mturkid"];
-  var tokeninfo = {id:mturkid, s:gs.getSuccessCount("success"), f:gs.getSuccessCount("fail"), a:gs.getSuccessCount("accept"), q:gs.log.numQueries}
-  var token = turk.XORCipher.encode(turk.page, JSON.stringify(tokeninfo).replace(/\"/g, "")+"|somepad")
+  var tokeninfo = {m:mturkid, c:gs.getLastWall().indexOf(gs.targetWall),  d:util.hashCode(gs.getLastWall().toString()), q:gs.log.numQueries}
+  var token = turk.XORCipher.encode(turk.page, JSON.stringify(tokeninfo).replace(/\"/g, "")+"||||||||")
   return token;
 };
 turk.test = function(){return turk.XORCipher.decode(turk.page, turk.token(GS))}
 document.getElementById("turkbutton").onclick = function() {
   var turkcode = document.getElementById("turkcode")
   var score = _.reduce(_.map(GS.successCounts, function(num, key){ return num; }), function(a,b){return parseInt(a)+parseInt(b)}, 0);
-  if(score >= 100) {
+  if(GS.getLastWall().indexOf(GS.targetWall)==0) {
     turkcode.innerHTML = turk.token(GS);
   } else {
-    turkmsg.innerHTML = "you will get the code after reaching 100 game points."
+    turkmsg.innerHTML = "you will get the code after you complete the target (you will see a message when you do that)"
   }
 }
