@@ -408,7 +408,8 @@ function saveGameState(gs, name) {
   // popTasks();
 }
 
-function addElemToHistory(gs, history, text, definition = false) {
+function addElemToHistory(gs, history, text, definition) {
+  if (definition == undefined) definition = false;
   if (gs.currentWall == "[[]]") { return; }
 
   var elem = document.createElement("div");
