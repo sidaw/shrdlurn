@@ -7,10 +7,10 @@ var purescript = require("gulp-purescript");
 var less = require("gulp-less");
 var uglify = require("gulp-uglify");
 var concat = require("gulp-concat");
-var concat = require("gulp-concat");
 var obfuscate = require('gulp-obfuscate');
 var webserver = require('gulp-webserver');
 var rimraf = require('rimraf');
+var requirejsOptimize = require('gulp-requirejs-optimize');
 
 var sources = [
     "src/**/*.purs",
@@ -70,11 +70,13 @@ gulp.task("concat", ["bundle"], function() {
     return gulp.src([
         "bower_components/isomer/dist/isomer.min.js",
         "js/underscore.js",
+        "node_modules/phoenix/priv/static/phoenix.js",
         "js/awesomplete.js",
         "dist/mainps.js",
         "js/Config.js",
 	"js/Util.js",
 	"js/Sempre.js",
+        "js/Logger.js",
         "js/GameLogic.js",
         "js/Tutorial.js",
         "js/Turk.js"
@@ -82,7 +84,6 @@ gulp.task("concat", ["bundle"], function() {
         .pipe(concat("main.js"))
         .pipe(gulp.dest("dist"));
 });
-
 
 gulp.task("compress", ["concat"], function() {
     return gulp.src("dist/main.js")

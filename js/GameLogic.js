@@ -19,7 +19,7 @@ function GameState() {
   this.nSteps = 1;
   this.maxSteps = 100;
   this.targetIndex = -1;
-  this.skipsLeft = 1;
+  this.skipsLeft = 2;
 
   this.tutorialMode = false;
   this.tutorialLevel = 2;
@@ -255,8 +255,9 @@ var GameAction = {
       return;
     }
     if (gs.prevIfPossible()) {
-      updateCanvas(gs)
-      updateStatus("↑: showing the previous one")
+      updateCanvas(gs);
+      updateStatus("↑: showing the previous one");
+      Logger.log({type: "scroll", msg: "prev"});
     } else {
       updateStatus("↑: already showing the first one")
     }
@@ -268,8 +269,9 @@ var GameAction = {
       return;
     }
     if (GS.nextIfPossible()) {
-      updateCanvas(gs)
-      updateStatus("↓: showing the next one")
+      updateCanvas(gs);
+      updateStatus("↓: showing the next one");
+      Logger.log({ type: "scroll", msg: "next" });
     } else {
       updateStatus("↓: already showing the last one");
     }
@@ -296,11 +298,12 @@ var GameAction = {
         completed_target();
       }
 
+      var count = (gs.query.match(/then/g) || []).length;
+      gs.nSteps += count + 1;
       gs.listWalls.push(gs.currentWall);
       gs.resetNBest();
       gs.query = "";
       gs.setCurrentWall();
-      gs.nSteps++;
       addPoint("accept");
       updateCanvas(gs);
       updateStatus("✓: accepted (#{accept}/{length}), enter another command"
@@ -310,6 +313,7 @@ var GameAction = {
     }
   }
 };
+
 //*************** DOM stuff
 
 function logh(strlog) {document.getElementById("history").innerHTML += strlog; }
@@ -414,6 +418,7 @@ function addElemToHistory(gs, history, text, definition = false) {
   elem.onclick = function() {
     revertHistory(gs, elem.getAttribute("data-index"));
   }
+  Logger.log({type: "action", msg: text});
 }
 
 Element.prototype.remove = function() {
@@ -460,6 +465,8 @@ function wipeHistory(gs, wall) {
   elem.onclick = function() {
     revertHistory(gs, elem.getAttribute("data-index"));
   }
+
+  Logger.log({type: "history", msg: "clear"});
 }
 
 function highlightHistory(gs, index) {
@@ -490,6 +497,8 @@ function undoHistory(gs) {
     }
   }
   revertHistory(gs, index);
+
+  Logger.log({type: "history", msg: "undo"});
 }
 
 function redoHistory(gs) {
@@ -501,6 +510,8 @@ function redoHistory(gs) {
     }
   }
   revertHistory(gs, index);
+
+  Logger.log({type: "history", msg: "redo"});
 }
 
 function revertHistory(gs, index) {
@@ -518,6 +529,9 @@ function revertHistory(gs, index) {
   }
 
   highlightHistory(gs, index);
+
+
+  Logger.log({type: "history", msg: "revert " + index});
 }
 
 /* States */
@@ -542,7 +556,7 @@ var STATES = [
   [8, "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]"],
   [4, "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]"],
   [2, "[[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[4],[4],[4],[4],[4],[4],[4],[4],[3],[3],[3],[3],[3],[3],[3],[3],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[2,2],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]"],
-  [2, "[[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2]]"],
+  [4, "[[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[],[],[1,1],[1,1],[2,2],[2,2],[],[],[1,1],[1,1],[],[],[],[],[2,2],[2,2],[1,1],[1,1],[],[],[],[],[2,2],[2,2]]"],
   [6, "[[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[],[0,2],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[],[],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0,2],[4],[],[],[0,2],[],[],[],[3],[0],[4],[],[],[],[],[],[],[3],[0]]"],
   [4, "[[2],[2],[2],[2],[2],[2],[2],[2],[2],[3],[3],[3],[3],[3],[3],[2],[2],[3],[0],[0],[0],[0],[3],[2],[2],[3],[0],[4],[4],[0],[3],[2],[2],[3],[0],[4],[4],[0],[3],[2],[2],[3],[0],[0],[0],[0],[3],[2],[2],[3],[3],[3],[3],[3],[3],[2],[2],[2],[2],[2],[2],[2],[2],[2]]"],
   [6, "[[1,2],[1,2],[1,2],[1,2],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[0,2],[],[],[4,2],[4,2],[],[],[],[3,2],[3,2],[3,2],[4,2]]"],
@@ -612,13 +626,13 @@ function updateTarget(index) {
   PS.Main.renderTargetJSON("[" + wall + "]")();
   GS.targetWall = wall;
   GS.targetIndex = index;
-  GS.maxSteps = state[0] * 2;
+  GS.maxSteps = Math.round(state[0] * 2.5);
 
   var canvas_target = document.getElementById("canvastarget");
   canvas_target.setAttribute("data-wall", wall);
   canvas_target.setAttribute("data-index", index);
   document.getElementById("possible_steps_n").innerHTML = state[0];
-  document.getElementById("max_steps_n").innerHTML = state[0] * 2;
+  document.getElementById("max_steps_n").innerHTML = GS.maxSteps;
   document.getElementById("recipe_steps").innerHTML = "(" + 0 + "/" + GS.maxSteps + ")";
 }
 
@@ -690,16 +704,18 @@ function runCurrentQuery(gs) {
   document.getElementById("maintextarea").value = ''
 
   if (querystr.length>0) {
-    // if (querystr.length > 50) {
-    //   alert("Instruction length is " + querystr.length + " characters. Please limit it to less than 50 characters. Try to define concepts and use those instead of one long instruction.");
-    //   return;
-    // }
+    if (querystr.length > 50) {
+      alert("Instruction length is " + querystr.length + " characters. Please limit it to less than 50 characters. Try to define concepts and use those instead of one long instruction.");
+      return;
+    }
     gs.log.totalTokens += querystr.split(" ").length;
     gs.log.numQueries++;
 
     logh(gs.numQueries + ' ' + querystr + '; ')
     gs.query = sempre.formatQuery(querystr);
     GameAction.candidates(gs);
+
+    Logger.log({ type: "query", msg: gs.query });
 
   } else {
     updateStatus("enter a command");
@@ -752,6 +768,7 @@ function acceptOnclick() {
   updateHistory(GS);
   GameAction.accept(GS);
   maintextarea.focus();
+  Logger.log({type: "metaaction", msg: "accept"});
 }
 function metaCommand(meta) {
   maintextarea.value = meta;
@@ -825,16 +842,16 @@ function definePhrase(e, gs) {
   /* If just trying, update current Wall */
   if (gs.defineSuccess.length == 0 || definetextarea.value != gs.defineSuccess) {
     var cmds = {q: "(uttdef \"" + sempre.formatQuery(definetextarea.value) + "\" -1)", sessionId: gs.sessionId };
-
+    Logger.log({type: "try_define", msg: definetextarea.value });
     sempre.sempreQuery(cmds, function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
       var commandResponse = jsonparse['commandResponse'];
-      
+
       var defCore = commandResponse.indexOf("Core") != -1;
       var defNoCover = commandResponse.indexOf("NoCover") != -1;
       var defNoParse = commandResponse.indexOf("NoParse") != -1;
-      
+
       if (defCore || defNoCover || defNoParse) {
         gs.define_coverage= jsonparse["coverage"];
         gs.taggedDefineCover = jsonparse["taggedcover"];
@@ -847,7 +864,7 @@ function definePhrase(e, gs) {
         gs.setCurrentWall();
         updateCanvas(gs);
         defineInterface(gs);
-        document.getElementById("define_phrase_button").className = "button button--big";
+        document.getElementById("define_phrase_button").innerHTML = "define";
       }
     });
     return;
@@ -859,29 +876,22 @@ function definePhrase(e, gs) {
 
   var text = "(uttdef \"" + sempre.formatQuery(gs.defineSuccess) + "\" " + gs.NBest[gs.NBestInd].rank + ")";
   var cmds = {q:text, sessionId:gs.sessionId};
+  Logger.log({type: "define", msg: gs.defineSuccess });
   sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
-    if (jsonparse["candidates"].length == 0) { // sidaw: this should not happen anymore right?
-      gs.define_coverage = jsonparse["coverage"];
-      gs.taggedDefineCover = jsonparse["taggedcover"];
-      defineInterface(gs);
-      return;
-    } else {
-      addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
-    		       + gs.query + '" as "' + gs.defineSuccess + '"', true);
-      closeDefineInterface(gs);
-      // consider populate the candidate list quietly,
-      //GameAction._candidates(gs);
-      gs.currentWall = "[[]]";
-      gs.resetNBest();
-      gs.setCurrentWall();
-      updateCanvas(gs);
-      document.getElementById("maintextarea").value = gs.query;
-      updateStatus("definition accepted. thanks for teaching!");
-      document.getElementById("show_define_status").className = "hidden";
-      document.getElementById("define_phrase_button").className = "button button--big hidden";
-    }
-
+    addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
+  		       + gs.query + '" as "' + gs.defineSuccess + '"', true);
+    closeDefineInterface(gs);
+    // consider populate the candidate list quietly,
+    //GameAction._candidates(gs);
+    gs.currentWall = "[[]]";
+    gs.resetNBest();
+    gs.setCurrentWall();
+    updateCanvas(gs);
+    document.getElementById("maintextarea").value = gs.query;
+    updateStatus("definition accepted. thanks for teaching!");
+    document.getElementById("show_define_status").className = "hidden";
+    document.getElementById("define_phrase_button").innerHTML = "try it";
   });
 }
 
@@ -1013,13 +1023,19 @@ function definePhraseClicked(e) {
   definePhrase(e, GS);
 }
 
-function defineTryClicked(e) {
-  GS.defineSuccess = "";
-  definePhrase(e, GS);
-}
+// function defineTryClicked(e) {
+//   GS.defineSuccess = "";
+//   definePhrase(e, GS);
+// }
 
 document.getElementById("define_phrase_button").addEventListener("click", definePhraseClicked, false);
-document.getElementById("define_try").addEventListener("click", defineTryClicked, false);
+//document.getElementById("define_try").addEventListener("click", defineTryClicked, false);
+document.getElementById("definetextarea").oninput = function(e) {
+  if (GS.defineSuccess.length > 0) {
+    document.getElementById("define_phrase_button").innerHTML = "try it";
+    GS.defineSuccess = "";
+  }
+};
 
 document.getElementById("define_instead").addEventListener("click", function(e) {
   e.preventDefault();
@@ -1112,6 +1128,7 @@ function completed_target() {
 
 document.getElementById("next_target").addEventListener("click", function(e) {
   document.getElementById("target_completed").className = "modal-container hidden";
+  document.getElementById("clear_button").click();
   new_target();
 });
 
@@ -1127,6 +1144,14 @@ document.getElementById("skip_target").addEventListener("click", function(e) {
   if (GS.skipsLeft <= 0) {
     skip.parentNode.removeChild(skip);
   } else {
-    skip.innerHTML = "skip (" + Gs.skipsLeft + " left) &rarr;";
+    skip.innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
   }
+  Logger.log({type: "metaaction", msg: "skip"});
 });
+
+window.addEventListener("load", function(e) {
+  document.getElementById("skip_target").innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
+});
+
+var Logger = new Logger();
+Logger.init(GS);
