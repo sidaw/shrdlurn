@@ -183,7 +183,7 @@ function prepNextTutorial(e) {
       removeCover("show_define_status");
       nextTutorial(6);
       addCover("define_interface");
-      document.getElementById("define_try").addEventListener("click", prepNextTutorial);
+      // document.getElementById("define_try").addEventListener("click", prepNextTutorial);
       break;
     case 7:
       if (document.getElementById("definetextarea").value != "add orange if row > 1 and col > 1 and row < 8 and col < 8") {
@@ -191,7 +191,7 @@ function prepNextTutorial(e) {
         return true;
       }
       addCover("canvas");
-      document.getElementById("define_try").removeEventListener("click", prepNextTutorial);
+      //document.getElementById("define_try").removeEventListener("click", prepNextTutorial);
       nextTutorial(7);
       document.getElementById("define_phrase_button").addEventListener("click", prepNextTutorial);
       break;
@@ -256,7 +256,7 @@ function prepNextTutorial(e) {
       removeCover("show_define_status");
       nextTutorial(12);
       addCover("define_interface");
-      document.getElementById("define_try").addEventListener("click", prepNextTutorial);
+      // document.getElementById("define_try").addEventListener("click", prepNextTutorial);
       break;
     case 13:
       if (document.getElementById("definetextarea").value != "repeat add red if col = 4 or col = 5 2 times") {
@@ -264,7 +264,7 @@ function prepNextTutorial(e) {
         return true;
       }
       addCover("canvas");
-      document.getElementById("define_try").removeEventListener("click", prepNextTutorial);
+      // document.getElementById("define_try").removeEventListener("click", prepNextTutorial);
       nextTutorial(13);
       document.getElementById("define_phrase_button").addEventListener("click", prepNextTutorial);
       break;
