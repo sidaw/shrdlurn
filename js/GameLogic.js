@@ -1,8 +1,8 @@
 "use strict"
 function GameState() {
   // the walls, just json strings
-  this.currentWall = "[[]]";
-  this.targetWall = "[[]]";
+  this.currentWall = configs.emptyWall;
+  this.targetWall = configs.emptyWall;
   this.listWalls = [];
 
   this.NBest = []; // current answer list returned by sempre
@@ -88,7 +88,7 @@ function GameState() {
     if (this.NBest.length>0)
       this.currentWall = this.NBest[this.NBestInd].value;
     else
-      this.currentWall = '[[]]';
+      this.currentWall = configs.emptyWall;
   }
 
   this.getCurrentWall = function() {
@@ -96,7 +96,7 @@ function GameState() {
     {
       return this.currentWall;
     }
-    return '[[]]';
+    return configs.emptyWall;
   }
   this.nextIfPossible = function() {
     if (this.noAnswer()) return false;
@@ -164,7 +164,7 @@ function updateCanvas(gs) {
   walls.push(gs.getCurrentWall());
 
   for (var i=0; i < maxWalls- wlen; i++)
-    walls.push('[[]]');
+    walls.push(configs.emptyWall);
 
   PSMain.renderJSON('['+walls.join(',')+']')();
   // updateGoalTextPosition(gs);
@@ -523,7 +523,7 @@ function redoHistory(gs) {
 function revertHistory(gs, index) {
   var elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
   var wall = elem.getAttribute("data-walls");
-  PS.Main.renderJSON("[" + wall + ",[[]]]")();
+  PS.Main.renderJSON("[" + wall + ","+configs.emptyWall+"]")();
 
   if (gs.reverting >= 0) { gs.listWalls.pop(); }
   gs.listWalls.push(wall);
@@ -591,7 +591,7 @@ function loadGameState(gs, newWall) {
 
 document.getElementById("clear_button").addEventListener("click", function() {
   GS.nSteps = 1;
-  loadGameState(GS, "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]");
+  loadGameState(GS, configs.emptyWall);
 });
 
 function updateTarget(index) {
@@ -681,7 +681,7 @@ function runCurrentQuery(gs) {
   document.getElementById("maintextarea").value = ''
 
   if (querystr.length>0) {
-    if (querystr.length > configs.uttLengthLimit) {
+    if (!configs.debugMode && querystr.length > configs.uttLengthLimit) {
       alert("Instruction length is " + querystr.length
 	    + " characters. Please limit it to less than "
 	    + configs.uttLengthLimit
@@ -740,7 +740,7 @@ function acceptOnclick() {
     return;
   }
 
-  if (GS.nSteps > GS.maxSteps) {
+  if (!configs.debugMode && GS.nSteps > GS.maxSteps) {
     alert("You have used the maximum number of steps. Undo some of your steps or clear to start over. You need to build the structure in less than the maxinum number of steps allowed. Try to define more complex phrases and use those rather than being overly specific.");
     return;
   }
@@ -814,7 +814,7 @@ document.addEventListener("keydown", parseKeys, false);
 function definePhrase(e, gs) {
   var definetextarea = document.getElementById("definetextarea");
 
-  if (definetextarea.value.length > configs.defLengthLimit) {
+  if (!configs.debugMode && definetextarea.value.length > configs.defLengthLimit) {
     alert("Definition length is " + definetextarea.value.length + " characters. Please limit it to less than 90 characters. Check out the help page for example commands, or try to define other phrases that would be building blocks to this one.");
     return;
   }
@@ -862,7 +862,7 @@ function definePhrase(e, gs) {
     closeDefineInterface(gs);
     // consider populate the candidate list quietly,
     //GameAction._candidates(gs);
-    gs.currentWall = "[[]]";
+    gs.currentWall = configs.emptyWall;;
     gs.resetNBest();
     gs.setCurrentWall();
     updateCanvas(gs);

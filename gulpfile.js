@@ -105,7 +105,7 @@ gulp.task("webserver", function() {
     return gulp.src('./')
     .pipe(webserver({
      livereload: {
-        enable: true,
+        enable: false,
         filter: function(fileName) {
           if (fileName.match(/(examples)|(logs)/)) {
             return false;

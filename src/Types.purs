@@ -7,8 +7,7 @@ import Data.Maybe
 import qualified Data.StrMap as SM
 
 -- Cube, Stack, Wall
-
-data Cube = Cyan | Brown | Red | Orange | Yellow
+data Cube = Cyan | Brown | Red | Orange | Yellow | Green | Blue | Purple |  Tran | Mark | FreeMark
 
 instance showCube :: Show Cube where
     show Cyan   = "Cyan"
@@ -16,6 +15,12 @@ instance showCube :: Show Cube where
     show Red    = "Red"
     show Orange = "Orange"
     show Yellow = "Yellow"
+    show Green = "Green"
+    show Blue = "Blue"
+    show Purple = "Purple"
+    show Tran = "Tran"
+    show Mark = "Mark"
+    show FreeMark = "FreeMark"
 
 instance eqCube :: Eq Cube where
     eq a b = fromEnum a == fromEnum b
@@ -34,27 +39,47 @@ instance enumCube :: Enum Cube where
     toEnum = cubeToEnum
     fromEnum = cubeFromEnum
 
-cubeFromEnum Cyan   = 0
-cubeFromEnum Brown  = 1
-cubeFromEnum Red    = 2
-cubeFromEnum Orange = 3
-cubeFromEnum Yellow = 4
+cubeFromEnum Red   = 0
+cubeFromEnum Orange  = 1
+cubeFromEnum Yellow = 2
+cubeFromEnum Green = 3
+cubeFromEnum Blue = 4
+cubeFromEnum Purple = 5
+cubeFromEnum Brown = 6
+cubeFromEnum Cyan = 7
 
-cubeToEnum 0 = Just Cyan
-cubeToEnum 1 = Just Brown
-cubeToEnum 2 = Just Red
-cubeToEnum 3 = Just Orange
-cubeToEnum 4 = Just Yellow
+cubeFromEnum Tran = 9
+cubeFromEnum Mark = 10
+cubeFromEnum FreeMark = 11
+
+cubeToEnum 0 = Just Red
+cubeToEnum 1 = Just Orange
+cubeToEnum 2 = Just Yellow
+cubeToEnum 3 = Just Green
+cubeToEnum 4 = Just Blue
+cubeToEnum 5 = Just Purple
+cubeToEnum 6 = Just Brown
+cubeToEnum 7 = Just Cyan
+
+cubeToEnum 9 = Just Tran
+cubeToEnum 10 = Just Mark
+cubeToEnum 11 = Just FreeMark
 cubeToEnum _ = Nothing
 
 intToCube :: Int -> Cube
-intToCube 0 = Cyan
-intToCube 1 = Brown
-intToCube 2 = Red
-intToCube 3 = Orange
-intToCube 4 = Yellow
-intToCube _ = Yellow
+intToCube 0 = Red
+intToCube 1 = Orange
+intToCube 2 = Yellow
+intToCube 3 = Green
+intToCube 4 = Blue
+intToCube 5 = Purple
+intToCube 6 = Brown
+intToCube 7 = Cyan
+
+intToCube 9 = Tran
+intToCube 10 = Mark
+intToCube 11 = FreeMark
+intToCube _ = Red
 
 type Stack = List Cube
-
 type Wall = List Stack

@@ -33,8 +33,14 @@ cubeColor Brown  = colorFromRGB 106  74  60
 cubeColor Red    = colorFromRGB 204  51  63
 cubeColor Orange = colorFromRGB 235 104  65
 cubeColor Yellow = colorFromRGB 237 201  81
+cubeColor Green = colorFromRGB 50 205 50
+cubeColor Blue = colorFromRGB 30 144 255
+cubeColor Purple = colorFromRGB 160 32 240
+cubeColor _ = colorFromRGB 0 0 0
 
 gray = (colorFromRGB 185 185 185)
+darkgray = (colorFromRGB 100 100 100)
+markcolor = (colorFromRGB 80 80 80)
 
 -- | Spacing between two walls
 spacing :: Number
@@ -48,6 +54,17 @@ traverseWithIndex_ :: forall a b m. (Applicative m) => (Int -> a -> m b) -> (Lis
 traverseWithIndex_ f xs = go xs 0
     where go Nil _         = return unit
           go (Cons x xs) i = f i x *> go xs (i + 1)
+-- | Render a single colored cube at the given position
+
+relsize = 0.9
+renderCube :: forall eff. IsomerInstance
+           -> Number
+           -> Number
+           -> Number
+           -> IsomerColor
+           -> Eff (isomer :: ISOMER | eff) Unit
+renderCube isomer x y z col = renderBlock isomer x y z relsize relsize relsize col
+           
 
 xPosition :: Number -> Number -> Number
 -- xPosition x y = (x+y*(spacing))
@@ -55,13 +72,18 @@ xPosition x y = x
 -- | Render a single stack of cubes
 renderStack :: IsomerInstance -> Number -> Number -> Stack -> EffIsomer
 renderStack isomer y x stack = do
-    --renderBlock isomer (xPosition x y) (-spacing * y) (-0.1) 1.0 0.9 0.1 gray
-    traverseWithIndex_ (\z -> renderCube isomer (xPosition x y) (y) (toNumber z)) $ map cubeColor stack
+    renderBlock isomer (x+0.05) (y+0.05) (-0.1) 0.9 0.9 0.1 gray
+    draw stack 0.0
+    where draw Nil _ = return unit
+          draw (Cons Tran cs) z = return unit *> draw cs (z + 1.0)
+          draw (Cons Mark cs) z = renderBlock isomer (x+(1.0-marksize)/2.0) (y+(1.0-marksize)/2.0) (z-0.1) marksize marksize 0.25 markcolor *> draw cs (z) where marksize=0.5
+          draw (Cons c cs) z = renderCube isomer (x+0.05) (y+0.05) z (cubeColor c) *> draw cs (z + 1.0)
+    -- renderBlock isomer (xPosition x y) (-spacing * y) (-0.1) 1.0 0.9 0.1 gray
 
 -- | Render a wall (multiple stacks)
 renderWall :: IsomerInstance -> Number -> Number -> Wall -> EffIsomer
 renderWall isomer initlen y wall  = do
-    renderBlock isomer (1.0 + (spacing)*y - y*factor) (-spacing*y - worldsize + 1.0 - y*factor) (-0.1) worldsize worldsize 0.1 gray
+    renderBlock isomer (1.0 + (spacing)*y - y*factor) (-spacing*y - worldsize + 1.0 - y*factor) (-0.1) worldsize worldsize 0.1 darkgray
     traverseWithIndex_ (\x -> renderStack isomer (-spacing*y - advance x - y*factor) (worldsize - advanceCol x + spacing*y - y*factor)) (reverse wall)
         where
         factor = 2.25 --sin (75.0/180.0*3.14159)

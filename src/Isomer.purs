@@ -4,7 +4,6 @@ module Isomer
     , IsomerColor(..)
     , getIsomerInstance
     , renderBlock
-    , renderCube
     , clearCanvas
     , setIsomerConfig
     , colorFromRGB
@@ -39,15 +38,6 @@ renderBlock :: forall eff. IsomerInstance
             -> Eff (isomer :: ISOMER | eff) Unit
 renderBlock = runFn8 _renderBlock
 
--- | Render a single colored cube at the given position
-cubesize = 0.8
-renderCube :: forall eff. IsomerInstance
-           -> Number
-           -> Number
-           -> Number
-           -> IsomerColor
-           -> Eff (isomer :: ISOMER | eff) Unit
-renderCube isomer x y z col = renderBlock isomer x y z cubesize cubesize 1.0 col
 
 -- | Clear the whole canvas that belongs to the Isomer instance
 foreign import clearCanvas :: forall eff. IsomerInstance
