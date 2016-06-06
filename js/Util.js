@@ -106,3 +106,4 @@ util.emojione = {};
 util.log2int = function(nbestind) {
     return Math.log2(nbestind+1);
 }
+

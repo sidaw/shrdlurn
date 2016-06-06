@@ -2,8 +2,17 @@
 var configs = {};
 if (configs.SEMPRE_URL==undefined)
     configs.SEMPRE_URL = "http://jonsson.stanford.edu:8400"
-// configs.SEMPRE_URL = "http://localhost:8400"
-
+if (util.parseQueryString()["local"]==true) {
+  configs.SEMPRE_URL = "http://localhost:8400";
+}
+configs.debugMode = false;
+if (util.parseQueryString()["debug"]==true) {
+  configs.debugMode = true;
+}
+configs.bePragmatic = true;
+if (util.parseQueryString()["prag"]==false) {
+  configs.bePragmatic = false;
+}
 configs.costPerStep = 3;
 configs.costPerScroll = 1;
 
@@ -11,7 +20,7 @@ configs.defaultMaxSteps = 3;
 configs.hardMaxSteps = true; // not allowing num steps to exceed this
 
 configs.maximumNbest = 42;
-configs.debugMode = false;
+
 
 configs.levels = []
 configs.levels.push({
