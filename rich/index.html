@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SHRDLURN</title>
+  <meta name="author" content="S.W.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="teach the computer English">
+  <link rel="stylesheet" type="text/css" href="dist/main.css">
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
+</head>
+<body>
+  <div id="container">
+    <div id="panel">
+      <canvas id="canvastarget" width="200" height="200"></canvas>
+      <!-- <button id="prev_state" class="button button--big">&larr; prev</button>
+      <button id="load_state" class="button button--big">load</button> -->
+      <span id="possible_steps">possible in <span id="possible_steps_n">3</span> steps</span>
+      <span id="max_steps">must be completed in <span id="max_steps_n">9</span> steps</span>
+      <button id="skip_target" class="button button--big">skip (2 left) &rarr;</button>
+      <p/>
+      <div><b>game points:</b> <span id="game_points"></span></div>
+      <br />
+      <div id="shortcuts">
+        <b>keyboard shortcuts:</b><br/>
+        &crarr;: enter (try)
+        <br/>
+        &#x2713;: shift-enter (accept)
+        <br/>
+        ~: crtl-d (teach)
+        <br/>
+        &uarr;: up
+        <br/>
+        &darr;: down
+        <br/>
+        undo: ctrl-z
+        <br />
+        redo: shift-ctrl-z
+        <br/>
+      </div>
+      <p/>
+      <div>
+        <a href="" class="reference_link">help me</a>
+        <br>
+        <br>
+        <a id="reset"
+        href="">reset ALL progress</a>
+        <br>
+        <br />
+        <a id="start_tutorial2"
+        href="">go back to tutorial</a>
+        <br>
+        <a href="" class="hidden" id="quit_tutorial">quit tutorial</a>
+      </div>
+      <div>
+        <p style="font-weight:bold;">SHRDLURN already learned:</p>
+        <div id="random_utterances"></div>
+      </div>
+    </div>
+
+
+  <div id="metaactions" class="buttons">
+    <button class="button button--solved" id="flyingaccept"
+    ctitle="take this action (shift-enter)">&#x2713;</button>
+    <button class="button button--solved" id="paraphrase"
+    ctitle="teach SHRDLURN what you mean">~</button>
+    <button class="button button--solved (up key)" id="prevbutton"
+    ctitle="show previous action">&uarr; </button>
+    <button class="button button--solved" id="nextbutton"
+    ctitle="show next action (down key)">&darr; </button>
+  </div>
+
+  <div id="startblocks">before action</div>
+  <div id="currentblocks">after action</div>
+  <div id="goalblocks">target</div>
+
+  <div class="col-info">col 1</div>
+  <div class="row-info">row 1</div>
+  <div class="col-info-8">col 8</div>
+  <div class="row-info-8">row 8</div>
+
+  <button id="clear_button" class="button button--big">clear</button>
+  <button id="reject_button" class="button button--big hidden">reject</button>
+
+  <canvas id="canvas" width="1100" height="750"></canvas>
+  <span id="show_define_status" class="hidden">
+    didn't understand. <br/>
+    <a href='' id='define_instead' class='define-this'>
+      please teach (ctrl-d)!</a>
+  </span>
+
+  <div id="chat" style="center">
+    <div id="statusinfo">
+      &nbsp; <span id="reaction"></span>
+      <span id="currentcmd"><b>No command</b> </span>,
+      <span id="status">type one!</span>
+    </div>
+    <div id="define_interface" class="hidden">
+      <span class="b-header"><span id="define_header"></span>
+      </span>
+
+      <hr/>
+      <div class="define-inputs">
+        <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" maxlength="100"/>
+        <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">try it</button>
+        <button class="button button--big button--closed" id="close_define_interface"  ctitle="close the teaching panel (esc or ctrl-d)">close</button>
+      </div>
+      <span class="helpertext">
+          <span id="define_status">
+            what you said
+      </span>
+      <a href="" class="reference_link">But it doesn't work, I need help...</a>
+      </span>
+    </div>
+    <input type="text" id="maintextarea" placeholder="type your command here! e.g. add red if top yellow" maxlength="100"/>
+    <div class="buttons" id="mainbuttons">
+      <button class="button button--solved" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
+    </div>
+
+    <fieldset class="command-history-container">
+      <legend>recipe steps <span id="recipe_steps">(0/100)</span></legend>
+      <div id="command_history">
+      </div>
+    </fieldset>
+  </div>
+
+  <div class="tutorial" id="tutorial">
+    <div class="modal-container tutorial-s active" id="tutorial-s1">
+      <div class="modal">
+        <h1>Welcome to SHRDLURN</h1>
+        <hr>
+        <div class="half">
+          <p>
+	  SHRDLURN is a project to teach computers to understand English, and we need your help!
+          </p>
+          <p>
+            <a href="" id="skip_tutorial">skip the tutorial</a>
+          </p>
+        </div>
+        <div class="half">
+          <img src="pyramid.png" />
+          <button class="button button--big button--modal sticky-botright" id="start_tutorial">Let's Get Started &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s2">
+      <div class="cover-text">
+          <div class="cover-info">
+            <h1>Let's get started by making a cool structure!</h1>
+            <hr />
+            <p>You can instruct SHRDLURN to build by entering a command in the box.</p>
+            <p>To get started, type "add yellow". Then, click on the
+      "&crarr;" button (or hit the enter key).</p>
+          </div>
+        </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s3">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Awesome!</h1>
+          <hr>
+          <p>Now "add yellow" is shown on the right.
+	  You must "accept" this action if you want to use it in the next step.
+	  Accept by clicking on the highlighted "&#x2713;" button (or press
+      "shift-enter").
+	  </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s4">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Great job!</h1>
+          <hr>
+          <p>While SHRDLURN understands a few simple commands, there
+	  are many useful commands that it does not understand.
+	  That's where you come in: teach SHRDLURN.</p>
+          <p>Let's try to add the next layer of orange blocks by typing "add orange except the border".</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s5">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Yikes! SHRDLURN didn't understand what you meant.</h1>
+          <hr>
+          <p>Let's teach it what "add orange except the border"
+      means. You'll have to do this a lot, but hopefully, SHRDLURN
+      will soon learn more from you and others, and understand
+      English better!</p>
+          <p>To open the "teaching interface", either hit "ctrl+d" or click on the highlighted "~" button.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s6">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Let's teach SHRDLURN by defining this complex step!</h1>
+          <hr />
+          <p>Whenever SHRDLURN doesn't understand your instruction,
+      you will need to define it for SHRDLURN in terms what it already
+      understands. SHRDLURN already understands what others taught it
+      (see bottom right), as
+	  well as a
+	  <a href=""
+      class="reference_link">basic language</a>
+	  <p>Type (or copy/paste)
+	  "add orange if row &gt; 1 and col &gt; 1 and row &lt; 8 and col &lt; 8" into the box below to teach it the meaning of the phrase. Then, hit "try it" to see SHRDLURN's intepretation of your definition.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s7">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Great! SHRDLURN understood this definition.</h1>
+          <p>Before you actually define it, you have to verify that your attempted definition was correctly interpreted by SHRDLURN. If it wasn't, rephrase your definition and click "try it" again until SHRDLURN understands. Or, scroll to see other interpretations.</p>
+          <p>But, since the interpretation was correct, you can go ahead and hit enter or click "define" to define this term.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s8">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Amazing! SHRDLURN just learned what "... except the border" means!</h1>
+          <hr>
+          <p>You just defined the phrase. Now, try it out by typing "add orange except the border" in the highlighted textbox.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s9">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>SHRDLURN understands!</h1>
+          <hr>
+          <p>Sometimes SHRDLURN returns multiple interpretations, and
+      you can scroll to pick the right one. Remember that you have to
+      accept the action (shift-enter) to move on.</p>
+      <p>Alternatively, if the interpretation is really wrong, you can click the "reject" button to tell SHRDLURN that is wrong.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s10">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Now, let's finish it up!</h1>
+          <hr>
+          <p>To finish up building the target structure, let's define another phrase. Type "add 2 red if col = 4 or col = 5" in the textbox below and hit enter.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s11">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>As predicted, SHRDLURN doesn't quite understand this instruction.</h1>
+          <hr>
+          <p>Hit ctrl+d to define it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s12">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Let's define what we mean.</h1>
+          <hr />
+          <p>In the basic grammar, "add 2 red if col = 4 or col = 5" means "repeat add red if col = 4 or col = 5 2 times". Type "repeat add red if col = 4 or col = 5 2 times" in the textbox below and hit enter to teach SHRDLURN.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s13">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>SHRDLURN understood your definition!</h1>
+          <hr />
+          <p>Now, hit enter or click on "define" to confirm this definition for SHRDLURN.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s14">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Great! SHRDLURN learned something new.</h1>
+          <hr />
+          <p>Let's go ahead and complete the structure by typing "add 2 red if col = 4 or col = 5" in the textbox.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-container tutorial-s" id="tutorial-s15">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Nifty</h1>
+          <hr />
+          <p>If this intrepetation is correct, accept it by hitting shift+enter (if not, scroll until it matches the target structure).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-container tutorial-s" id="tutorial-s16">
+      <div class="modal">
+        <h1>You've done it! You completed the tutorial.</h1>
+        <hr>
+        <div class="half">
+          <p>Now that you have completed the tutorial, we want you to try to build complex structures yourself!</p>
+          <p>In the top right corner you will find a target structure to build. Try to come up with a way to build the structure as close as possible to the number of possible steps it took to build (you must build it in less than the maxinum number of steps allowed). Do this by defining complex phrases, for example: instead of "add red if row &lt;= 2 and col &lt;= 2", define "add red square" and then use that.</p>
+          <p>The goal is to teach SHRDLURN as much as possible. You are allowed unlimited defines!</p>
+          <p>Have fun!</p>
+        </div>
+        <button class="button button--big button--modal sticky-botright" id="finish_tutorial">start building</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-container hidden" id="target_completed">
+    <div class="modal">
+      <h1>Congratulations! You built the target!</h1>
+      <br />
+      <p>Great job! You successfully built the target using natural language. Thank you for helping to teach SHRDLURN. Feel free to try to build another target.</p>
+      <button class="button button--big button--modal sticky-botright" id="next_target">Close</button>
+    </div>
+  </div>
+
+  </div>
+
+  <div class="hidden" id="tutorial_overlay"></div>
+
+  <div id="debugdiv" class="hidden">
+    <div id="formula"> <b>No action</b> </div>
+    <div id="nbestlist"> </div>
+    <div id="history"> </div>
+  </div>
+
+  <div id="turker" style="display:none;margin-top:2em;center;">
+    <hr>
+    <p>Dear Turker, please click
+      the "code" button below after you have completed the target.
+      <span id="turkmsg"></span>
+    </p>
+    <button id="turkbutton" class="button"
+    style="width:80px;">code</button> <span id="turkcode">(code to appear here)</span>
+    <p/>
+    <div>
+    </div>
+  </div>
+
+  <div>
+    <div class="modal-container hidden" id="reference">
+      <div class="modal" style="overflow-y:scroll;">
+        <h1>Help for SHRDLURN (esc to close)</h1>
+
+        <hr><br>
+        <p> The goal is to teach SHRDLURN (the computer) to understand more English. You have to define things in a way that can already be understood by SHRDLURN.
+          This includes anything that you or others have already taught it,
+          as well as the core language below, which it always understands:
+          <ul>
+            <li><b>number: </b> 0, 1, 2, ..., 9, many</li>
+            <li><b>color: </b> red, cyan, brown, yellow, orange</li>
+            <li><b>action: </b> remove, add [color] </li>
+            <li><b>condition: </b> top [color], row = [number], height > [number], has [color], etc. </li>
+            <li><b>if: </b> [action] if [condition]
+              <ul>
+                <li>add red if col = 1 or col = 8 or row = 1 or row = 8</li>
+                <li>add red if row < 3</li>
+                <li>remove if top red</li>
+              </ul>
+            </li>
+            <li><b>control: </b> [action] then [action], repeat [action] 3 times
+              <ul>
+                <li>repeat remove if has red many times</li>
+                <li>remove then add red if top yellow </li>
+                <li>repeat add red 3 times if top yellow or row < 3 </li>
+                <li>[remove then add red then add red] if height < 1</li>
+                <li>repeat add red then add yellow 5 times if height > 0 </li>
+              </ul>
+            </li>
+            <li><b>(advanced) relative condition: </b> relativepos_of [condition]
+            <ul>
+              <li>add yellow if leftof top red</li>
+              <li>add yellow if rightof col = 3</li>
+              <li>add yellow if backof col = row </li>
+              <li>add yellow if rightof frontof [row = 4 and col = 4]</li>
+            </ul>
+            </li>
+            <li><b>(advanced) extremes: </b> largest X in [condition]
+            <ul>
+              <li>add yellow if largest row in all</li>
+              <li>add yellow if smallest col in top red</li>
+            </ul>
+            </li>
+            <li><b>(advanced) inside: </b> inside [[condition]]
+            <ul>
+              <li>add red if inside [top red]</li>
+              <li>add red if inside [col = 1 or col = 4]</li>
+              <li>add cyan if inside [ [ row = 1 or row = 4 ] and [col = 1 or col = 4] ] </li>
+            </ul>
+            </li>
+          </ul>
+        </p>
+        <h3>But it's not accepting my teachings! </h3>
+        <ul>
+          <li>
+            SHRDLURN understands everything in green boxes, blue are words it knows but not used correctly, red are unknowns.</li>
+          <li> <span style="color:red;">blah </span>
+          <span class="color-good">add red if height &lt; 1 </span>
+          <span style="color:blue;" ;="">then </span>
+          <span style="color:blue;" ;="">if </span><span style="color:red;">someblah </span>
+          <span class="color-good">add red </span>
+          <span class="color-good">remove red </span> </li>
+          <li> If there are several green boxes, then it understands each box, but not how they are combined. For example, <span class="color-good">add red </span>
+          <span class="color-good">remove red </span> needs to be changed to <span class="color-good">add red then remove red </span></li>
+          <li> Still, if nothing works, close the definition window and teach something else!</li>
+        </ul>
+        <p> English is hard for beginners, which is why we need your help teaching SHRDLURN!</p>
+        <a class="button--closed" id="reference_close" href="" >Okay, got it! (click here or press ESC key to close this window)</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="dist/main.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-74509910-1', 'auto');
+  ga('send', 'pageview');
+  </script>
+</body>
+</html>

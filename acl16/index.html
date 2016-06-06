@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>teach a computer a language</title>
+    <meta name="author" content="S.W.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="teach computer">
+    <link rel="stylesheet" type="text/css" href="dist/main.css">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
+  </head>
+  <body>
+<div id="container">
+      <div id="panel">
+	<select id="tasks" size="5"></select>
+	<p/>
+	<div id="shortcuts">
+	<b>keyboard shortcuts:</b><br/>
+	  &crarr;: enter
+	   <br/>
+	  &#x2713;: shift-enter
+	  <br/>
+	  &#x238c;: ctrl-z
+	  <br/>
+	  &darr;: next try
+	  <br/>
+	  &uarr;: previous try
+	</div>
+	<p/>
+	<div>
+	<b><span id="penalty">0</span> bits penalty </b> <br/><br/><a id="reset"
+	href="">reset ALL progress</a>
+	</div>
+      </div>
+      <div id="message">
+	<span id="solved" class="animated">solved!</span>
+	<div>click ✓ (or shift-enter) for the next problem.</div>
+      </div>
+      <div id="startblocks">start</div>
+      <div id="goalblocks" style="visibility:hidden;">goal</div>
+      
+      <div id="flyingdiv" style="visibility:hidden;">
+	  <button class="button button--solved" id="flyingaccept"
+	  ctitle="take this action (shift-enter)">
+	&#x2713;</button>
+      </div>
+      <canvas id="canvas" width="1100" height="800"></canvas>
+      <div id="chat" style=center>
+	<div id="statusinfo">
+	&nbsp; <span id="reaction"></span>
+	<span id="currentcmd"><b>No command</b> </span>,
+	<span id="status">type one!</span></div>
+	<input type="text" id="maintextarea" placeholder=" command the computer here"></input>
+	<div class="buttons">
+	  <button class="button" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
+	  <button class="button" id="undobutton" ctitle="undo (ctrl-z)">&#x238c;</button>
+	  <div class="divider"></div>
+
+	  <button class="button button--train" id="nextbutton"
+	  ctitle="show next action (down key)">&darr; </button>
+	  <button class="button button--train (up key)" id="prevbutton"
+	  ctitle="show previous action">&uarr; </button>
+	  <button class="button button--train" id="acceptbutton"
+	  ctitle="take this action (shift-enter)"> &#x2713; </button>
+	  </div>
+	  <p/>
+	<div id="helptext">
+	  Cooperatively build the "goal" from the "start"
+	  by teaching the computer any language.
+	  The computer knows nothing, and you have to teach quickly.
+	  Type a command and press enter, use ↓ and ↑ to
+	  select the right action, use ✓ (shift-enter) take the current action and
+	  move to the next step, and use &#x238c; (ctrl-z) to undo and
+	  skip examples. 
+	  <br/>
+	  <a href="https://github.com/sidaw/cubesem/blob/master/README.md"
+	  target="_blank">help</a>,
+	  <a href="http://goo.gl/forms/Oxl09GJ9f3"
+	  target="_blank">comments</a>
+	</div>
+	<div id="turker" style="visibility:hidden;margin-top:2em">
+	  <hr>
+	  <p>Dear Turker, please click
+	  the button below after you are done, and paste the code back
+	  to AMT.
+	  <span id="turkmsg"></span></p>
+	  <button id="turkbutton" class="button"
+	  style="width:80px;">done</button>
+	  <p/>
+	  <div id="turkcode">XXXXXX(to appear)</div>
+	</div>
+	<div>
+	<p>
+	<span id="history" style="visibility:hidden;"></span>
+	</p>
+	<div id="sempreret"></div>
+	</div>
+      </div>
+    </div>
+    
+    <script type="text/javascript" src="dist/main.js"></script>
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-74509910-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+  </body>
+</html>
