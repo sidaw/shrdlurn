@@ -1,0 +1,46 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body,
+select {
+  font-family: 'Roboto Condensed', sans;
+  font-weight: 400;
+  font-size: 16px;
+}
+b {
+  font-weight: 700;
+}
+#info {
+  position: relative;
+  margin: 0 auto;
+  width: 400px;
+  z-index: 1000;
+  background-color: #fff;
+}
+
+.left {
+  margin-left: 120px;
+}
+.right {
+  margin-left: 80px;
+}
+.buttons {
+  margin: -3px 0px;
+}
+.divider {
+  width: 20px;
+  height: auto;
+  display: inline-block;
+}
+p.footer {
+  margin-top: 30px;
+  font-size: 14px;
+  text-align: center;
+  color: #444;
+}
+a {
+    color: #CC333F;
+    font-size: 20px;
+}
