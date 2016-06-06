@@ -11,7 +11,7 @@
 @fontSize:      16px;
 @fontSizeSmall: 14px;
 @fontSizeLarge: 25px;
-@fontSizeInput:            24px;
+@fontSizeInput:            18px;
 
 // Dimensions
 @width:               800px;
@@ -159,8 +159,8 @@ b {
 #metaactions {
     visibility: visible;
     position: absolute;
-    top: @canvasHeight - 50px;
-    left: 215px;
+    top: @canvasHeight - 10px;
+    left: 200px;
     padding: 1px;
     text-align: center;
 
@@ -175,8 +175,9 @@ b {
 }
 #maintextarea {
   display: inline-block;
+  //font-family: 'monaco',  monospace;
   font-family: 'Roboto Condensed', sans;
-  font-size: @fontSizeInput;
+  font-size: 18px;
   appearance: none;
   outline: none;
   resize: none;
@@ -222,7 +223,7 @@ b {
     margin: 3px;
 
     color: #000;
-    font-size: 25px;
+    font-size: 23px;
     text-decoration: none;
 
     @bgCol: #fefefe;
@@ -253,9 +254,9 @@ b {
 }
 .button--solved {
     color: #000;
-    font-size: 20px;
-    width: 35px;
-    height: 30px;
+    font-size: 18px;
+    width: 34px;
+    height: 29px;
 }
 
 .button--big {
@@ -484,7 +485,8 @@ img.emojione {
   }
 }
 
-#reference {
+#reference,
+#target_completed {
   position: fixed;
   top: 0;
   left: 0;
@@ -499,6 +501,11 @@ img.emojione {
     width: 700px;
     height: 600px;
   }
+}
+
+#target-completed .modal {
+  width: 300px;
+  height: 200px;
 }
 
 .tutorial-s, {
@@ -537,7 +544,7 @@ img.full {
 #define_interface {
   position: relative;
   width: @width*0.75-20px;
-  min-height: 200px;
+  min-height: 125px;
   background-color: #efefef;
   padding: 20px;
   box-sizing: border-box;
@@ -555,8 +562,8 @@ img.full {
   }
 
   .helpertext {
-    font-size: 14px;
-    padding: 20px;
+    font-size: 16px;
+    padding: 5px;
   }
 }
 
@@ -566,14 +573,18 @@ img.full {
 
 .b-header {
   font-weight: bold;
-  font-size: 20px;
+  font-size: 16px;
 }
 
 #definetextarea:extend(#maintextarea) {
   margin: 0 0px;
   box-sizing: border-box;
   font-size: 16px;
-  width: 87%;
+  width: 100%;
+}
+#definetextarea:focus {
+  outline: none;
+  border: solid 3px #000;
 }
 
 
@@ -584,40 +595,40 @@ img.full {
   font-size: 20px;
 }
 
-.row-info {
+.col-info {
   position: absolute;
   top: @canvasHeight + 2px;
   left: 415px;
   font-size: 16px;
-  transform: rotateZ(-60deg);
+  transform: rotateZ(-68deg);
 }
 
-.col-info:extend(.row-info) {
-  top: @canvasHeight -  10px;
+.row-info:extend(.col-info) {
+  top: @canvasHeight -  5px;
   left: 450px;
-  transform: rotateZ(30deg);
+  transform: rotateZ(38deg);
+}
+
+.col-info-8:extend(.col-info) {
+  top: @canvasHeight - 44px;
+  left: 265px;
+}
+.row-info-8:extend(.row-info) {
+  top: @canvasHeight -  90px;
+  left: 535px;
 }
 
 .button--closed {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  cursor: pointer;
+  // position: absolute;
+  // right: 10px;
+  // top: 10px;
+  width: auto;
 }
 
-// stands for utterance
-.utt {
-font-style: italic;
-}
-
-.utt:before
-{
-content: open-quote;
-}
-
-.utt:after
-{
-content: close-quote;
+// underline
+.color-good {
+color: green;
+border: 2px solid green;
 }
 
 #turker {
@@ -629,6 +640,12 @@ content: close-quote;
 #clear_button {
   position: absolute;
   top: 380px;
+}
+
+#reject_button {
+  position: absolute;
+  top: 380px;
+  left: 500px;
 }
 
 .modal-container.active {
@@ -700,42 +717,54 @@ content: close-quote;
 }
 
 #tutorial-s7 .cover-text {
+  height: 200px;
+  border-top-width: 20px;
+  border-left-width: 0;
+}
+
+#tutorial-s8 .cover-text {
   border-top-width: 200px;
   height: 250px;
   border-left-width: 0;
 }
 
-#tutorial-s8 .cover-text {
+#tutorial-s9 .cover-text {
   height: 250px;
   border-top-width: 20px;
   border-left-width: 0;
 }
 
-#tutorial-s9 .cover-text {
+#tutorial-s10 .cover-text {
   border-top-width: 200px;
   height: 250px;
   border-left-width: 0;
 }
 
-#tutorial-s10 .cover-text {
+#tutorial-s11 .cover-text {
   height: 250px;
   border-top-width: 450px;
   border-left-width: 0;
 }
 
-#tutorial-s11 .cover-text {
+#tutorial-s12 .cover-text {
   height: 300px;
   border-top-width: 100px;
   border-left-width: 0;
 }
 
-#tutorial-s12 .cover-text {
+#tutorial-s13 .cover-text {
+  height: 200px;
+  border-top-width: 20px;
+  border-left-width: 0;
+}
+
+#tutorial-s14 .cover-text {
   border-top-width: 200px;
   height: 250px;
   border-left-width: 0;
 }
 
-#tutorial-s13 .cover-text {
+#tutorial-s15 .cover-text {
   height: 260px;
   border-top-width: 450px;
   border-left-width: 0;
@@ -748,4 +777,28 @@ content: close-quote;
   width: 100%;
   height: 100%;
   background-color: @overlay-color;
+}
+
+.define-inputs {
+  display: flex;
+
+  .awesomplete {
+    flex-grow: 2;
+    > .awesomplete { width: 100%; }
+  }
+
+  input {
+    flex-grow: 3;
+    width: auto;
+  }
+}
+
+#possible_steps,
+#max_steps {
+  display: block;
+}
+
+#possible_steps_n,
+#max_steps_n {
+  font-weight: bold;
 }

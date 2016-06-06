@@ -1,8 +1,8 @@
 "use strict"
 function GameState() {
   // the walls, just json strings
-  this.currentWall = "[[]]";
-  this.targetWall = "[[]]";
+  this.currentWall = configs.emptyWall;
+  this.targetWall = configs.emptyWall;
   this.listWalls = [];
 
   this.NBest = []; // current answer list returned by sempre
@@ -11,11 +11,17 @@ function GameState() {
   this.query = "";
   this.taskind = 0;
 
-  this.extraBits = 0;
   this.log = {};
   this.log.numQueries = 0;
   this.log.totalTokens = 0;
   this.log.numScrolls = 0;
+  
+  this.nSteps = 1;
+  this.maxSteps = 100;
+  this.targetIndex = -1;
+  this.skipsLeft = 2;
+  if (configs.debugMode)
+    this.skipsLeft = 100;
 
   this.tutorialMode = false;
   this.tutorialLevel = 2;
@@ -25,6 +31,7 @@ function GameState() {
   this.taggedCover = [];
   this.taggedDefineCover = [];
   this.defineState = false;
+  this.defineSuccess = "";
   this.reverting = -1;
 
   // the only persistent states
@@ -73,11 +80,15 @@ function GameState() {
     this.pastWall = wall;
   }
 
+  this.getLastWall = function() {
+    return this.listWalls[this.listWalls.length-1];
+  }
+    
   this.setCurrentWall = function() {
     if (this.NBest.length>0)
       this.currentWall = this.NBest[this.NBestInd].value;
     else
-      this.currentWall = '[[]]';
+      this.currentWall = configs.emptyWall;
   }
 
   this.getCurrentWall = function() {
@@ -85,7 +96,7 @@ function GameState() {
     {
       return this.currentWall;
     }
-    return '[[]]';
+    return configs.emptyWall;
   }
   this.nextIfPossible = function() {
     if (this.noAnswer()) return false;
@@ -131,7 +142,7 @@ function updateCanvas(gs) {
   var PSMain = PS.Main;
   var walls = [];
 
-  if (!gs.noQuery() && gs.noAnswer()) {
+  if (!gs.noQuery() && gs.noAnswer() && !(gs.defineSuccess.length > 0)) {
     document.getElementById("show_define_status").className = "";
     updateStatus("SHRDLURN did not understand.");
   } else { document.getElementById("show_define_status").className = "hidden"}
@@ -141,7 +152,7 @@ function updateCanvas(gs) {
   }
 
   var wlen = gs.listWalls.length;
-  var maxWalls = configs.levels[gs.taskind].maxSteps;
+  var maxWalls = 1;
 
   // cut
   if (wlen <= maxWalls) {
@@ -153,7 +164,7 @@ function updateCanvas(gs) {
   walls.push(gs.getCurrentWall());
 
   for (var i=0; i < maxWalls- wlen; i++)
-    walls.push('[[]]');
+    walls.push(configs.emptyWall);
 
   PSMain.renderJSON('['+walls.join(',')+']')();
   // updateGoalTextPosition(gs);
@@ -187,26 +198,26 @@ function newWall(gs) {
 
 
 var GameAction = {
-  // functions starting with _ are internal, and should not modify status messages.
-  _candidates: function(gs) {
-    if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 11)) {
-      if (gs.tutorialLevel == 6) gs.taggedCover = [["$Action", "add orange"], ["$UNK", "except", "the", "border"]];
-      if (gs.tutorialLevel == 11) gs.taggedCover = [["$UNK", "add", "2"], ["$Color", "red"], ["$Cond", "if", "col", "=", "4", "or", "col", "=", "5"]];
-      gs.taggedDefineCover = gs.taggedCover;
-      gs.resetNBest();
-      gs.setCurrentWall();
-      updateCanvas(gs);
-      return;
-    }
+    // functions starting with _ are internal, and should not modify status messages.
+    _candidates: function(gs) {
+    // if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 12)) {
+    //   if (gs.tutorialLevel == 6) gs.taggedCover = [["$Action", "add orange"], ["$UNK", "except", "the", "border"]];
+    //   if (gs.tutorialLevel == 11) gs.taggedCover = [["$UNK", "add", "2"], ["$Color", "red"], ["$Cond", "if", "col", "=", "4", "or", "col", "=", "5"]];
+    //   gs.taggedDefineCover = gs.taggedCover;
+    //   gs.resetNBest();
+    //   gs.setCurrentWall();
+    //   updateCanvas(gs);
+    //   return;
+    // }
 
     var cmds = {q:gs.query, sessionId:gs.sessionId};
+
     sempre.sempreQuery(cmds , function(jsonstr) {
       var jsonparse = JSON.parse(jsonstr);
       console.log(jsonparse);
-      gs.coverage = jsonparse["coverage"];
       gs.taggedCover = jsonparse["taggedcover"];
-      gs.define_coverage = gs.coverage;
       gs.taggedDefineCover = gs.taggedCover;
+
       var formval = sempre.parseSEMPRE(jsonparse['candidates']);
       if (formval == null) {
 	console.log('no answer from sempre')
@@ -217,9 +228,16 @@ var GameAction = {
 	gs.NBest = formval;
 	gs.setCurrentWall();
       }
-      if (configs.debugMode)
+      if (configs.debugMode) {
+	console.log(jsonparse);
 	writeSemAns(gs);
+      }
       updateCanvas(gs);
+      if (gs.tutorialMode && (gs.tutorialLevel == 6 || gs.tutorialLevel == 12)) {
+        GS.resetNBest();
+        GS.setCurrentWall();
+        updateCanvas(GS);
+      }
     });
 
     // Update random utterances
@@ -229,7 +247,6 @@ var GameAction = {
     sempre.sempreQuery({q: gs.query, accept:gs.NBest[gs.NBestInd].rank, sessionId:gs.sessionId}, function(){})
   },
   candidates: function(gs) {
-
     var contextcommand = "(context (graph NaiveKnowledgeGraph ((string {wall}) (name b) (name c))))"
 	._format({wall:gs.listWalls[gs.listWalls.length-1]}); // attach arguments here!
     var cmds = {q:contextcommand, sessionId:gs.sessionId};
@@ -243,8 +260,9 @@ var GameAction = {
       return;
     }
     if (gs.prevIfPossible()) {
-      updateCanvas(gs)
-      updateStatus("↑: showing the previous one")
+      updateCanvas(gs);
+      updateStatus("↑: showing the previous one");
+      Logger.log({type: "scroll", msg: "prev"});
     } else {
       updateStatus("↑: already showing the first one")
     }
@@ -256,8 +274,9 @@ var GameAction = {
       return;
     }
     if (GS.nextIfPossible()) {
-      updateCanvas(gs)
-      updateStatus("↓: showing the next one")
+      updateCanvas(gs);
+      updateStatus("↓: showing the next one");
+      Logger.log({ type: "scroll", msg: "next" });
     } else {
       updateStatus("↓: already showing the last one");
     }
@@ -279,6 +298,13 @@ var GameAction = {
   _accept_commit: function(gs) {
     if (!gs.noAnswer()) {
       GameAction._simpleaccept(gs);
+
+      if (gs.currentWall == gs.targetWall) {
+        completed_target();
+      }
+
+      var count = (gs.query.match(/then/g) || []).length;
+      gs.nSteps += count + 1;
       gs.listWalls.push(gs.currentWall);
       gs.resetNBest();
       gs.query = "";
@@ -292,6 +318,7 @@ var GameAction = {
     }
   }
 };
+
 //*************** DOM stuff
 
 function logh(strlog) {document.getElementById("history").innerHTML += strlog; }
@@ -348,14 +375,14 @@ function updateFormula(gs) {
   }
 }
 
-function updateGoalTextPosition(gs) {
-  var initx = 100; var inity = 280;
-  var g = document.getElementById("goalblocks");
-  var scalefactor = 800*0.75/1100.0; // this is radio of the widths of canvas in html vs stylesheet
-  var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
-  g.style.top=(inity + (configs.levels[gs.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
-  g.style.left=(initx + (configs.levels[gs.taskind].maxSteps+1)*space*1.717/2)+"px";
-}
+// function updateGoalTextPosition(gs) {
+//   var initx = 100; var inity = 280;
+//   var g = document.getElementById("goalblocks");
+//   var scalefactor = 800*0.75/1100.0; // this is radio of the widths of canvas in html vs stylesheet
+//   var space = 5*35*scalefactor; // these should correspond to spacing and cubesize in Main.purs
+//   g.style.top=(inity + (configs.levels[gs.taskind].maxSteps+1)*space*0.5)+"px"; //sin 30 and 60 due to isometry
+//   g.style.left=(initx + (configs.levels[gs.taskind].maxSteps+1)*space*1.717/2)+"px";
+// }
 
 // State stuff
 
@@ -364,7 +391,7 @@ function updateRandomUtterances(gs) {
     var autocompletes = JSON.parse(jsonstr).autocompletes;
     var random_strings = "";
     for (var i = 0; i < 4 && i < autocompletes.length; i++) {
-      random_strings += "<span>" + autocompletes[i] + "</span><hr>";
+      random_strings += "<span>" + autocompletes[i] + "</span><br/>";
     }
     document.getElementById("random_utterances").innerHTML = random_strings;
   });
@@ -380,17 +407,24 @@ function saveGameState(gs, name) {
   // popTasks();
 }
 
-function addElemToHistory(gs, history, text) {
+function addElemToHistory(gs, history, text, definition) {
+  if (definition == undefined) definition = false;
   if (gs.currentWall == "[[]]") { return; }
 
   var elem = document.createElement("div");
   elem.setAttribute("data-index", gs.listWalls.length - 1);
   elem.setAttribute("data-walls", gs.currentWall);
+  if (!definition) {
+    elem.setAttribute("data-steps", gs.nSteps);
+    document.getElementById("recipe_steps").innerHTML = "(" + gs.nSteps + "/" + gs.maxSteps + ")";
+    text = gs.nSteps + ". " + text;
+  }
   elem.innerHTML = text;
   history.insertBefore(elem, history.firstChild);
   elem.onclick = function() {
     revertHistory(gs, elem.getAttribute("data-index"));
   }
+  Logger.log({type: "action", msg: text});
 }
 
 Element.prototype.remove = function() {
@@ -437,6 +471,8 @@ function wipeHistory(gs, wall) {
   elem.onclick = function() {
     revertHistory(gs, elem.getAttribute("data-index"));
   }
+
+  Logger.log({type: "history", msg: "clear"});
 }
 
 function highlightHistory(gs, index) {
@@ -467,6 +503,8 @@ function undoHistory(gs) {
     }
   }
   revertHistory(gs, index);
+
+  Logger.log({type: "history", msg: "undo"});
 }
 
 function redoHistory(gs) {
@@ -478,84 +516,101 @@ function redoHistory(gs) {
     }
   }
   revertHistory(gs, index);
+
+  Logger.log({type: "history", msg: "redo"});
 }
 
 function revertHistory(gs, index) {
   var elem = document.querySelectorAll("#command_history > div[data-index='" + index + "']")[0];
   var wall = elem.getAttribute("data-walls");
-  PS.Main.renderJSON("[" + wall + ",[[]]]")();
+  PS.Main.renderJSON("[" + wall + ","+configs.emptyWall+"]")();
 
   if (gs.reverting >= 0) { gs.listWalls.pop(); }
   gs.listWalls.push(wall);
   gs.reverting = index;
 
+  var steps = elem.getAttribute("data-steps");
+  if (steps) {
+    gs.nSteps = parseInt(steps) + 1;
+  }
+
   highlightHistory(gs, index);
+
+
+  Logger.log({type: "history", msg: "revert " + index});
 }
 
-/* States */
-var STATES = [
-  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,3,2,2],[4,2,2],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
-  "[[4],[4],[4],[4],[4],[4],[4],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2,0],[4,3,2,0],[4,3,2],[4,3],[4],[4],[4,3],[4,3,2],[4,3,2],[4,3,2],[4,3,2],[4,3],[4],[4],[4,3],[4,3],[4,3],[4,3],[4,3],[4,3],[4],[4],[4],[4],[4],[4],[4],[4],[4]]",
-  "[[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3,0],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2,3],[2,3,4,0,1,2,3],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1,2],[2,3,4,0,1,2],[2,3,4,0,1,2],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2,3,4,0,1],[2],[2,3],[2,3,4],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2,3,4,0],[2],[2,3],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2,3,4],[2],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2,3],[2],[2],[2],[2],[2],[2],[2],[2]]",
-  "[[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4],[4],[0],[4],[0],[4],[0],[4],[0],[0],[4],[0],[4],[0],[4],[0],[4]]",
-  "[[1,1],[1,1],[],[],[],[],[1,1],[1,1],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[],[],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[],[],[1,1],[1,1],[2,2,4],[2,2,4,0],[2,2,4,0],[2,2,4],[1,1],[1,1],[1,1],[1,1],[],[],[],[],[1,1],[1,1]]",
-  "[[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[2],[3,3],[4,4,4],[0,0,0,0],[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[4,4,4,4,4,4],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[3,3,3,3,3,3,3],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2],[2,2,2,2,2,2,2,2]]",
-  "[[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[2,2,2],[2,2,2],[0,0,0],[0,0,0],[4,4,4],[4,4,4],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[3,3,3],[3,3,3],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]",
-  "random"
-];
-
 /* Render the target state initially. */
-window.addEventListener("load", function() {
-  updateTarget(0);
+window.addEventListener("load", new_target);
+
+function new_target() {
+  var index = 0;
+  var completedTargets = JSON.parse(util.getStore("completed_targets", "[]"));
+  if (completedTargets.length == STATES.length) {
+    alert("No more targets.");
+    return;
+  }
+  do {
+    index = Math.floor(Math.random()*STATES.length);
+  } while (completedTargets.indexOf(index) !== -1 && index !== GS.targetIndex);
+  updateTarget(index);
   updateRandomUtterances(GS);
-});
+}
 
 function loadGameState(gs, newWall) {
   gs.listWalls = [newWall];
   updateCanvas(gs);
   wipeHistory(gs, newWall);
 }
-
-document.getElementById("prev_state").addEventListener("click", function() {
-  var index = document.getElementById("canvastarget").getAttribute("data-index");
-  index--;
-
-  if (index >= 0)
-    updateTarget(index);
-});
-
-document.getElementById("load_state").addEventListener("click", function() {
-  var canvas_target = document.getElementById("canvastarget")
-  var index = canvas_target.getAttribute("data-index");
-  var wall = canvas_target.getAttribute("data-wall");
-  loadGameState(GS, wall);
-  updateStatus("loaded a new state");
-});
-
-document.getElementById("next_state").addEventListener("click", function() {
-  var index = document.getElementById("canvastarget").getAttribute("data-index");
-  index++;
-  if (index != STATES.length) {
-    updateTarget(index);
-  } else {
-    updateTarget(index - 1);
-  }
-});
+//
+// document.getElementById("prev_state").addEventListener("click", function() {
+//   var index = document.getElementById("canvastarget").getAttribute("data-index");
+//   index--;
+//
+//   if (index >= 0)
+//     updateTarget(index);
+// });
+//
+// document.getElementById("load_state").addEventListener("click", function() {
+//   var canvas_target = document.getElementById("canvastarget")
+//   var index = canvas_target.getAttribute("data-index");
+//   var wall = canvas_target.getAttribute("data-wall");
+//   loadGameState(GS, wall);
+//   updateStatus("loaded a new state");
+// });
+//
+// document.getElementById("next_state").addEventListener("click", function() {
+//   var index = document.getElementById("canvastarget").getAttribute("data-index");
+//   index++;
+//   if (index != STATES.length) {
+//     updateTarget(index);
+//   } else {
+//     updateTarget(index - 1);
+//   }
+// });
 
 document.getElementById("clear_button").addEventListener("click", function() {
-  loadGameState(GS, "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]");
+  GS.nSteps = 1;
+  loadGameState(GS, configs.emptyWall);
 });
 
 function updateTarget(index) {
-  var wall = STATES[index];
-  if (wall == "random")
-    wall = randomWall();
+  var state = STATES[index];
+  var wall = state[1];
+  // if (wall == "random")
+  //   wall = randomWall();
 
   PS.Main.renderTargetJSON("[" + wall + "]")();
+  GS.targetWall = wall;
+  GS.targetIndex = index;
+  GS.maxSteps = Math.round(state[0] * 2.5);
 
   var canvas_target = document.getElementById("canvastarget");
   canvas_target.setAttribute("data-wall", wall);
   canvas_target.setAttribute("data-index", index);
+  document.getElementById("possible_steps_n").innerHTML = state[0];
+  document.getElementById("max_steps_n").innerHTML = GS.maxSteps;
+  document.getElementById("recipe_steps").innerHTML = "(" + 0 + "/" + GS.maxSteps + ")";
 }
 
 function randomWall() {
@@ -626,12 +681,21 @@ function runCurrentQuery(gs) {
   document.getElementById("maintextarea").value = ''
 
   if (querystr.length>0) {
+    if (!configs.debugMode && querystr.length > configs.uttLengthLimit) {
+      alert("Instruction length is " + querystr.length
+	    + " characters. Please limit it to less than "
+	    + configs.uttLengthLimit
+	    + " characters. Try to define concepts and use those instead of one long instruction.");
+      return;
+    }
     gs.log.totalTokens += querystr.split(" ").length;
     gs.log.numQueries++;
 
     logh(gs.numQueries + ' ' + querystr + '; ')
-    gs.query = querystr;
+    gs.query = sempre.formatQuery(querystr);
     GameAction.candidates(gs);
+
+    Logger.log({ type: "query", msg: gs.query });
 
   } else {
     updateStatus("enter a command");
@@ -671,11 +735,20 @@ function acceptOnclick() {
   //   }
   // }
 
-  if (GS.defineState)
-    closeDefineInterface(GS);
+  if (GS.defineState) {
+    alert("You must submit this definition first, then you can accept it!");
+    return;
+  }
+
+  if (!configs.debugMode && GS.nSteps > GS.maxSteps) {
+    alert("You have used the maximum number of steps. Undo some of your steps or clear to start over. You need to build the structure in less than the maxinum number of steps allowed. Try to define more complex phrases and use those rather than being overly specific.");
+    return;
+  }
+
   updateHistory(GS);
   GameAction.accept(GS);
   maintextarea.focus();
+  Logger.log({type: "metaaction", msg: "accept"});
 }
 function metaCommand(meta) {
   maintextarea.value = meta;
@@ -683,7 +756,7 @@ function metaCommand(meta) {
 }
 
 document.getElementById("paraphrase").onclick = function() {
-  defineInterface(GS, GS.query);
+  defineInterface(GS);
 };
 
 var Hotkeys = {
@@ -722,11 +795,15 @@ function parseKeys(e) {
     e.preventDefault();
     if (GS.defineState && !(GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))) {
       closeDefineInterface(GS); return false; }
-    defineInterface(GS, GS.query);
+    defineInterface(GS);
   } else if (e.keyCode == Hotkeys.ESC) {
-    var close_links = document.getElementsByClassName("button--closed");
-    for (var i = 0; i < close_links.length; i++)
-      close_links[i].click();
+    e.preventDefault();
+    var help_reference = document.getElementById("reference");
+    if (help_reference.className == "modal-container") {
+      help_reference.className = "modal-container hidden";
+    } else if (GS.defineState) {
+      closeDefineInterface(GS);
+    }
     return true;
   }
 }
@@ -735,36 +812,64 @@ document.addEventListener("keydown", parseKeys, false);
 
 // Define interface
 function definePhrase(e, gs) {
-  if (gs.tutorialMode)
-    return;
-
   var definetextarea = document.getElementById("definetextarea");
-  var text = "(uttdef \"" + definetextarea.value + "\")";
+
+  if (!configs.debugMode && definetextarea.value.length > configs.defLengthLimit) {
+    alert("Definition length is " + definetextarea.value.length + " characters. Please limit it to less than 90 characters. Check out the help page for example commands, or try to define other phrases that would be building blocks to this one.");
+    return;
+  }
+
+  /* If just trying, update current Wall */
+  if (gs.defineSuccess.length == 0 || definetextarea.value != gs.defineSuccess) {
+    var cmds = {q: "(uttdef \"" + sempre.formatQuery(definetextarea.value) + "\" -1)", sessionId: gs.sessionId };
+    Logger.log({type: "try_define", msg: definetextarea.value });
+    sempre.sempreQuery(cmds, function(jsonstr) {
+      var jsonparse = JSON.parse(jsonstr);
+      var formval = sempre.parseSEMPRE(jsonparse['candidates']);
+      var commandResponse = jsonparse['commandResponse'];
+
+      var defCore = commandResponse.indexOf("Core") != -1;
+      var defNoCover = commandResponse.indexOf("NoCover") != -1;
+      var defNoParse = commandResponse.indexOf("NoParse") != -1;
+
+      if (defCore || defNoCover || defNoParse) {
+        gs.define_coverage= jsonparse["coverage"];
+        gs.taggedDefineCover = jsonparse["taggedcover"];
+        defineInterface(gs, commandResponse);
+        addPoint("fail");
+      } else {
+	gs.defineSuccess = definetextarea.value;
+        gs.NBestInd = 0;
+        gs.NBest = formval;
+        gs.setCurrentWall();
+        updateCanvas(gs);
+        defineInterface(gs);
+        document.getElementById("define_phrase_button").innerHTML = "define";
+      }
+    });
+    return;
+  }
+  /* If already tried, submit definition */
+  //sempre.sempreQuery({q: sempre.formatQuery(gs.query), sessionId: gs.sessionId }, function(jsonstr) {
+  //});
+  var text = "(uttdef \"" + sempre.formatQuery(gs.defineSuccess) + "\" " + gs.NBest[gs.NBestInd].rank + ")";
   var cmds = {q:text, sessionId:gs.sessionId};
+  Logger.log({type: "define", msg: gs.defineSuccess });
   sempre.sempreQuery(cmds, function(jsonstr) {
     var jsonparse = JSON.parse(jsonstr);
-    console.log(jsonparse);
-
-    if (jsonparse["candidates"].length == 0) {
-      gs.define_coverage = jsonparse["coverage"];
-      gs.taggedDefineCover = jsonparse["taggedcover"];
-      defineInterface(gs, definetextarea.value);
-      addPoint("fail");
-      return;
-    } else {
-      var commandResponse = jsonparse['commandResponse'];
-      var numans = parseInt(commandResponse);
-      console.log("got this many rules: " + numans)
-      if (numans == 0) addPoint("fail");
-      else addPoint("success");
-      addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
-    		       + gs.query + '" as "' + definetextarea.value + '"');
-      closeDefineInterface(gs);
-      // consider populate the candidate list quietly,
-      GameAction._candidates(gs);
-      updateStatus("definition accepted. thanks for teaching!");
-    }
-
+    addElemToHistory(gs, document.getElementById("command_history"), ' defined "'
+  		       + gs.query + '" as "' + gs.defineSuccess + '"', true);
+    closeDefineInterface(gs);
+    // consider populate the candidate list quietly,
+    //GameAction._candidates(gs);
+    gs.currentWall = configs.emptyWall;;
+    gs.resetNBest();
+    gs.setCurrentWall();
+    updateCanvas(gs);
+    document.getElementById("maintextarea").value = gs.query;
+    updateStatus("definition accepted. thanks for teaching!");
+    document.getElementById("show_define_status").className = "hidden";
+    document.getElementById("define_phrase_button").innerHTML = "try it";
   });
 }
 
@@ -782,41 +887,48 @@ function closeDefineInterface(gs) {
   var mainbuttons = document.getElementById("mainbuttons");
   mainbuttons.className = "buttons";
   maintextarea.focus();
+  gs.defineSuccess = "";
   gs.defineState = false;
 }
 
-function getColoredSpan(coverage, utt) {
+function getColoredSpan(coverage) {
   var colored_query = "";
   for (var i = 0; i < coverage.length; i++) {
     var type = coverage[i][0];
     switch (type) {
+      case "$ActionSeq":
+        colored_query += "<span class='color-good'>";
+        break;
       case "$Action":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span class='color-good'>";
+        break;
+      case "$CondSeq":
+        colored_query += "<span class='color-good'>";
         break;
       case "$Cond":
-        colored_query += "<span style='color:green;'>";
+        colored_query += "<span class='color-good'>";
         break;
-      case "$NUM":
-        colored_query += "<span style='color:blue;'>";
+      case "$NumberSeq":
+        colored_query += "<span class='color-good'>";
+        break;
+      case "$Number":
+        colored_query += "<span class='color-good'>";
         break;
       case "$Color":
         colored_query += "<span style='color:blue;'>";
         break;
-      case "$Getter":
+      case "$Keyword":
         colored_query += "<span style='color:blue;'>";
         break;
       case "$UNK":
         colored_query += "<span style='color:red;'>";
-        break;
-      case "$Keyword":
-        colored_query += "<span style='color:blue;';>"
         break;
       default:
         colored_query += "<span style='color:red;'>";
     }
     for (var j = 1; j < coverage[i].length; j++) {
       console.log(coverage[i][j]);
-      colored_query += " " + coverage[i][j] + " ";
+      colored_query += coverage[i][j] + " ";
     }
     colored_query += "</span>";
     console.log(colored_query);
@@ -824,29 +936,48 @@ function getColoredSpan(coverage, utt) {
   return colored_query;
 }
 
-function defineInterface(gs, utt) {
+function defineInterface(gs, status) {
   if (!gs.query) {
     updateStatus("nothing to define, enter a command.");
     return;
   }
 
-  var original_utt = document.getElementById("original_utt");
-  console.log(gs.taggedCover);
-  console.log(getColoredSpan(gs.taggedCover, gs.query));
-  original_utt.innerHTML = getColoredSpan(gs.taggedCover, gs.query);
+  var define_header = document.getElementById("define_header");
+  var define_status = document.getElementById("define_status");
+  define_status.innerHTML = 'Teach SHRDLURN "' + gs.query + '". ';
 
-  var query_phrase = document.getElementById("query_phrase");
   if (!gs.defineState) { // first time openning, or close and open
      if (!gs.noAnswer()) {
-      updateStatus("SHRDLURN already understands " + gs.query + "!");
-      query_phrase.innerHTML = "SHRDLURN already understands \""
-	+ gs.query + "\", but you can teach another meaning."
+      // updateStatus("SHRDLURN already understands " + gs.query + "! Try scrolling too.");
+      define_header.innerHTML = "Already understand \""
+	+ gs.query + "\", teach another meaning?"
     } else {
-      query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedCover, utt) +'"';
+      define_header.innerHTML = 'Didn\'t understand "' + getColoredSpan(gs.taggedCover) +'". Please rephrase:';
     }
   } else { // refinement
-    updateStatus("SHRDLURN still does not understand you.");
-    query_phrase.innerHTML = 'SHRDLURN did not understand "' + getColoredSpan(gs.taggedDefineCover, utt) +'"';
+    if (gs.defineSuccess.length > 0 || gs.tutorialMode) {
+      //updateStatus("SHRDLURN understands this!");
+      define_header.innerHTML = 'SHRDLURN understands the definition, "' + gs.defineSuccess +'". If this is correct, click "define" to submit the definition.';
+    } else {
+      //updateStatus("SHRDLURN still does not understand you.");
+      define_header.innerHTML = 'Still don\'t understand "' + getColoredSpan(gs.taggedDefineCover) +'". Please rephrase:';
+    }
+
+    // handle special status...
+    if (status!=undefined) {
+      var defCore = status.indexOf("Core") != -1;
+      var defNoCover = status.indexOf("NoCover") != -1;
+      console.log(status)
+      if (defCore) {
+	//updateStatus("cannot redefine the core language!");
+	define_header.innerHTML = '"' + gs.query + '" is precisely understood, and cannot be redefined by "'+getColoredSpan(gs.taggedDefineCover)+'".';
+      }
+      else if (defNoCover) {
+	//updateStatus("SHRDLRUN cannot learn from this definition");
+	define_header.innerHTML = 'Nothing (colors, numbers, etc) in "' + getColoredSpan(gs.taggedDefineCover) + '" matches "' + gs.query
+	  + '", so SHRDLURN cannot learn from this.';
+      }
+    }
   }
 
   // Hide maintextarea
@@ -860,7 +991,7 @@ function defineInterface(gs, utt) {
   var define_interface = document.getElementById("define_interface");
   define_interface.className = "";
   var definetextarea = document.getElementById("definetextarea");
-  definetextarea.placeholder = 'write the meaning of "' + gs.query + '" here!';
+  definetextarea.placeholder = 'define "' + gs.query + '" here.';
   definetextarea.focus();
 
   gs.defineState = true;
@@ -870,11 +1001,23 @@ function definePhraseClicked(e) {
   definePhrase(e, GS);
 }
 
+// function defineTryClicked(e) {
+//   GS.defineSuccess = "";
+//   definePhrase(e, GS);
+// }
+
 document.getElementById("define_phrase_button").addEventListener("click", definePhraseClicked, false);
+//document.getElementById("define_try").addEventListener("click", defineTryClicked, false);
+document.getElementById("definetextarea").oninput = function(e) {
+  if (GS.defineSuccess.length > 0) {
+    document.getElementById("define_phrase_button").innerHTML = "try it";
+    GS.defineSuccess = "";
+  }
+};
 
 document.getElementById("define_instead").addEventListener("click", function(e) {
   e.preventDefault();
-  defineInterface(GS, GS.query);
+  defineInterface(GS);
 });
 document.getElementById("close_define_interface").addEventListener("click", function(e) {
   if (GS.tutorialMode && (GS.tutorialLevel == 7 || GS.tutorialLevel == 12))
@@ -895,4 +1038,97 @@ document.getElementById("reset").onclick = function() {
   util.resetStore();
   simplereset();
 }
+
 simplereset();
+
+var input = document.getElementById("definetextarea");
+var onautocomplete = function(e) {
+  if (configs.debugMode) console.log(e);
+  if (input.value.endsWith(' '))
+    autocomplete(GS, input.value);
+  else if (input.value.length == 0)
+    autocomplete(GS, "");
+  e.stopPropagation();
+};
+input.addEventListener('input', onautocomplete, false);
+input.addEventListener('focus', onautocomplete, false);
+
+// make sure something happens even when autocomplete returns nothing
+var awesomplete = new Awesomplete(input,
+				  { minChars: 0,
+				    list: ["remove if top red", "add yellow",
+					   "add brown if has red or row = 3",
+					   "add yellow if row = 3",
+					   "repeat add yellow 3 times"],
+				    filter : function() {return true}
+				  });
+
+function autocomplete(gs, prefix) {
+  var cmdautocomp = '(autocomplete "' + prefix + '")';
+  var cmds = {q:cmdautocomp, sessionId:gs.sessionId};
+
+  sempre.sempreQuery(cmds, function (jsonstr) {
+    var autocomps = JSON.parse(jsonstr)['autocompletes'];
+    // var wall = jsresp.replace(/\(string /g, '').replace(/\)|\s/g, '');
+    if (configs.debugMode)
+      console.log("got these suggestions: " + autocomps);
+    awesomplete.list = autocomps;
+    // call awesomplete
+    awesomplete.open();
+    awesomplete.evaluate();
+  })
+}
+
+document.getElementById("reject_button").addEventListener("click", function(e) {
+  if (GS.NBest.length == 0) {
+    alert("Nothing to reject.");
+    return;
+  }
+  var cmds = {q: "(reject " + GS.NBestInd + ")", sessionId: GS.sessionId};
+  sempre.sempreQuery(cmds, function(jsonstr) {
+    var jsonparse = JSON.parse(jsonstr);
+    GS.NBest.splice(GS.NBestInd, 1);
+    GameAction.prev(GS);
+  });
+});
+
+function completed_target() {
+  if (GS.nSteps <= GS.maxSteps) {
+    var completed_targets = JSON.parse(util.getStore("completed_targets", "[]"));
+    completed_targets.push(GS.targetIndex);
+    util.setStore("completed_targets", JSON.stringify(completed_targets));
+    document.getElementById("target_completed").className = "modal-container";
+  } else {
+    alert("You used too many steps to build the target. Undo some steps and try again. Try to define some of the concepts you used and then use them.");
+  }
+}
+
+document.getElementById("next_target").addEventListener("click", function(e) {
+  document.getElementById("target_completed").className = "modal-container hidden";
+  //document.getElementById("clear_button").click();
+  //new_target();
+});
+
+document.getElementById("skip_target").addEventListener("click", function(e) {
+  var completedTargets = JSON.parse(util.getStore("completed_targets", "[]"));
+  if (completedTargets.length >= STATES.length - 1) {
+    alert("No more targets.");
+    return;
+  }
+  new_target();
+  GS.skipsLeft--;
+  var skip = document.getElementById("skip_target");
+  if (GS.skipsLeft <= 0) {
+    skip.parentNode.removeChild(skip);
+  } else {
+    skip.innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
+  }
+  Logger.log({type: "metaaction", msg: "skip"});
+});
+
+window.addEventListener("load", function(e) {
+  document.getElementById("skip_target").innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
+});
+
+var Logger = new Logger();
+Logger.init(GS);
