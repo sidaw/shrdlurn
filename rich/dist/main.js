@@ -3461,7 +3461,7 @@ if (allURLParameters.hasOwnProperty("debug")) {
   configs.debugMode = true;
   document.getElementById("debugdiv").className = "";
 }
-if (allURLParameters.hasOwnProperty("local") {
+if (allURLParameters.hasOwnProperty("local")) {
   configs.SEMPRE_URL = "http://localhost:8400"
 }
 
