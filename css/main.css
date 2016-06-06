@@ -15,7 +15,7 @@ b {
 #info {
   position: relative;
   margin: 0 auto;
-  width: 400px;
+  width: 800px;
   z-index: 1000;
   background-color: #fff;
 }
