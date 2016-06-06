@@ -1,16 +1,17 @@
 "use strict"
 var configs = {};
+configs.URL_Parameters = util.parseQueryString();
 if (configs.SEMPRE_URL==undefined)
     configs.SEMPRE_URL = "http://jonsson.stanford.edu:8400"
-if (util.parseQueryString()["local"]==true) {
+if (configs.URL_Parameters.hasOwnProperty("local")) {
   configs.SEMPRE_URL = "http://localhost:8400";
 }
 configs.debugMode = false;
-if (util.parseQueryString()["debug"]==true) {
+if (configs.URL_Parameters.hasOwnProperty("debug")) {
   configs.debugMode = true;
 }
 configs.bePragmatic = true;
-if (util.parseQueryString()["prag"]==false) {
+if (configs.URL_Parameters.hasOwnProperty("nopragmatics")) {
   configs.bePragmatic = false;
 }
 configs.costPerStep = 3;
