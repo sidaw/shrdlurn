@@ -3391,30 +3391,6 @@ util.resetStore = function() {
     util.store.clear();
 }
 
-// jack the simpleid function when a user is present
-if (util.parseQueryString()["user"]) {
-    util.getId = function()
-    {
-	return util.parseQueryString()["user"];
-    }
-}
-// jack the simpleid function when mturkid is present
-if (util.parseQueryString()["mturkid"]) {
-    document.getElementById("turker").style.display="block";
-    util.store = sessionStorage;
-    util.getId = function()
-    {
-	return util.parseQueryString()["mturkid"];
-    }
-}
-if (util.parseQueryString()["debug"]) {
-  configs.debugMode = true;
-  configs.SEMPRE_URL = "http://localhost:8400";
-  //configs.levels[0].minSuccess = 3;
-  //configs.levels[1].minSuccess = 3;
-  document.getElementById("debugdiv").className = "";
-}
-
 util.emojione = {};
 (function(ns) {
     ns.emojioneList = {
@@ -3461,6 +3437,32 @@ util.emojione = {};
 
 util.log2int = function(nbestind) {
     return Math.log2(nbestind+1);
+}
+
+
+var allURLParameters = util.parseQueryString();
+// jack the simpleid function when a user is present
+if (allURLParameters["user"]) {
+    util.getId = function()
+    {
+	return util.parseQueryString()["user"];
+    }
+}
+// jack the simpleid function when mturkid is present
+if (allURLParameters["mturkid"]) {
+    document.getElementById("turker").style.display="block";
+    util.store = sessionStorage;
+    util.getId = function()
+    {
+	return util.parseQueryString()["mturkid"];
+    }
+}
+if (allURLParameters.hasOwnProperty("debug")) {
+  configs.debugMode = true;
+  document.getElementById("debugdiv").className = "";
+}
+if (allURLParameters.hasOwnProperty("local") {
+  configs.SEMPRE_URL = "http://localhost:8400"
 }
 
 "use strict"
