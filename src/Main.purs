@@ -64,7 +64,7 @@ renderCube :: forall eff. IsomerInstance
            -> IsomerColor
            -> Eff (isomer :: ISOMER | eff) Unit
 renderCube isomer x y z col = renderBlock isomer x y z relsize relsize relsize col
-           
+
 
 xPosition :: Number -> Number -> Number
 -- xPosition x y = (x+y*(spacing))
@@ -87,7 +87,7 @@ renderWall isomer initlen y wall  = do
     traverseWithIndex_ (\x -> renderStack isomer (-spacing*y - advance x - y*factor) (worldsize - advanceCol x + spacing*y - y*factor)) (reverse wall)
         where
         factor = 2.25 --sin (75.0/180.0*3.14159)
-        
+
     --if wallNotEmpty wall
     --then traverseWithIndex_ (\x -> renderStack isomer y (toNumber (length wall - x))) (reverse wall)
     --else renderBlock isomer (xPosition 1.0 y) (-spacing * y) (-0.1) (initlen-0.1) 0.9 0.1 (colorFromRGB 100 100 100)

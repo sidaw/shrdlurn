@@ -267,6 +267,11 @@ b {
 .button--modal {
   font-size: 20px;
   padding: 6px 10px;
+
+  .button--med {
+    width: auto;
+    font-size: 16px;
+  }
 }
 
 .width-30px{
@@ -486,7 +491,8 @@ img.emojione {
 }
 
 #reference,
-#target_completed {
+#target_completed,
+#structs_modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -587,6 +593,9 @@ img.full {
   border: solid 3px #000;
 }
 
+.miniinput:extend(#definetextarea) {
+
+}
 
 #show_define_status {
   position: absolute;
@@ -637,9 +646,9 @@ border: 2px solid green;
     width: @width;
 }
 
-#clear_button {
+#curr_buttons {
   position: absolute;
-  top: 380px;
+  top: 400px;
 }
 
 #reject_button {
@@ -770,6 +779,12 @@ border: 2px solid green;
   border-left-width: 0;
 }
 
+#submit_cover .cover-text {
+  height: 300px;
+  border-top-width: 410px;
+  border-left-width: 0;
+}
+
 #tutorial_overlay {
   position: fixed;
   top: 0;
@@ -777,6 +792,12 @@ border: 2px solid green;
   width: 100%;
   height: 100%;
   background-color: @overlay-color;
+}
+
+#submit_modal {
+  height: 260px;
+  border-top-width: 450px;
+  border-left-width: 0;
 }
 
 .define-inputs {
@@ -801,4 +822,27 @@ border: 2px solid green;
 #possible_steps_n,
 #max_steps_n {
   font-weight: bold;
+}
+
+#user_structs {
+  width: 100%;
+  height: auto;
+
+  li {
+    width: 23%;
+    margin: 0;
+    height: 100px;
+    padding: 1%;
+    list-style-type: none;
+    display: inline-block;
+
+    &.active {
+      background-color: blue;
+    }
+
+    &:hover {
+      cursor: pointer;
+      background-color: lightblue;
+    }
+  }
 }

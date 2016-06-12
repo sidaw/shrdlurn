@@ -50,6 +50,9 @@
         <a id="start_tutorial2"
         href="">go back to tutorial</a>
         <br>
+        <br />
+        <a id="view_structs" href="">view structures</a>
+        <br />
         <a href="" class="hidden" id="quit_tutorial">quit tutorial</a>
       </div>
       <div>
@@ -79,7 +82,10 @@
   <div class="col-info-8">col 8</div>
   <div class="row-info-8">row 8</div>
 
-  <button id="clear_button" class="button button--big">clear</button>
+  <div id="curr_buttons">
+    <button id="clear_button" class="button button--big">clear</button>
+    <button id="submit_button" class="button button--big">submit</button>
+  </div>
   <button id="reject_button" class="button button--big hidden">reject</button>
 
   <canvas id="canvas" width="1100" height="750"></canvas>
@@ -125,7 +131,7 @@
   </div>
 
   <div class="tutorial" id="tutorial">
-    <div class="modal-container tutorial-s active" id="tutorial-s1">
+    <div class="modal-container tutorial-s" id="tutorial-s1">
       <div class="modal">
         <h1>Welcome to SHRDLURN</h1>
         <hr>
@@ -308,6 +314,21 @@
       </div>
     </div>
 
+    <div class="cover-container tutorial-s" id="submit_cover">
+      <div class="cover-text">
+        <div class="cover-info">
+          <h1>Submit this structure to SHRDLURN! <a href="" id="close_submit">(esc to close)</a></h1>
+          <hr />
+          <p>To save this structure so that anyone can view it, fill out the information below and hit submit.</p>
+          <input type="text" name="submit_user" id="submit_user" class="miniinput" placeholder="Your Name" />
+          <br /><br />
+          <input type="text" name="submit_name" id="submit_name" class="miniinput" placeholder="Name of structure" />
+          <br /><br />
+          <button class="button button--big button--modal button--med sticky-botright" id="submit_struct">submit structure</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-container tutorial-s" id="tutorial-s16">
       <div class="modal">
         <h1>You've done it! You completed the tutorial.</h1>
@@ -424,6 +445,15 @@
         </ul>
         <p> English is hard for beginners, which is why we need your help teaching SHRDLURN!</p>
         <a class="button--closed" id="reference_close" href="" >Okay, got it! (click here or press ESC key to close this window)</a>
+      </div>
+    </div>
+    <div class="modal-container hidden" id="structs_modal">
+      <div class="modal" style="overflow-y:scroll;">
+        <h1>User-created Structures <a href="" id="close_structs_modal">(esc to close)</a></h1>
+        <hr>
+        <p>Below is a selection of user-created structures. Click one to load into the target.</p>
+        <br>
+        <ul name="structs" id="user_structs"></ul>
       </div>
     </div>
   </div>

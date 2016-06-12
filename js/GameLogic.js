@@ -15,7 +15,7 @@ function GameState() {
   this.log.numQueries = 0;
   this.log.totalTokens = 0;
   this.log.numScrolls = 0;
-  
+
   this.nSteps = 1;
   this.maxSteps = 100;
   this.targetIndex = -1;
@@ -83,7 +83,7 @@ function GameState() {
   this.getLastWall = function() {
     return this.listWalls[this.listWalls.length-1];
   }
-    
+
   this.setCurrentWall = function() {
     if (this.NBest.length>0)
       this.currentWall = this.NBest[this.NBestInd].value;
@@ -553,7 +553,7 @@ function new_target() {
   do {
     index = Math.floor(Math.random()*STATES.length);
   } while (completedTargets.indexOf(index) !== -1 && index !== GS.targetIndex);
-  updateTarget(index);
+  updateTarget(STATES[index], index);
   updateRandomUtterances(GS);
 }
 
@@ -594,8 +594,7 @@ document.getElementById("clear_button").addEventListener("click", function() {
   loadGameState(GS, configs.emptyWall);
 });
 
-function updateTarget(index) {
-  var state = STATES[index];
+function updateTarget(state, index) {
   var wall = state[1];
   // if (wall == "random")
   //   wall = randomWall();
@@ -799,8 +798,14 @@ function parseKeys(e) {
   } else if (e.keyCode == Hotkeys.ESC) {
     e.preventDefault();
     var help_reference = document.getElementById("reference");
+    var submit = document.getElementById("submit_cover");
+    var structs = document.getElementById("structs_modal");
     if (help_reference.className == "modal-container") {
       help_reference.className = "modal-container hidden";
+    } else if (submit.className == "cover-container tutorial-s active") {
+      closeSubmit(e);
+    } else if (structs.className == "modal-container") {
+      closeStructs(e);
     } else if (GS.defineState) {
       closeDefineInterface(GS);
     }
@@ -1129,6 +1134,59 @@ document.getElementById("skip_target").addEventListener("click", function(e) {
 window.addEventListener("load", function(e) {
   document.getElementById("skip_target").innerHTML = "skip (" + GS.skipsLeft + " left) &rarr;";
 });
+
+document.getElementById("submit_button").addEventListener("click", function() {
+  document.getElementById("submit_cover").className = "cover-container tutorial-s active";
+  document.getElementById("tutorial_overlay").className = "";
+  document.getElementById("tutorial").className = "tutorial active";
+  addCover("canvas");
+});
+
+document.getElementById("close_submit").addEventListener("click", closeSubmit);
+
+function closeSubmit(e) {
+  e.preventDefault();
+  document.getElementById("submit_cover").className = "cover-container tutorial-s";
+  document.getElementById("tutorial_overlay").className = "hidden";
+  document.getElementById("tutorial").className = "tutorial";
+  removeCover("canvas");
+}
+
+document.getElementById("submit_struct").addEventListener("click", function(e) {
+  var submit_user = document.getElementById("submit_user");
+  var submit_name = document.getElementById("submit_name");
+  var username = submit_user.value;
+  var name = submit_name.value;
+  submit_user.value = '';
+  submit_name.value = '';
+  var wall = GS.listWalls[GS.listWalls.length-1];
+  Logger.log({type: "submit", msg: username + ":" + wall});
+  Logger.submit(username, name, wall, GS.nSteps);
+  closeSubmit(e);
+});
+
+document.getElementById("view_structs").addEventListener("click", function(e) {
+  e.preventDefault();
+  document.getElementById("structs_modal").className = "modal-container";
+  var structs = Logger.getStructs();
+});
+
+document.getElementById("close_structs_modal").addEventListener("click", closeStructs);
+
+function closeStructs(e) {
+  e.preventDefault();
+  document.getElementById("structs_modal").className = "modal-container hidden";
+}
+
+function loadStruct(e) {
+  e.stopPropagation();
+  var target = e.target;
+  var wall = e.target.getAttribute("data-wall");
+  var steps = e.target.getAttribute("data-steps");
+  updateTarget([steps, wall], -1);
+  wipeHistory();
+  closeStructs(e);
+}
 
 var Logger = new Logger();
 Logger.init(GS);
