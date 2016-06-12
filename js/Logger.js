@@ -37,9 +37,10 @@ function Logger() {
           var elem = document.createElement("li");
           elem.setAttribute("data-wall", structs[i].wall);
           elem.setAttribute("data-steps", structs[i].steps);
-          elem.innerHTML = Logger.strip(structs[i].name) + " by " + Logger.strip(structs[i].username);
+          elem.innerHTML = "<canvas id='usercanvas" + i + "' width='100%' height='100px'></canvas><br>" + Logger.strip(structs[i].name) + " by " + Logger.strip(structs[i].username);
           structs_list.appendChild(elem);
           elem.addEventListener("click", loadStruct);
+          PS.Main.renderUserTargetJSON("[" + structs[i].wall + "]")("usercanvas" + i)();
         }
       });
   }

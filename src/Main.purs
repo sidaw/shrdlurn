@@ -1,4 +1,4 @@
-module Main (App(..), main, renderJSON, renderTargetJSON) where
+module Main (App(..), main, renderJSON, renderTargetJSON, renderUserTargetJSON) where
 import Prelude
 import Control.Apply
 import Control.Monad.Eff
@@ -141,6 +141,16 @@ renderTargetJSON jsonwalls = do
     -- On-canvas rendering
     clearCanvas isomer
     setIsomerConfig isomer 12.0 5.0 160.0
+    renderWalls isomer $ jsonToWalls jsonwalls
+    print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
+
+renderUserTargetJSON :: String -> String -> App
+renderUserTargetJSON jsonwalls canvasId = do
+    doc <- getDocument
+    isomer <- getIsomerInstance canvasId
+    -- On-canvas rendering
+    clearCanvas isomer
+    setIsomerConfig isomer 7.0 5.0 80.0
     renderWalls isomer $ jsonToWalls jsonwalls
     print $ either (const [[0]]) (id) (readJSON jsonwalls :: F (Array (Array Int)))
 

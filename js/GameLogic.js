@@ -1181,8 +1181,9 @@ function closeStructs(e) {
 function loadStruct(e) {
   e.stopPropagation();
   var target = e.target;
-  var wall = e.target.getAttribute("data-wall");
-  var steps = e.target.getAttribute("data-steps");
+  if (target.tagName == "CANVAS") { target = target.parentElement; }
+  var wall = target.getAttribute("data-wall");
+  var steps = target.getAttribute("data-steps");
   updateTarget([steps, wall], -1);
   wipeHistory();
   closeStructs(e);
