@@ -31,7 +31,7 @@
     },
     "rules": {
       "max-len": 0,
-      "semi": 0
+      "quotes":[2, "double", {"avoidEscape": true, "allowTemplateLiterals": true}]
     },
     "settings": {
       "import/resolver": {
@@ -48,6 +48,11 @@
     "babel-preset-es2015-webpack": "^6.4.1",
     "babel-preset-stage-0": "^6.5.0",
     "css-loader": "^0.23.1",
+    "eslint": "^2.13.1",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.9.2",
+    "eslint-plugin-jsx-a11y": "^1.5.3",
+    "eslint-plugin-react": "^5.2.2",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
     "html-loader": "^0.4.3",

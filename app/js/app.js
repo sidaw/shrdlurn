@@ -1,15 +1,18 @@
-import Game from './game';
+import Game from "./game";
+import configs from "./config"
 
 class App {
   constructor() {
     this.Game = new Game();
+    this.consoleElem = document.getElementById(configs.consoleElemId);
 
-    this.consoleElem = document.getElementById("maintextarea");
+    /* Generate Target at Random */
+    this.Game.setTarget(this.getRandomTarget());
   }
 
   enter() {
     this.Game.enter(this.consoleElem.value);
-    this.consoleElem.value = '';
+    this.consoleElem.value = "";
   }
 
   accept() {
@@ -29,17 +32,21 @@ class App {
   prev() {
     this.Game.prev();
   }
+
+  getRandomTarget() {
+    return configs.targets[Math.floor(Math.random() * configs.targets.length)];
+  }
 }
 
 const A = new App();
 
 /* Event Listeners */
 
-document.getElementById("dobutton").addEventListener('click', (e) => A.enter(), false);
-document.getElementById("flyingaccept").addEventListener('click', (e) => A.accept(), false);
-document.getElementById("prevbutton").addEventListener('click', (e) => A.prev(), false);
-document.getElementById("nextbutton").addEventListener('click', (e) => A.next(), false);
-document.getElementById("clear_button").addEventListener('click', (e) => A.clear(), false);
+document.getElementById("dobutton").addEventListener("click", () => A.enter(), false);
+document.getElementById("flyingaccept").addEventListener("click", () => A.accept(), false);
+document.getElementById("prevbutton").addEventListener("click", () => A.prev(), false);
+document.getElementById("nextbutton").addEventListener("click", () => A.next(), false);
+document.getElementById("clear_button").addEventListener("click", () => A.clear(), false);
 
 /* Keyboard shortcuts */
 
@@ -50,13 +57,13 @@ const Hotkeys = {
   RIGHT: "39",
   UP: "38",
   DOWN: "40",
-  Z : "90",
+  Z: "90",
   D: "68",
   ESC: "27",
-  SHIFTENTER: "13+shift"
+  SHIFTENTER: "13+shift",
 };
 
-window.onkeyup = function(e) {
+window.onkeyup = (e) => {
   let key = "";
   key += e.keyCode;
 
@@ -81,4 +88,4 @@ window.onkeyup = function(e) {
       break;
     default:
   }
-}
+};

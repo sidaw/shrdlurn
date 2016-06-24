@@ -10,28 +10,32 @@
       <div class="panel">
         <div class="canvas-header ch-target">target</div>
         <canvas id="canvastarget" width="200" height="200"></canvas>
-        <div>possible in 3 steps</div>
-        <div>must be completed in 8 steps</div>
-        <button class="button button--big">skip (2 left) &rarr;</button>
-        <div>game points: 0</div>
-        <div>
-          keyboard shortcuts:
-          ↵: enter (try)
-          ✓: shift-enter (accept)
-          ~: crtl-d (teach)
-          ↑: up
-          ↓: down
-          undo: ctrl-z
+        <div class="panel-block">
+          possible in <span class="possible_steps">0</span> steps<br />
+          must be completed in <span class="max_steps">100</span> steps
+        </div>
+        <button class="button button--big panel-block">skip (2 left) &rarr;</button>
+        <!-- <div class="panel-block">game points: 0</div> -->
+        <div class="panel-block">
+          <strong>keyboard shortcuts:</strong><br />
+          ↵: enter (try)<br />
+          ✓: shift-enter (accept)<br />
+          ~: crtl-d (teach)<br />
+          ↑: up<br />
+          ↓: down<br />
+          undo: ctrl-z<br />
           redo: shift-ctrl-z
         </div>
-        <div>
+        <div class="panel-block">
           Help me
-
+        </div>
+        <div class="panel-block">
           reset ALL progress
-
+        </div>
+        <div class="panel-block">
           go back to tutorial
         </div>
-        <div>
+        <div class="panel-block">
           SHRDLURN already learned:
         </div>
       </div>
@@ -62,7 +66,7 @@
         <!-- Interaction areas -->
         <div id="chat" style="center">
           <div id="statusinfo">
-            &nbsp; <span id="reaction"></span>
+            &nbsp; <span id="reaction"><img class="emojione" alt=":rolling_eyes:" src="http://cdn.jsdelivr.net/emojione/assets/png/1f644.png"></span>
             <span id="currentcmd"><b>No command</b> </span>,
             <span id="status">type one!</span>
           </div>
@@ -78,9 +82,9 @@
               <button class="button button--big button--closed" id="close_define_interface"  ctitle="close the teaching panel (esc or ctrl-d)">close</button>
             </div>
             <span class="helpertext">
-                <span id="define_status">
-                  what you said
-            </span>
+              <span id="define_status">
+                what you said
+              </span>
             <a href="" class="reference_link">But it doesn't work, I need help...</a>
             </span>
           </div>
@@ -91,7 +95,7 @@
           </div>
 
           <fieldset class="command-history-container">
-            <legend>recipe steps <span id="recipe_steps">(0/100)</span></legend>
+            <legend>recipe steps <span id="recipe_steps">(<span class="curr_steps">0</span>/<span class="max_steps">100</span>)</span></legend>
             <div id="command_history">
             </div>
           </fieldset>
