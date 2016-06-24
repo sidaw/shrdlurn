@@ -8,8 +8,94 @@
   <body>
     <div class="container">
       <div class="panel">
-        HELLO WORLD! and goodbye world!
+        <div class="canvas-header ch-target">target</div>
         <canvas id="canvastarget" width="200" height="200"></canvas>
+        <div>possible in 3 steps</div>
+        <div>must be completed in 8 steps</div>
+        <button class="button button--big">skip (2 left) &rarr;</button>
+        <div>game points: 0</div>
+        <div>
+          keyboard shortcuts:
+          ↵: enter (try)
+          ✓: shift-enter (accept)
+          ~: crtl-d (teach)
+          ↑: up
+          ↓: down
+          undo: ctrl-z
+          redo: shift-ctrl-z
+        </div>
+        <div>
+          Help me
+
+          reset ALL progress
+
+          go back to tutorial
+        </div>
+        <div>
+          SHRDLURN already learned:
+        </div>
+      </div>
+      <div class="main">
+        <!-- Canvas -->
+        <div class="canvas-header ch-before">before action</div>
+        <div class="canvas-header ch-after">after action</div>
+        <canvas id="canvas" width="1100" height="750"></canvas>
+        <div class="col-info">col 1</div>
+        <div class="row-info">row 1</div>
+        <div class="col-info-8">col 8</div>
+        <div class="row-info-8">row 8</div>
+        <div class="curr-buttons">
+          <button id="clear_button" class="button button--big">clear</button>
+          <button id="submit-button" class="button button--big">submit</button>
+        </div>
+        <!-- TODO: REJECT BUTTON! -->
+        <div class="meta-actions">
+          <button id="flyingaccept" class="button button--solved" ctitle="take this action (shift-enter)">&#x2713;</button>
+          <button class="button button--solved" id="paraphrase"
+          ctitle="teach SHRDLURN what you mean">~</button>
+          <button class="button button--solved (up key)" id="prevbutton"
+          ctitle="show previous action">&uarr; </button>
+          <button class="button button--solved" id="nextbutton"
+          ctitle="show next action (down key)">&darr; </button>
+        </div>
+
+        <!-- Interaction areas -->
+        <div id="chat" style="center">
+          <div id="statusinfo">
+            &nbsp; <span id="reaction"></span>
+            <span id="currentcmd"><b>No command</b> </span>,
+            <span id="status">type one!</span>
+          </div>
+
+          <div id="define_interface" class="hidden">
+            <span class="b-header"><span id="define_header"></span>
+            </span>
+
+            <hr/>
+            <div class="define-inputs">
+              <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" maxlength="100"/>
+              <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">try it</button>
+              <button class="button button--big button--closed" id="close_define_interface"  ctitle="close the teaching panel (esc or ctrl-d)">close</button>
+            </div>
+            <span class="helpertext">
+                <span id="define_status">
+                  what you said
+            </span>
+            <a href="" class="reference_link">But it doesn't work, I need help...</a>
+            </span>
+          </div>
+
+          <input type="text" id="maintextarea" placeholder="type your command here! e.g. add red if top yellow" maxlength="100"/>
+          <div class="buttons" id="mainbuttons">
+            <button class="button button--solved" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
+          </div>
+
+          <fieldset class="command-history-container">
+            <legend>recipe steps <span id="recipe_steps">(0/100)</span></legend>
+            <div id="command_history">
+            </div>
+          </fieldset>
+        </div>
       </div>
     </div>
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">

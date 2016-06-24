@@ -28,13 +28,13 @@ type App       = forall eff. Eff (dom :: DOM, console :: CONSOLE, isomer :: ISOM
 
 -- | RGB codes for the abstract colors
 cubeColor :: Cube -> IsomerColor
-cubeColor Cyan   = colorFromRGB   0 160 176
-cubeColor Brown  = colorFromRGB 106  74  60
-cubeColor Red    = colorFromRGB 204  51  63
-cubeColor Orange = colorFromRGB 235 104  65
-cubeColor Yellow = colorFromRGB 237 201  81
-cubeColor Green = colorFromRGB 50 205 50
-cubeColor Blue = colorFromRGB 30 144 255
+cubeColor Yellow   = colorFromRGB 204  51  63
+cubeColor Green  = colorFromRGB 235 104  65
+cubeColor Blue    = colorFromRGB 237 201  8
+cubeColor Cyan = colorFromRGB 50 205 50
+cubeColor Brown = colorFromRGB 30 144 255
+cubeColor Red = colorFromRGB 106  74  60
+cubeColor Orange = colorFromRGB 10 160 176
 cubeColor Purple = colorFromRGB 160 32 240
 cubeColor _ = colorFromRGB 0 0 0
 

@@ -12,7 +12,8 @@ const config = module.exports = {
     application: [
       'webpack/hot/only-dev-server',
       path.resolve(__dirname, 'app/js/app.js'),
-      path.resolve(__dirname, 'app/css/app.less')
+      path.resolve(__dirname, 'app/css/app.less'),
+      path.resolve(__dirname, 'app/index.html')
     ],
   },
 
@@ -48,6 +49,9 @@ const config = module.exports = {
       }, {
         test: /\.png$/,
         loader: 'url-loader?limit=10000',
+      }, {
+        test: /\.html$/,
+        loader: 'html-loader'
       }
     ],
   },
