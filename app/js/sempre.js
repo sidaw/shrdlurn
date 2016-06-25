@@ -139,7 +139,7 @@ export default class SempreClient {
       mynbd[nbest.value] = this.combine(nbd[nbest.value], nbest);
       return mynbd;
     }, {});
-    
+
     const listqadedup = [];
     for (const key in nbestdict) {
       listqadedup.push(nbestdict[key]);
@@ -180,11 +180,9 @@ export default class SempreClient {
 
     fetch(`${configs.SEMPRE_URL}/sempre?format=lisp2json&${cmdstr.join("&")}`)
       .then((response) => response.json())
-      .then((json) => {
-        callback(json);
-      })
-      // .catch((ex) => {
-      //   console.log("xmlhttp issue?", ex);
-      // });
+      .then((json) => callback(json))
+      .catch((ex) => {
+        console.log("xmlhttp issue?", ex);
+      });
   }
 }

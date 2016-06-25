@@ -1,3 +1,5 @@
+@import (css) "../../node_modules/awesomplete/awesomplete.css";
+
 @font-family: 'Roboto Condensed', 'Helvetica', sans-serif;
 @font-size: 16px;
 
@@ -183,7 +185,7 @@ button[ctitle]:hover:after {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .command-history-container {
@@ -243,6 +245,60 @@ button[ctitle]:hover:after {
 img.emojione {
   /* prevent img stretch */
   width: auto;
+}
+
+#define_interface {
+  position: relative;
+  width: @width*0.75-20px;
+  min-height: 125px;
+  background-color: #efefef;
+  padding: 20px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: solid 3px lighten(#969696, 10%);
+  font-size: 16px;
+
+  > span {
+    display: block;
+  }
+
+  input, button {
+    display: inline-block;
+  }
+
+  .helpertext {
+    font-size: 16px;
+    padding: 5px;
+  }
+}
+
+#define_phrase {
+  margin: 0px;
+}
+
+.b-header {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#definetextarea:extend(#maintextarea) {
+  margin: 0 0px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+#definetextarea:focus {
+  outline: none;
+  border: solid 3px #000;
+}
+
+.color-good {
+  color: green;
+  border: 2px solid green;
+}
+
+.awesomplete {
+  width: 100%;
 }
 
 // // Ocean Five palette (http://www.colourlovers.com/palette/1473/Ocean_Five)

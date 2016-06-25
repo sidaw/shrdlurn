@@ -19,6 +19,8 @@ configs.possStepsElemId = "possible_steps";
 configs.maxStepsElemId = "max_steps";
 configs.currStepsElemId = "curr_steps";
 configs.reactionElemId = "reaction";
+configs.defineElemId = "definetextarea";
+configs.defineButton = "define_phrase_button";
 
 configs.difficulty = 3;
 
