@@ -2,20 +2,27 @@ import Game from "./game";
 import configs from "./config";
 import Setting from "./setting";
 import Sempre from "./sempre";
-import { getHistoryElems } from "./util";
+import { getHistoryElems, resetStore } from "./util";
 const Awesomplete = require("awesomplete");
 
 class App {
   constructor() {
-    this.Game = new Game();
-    this.Setting = new Setting();
     this.Sempre = new Sempre();
+    this.Setting = new Setting();
+    this.Game = new Game(this.Setting, this.Sempre);
     this.consoleElem = document.getElementById(configs.consoleElemId);
     this.defineElem = document.getElementById(configs.defineElemId);
     this.defineState = false;
     this.activeHistoryElem = -1;
     this.awesomplete = {};
+    this.helpOn = false;
 
+    this.updateRandomUtterances();
+
+    this.generateTarget();
+  }
+
+  generateTarget() {
     /* Generate Target at Random */
     this.Game.setTarget(this.Game.getRandomTarget());
     this.setupAutocomplete();
@@ -44,16 +51,20 @@ class App {
 
     this.Game.enter(this.consoleElem.value);
     this.consoleElem.value = "";
+
+    this.updateRandomUtterances();
   }
 
   accept() {
     this.Game.accept();
     this.consoleElem.focus();
+    this.updateRandomUtterances();
   }
 
   clear() {
     this.Game.clear();
     this.consoleElem.focus();
+    this.updateRandomUtterances();
   }
 
   next() {
@@ -65,8 +76,9 @@ class App {
   }
 
   openDefineInterface() {
-    this.Setting.openDefineInterface(this.Game.query, this.Game.responses.length > 0, this.Game.taggedCover);
-    this.defineState = true;
+    if (this.Setting.openDefineInterface(this.Game.query, this.Game.responses.length > 0, this.Game.taggedCover)) {
+      this.defineState = true;
+    }
   }
 
   closeDefineInterface() {
@@ -133,6 +145,32 @@ class App {
       this.awesomplete.evaluate();
     });
   }
+
+  skip() {
+    this.Game.skipTarget();
+    this.updateRandomUtterances();
+  }
+
+  updateRandomUtterances() {
+    this.Sempre.query({ q: "(autocomplete \"\")", sessionId: this.Game.sessionId }, (resp) => {
+      const autocompletes = resp.autocompletes;
+      let randomStrings = "";
+      for (const ac of autocompletes) {
+        randomStrings += `<span>${ac}</span><br>`;
+      }
+      document.getElementById("random_utterances").innerHTML = randomStrings;
+    });
+  }
+
+  resetAllProgress() {
+    resetStore();
+    window.location.reload();
+  }
+
+  toggleHelp() {
+    this.helpOn = !this.helpOn;
+    document.getElementById("reference").classList.toggle("hidden");
+  }
 }
 
 const A = new App();
@@ -148,6 +186,17 @@ document.getElementById("paraphrase").addEventListener("click", () => A.openDefi
 document.getElementById(configs.consoleElemId).addEventListener("keyup", () => true);
 document.getElementById("define_phrase_button").addEventListener("click", () => A.enter(), false);
 document.getElementById("close_define_interface").addEventListener("click", () => A.closeDefineInterface(), false);
+document.getElementById("define_instead").addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); }, false);
+document.getElementById("skip_button").addEventListener("click", () => A.skip(), false);
+document.getElementById("reset_all_progress").addEventListener("click", (e) => { e.preventDefault(); A.resetAllProgress(); }, false);
+
+const helpButtons = document.querySelectorAll(".help-button, .close-help");
+for (const helpButton of helpButtons) {
+  helpButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    A.toggleHelp();
+  });
+}
 
 document.getElementById("command_history").addEventListener("click", (e) => {
   let index = 0;
@@ -203,6 +252,8 @@ window.onkeydown = (e) => {
     case Hotkeys.ESC:
       if (A.defineState) {
         A.closeDefineInterface();
+      } else if (A.helpOn) {
+        A.toggleHelp();
       }
       break;
     case Hotkeys.UNDO:

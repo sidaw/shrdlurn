@@ -5,7 +5,7 @@ String.prototype._format = function(placeholders) {
     for(var propertyName in placeholders) {
         var re = new RegExp('{' + propertyName + '}', 'gm');
         s = s.replace(re, placeholders[propertyName]);
-    }    
+    }
     return s;
 };
 
@@ -93,12 +93,12 @@ util.emojione = {};
 	1: ':relaxed:',
 	0: ':smiley:'
     };
-    
+
     ns.imagePathPNG = 'http://cdn.jsdelivr.net/emojione/assets/png/';
     ns.imagePathSVG = 'http://cdn.jsdelivr.net/emojione/assets/svg/';
     ns.cacheBustParam = ''; //'?v=2.1.1';
     ns.imageType = 'png'; // png or svg
-    
+
     ns.shortnameToImage = function(shortname) {
 	unicode = ns.emojioneList[shortname][ns.emojioneList[shortname].length-1];
 	alt = shortname;

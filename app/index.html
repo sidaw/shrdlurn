@@ -14,7 +14,7 @@
           possible in <span class="possible_steps" style="font-weight:bold;">0</span> steps<br />
           must be completed in <span class="max_steps" style="font-weight:bold;">100</span> steps
         </div>
-        <button class="button button--big panel-block">skip (2 left) &rarr;</button>
+        <button class="button button--big panel-block" id="skip_button">skip (<span id="skips_left">2</span> left) &rarr;</button>
         <!-- <div class="panel-block">game points: 0</div> -->
         <div class="panel-block">
           <strong>keyboard shortcuts:</strong><br />
@@ -27,16 +27,17 @@
           redo: shift-ctrl-z
         </div>
         <div class="panel-block">
-          Help me
+          <a href="" class="help-button">Help me</a>
         </div>
         <div class="panel-block">
-          reset ALL progress
+          <a href="" id="reset_all_progress">reset ALL progress</a>
         </div>
         <div class="panel-block">
           go back to tutorial
         </div>
         <div class="panel-block">
-          SHRDLURN already learned:
+          <strong>SHRDLURN already learned:</strong><br />
+          <div id="random_utterances"></div>
         </div>
       </div>
       <div class="main">
@@ -50,7 +51,7 @@
         <div class="row-info-8">row 8</div>
         <div class="curr-buttons">
           <button id="clear_button" class="button button--big">clear</button>
-          <button id="submit-button" class="button button--big">submit</button>
+          <!-- TODO: Submit! <button id="submit-button" class="button button--big">submit</button> -->
         </div>
         <!-- TODO: REJECT BUTTON! -->
         <div class="meta-actions">
@@ -62,6 +63,11 @@
           <button class="button button--solved" id="nextbutton"
           ctitle="show next action (down key)">&darr; </button>
         </div>
+        <span id="show_define_status" class="hidden">
+          didn't understand. <br/>
+          <a href='' id='define_instead' class='define-this'>
+            please teach (ctrl-d)!</a>
+        </span>
 
         <!-- Interaction areas -->
         <div id="chat" style="center">
@@ -100,8 +106,89 @@
           </fieldset>
         </div>
       </div>
-    </div>
+
+      <!-- Modals -->
+      <div class="modals">
+        <div class="modal-container hidden" id="reference">
+          <div class="modal" style="overflow-y:scroll;">
+            <h1>Help for SHRDLURN (esc to close)</h1>
+
+            <hr><br>
+            <p> The goal is to teach SHRDLURN (the computer) to understand more English. You have to define things in a way that can already be understood by SHRDLURN.
+              This includes anything that you or others have already taught it,
+              as well as the core language below, which it always understands:
+              <ul>
+                <li><b>number: </b> 0, 1, 2, ..., 9, many</li>
+                <li><b>color: </b> red, cyan, brown, yellow, orange</li>
+                <li><b>action: </b> remove, add [color] </li>
+                <li><b>condition: </b> top [color], row = [number], height > [number], has [color], etc. </li>
+                <li><b>if: </b> [action] if [condition]
+                  <ul>
+                    <li>add red if col = 1 or col = 8 or row = 1 or row = 8</li>
+                    <li>add red if row < 3</li>
+                    <li>remove if top red</li>
+                  </ul>
+                </li>
+                <li><b>control: </b> [action] then [action], repeat [action] 3 times
+                  <ul>
+                    <li>repeat remove if has red many times</li>
+                    <li>remove then add red if top yellow </li>
+                    <li>repeat add red 3 times if top yellow or row < 3 </li>
+                    <li>[remove then add red then add red] if height < 1</li>
+                    <li>repeat add red then add yellow 5 times if height > 0 </li>
+                  </ul>
+                </li>
+                <li><b>(advanced) relative condition: </b> relativepos_of [condition]
+                <ul>
+                  <li>add yellow if leftof top red</li>
+                  <li>add yellow if rightof col = 3</li>
+                  <li>add yellow if backof col = row </li>
+                  <li>add yellow if rightof frontof [row = 4 and col = 4]</li>
+                </ul>
+                </li>
+                <li><b>(advanced) extremes: </b> largest X in [condition]
+                <ul>
+                  <li>add yellow if largest row in all</li>
+                  <li>add yellow if smallest col in top red</li>
+                </ul>
+                </li>
+                <li><b>(advanced) inside: </b> inside [[condition]]
+                <ul>
+                  <li>add red if inside [top red]</li>
+                  <li>add red if inside [col = 1 or col = 4]</li>
+                  <li>add cyan if inside [ [ row = 1 or row = 4 ] and [col = 1 or col = 4] ] </li>
+                </ul>
+                </li>
+              </ul>
+            </p>
+            <h3>But it's not accepting my teachings! </h3>
+            <ul>
+              <li>
+                SHRDLURN understands everything in green boxes, blue are words it knows but not used correctly, red are unknowns.</li>
+              <li> <span style="color:red;">blah </span>
+              <span class="color-good">add red if height &lt; 1 </span>
+              <span style="color:blue;" ;="">then </span>
+              <span style="color:blue;" ;="">if </span><span style="color:red;">someblah </span>
+              <span class="color-good">add red </span>
+              <span class="color-good">remove red </span> </li>
+              <li> If there are several green boxes, then it understands each box, but not how they are combined. For example, <span class="color-good">add red </span>
+              <span class="color-good">remove red </span> needs to be changed to <span class="color-good">add red then remove red </span></li>
+              <li> Still, if nothing works, close the definition window and teach something else!</li>
+            </ul>
+            <p> English is hard for beginners, which is why we need your help teaching SHRDLURN!</p>
+            <a class="button--closed" class="close-help" href="" >Okay, got it! (click here or press ESC key to close this window)</a>
+          </div>
+        </div>
+      </div>
+      </div>
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-74509910-1', 'auto');
+    ga('send', 'pageview');
+    </script>
   </body>
-  </head>
 </html>

@@ -1,5 +1,5 @@
 import configs from "./config";
-import { getHistoryElems } from "./util";
+import { getHistoryElems, emojione } from "./util";
 
 const PS = require("../src/Main.purs");
 
@@ -19,7 +19,7 @@ export default class Setting {
   }
 
   equalityCheck(struct1, struct2) {
-    return struct1 == struct2;
+    return struct1 === struct2;
   }
 
   status(msg, query = "", prob = 0) {
@@ -41,56 +41,13 @@ export default class Setting {
   updateReaction(prob) {
     const reaction = document.getElementById(configs.reactionElemId);
     if (prob === 0) {
-      reaction.innerHTML = this.emojione(3);
+      reaction.innerHTML = emojione(3);
     } else {
       let cc = prob;
       if (!cc) { cc = 0; }
       const cutoffs = [0.5, 0.1, 0.05, 0.01, 0.001, 0.00001, -1];
-      reaction.innerHTML = this.emojione(cutoffs.findIndex((val) => cc >= val));
+      reaction.innerHTML = emojione(cutoffs.findIndex((val) => cc >= val));
     }
-  }
-
-  emojione(num) {
-    const emojioneList = {
-      ":scream:": ["1f631"],
-      ":astonished:": ["1f632"],
-      ":confused:": ["1f615"],
-      ":rolling_eyes:": ["1f644"],
-      ":relieved:": ["1f60c"],
-      ":relaxed:": ["263a"],
-      ":neutral_face:": ["1f610"],
-      ":slight_smile:": ["1f642"],
-      ":smiley:": ["1f603"],
-      ":grinning:": ["1f600"],
-    };
-
-    const numToShort = {
-      6: ":scream:",
-      5: ":astonished:",
-      4: ":confused:",
-      3: ":rolling_eyes:",
-      2: ":relieved:",
-      1: ":relaxed:",
-      0: ":smiley:",
-    };
-
-    const imagePathPNG = "http:\/\/cdn.jsdelivr.net\/emojione\/assets\/png\/";
-    const imagePathSVG = "http:\/\/cdn.jsdelivr.net\/emojione\/assets\/svg\/";
-    const cacheBustParam = "";
-    const imageType = "png"; // png or svg
-
-    const shortname = numToShort[num];
-    const unicode = emojioneList[shortname][emojioneList[shortname].length - 1];
-    const alt = shortname;
-
-    let replaceWith = "";
-    if (imageType === "png") {
-      replaceWith = `<img class="emojione" alt="${alt}" src="${imagePathPNG}${unicode}.png" />`;
-    } else {
-      replaceWith = `<object class="emojione" data="${imagePathSVG}${unicode}.svg" type="image/svg+xml" standby="${alt}">${alt}</object`;
-    }
-
-    return replaceWith;
   }
 
   renderHistory(history) {
@@ -132,7 +89,7 @@ export default class Setting {
   openDefineInterface(query, canAnswer, coverage) {
     if (query.length === 0) {
       this.status("nothing to define");
-      return;
+      return false;
     }
 
     const defineInterface = document.getElementById("define_interface");
@@ -147,6 +104,7 @@ export default class Setting {
     this.tryDefine(query, false, canAnswer, coverage);
 
     document.getElementById(configs.defineElemId).focus();
+    return true;
   }
 
   closeDefineInterface() {
@@ -161,8 +119,9 @@ export default class Setting {
     document.getElementById("mainbuttons").classList.remove("hidden");
   }
 
-  tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = "") {
+  tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "") {
     const defineHeader = document.getElementById("define_header");
+    document.getElementById(configs.definePromptElemId).classList.add("hidden");
 
     if (!refineDefine) {
       if (canAnswer) {
@@ -180,14 +139,13 @@ export default class Setting {
       // Special Statuses
       if (commandResponse.length > 0) {
         const defCore = commandResponse.indexOf("Core") !== -1;
-        const defNoCover = status.indexOf("NoCover") !== -1;
-        console.log(status);
+        const defNoCover = commandResponse.indexOf("NoCover") !== -1;
         if (defCore) {
           // updateStatus("cannot redefine the core language!");
-          defineHeader.innerHTML = `"${query}" is precisely understood, and cannot be redefined by "${this.intelHighlight(coverage)}".`;
+          defineHeader.innerHTML = `"${oldQuery}" is precisely understood, and cannot be redefined by "${this.intelHighlight(coverage)}".`;
         } else if (defNoCover) {
           // updateStatus("SHRDLRUN cannot learn from this definition");
-          defineHeader.innerHTML = `Nothing (colors, numbers, etc) in "${this.intelHighlight(coverage)}" matches "${query}", so SHRDLURN cannot learn from this.`;
+          defineHeader.innerHTML = `Nothing (colors, numbers, etc) in "${this.intelHighlight(coverage)}" matches "${oldQuery}", so SHRDLURN cannot learn from this.`;
         }
       }
     }
@@ -240,8 +198,6 @@ export default class Setting {
     const newGame = game;
 
     const historyElems = getHistoryElems();
-    console.log(historyElems);
-    console.log(index);
     const state = newGame.history.find((h) => h.stepN === parseInt(historyElems[index].getAttribute("data-stepN"), 10));
     newGame.currentState = state.state;
     newGame.update();
@@ -252,5 +208,20 @@ export default class Setting {
     return newGame;
   }
 
+  promptDefine() {
+    document.getElementById(configs.definePromptElemId).classList.remove("hidden");
+  }
 
+  removePromptDefine() {
+    document.getElementById(configs.definePromptElemId).classList.add("hidden");
+  }
+
+  setSkips(skipsLeft) {
+    const skipsLeftElem = document.getElementById("skips_left");
+    if (skipsLeft !== 0) {
+      skipsLeftElem.innerHTML = skipsLeft;
+    } else {
+      document.getElementById("skip_button").classList.add("hidden");
+    }
+  }
 }

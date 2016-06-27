@@ -1,9 +1,8 @@
-import Setting from "./setting";
-import SempreClient from "./sempre";
 import configs from "./config";
+import { getStore, setStore } from "./util";
 
 export default class Game {
-  constructor() {
+  constructor(setting, sempreClient) {
     this.sessionId = configs.defaultSessionId;
 
     this.currentState = configs.defaultStruct;
@@ -15,17 +14,20 @@ export default class Game {
     this.defineSuccess = "";
 
     this.targetStruct = configs.defaultStruct;
+    this.targetIdx = -1;
     this.maxTargetSteps = 0;
+    this.skipsLeft = configs.defaultSkips;
 
-    this.Sempre = new SempreClient();
+    this.Sempre = sempreClient;
 
-    this.Setting = new Setting();
+    this.Setting = setting;
     this.Setting.renderHistory(this.history);
   }
 
   setTarget(targetStruct) {
-    this.targetStruct = targetStruct[1];
-    this.maxTargetSteps = targetStruct[0] * configs.difficulty;
+    this.targetIdx = targetStruct[0];
+    this.targetStruct = targetStruct[2];
+    this.maxTargetSteps = targetStruct[1] * configs.difficulty;
 
     this.Setting.renderTarget(this.targetStruct);
     this.Setting.setSteps(targetStruct[0], this.maxTargetSteps);
@@ -53,8 +55,10 @@ export default class Game {
           console.log("no answer from sempre");
           this.resetResponses();
           this.query = query;
-          this.Setting.status('SHRDLURN did not understand', query);
+          this.Setting.status("SHRDLURN did not understand", query);
+          this.Setting.promptDefine();
         } else {
+          this.Setting.removePromptDefine();
           this.responses = formval;
           this.selectedResp = 0;
           this.query = query;
@@ -88,10 +92,19 @@ export default class Game {
     }
 
     if (this.Setting.equalityCheck(this.currentState, this.targetStruct)) {
-      alert("You've did it! Congratulations! You've made the target! Try another one now.");
-      this.setTarget(this.getRandomTarget());
-      this.clear();
+      this.win();
     }
+  }
+
+  win() {
+    alert("You've did it! Congratulations! You've made the target! Try another one now.");
+
+    const usedTargets = getStore("usedTargets", []);
+    usedTargets.push(this.targetIdx);
+    usedTargets.setStore("usedTargets", usedTargets);
+
+    this.setTarget(this.getRandomTarget());
+    this.clear();
   }
 
   resetResponses() {
@@ -125,7 +138,7 @@ export default class Game {
 
         if (defCore || defNoCover || defNoParse) {
           this.taggedCover = response.taggedcover;
-          this.Setting.tryDefine(query, true, false, this.taggedCover, commandResponse);
+          this.Setting.tryDefine(query, true, false, this.taggedCover, commandResponse, this.query);
         } else {
           this.defineSuccess = query;
           this.selectedResp = 0;
@@ -195,6 +208,32 @@ export default class Game {
   }
 
   getRandomTarget() {
-    return configs.targets[Math.floor(Math.random() * configs.targets.length)];
+    const usedTargets = getStore("usedTargets", []);
+    if (usedTargets.length === configs.targets.length) {
+      alert("You've completed all targets! Resetting...");
+      setStore("usedTargets", []);
+    }
+
+    let targetIdx = -1;
+    do {
+      targetIdx = Math.floor(Math.random() * configs.targets.length);
+    } while (usedTargets.includes(targetIdx));
+
+    return [targetIdx, ...configs.targets[targetIdx]];
+  }
+
+  skipTarget() {
+    this.skipsLeft--;
+    this.Setting.setSkips(this.skipsLeft);
+    const usedTargets = getStore("usedTargets", []);
+    if (configs.targets.length - usedTargets.length > 1) {
+      let randomTarget = [];
+      do {
+        randomTarget = this.getRandomTarget();
+      } while (randomTarget[0] === this.targetIdx);
+      this.setTarget(randomTarget);
+    } else {
+      alert("Sorry, this is the last target. No skips possible.");
+    }
   }
 }
