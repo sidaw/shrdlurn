@@ -1,9 +1,9 @@
+import Awesomplete from "awesomplete";
 import Game from "./game";
 import configs from "./config";
 import Setting from "./setting";
 import Sempre from "./sempre";
 import { getHistoryElems, resetStore } from "./util";
-const Awesomplete = require("awesomplete");
 
 class App {
   constructor() {

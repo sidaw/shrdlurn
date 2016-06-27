@@ -165,6 +165,7 @@ export default class Game {
     /* Otherwise, submit the definition if already tried */
     const text = `(uttdef "${this.Sempre.formatQuery(this.defineSuccess)}" ${this.responses[this.selectedResp].rank})`;
     const cmds = { q: text, sessionId: this.sessionId };
+    const newPhrase = this.query;
 
     this.Sempre.query(cmds, () => {
       this.history.push({ query: `defined "${this.query}" as "${this.defineSuccess}"`, type: "define" });
@@ -175,7 +176,6 @@ export default class Game {
       this.Setting.status("definition accepted. thanks for teaching!");
     });
 
-    const newPhrase = this.defineSuccess;
     return newPhrase;
   }
 
