@@ -76,6 +76,7 @@
   "dependencies": {
     "awesomplete": "^1.1.0",
     "isomer": "^0.2.6",
+    "phoenix": "^1.2.0",
     "purescript": "^0.8.5",
     "whatwg-fetch": "^1.0.0"
   }

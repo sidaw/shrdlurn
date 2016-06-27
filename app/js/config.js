@@ -4,6 +4,8 @@ if (configs.SEMPRE_URL === undefined) {
   configs.SEMPRE_URL = "http://jonsson.stanford.edu:8401";
 }
 
+configs.loggerServer = "ws://hydrogen.samginn.com:4000/socket";
+
 configs.debugMode = false;
 
 configs.defaultSessionId = "deadbeef";
