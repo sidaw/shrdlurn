@@ -9,8 +9,8 @@
   "license": "MIT",
   "homepage": "https://github.com/sidaw/shrdlurn",
   "scripts": {
-    "start": "webpack-dev-server --inline --hot",
-    "build": "webpack --progress -p",
+    "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot",
+    "build": "node ./node_modules/webpack/bin/webpack --progress -p",
     "test": "echo 'No tests'"
   },
   "babel": {

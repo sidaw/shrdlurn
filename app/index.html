@@ -122,11 +122,11 @@
                 <li><b>number: </b> 0, 1, 2, ..., 9, many</li>
                 <li><b>color: </b> red, cyan, brown, yellow, orange</li>
                 <li><b>action: </b> remove, add [color] </li>
-                <li><b>condition: </b> top [color], row = [number], height > [number], has [color], etc. </li>
+                <li><b>condition: </b> top [color], row = [number], height &gt; [number], has [color], etc. </li>
                 <li><b>if: </b> [action] if [condition]
                   <ul>
                     <li>add red if col = 1 or col = 8 or row = 1 or row = 8</li>
-                    <li>add red if row < 3</li>
+                    <li>add red if row &lt; 3</li>
                     <li>remove if top red</li>
                   </ul>
                 </li>
@@ -134,9 +134,9 @@
                   <ul>
                     <li>repeat remove if has red many times</li>
                     <li>remove then add red if top yellow </li>
-                    <li>repeat add red 3 times if top yellow or row < 3 </li>
-                    <li>[remove then add red then add red] if height < 1</li>
-                    <li>repeat add red then add yellow 5 times if height > 0 </li>
+                    <li>repeat add red 3 times if top yellow or row &lt; 3 </li>
+                    <li>[remove then add red then add red] if height &lt; 1</li>
+                    <li>repeat add red then add yellow 5 times if height &gt; 0 </li>
                   </ul>
                 </li>
                 <li><b>(advanced) relative condition: </b> relativepos_of [condition]
