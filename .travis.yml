@@ -2,8 +2,7 @@ language: node_js
 node_js:
   - 0.10
 install:
-  - npm install purescript bower gulp -g
   - npm install
   - bower install
 script:
-  - gulp
+  - npm build

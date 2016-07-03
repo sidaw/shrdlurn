@@ -1,4 +1,5 @@
 dist
+dst
 output
 node_modules
 bower_components
@@ -6,3 +7,4 @@ bower_components
 .psci_modules
 data/*.json
 data/*.lisp
+npm-debug.log
