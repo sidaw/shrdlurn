@@ -46,44 +46,58 @@ export default class SempreClient {
   formatValue(value) {
     if (typeof value === "undefined") return "";
 
-    const head = value[0];
-    let str = "";
-    switch (head) {
-      case "list": {
-        const elements = [];
-        for (let i = 1; i < value.length; i++) {
-          elements.push(this.formatValue(value[i], value.length));
-        }
-        str = `[${elements.join(", ")}]`;
-        break;
+    const valueArray = JSON.parse(value);
+
+    /* TODO: const valueArray = [[1, 1, 0, "Red", []], [1, 1, 1, "Orange", []]]; */
+
+    return valueArray.map((c) => (
+      {
+        x: c[0],
+        y: c[1],
+        z: c[2],
+        color: c[3],
+        names: c[4],
       }
-      case "table": {
-        const headers = value[1];
-        for (let j = 0; j < headers.length; j++) {
-          str += `{${value[1][j]}\t `;
-        }
-        str += "\n";
-        for (let i = 2; i < value.length; i++) {
-          for (let j = 0; j < headers.length; j++) {
-            str += `${this.formatValue(value[i][j], value.length)}\t `;
-          }
-          str += "\n";
-        }
-        break;
-      }
-      case "number": {
-        str = this.cleanValue(value[1]);
-        break;
-      }
-      case "name": {
-        str = this.cleanValue(value[1]);
-        break;
-      }
-      default: {
-        str = this.cleanValue(value[1]);
-      }
-    }
-    return str;
+    ));
+
+    // const head = value[0];
+    // let str = "";
+    // switch (head) {
+    //   case "list": {
+    //     const elements = [];
+    //     for (let i = 1; i < value.length; i++) {
+    //       elements.push(this.formatValue(value[i], value.length));
+    //     }
+    //     str = `[${elements.join(", ")}]`;
+    //     break;
+    //   }
+    //   case "table": {
+    //     const headers = value[1];
+    //     for (let j = 0; j < headers.length; j++) {
+    //       str += `{${value[1][j]}\t `;
+    //     }
+    //     str += "\n";
+    //     for (let i = 2; i < value.length; i++) {
+    //       for (let j = 0; j < headers.length; j++) {
+    //         str += `${this.formatValue(value[i][j], value.length)}\t `;
+    //       }
+    //       str += "\n";
+    //     }
+    //     break;
+    //   }
+    //   case "number": {
+    //     str = this.cleanValue(value[1]);
+    //     break;
+    //   }
+    //   case "name": {
+    //     str = this.cleanValue(value[1]);
+    //     break;
+    //   }
+    //   default: {
+    //     str = this.cleanValue(value[1]);
+    //   }
+    // }
+    // return str;
   }
 
   combine(vsTmp, v) {

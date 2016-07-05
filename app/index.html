@@ -10,7 +10,7 @@
     <div class="container">
       <div class="panel">
         <div class="canvas-header ch-target">target</div>
-        <canvas id="canvastarget" width="200" height="200"></canvas>
+        <canvas id="canvastarget" width="650" height="600"></canvas>
         <div class="panel-block">
           possible in <span class="possible_steps" style="font-weight:bold;">0</span> steps<br />
           must be completed in <span class="max_steps" style="font-weight:bold;">100</span> steps
@@ -45,17 +45,17 @@
         <!-- Canvas -->
         <div class="canvas-header ch-before">before action</div>
         <div class="canvas-header ch-after">after action</div>
-        <canvas id="canvas" width="1100" height="750"></canvas>
-        <div class="col-info">col 1</div>
-        <div class="row-info">row 1</div>
-        <div class="col-info-8">col 8</div>
-        <div class="row-info-8">row 8</div>
-        <div class="curr-buttons">
+        <canvas id="main_canvas" width="1300" height="1200"></canvas>
+        <div class="col-info hidden">col 1</div>
+        <div class="row-info hidden">row 1</div>
+        <div class="col-info-8 hidden">col 8</div>
+        <div class="row-info-8 hidden">row 8</div>
+        <div class="curr-buttons hidden">
           <button id="clear_button" class="button button--big">clear</button>
           <!-- TODO: Submit! <button id="submit-button" class="button button--big">submit</button> -->
         </div>
         <!-- TODO: REJECT BUTTON! -->
-        <div class="meta-actions">
+        <div class="meta-actions hidden">
           <button id="flyingaccept" class="button button--solved" ctitle="take this action (shift-enter)">&#x2713;</button>
           <button class="button button--solved" id="paraphrase"
           ctitle="teach SHRDLURN what you mean">~</button>

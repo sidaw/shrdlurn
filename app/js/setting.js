@@ -1,21 +1,135 @@
 import configs from "./config";
 import { getHistoryElems, emojione } from "./util";
 
-const PS = require("../src/Main.purs");
+import Isomer,
+       { Point,
+         Shape,
+         Color,
+       } from "isomer";
+
+/* eslint-disable new-cap */
 
 export default class Setting {
   constructor() {
-    const structs = [configs.emptyStruct, configs.emptyStruct];
-    this.renderCanvas(structs);
+    this.iso = new Isomer(document.getElementById(configs.mainCanvas));
+    this.isoTarget = new Isomer(document.getElementById(configs.targetCanvas));
+    this.basicUnit = 0.8;
+    this.width = 12;
+    this.borderWidth = -0.15;
+    this.baseHeight = 0.1;
+    this.centerPoint = Point(this.width / 2, this.width / 2, this.width / 2);
+    this.rotation = Math.PI / 12;
+    this.targetScale = 0.5;
+    this.translateFactor = -0.5;
+
+    this.renderCanvas(configs.emptyStruct);
     this.renderTarget(configs.emptyStruct);
+
+    // /* TODO: TEMPORARY FAKE DATA UNTIL SEMPRE IS UPDATED */
+    // const fake = [
+    //   { x: 0, y: 0, z: 0, color: 1, names: ["S", "A"] },
+    //   { x: 1, y: 0, z: 0, color: 2, names: [] },
+    //   { x: 2, y: 0, z: 0, color: 3, names: [] },
+    //   { x: 3, y: 0, z: 0, color: 4, names: [] },
+    //   { x: 4, y: 0, z: 0, color: 5, names: [] },
+    //   { x: 0, y: 1, z: 0, color: 1, names: ["_new"] },
+    //   { x: 1, y: 1, z: 0, color: 2, names: ["_new"] },
+    //   { x: 2, y: 1, z: 0, color: 3, names: ["_new"] },
+    //   { x: 3, y: 1, z: 0, color: 4, names: ["_new"] },
+    //   { x: 4, y: 1, z: 0, color: 5, names: ["_new"] },
+    //   { x: 2, y: 4, z: 0, color: 1 },
+    //   { x: 2, y: 4, z: 1, color: 1, names: ["_new"] },
+    // ];
+    //
+    // const fakeTarget = [
+    //   { x: 0, y: 0, z: 0, color: 1 },
+    // ];
+    //
+    // this.renderCanvas(fake);
+    // this.renderTarget(fakeTarget);
+    // /* END TODO */
   }
 
-  renderTarget(struct) {
-    PS.renderTargetJSON(`[${struct}]`)();
+  renderTarget(state) {
+    this.renderBoard(this.isoTarget, this.targetScale);
+    this.renderBlocks(this.isoTarget, state, this.targetScale);
   }
 
-  renderCanvas(structs) {
-    PS.renderJSON(`[${structs.join(",")}]`)();
+  renderCanvas(state) {
+    this.renderBoard(this.iso);
+    this.renderBlocks(this.iso, state);
+  }
+
+  renderBoard(iso, scalingFactor = 1) {
+    const translateBy = this.translateFactor * this.basicUnit * scalingFactor;
+    for (let x = this.width - 1; x >= 0; x--) {
+      for (let y = this.width - 1; y >= 0; y--) {
+        iso.add(
+          Shape.Prism(
+            Point((x + (this.borderWidth * x)) * scalingFactor,
+                  (y + (this.borderWidth * y)) * scalingFactor,
+                  0
+                 ),
+            this.basicUnit * scalingFactor,
+            this.basicUnit * scalingFactor,
+            this.baseHeight * scalingFactor
+          )
+          .rotateZ(this.centerPoint, this.rotation)
+          .translate(translateBy, translateBy, translateBy)
+        );
+      }
+    }
+  }
+
+  renderBlocks(iso, state, scalingFactor = 1) {
+    const blocks = this.sortBlocks(state);
+    for (const block of blocks) {
+      const color = configs.colorMap[block.color];
+      let blockColor = new Color();
+      if (block.names && block.names.includes("_new")) {
+        blockColor = new Color(color[0], color[1], color[2], 0.5);
+      } else {
+        blockColor = new Color(color[0], color[1], color[2]);
+      }
+      iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor), blockColor);
+    }
+  }
+
+  makeBlock(x, y, z, scalingFactor = 1) {
+    const translateBy = this.translateFactor * this.basicUnit * scalingFactor;
+    return Shape.Prism(
+      Point((x + (x * this.borderWidth)) * scalingFactor,
+            (y + (y * this.borderWidth)) * scalingFactor,
+            (z + this.baseHeight + (this.borderWidth * z)) * scalingFactor
+           ),
+      this.basicUnit * scalingFactor, this.basicUnit * scalingFactor, this.basicUnit * scalingFactor
+    )
+    .rotateZ(this.centerPoint, this.rotation)
+    .translate(translateBy, translateBy, translateBy);
+  }
+
+  sortBlocks(blocks) {
+    return blocks.sort((a, b) => {
+      if (a.z > b.z) {
+        return 1;
+      } else if (a.z < b.z) {
+        return -1;
+      }
+
+      if (a.x > b.x) {
+        return -1;
+      } else if (a.x < b.x) {
+        return 1;
+      }
+
+      if (a.y > b.y) {
+        return -1;
+      } else if (a.y < b.y) {
+        return 1;
+      }
+
+      return 0;
+    });
   }
 
   equalityCheck(struct1, struct2) {
