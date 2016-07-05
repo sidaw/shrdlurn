@@ -19,8 +19,8 @@ export default class Setting {
     this.baseHeight = 0.1;
     this.centerPoint = Point(this.width / 2, this.width / 2, this.width / 2);
     this.rotation = Math.PI / 12;
-    this.targetScale = 0.5;
-    this.translateFactor = -0.5;
+    this.targetScale = 0.4;
+    this.targetTranslate = -3;
     // const structs = [configs.emptyStruct, configs.emptyStruct];
     // this.renderBefore(configs.emptyStruct);
     // this.renderAfter(configs.emptyStruct);
@@ -52,8 +52,8 @@ export default class Setting {
   }
 
   renderTarget(state) {
-    this.renderBoard(this.isoTarget, this.targetScale);
-    this.renderBlocks(this.isoTarget, state, this.targetScale);
+    this.renderBoard(this.isoTarget, this.targetScale, this.targetTranslate);
+    this.renderBlocks(this.isoTarget, state, this.targetScale, this.targetTranslate);
   }
 
   renderCanvas(state) {
@@ -61,8 +61,8 @@ export default class Setting {
     this.renderBlocks(this.iso, state);
   }
 
-  renderBoard(iso, scalingFactor = 1) {
-    const translateBy = this.translateFactor * this.basicUnit * scalingFactor;
+  renderBoard(iso, scalingFactor = 1, translateFactor = 0) {
+    const translateBy = translateFactor * this.basicUnit * scalingFactor;
     for (let x = this.width - 1; x >= 0; x--) {
       for (let y = this.width - 1; y >= 0; y--) {
         iso.add(
@@ -76,13 +76,13 @@ export default class Setting {
             this.baseHeight * scalingFactor
           )
           .rotateZ(this.centerPoint, this.rotation)
-          .translate(translateBy, translateBy, translateBy)
+          .translate(translateBy, -translateBy, -2.5 * translateBy)
         );
       }
     }
   }
 
-  renderBlocks(iso, state, scalingFactor = 1) {
+  renderBlocks(iso, state, scalingFactor = 1, translateFactor = 0) {
     const blocks = this.sortBlocks(state);
     for (const block of blocks) {
       const color = configs.colorMap[block.color];
@@ -92,12 +92,12 @@ export default class Setting {
       } else {
         blockColor = new Color(color[0], color[1], color[2]);
       }
-      iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor), blockColor);
+      iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor), blockColor);
     }
   }
 
-  makeBlock(x, y, z, scalingFactor = 1) {
-    const translateBy = this.translateFactor * this.basicUnit * scalingFactor;
+  makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0) {
+    const translateBy = translateFactor * this.basicUnit * scalingFactor;
     return Shape.Prism(
       Point((x + (x * this.borderWidth)) * scalingFactor,
             (y + (y * this.borderWidth)) * scalingFactor,
@@ -106,7 +106,7 @@ export default class Setting {
       this.basicUnit * scalingFactor, this.basicUnit * scalingFactor, this.basicUnit * scalingFactor
     )
     .rotateZ(this.centerPoint, this.rotation)
-    .translate(translateBy, translateBy, translateBy);
+    .translate(translateBy, -translateBy, -2.5 * translateBy);
   }
 
   sortBlocks(blocks) {
@@ -183,9 +183,9 @@ export default class Setting {
   }
 
   setSteps(poss, max) {
-    const currSteps = document.querySelectorAll(`.${configs.possStepsElemId}`);
-    for (const currStep of currSteps) {
-      currStep.innerHTML = poss;
+    const possSteps = document.querySelectorAll(`.${configs.possStepsElemId}`);
+    for (const possStep of possSteps) {
+      possStep.innerHTML = poss;
     }
 
     const maxSteps = document.querySelectorAll(`.${configs.maxStepsElemId}`);

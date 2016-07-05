@@ -33,7 +33,7 @@ export default class Game {
     this.maxTargetSteps = targetStruct[1] * configs.difficulty;
 
     /* TODO: this.Setting.renderTarget(this.targetStruct); */
-    this.Setting.setSteps(targetStruct[0], this.maxTargetSteps);
+    this.Setting.setSteps(targetStruct[1], this.maxTargetSteps);
 
     this.Logger.log({ type: "target", msg: this.targetStruct });
   }

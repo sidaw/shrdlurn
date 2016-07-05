@@ -15,8 +15,8 @@ configs.emptyStruct = "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]
 configs.defaultStruct = configs.emptyStruct;
 
 configs.mainCanvas = "main_canvas";
-configs.targetCanvas = "canvastarget";
-configs.consoleElemId = "maintextarea";
+configs.targetCanvas = "target_canvas";
+configs.consoleElemId = "console";
 configs.historyElemId = "command_history";
 configs.statusElemId = "status";
 configs.currentCmdElemId = "currentcmd";
@@ -27,6 +27,22 @@ configs.reactionElemId = "reaction";
 configs.defineElemId = "definetextarea";
 configs.defineButton = "define_phrase_button";
 configs.definePromptElemId = "show_define_status";
+configs.randomElemId = "random";
+configs.referenceElemId = "reference";
+
+configs.buttons = {
+  do: "dobutton",
+  accept: "flyingaccept",
+  prev: "prevbutton",
+  next: "nextbutton",
+  clear: "clearbutton",
+  paraphrase: "paraphrase",
+  define: "define_phrase_button",
+  close_define: "close_define_interface",
+  define_instead: "define_instead",
+  skip: "skip_button",
+  reset: "reset_all_progress",
+};
 
 configs.difficulty = 3;
 configs.defaultSkips = 2;
@@ -61,7 +77,7 @@ configs.store = sessionStorage;
 /* http://www.colourlovers.com/palette/1473/Ocean_Five */
 configs.colorMap = {
   1: [204, 51, 63], /* Red */
-  2: [0, 160, 176], /* Blue */
+  2: [0, 160, 176], /* Cyan */
   3: [106, 74, 60], /* Brown */
   4: [237, 201, 81], /* Yellow */
   5: [235, 104, 65], /* Orange */

@@ -20,6 +20,8 @@ class App {
     this.updateRandomUtterances();
 
     this.generateTarget();
+
+    this.consoleElem.focus();
   }
 
   generateTarget() {
@@ -158,7 +160,7 @@ class App {
       for (const ac of autocompletes) {
         randomStrings += `<span>${ac}</span><br>`;
       }
-      document.getElementById("random_utterances").innerHTML = randomStrings;
+      document.getElementById(configs.randomElemId).innerHTML = randomStrings;
     });
   }
 
@@ -169,7 +171,7 @@ class App {
 
   toggleHelp() {
     this.helpOn = !this.helpOn;
-    document.getElementById("reference").classList.toggle("hidden");
+    document.getElementById(configs.referenceElemId).classList.toggle("hidden");
   }
 }
 
@@ -177,18 +179,18 @@ const A = new App();
 
 /* Event Listeners */
 
-document.getElementById("dobutton").addEventListener("click", () => A.enter(), false);
-document.getElementById("flyingaccept").addEventListener("click", () => A.accept(), false);
-document.getElementById("prevbutton").addEventListener("click", () => A.prev(), false);
-document.getElementById("nextbutton").addEventListener("click", () => A.next(), false);
-document.getElementById("clear_button").addEventListener("click", () => A.clear(), false);
-document.getElementById("paraphrase").addEventListener("click", () => A.openDefineInterface(), false);
+document.getElementById(configs.buttons.do).addEventListener("click", () => A.enter(), false);
+document.getElementById(configs.buttons.accept).addEventListener("click", () => A.accept(), false);
+document.getElementById(configs.buttons.prev).addEventListener("click", () => A.prev(), false);
+document.getElementById(configs.buttons.next).addEventListener("click", () => A.next(), false);
+document.getElementById(configs.buttons.clear).addEventListener("click", () => A.clear(), false);
+document.getElementById(configs.buttons.paraphrase).addEventListener("click", () => A.openDefineInterface(), false);
 document.getElementById(configs.consoleElemId).addEventListener("keyup", () => true);
-document.getElementById("define_phrase_button").addEventListener("click", () => A.enter(), false);
-document.getElementById("close_define_interface").addEventListener("click", () => A.closeDefineInterface(), false);
-document.getElementById("define_instead").addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); }, false);
-document.getElementById("skip_button").addEventListener("click", () => A.skip(), false);
-document.getElementById("reset_all_progress").addEventListener("click", (e) => { e.preventDefault(); A.resetAllProgress(); }, false);
+document.getElementById(configs.buttons.define).addEventListener("click", () => A.enter(), false);
+document.getElementById(configs.buttons.close_define).addEventListener("click", () => A.closeDefineInterface(), false);
+document.getElementById(configs.buttons.define_instead).addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); }, false);
+document.getElementById(configs.buttons.skip).addEventListener("click", () => A.skip(), false);
+document.getElementById(configs.buttons.reset).addEventListener("click", (e) => { e.preventDefault(); A.resetAllProgress(); }, false);
 
 const helpButtons = document.querySelectorAll(".help-button, .close-help");
 for (const helpButton of helpButtons) {
