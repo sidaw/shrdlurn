@@ -21,34 +21,33 @@ export default class Setting {
     this.rotation = Math.PI / 12;
     this.targetScale = 0.5;
     this.translateFactor = -0.5;
-    // const structs = [configs.emptyStruct, configs.emptyStruct];
-    // this.renderBefore(configs.emptyStruct);
-    // this.renderAfter(configs.emptyStruct);
-    // this.renderTarget(configs.emptyStruct);
 
-    /* TODO: TEMPORARY FAKE DATA UNTIL SEMPRE IS UPDATED */
-    const fake = [
-      { x: 0, y: 0, z: 0, color: 1, names: ["S", "A"] },
-      { x: 1, y: 0, z: 0, color: 2, names: [] },
-      { x: 2, y: 0, z: 0, color: 3, names: [] },
-      { x: 3, y: 0, z: 0, color: 4, names: [] },
-      { x: 4, y: 0, z: 0, color: 5, names: [] },
-      { x: 0, y: 1, z: 0, color: 1, names: ["_new"] },
-      { x: 1, y: 1, z: 0, color: 2, names: ["_new"] },
-      { x: 2, y: 1, z: 0, color: 3, names: ["_new"] },
-      { x: 3, y: 1, z: 0, color: 4, names: ["_new"] },
-      { x: 4, y: 1, z: 0, color: 5, names: ["_new"] },
-      { x: 2, y: 4, z: 0, color: 1 },
-      { x: 2, y: 4, z: 1, color: 1, names: ["_new"] },
-    ];
+    this.renderCanvas(configs.emptyStruct);
+    this.renderTarget(configs.emptyStruct);
 
-    const fakeTarget = [
-      { x: 0, y: 0, z: 0, color: 1 },
-    ];
-
-    this.renderCanvas(fake);
-    this.renderTarget(fakeTarget);
-    /* END TODO */
+    // /* TODO: TEMPORARY FAKE DATA UNTIL SEMPRE IS UPDATED */
+    // const fake = [
+    //   { x: 0, y: 0, z: 0, color: 1, names: ["S", "A"] },
+    //   { x: 1, y: 0, z: 0, color: 2, names: [] },
+    //   { x: 2, y: 0, z: 0, color: 3, names: [] },
+    //   { x: 3, y: 0, z: 0, color: 4, names: [] },
+    //   { x: 4, y: 0, z: 0, color: 5, names: [] },
+    //   { x: 0, y: 1, z: 0, color: 1, names: ["_new"] },
+    //   { x: 1, y: 1, z: 0, color: 2, names: ["_new"] },
+    //   { x: 2, y: 1, z: 0, color: 3, names: ["_new"] },
+    //   { x: 3, y: 1, z: 0, color: 4, names: ["_new"] },
+    //   { x: 4, y: 1, z: 0, color: 5, names: ["_new"] },
+    //   { x: 2, y: 4, z: 0, color: 1 },
+    //   { x: 2, y: 4, z: 1, color: 1, names: ["_new"] },
+    // ];
+    //
+    // const fakeTarget = [
+    //   { x: 0, y: 0, z: 0, color: 1 },
+    // ];
+    //
+    // this.renderCanvas(fake);
+    // this.renderTarget(fakeTarget);
+    // /* END TODO */
   }
 
   renderTarget(state) {

@@ -11,8 +11,7 @@ configs.debugMode = false;
 
 configs.defaultSessionId = "deadbeef";
 
-configs.emptyStruct = "[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]";
-configs.defaultStruct = configs.emptyStruct;
+configs.emptyStruct = [];
 
 configs.mainCanvas = "main_canvas";
 configs.targetCanvas = "canvastarget";
@@ -60,11 +59,11 @@ configs.store = sessionStorage;
 
 /* http://www.colourlovers.com/palette/1473/Ocean_Five */
 configs.colorMap = {
-  1: [204, 51, 63], /* Red */
-  2: [0, 160, 176], /* Blue */
-  3: [106, 74, 60], /* Brown */
-  4: [237, 201, 81], /* Yellow */
-  5: [235, 104, 65], /* Orange */
+  Red: [204, 51, 63], /* Red */
+  Cyan: [0, 160, 176], /* Cyan */
+  Brown: [106, 74, 60], /* Brown */
+  Yellow: [237, 201, 81], /* Yellow */
+  Orange: [235, 104, 65], /* Orange */
 };
 
 export default configs;

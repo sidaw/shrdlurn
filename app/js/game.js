@@ -125,7 +125,7 @@ export default class Game {
     /* Update the canvas */
     let afterStruct = configs.emptyStruct;
     if (this.responses.length > 0) afterStruct = this.responses[this.selectedResp].value;
-    /* TODO:  this.Setting.renderCanvas([this.currentState, afterStruct]); */
+    this.Setting.renderCanvas(afterStruct);
 
     /* Update the history */
     this.Setting.renderHistory(this.history);
