@@ -9,9 +9,10 @@
   "license": "MIT",
   "homepage": "https://github.com/sidaw/shrdlurn",
   "scripts": {
-    "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot",
-    "build": "node ./node_modules/webpack/bin/webpack --progress -p",
-    "test": "echo 'No tests'"
+    "start": "cross-env NODE_ENV=development node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot",
+    "build": "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --progress -p",
+    "test": "echo 'No tests'",
+    "local": "cross-env NODE_ENV=local node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot"
   },
   "babel": {
     "presets": [

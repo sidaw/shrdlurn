@@ -49,6 +49,11 @@ const config = module.exports = {
   },
 
   plugins: [
+    new webpack.DefinePlugin({
+      "process.env": {
+        NODE_ENV: `"${process.env.NODE_ENV}"`,
+      },
+    }),
     new webpack.HotModuleReplacementPlugin(),
     new ExtractTextPlugin("css/app.css"),
     new HtmlWebpackPlugin({
