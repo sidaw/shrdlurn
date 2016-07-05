@@ -3,6 +3,5 @@ node_js:
   - 0.10
 install:
   - npm install
-  - bower install
 script:
-  - npm build
+  - npm run build

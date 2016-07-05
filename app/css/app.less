@@ -3,7 +3,7 @@
 @font-family: 'Roboto Condensed', 'Helvetica', sans-serif;
 @font-size: 16px;
 
-@width: 800px;
+@width: 900px;
 @panelWidth: 0.25 * @width;
 @canvasWidth: 0.75 * @width;
 @canvasRatio : 750/1100; // equals the numbers in HTML
@@ -20,6 +20,7 @@ body {
   height: 100%;
   font-family: @font-family;
   font-size: @font-size;
+  background-color: rgb(244, 244, 244);
 }
 
 .container {
@@ -46,8 +47,14 @@ a {
   float: right;
 }
 
-#canvas {
-  width: 100%;
+#main_canvas {
+  width: 650px;
+  height: 600px;
+}
+
+#canvastarget {
+  width: 325px;
+  height: 300px;
 }
 
 .canvas-header {

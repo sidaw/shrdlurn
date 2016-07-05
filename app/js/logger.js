@@ -3,24 +3,28 @@ import configs from "./config";
 
 export default class Logger {
   constructor(sessionId) {
-    let socket = new Socket(configs.loggerServer, {
-      logger: ((kind, msg, data) => { console.log(`${kind}: ${msg}`, data) })
-    });
+    if (configs.loggerOn) {
+      const socket = new Socket(configs.loggerServer, {
+        logger: ((kind, msg, data) => { console.log(`${kind}: ${msg}`, data) })
+      });
 
-    socket.connect();
-    socket.onOpen(ev => { console.log("OPEN", ev)});
-    socket.onError(ev => { console.log("ERROR", ev)});
-    socket.onClose(ev => { console.log("CLOSE", ev)});
+      socket.connect();
+      socket.onOpen(ev => { console.log("OPEN", ev) });
+      socket.onError(ev => { console.log("ERROR", ev) });
+      socket.onClose(ev => { console.log("CLOSE", ev) });
 
-    this.chan = socket.channel(`session:${sessionId}`, {});
-    this.chan.join();
-    this.chan.onError(e => console.log("something went wrong", e));
-    this.chan.onClose(e => console.log("channel closed", e));
+      this.chan = socket.channel(`session:${sessionId}`, {});
+      this.chan.join();
+      this.chan.onError(e => console.log("something went wrong", e));
+      this.chan.onClose(e => console.log("channel closed", e));
+    }
   }
 
   log(e) {
-    const message = `${this.strip(e.type)}:${this.strip(e.msg)}`;
-    this.chan.push("log:event", { message: message });
+    if (configs.loggerOn) {
+      const message = `${this.strip(e.type)}:${this.strip(e.msg)}`;
+      this.chan.push("log:event", { message: message });
+    }
   }
 
   strip(str) {

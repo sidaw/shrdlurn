@@ -32,7 +32,7 @@ export default class Game {
     this.targetStruct = targetStruct[2];
     this.maxTargetSteps = targetStruct[1] * configs.difficulty;
 
-    this.Setting.renderTarget(this.targetStruct);
+    /* TODO: this.Setting.renderTarget(this.targetStruct); */
     this.Setting.setSteps(targetStruct[0], this.maxTargetSteps);
 
     this.Logger.log({ type: "target", msg: this.targetStruct });
@@ -125,7 +125,7 @@ export default class Game {
     /* Update the canvas */
     let afterStruct = configs.emptyStruct;
     if (this.responses.length > 0) afterStruct = this.responses[this.selectedResp].value;
-    this.Setting.renderCanvas([this.currentState, afterStruct]);
+    /* TODO:  this.Setting.renderCanvas([this.currentState, afterStruct]); */
 
     /* Update the history */
     this.Setting.renderHistory(this.history);
