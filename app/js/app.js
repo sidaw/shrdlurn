@@ -204,7 +204,6 @@ document.getElementById(configs.buttons.define).addEventListener("click", () => 
 document.getElementById(configs.buttons.close_define).addEventListener("click", () => A.closeDefineInterface(), false);
 document.getElementById(configs.buttons.define_instead).addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); }, false);
 document.getElementById(configs.buttons.skip).addEventListener("click", () => A.skip(), false);
-document.getElementById(configs.buttons.reset).addEventListener("click", (e) => { e.preventDefault(); A.resetAllProgress(); }, false);
 
 function openAndCloseSetter(selector, callback, callbackObj) {
   const buttons = document.querySelectorAll(selector);
