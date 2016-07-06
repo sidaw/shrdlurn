@@ -76,7 +76,8 @@ export default class Setting {
             this.baseHeight * scalingFactor
           )
           .rotateZ(this.centerPoint, this.rotation)
-          .translate(translateBy, -translateBy, -2.5 * translateBy)
+          .translate(translateBy, -translateBy, -4.5 * translateBy),
+          new Color(144, 144, 144)
         );
       }
     }
@@ -106,7 +107,7 @@ export default class Setting {
       this.basicUnit * scalingFactor, this.basicUnit * scalingFactor, this.basicUnit * scalingFactor
     )
     .rotateZ(this.centerPoint, this.rotation)
-    .translate(translateBy, -translateBy, -2.5 * translateBy);
+    .translate(translateBy, -translateBy, -4.5 * translateBy);
   }
 
   sortBlocks(blocks) {
@@ -195,7 +196,7 @@ export default class Setting {
   }
 
   updateSteps(steps) {
-    const currSteps = document.querySelectorAll(`.${configs.currStepsElemId}`);
+    const currSteps = document.querySelectorAll(`.${configs.elems.currSteps}`);
     for (const currStep of currSteps) {
       currStep.innerHTML = steps;
     }
@@ -207,35 +208,36 @@ export default class Setting {
       return false;
     }
 
-    const defineInterface = document.getElementById("define_interface");
-    defineInterface.classList.remove("hidden");
+    const defineInterface = document.getElementById(configs.elems.defineInterface);
+    defineInterface.classList.add("active");
 
-    document.getElementById(configs.consoleElemId).classList.add("hidden");
-    document.getElementById("mainbuttons").classList.add("hidden");
-
-    const defineStatus = document.getElementById("define_status");
+    const defineStatus = document.getElementById(configs.elems.defineStatus);
     defineStatus.innerHTML = `Teach SHRDLURN ${query}.`;
+
+    const toggleButton = document.getElementById(configs.buttons.toggleDefine);
+    toggleButton.innerHTML = "Return";
 
     this.tryDefine(query, false, canAnswer, coverage);
 
-    document.getElementById(configs.defineElemId).focus();
+    document.getElementById(configs.elems.defineConsole).focus();
     return true;
   }
 
   closeDefineInterface() {
-    const defineInterface = document.getElementById("define_interface");
-    defineInterface.classList.add("hidden");
+    const defineInterface = document.getElementById(configs.elems.defineInterface);
+    defineInterface.classList.remove("active");
 
-    document.getElementById("define_phrase_button").innerHTML = "try";
+    const toggleButton = document.getElementById(configs.buttons.toggleDefine);
+    toggleButton.innerHTML = "Define";
 
-    const consoleElem = document.getElementById(configs.consoleElemId);
-    consoleElem.classList.remove("hidden");
+    removePromptDefine();
+
+    const consoleElem = document.getElementById(configs.elems.console);
     consoleElem.focus();
-    document.getElementById("mainbuttons").classList.remove("hidden");
   }
 
   tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "") {
-    const defineHeader = document.getElementById("define_header");
+    const defineHeader = document.getElementById(configs.elems.defineHeader);
     document.getElementById(configs.definePromptElemId).classList.add("hidden");
 
     if (!refineDefine) {
@@ -324,11 +326,11 @@ export default class Setting {
   }
 
   promptDefine() {
-    document.getElementById(configs.definePromptElemId).classList.remove("hidden");
+    document.getElementById(configs.elems.definePrompt).classList.remove("hidden");
   }
 
   removePromptDefine() {
-    document.getElementById(configs.definePromptElemId).classList.add("hidden");
+    document.getElementById(configs.elems.definePrompt).classList.add("hidden");
   }
 
   setSkips(skipsLeft) {
@@ -338,5 +340,9 @@ export default class Setting {
     } else {
       document.getElementById("skip_button").classList.add("hidden");
     }
+  }
+
+  toggleAccept() {
+    document.getElementById(configs.elems.consoleGroup).classList.toggle("accepting");
   }
 }

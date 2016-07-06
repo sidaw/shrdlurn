@@ -30,6 +30,19 @@ configs.definePromptElemId = "show_define_status";
 configs.randomElemId = "random";
 configs.referenceElemId = "reference";
 
+configs.elems = {
+  helpMe: "helpme",
+  keyboard: "keyboard_shortcuts",
+  currSteps: "curr_steps",
+  consoleGroup: "console_group",
+  defineInterface: "define_interface",
+  console: "console",
+  defineConsole: "definetextarea",
+  defineStatus: "define_status",
+  defineHeader: "define_header",
+  definePrompt: "define_prompt",
+};
+
 configs.buttons = {
   do: "dobutton",
   accept: "flyingaccept",
@@ -42,6 +55,7 @@ configs.buttons = {
   define_instead: "define_instead",
   skip: "skip_button",
   reset: "reset_all_progress",
+  toggleDefine: "toggledefine",
 };
 
 configs.difficulty = 3;

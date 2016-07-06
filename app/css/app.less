@@ -8,9 +8,13 @@
 @panelWidth: 0.25 * @width;
 @mainWidth: 0.75 * @width;
 
-@red: #CC333F;
+@red: rgb(204, 51, 63);
 @cyan: rgb(0, 160, 176);
+@brown: rgb(106, 74, 60);
+@yellow: rgb(237, 201, 81);
+@orange: rgb(235, 104, 65);
 @overlayColor: rgba(60,60,60,0.75);
+@bgColor: rgb(240, 240, 240);
 
 html,
 body {
@@ -19,13 +23,13 @@ body {
   width: 100%;
   height: 100%;
   font-family: @font-family;
-  background-color: rgb(240, 240, 240);
+  background-color: @bgColor;
   font-size: 62.5%;
 }
 
 .container {
   width: @width;
-  height: 100%;
+  height: auto;
   margin: 0 auto;
   font-size: @font-size;
 }
@@ -49,6 +53,58 @@ body {
 
 .hidden {
   display: none;
+}
+
+.header {
+  width: 100%;
+  height: 50px;
+  background-color: @cyan;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15),
+              0 3px 5px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 10%;
+  color: #FFF;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+
+  // & .l-r { text-shadow: -1px 0 @red, 0 1px @red, 1px 0 @red, 0 -1px @red; }
+  // & .l-y { text-shadow: -1px 0 @yellow, 0 1px @yellow, 1px 0 @yellow, 0 -1px @yellow; }
+  // & .l-o { text-shadow: -1px 0 @orange, 0 1px @orange, 1px 0 @orange, 0 -1px @orange; }
+  // & .l-b { text-shadow: -1px 0 @brown, 0 1px @brown, 1px 0 @brown, 0 -1px @brown; }
+}
+
+.sublogo {
+  font-weight: 100;
+  letter-spacing: normal;
+}
+
+.nav {
+  align-self: flex-end;
+  height: 100%;
+
+  & > div {
+    display: inline-flex;
+    height: 100%;
+    width: auto;
+    padding: 0 15px;
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+
+    &:hover {
+      background-color: rgba(244, 244, 244, 0.5);
+      cursor: pointer;
+    }
+  }
 }
 
 #main_canvas {
@@ -88,9 +144,10 @@ button {
   text-transform: uppercase;
   color: #000;
   background-color: #FFF;
-  border-radius: 3px;
+  border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15),
               0 1.5px 2.5px rgba(0,0,0,0.08);
+  transition: 0.2s ease background-color;
 
   &:hover {
     background-color: @cyan;
@@ -111,9 +168,19 @@ button {
       color: #000;
     }
   }
+
+  &.bold-button {
+    background-color: @cyan;
+    color: #FFF;
+
+    &:hover {
+      background-color: @yellow;
+    }
+  }
 }
 
-.console-area {
+.console-area,
+.define-area {
   margin: 0 auto;
   width: 90%;
 }
@@ -124,20 +191,22 @@ button {
   box-shadow: 0 4px 16px rgba(0,0,0,0.15),
               0 3px 5px rgba(0,0,0,0.08);
   padding: 0;
+  margin-bottom: 20px;
 
   & input {
-    width: 85%;
+    width: 73.5%;
     margin: 0;
     box-shadow: none;
 
-    &:focus + .button-at-end button {
+    &:focus + .buttons-at-end > .enter-button {
       background-color: @cyan;
+      cursor: pointer;
     }
   }
 
-  & .button-at-end {
+  & .buttons-at-end {
     float: right;
-    width: 15%;
+    width: 26.5%;
     height: 5rem;
     margin: 0;
     padding: 0 10px;
@@ -148,12 +217,49 @@ button {
 
   & button {
     height: 3.5rem;
-    background-color: grey;
+    background-color: rgb(150, 150, 150);
     color: #FFF;
+    cursor: default;
+  }
+
+  & .remove-button {
+    background-color: transparent;
+    color: rgb(150, 150, 150);
+    box-shadow: none;
+    border-radius: 50%;
+    border: 3px solid rgb(150, 150, 150);
+    line-height: 0.7;
+    height: 25px;
+    width: 25px;
+    font-size: 2rem;
+    letter-spacing: 5px;
+    padding: 0;
+    padding-left: 5px;
+    text-align: center;
+    transition: 0.15s ease opacity;
+    opacity: 0;
   }
 }
 
-#statusinfo {
+.input-group.accepting {
+  & .buttons-at-end {
+    & .accept-button {
+      background-color: @cyan;
+      cursor: pointer;
+    }
+
+    & .remove-button {
+      opacity: 1;
+      cursor: pointer;
+      &:hover {
+        color: @cyan;
+        border-color: @cyan;
+      }
+    }
+  }
+}
+
+.status {
   width: 100%;
   height: 4rem;
   display: flex;
@@ -162,7 +268,7 @@ button {
   margin-bottom: 20px;
 }
 
-#reaction img {
+.reaction img {
   height: 3.6rem;
   margin-right: 10px;
 }
@@ -176,17 +282,57 @@ button {
   text-align: right;
 }
 
-.target {
+.define-area {
+  display: none;
+  position: relative;
+
+  &.active {
+    display: block;
+  }
+}
+
+.define-area.active ~ .console-area {
+  display: none;
+}
+
+.awesomplete {
+  width: 73.5%;
+
+  & input {
+    width: 100%;
+  }
+
+  & ul {
+    min-width: 200px !important;
+    width: 1024px !important;
+    height: 30px !important;
+
+    & li {
+      width: auto !important;
+      display: inline-block;
+
+      &:after {
+        content: ", ";
+      }
+    }
+  }
+}
+
+.card {
   background-color: #FFF;
   width: 100%;
-  height: 380px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15),
               0 3px 5px rgba(0,0,0,0.08);
+  margin-bottom: 30px;
+}
+
+.target {
+  height: 300px;
   overflow-y: hidden;
   position: relative;
 }
 
-.target-header {
+.card-header {
   font-weight: 700;
   font-size: 2.2rem;
   line-height: 2;
@@ -219,6 +365,97 @@ button {
       border-right: 1px solid rgba(60, 60, 60, 0.2);
     }
   }
+}
+
+::-webkit-scrollbar {
+  background-color: @bgColor;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(60, 60, 60, 0.2);
+}
+
+.history {
+  height: 300px;
+}
+
+.history-steps {
+  padding: 20px 10px;
+  height: 250px;
+  overflow-y: scroll;
+
+  & > div {
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-bottom: 5px;
+    background-color: #FFF;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15),
+                0 1.5px 2.5px rgba(0,0,0,0.08);
+
+    &.active {
+      background-color: @cyan;
+      color: #FFF;
+    }
+  }
+}
+
+.modal-container {
+  background-color: rgba(60, 60, 60, 0.3);
+  width: 100%;
+  height: 100%;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  &.active {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+  }
+
+  & .modal {
+    width: .8 * @width;
+    height: 70%;
+    background-color: #FFF;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  & .modal-header {
+    width: 100%;
+    border-bottom: 1px solid rgba(60, 60, 60, 0.2);
+    font-size: 3.6rem;
+    font-weight: 700;
+    padding: 20px 30px;
+  }
+
+  & .modal-body {
+    padding: 20px 30px;
+    font-size: 1.6rem;
+  }
+}
+
+.curr_steps {
+  display: inline-block;
+}
+
+#define_header {
+  font-weight: 900;
+}
+
+.canvas-prompt {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  height: 300px;
+  width: 300px;
+  padding: 15px 30px;
+  background-color: #FFF;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15),
+              0 3px 5px rgba(0,0,0,0.08);
+
 }
 
 // .container {

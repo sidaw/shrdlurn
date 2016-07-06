@@ -7,37 +7,81 @@
     <title>SHRDLURN</title>
   </head>
   <body>
+    <div class="header">
+      <div class="logo">
+        <span class="l-r">S</span><span class="l-y">H</span><span class="l-o">R</span><span class="l-b">D</span><span class="l-r">L</span><span class="l-y">U</span><span class="l-o">R</span><span class="l-b">N</span>
+        <span class="sublogo">A Stanford NLP Project</span>
+      </div>
+      <div class="nav">
+        <div class="help-toggle">Help Me</div>
+        <div class="keyboard-toggle">Keyboard Shortcuts</div>
+        <div>Restart Tutorial</div>
+        <div id="reset_all_progress">Reset All Progress</div>
+      </div>
+    </div>
     <div class="container">
       <div class="main">
+        <div id="define_prompt" class="canvas-prompt hidden">
+          <h1>SHRDLURN does not understand.</h1>
+          <hr>
+          <p>Help SHRDLURN learn by teaching the phrase you attempted to instruct SHRDLURN with by defining it.</p>
+          <button type="button" class="bold-button" id="define_instead">Ok. TEACH SHRDLURN.</button>
+        </div>
         <canvas id="main_canvas" width="1536" height="1200"></canvas>
+        <div class="define-area" id="define_interface">
+          <div class="status">
+            <span class="reaction"><img class="emojione" alt=":rolling_eyes:" src="http://cdn.jsdelivr.net/emojione/assets/png/1f642.png"></span>
+            <span id="define_header"></span>
+              <div id="show_define_status"></div>
+              <div id="define_phrase_button"></div>
+              <div id="show_define_status"></div>
+              <div id="define_phrase"></div>
+              <div id="close_define_interface"></div>
+          </div>
+          <div class="input-group">
+            <input type="text" id="definetextarea" />
+            <div class="buttons-at-end">
+              <button type="button" class="enter-button" id="try_define">try</button>
+              <button type="button" class="accept-button" id="define_phrase">define</button>
+            </div>
+          </div>
+          <div class="examples">
+            <span id="define_status"></span>
+          </div>
+        </div>
         <div class="console-area">
-          <div id="statusinfo">
-            &nbsp; <span id="reaction"><img class="emojione" alt=":rolling_eyes:" src="http://cdn.jsdelivr.net/emojione/assets/png/1f644.png"></span>
+          <div id="statusinfo" class="status">
+            &nbsp; <span class="reaction" id="reaction"><img class="emojione" alt=":rolling_eyes:" src="http://cdn.jsdelivr.net/emojione/assets/png/1f644.png"></span>
             <div>
               <span id="currentcmd"><b>No command</b></span>, <span id="status">type one!</span>
             </div>
           </div>
-          <div class="input-group">
+          <div class="input-group" id="console_group">
             <input type="text" id="console">
-            <div class="button-at-end">
+            <div class="buttons-at-end">
+              <button type="button" class="remove-button">&times;</button>
               <button type="button" class="enter-button" id="dobutton">enter</button>
+              <button type="button" class="accept-button" id="flyingaccept">accept</button>
             </div>
+          </div>
+          <div class="examples">
+            <strong>example query:</strong> <span id="random"></span>
           </div>
         </div>
         <div class="meta-buttons">
-          <button type="button">clear</button>
+          <button type="button" id="clearbutton">clear</button>
           <!-- TODO: <button type="button">submit</button> -->
           <br>
-          <button type="button">define</button>
-          <button type="button">&uarr;</button>
-          <button type="button">&darr;</button>
+          <button type="button" id="toggledefine">define</button>
+          <button type="button" id="prevbutton">&uarr;</button>
+          <button type="button" id="nextbutton">&darr;</button>
         </div>
       </div>
       <div class="panel">
-        <div class="target">
-          <div class="target-header">
+        <div class="target card">
+          <div class="card-header">
             Target
-            <button type="button" id="skip_button" class="seethrough">skip</button>
+            <button type="button" id="skip_button" class="seethrough">skip (<span id="skips_left">2</span> left)</button>
           </div>
           <div class="target-footer">
             <div>
@@ -49,26 +93,109 @@
           </div>
           <canvas id="target_canvas" width="512" height="800"></canvas>
         </div>
-        <div id="command_history"></div>
-        <div class="hidden">
-          <div id="curr_steps"></div>
-          <input id="definetextarea" />
-          <div id="define_phrase_button"></div>
-          <div id="show_define_status"></div>
-          <div id="flyingaccept"></div>
-          <div id="prevbutton"></div>
-          <div id="nextbutton"></div>
-          <div id="clearbutton"></div>
-          <div id="paraphrase"></div>
-          <div id="define_ph"></div>
-          <div id="close_define_interface"></div>
-          <div id="define_instead"></div>
-          <div id="reset_all_progress"></div>
-          <div id="random"></div>
+        <div class="history">
+          <div class="card-header">
+            Recipe Steps (<span class="curr_steps">0</span>/<span class="max_steps">100</span>)
+          </div>
+          <div class="history-steps" id="command_history"></div>
         </div>
       </div>
     </div>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+    <div class="modals">
+      <div class="modal-container" id="helpme">
+        <div class="modal">
+          <div class="modal-header">
+            Help for SHRDLURN (esc to close)
+          </div>
+          <div class="modal-body">
+            <p> The goal is to teach SHRDLURN (the computer) to understand more English. You have to define things in a way that can already be understood by SHRDLURN.
+              This includes anything that you or others have already taught it,
+              as well as the core language below, which it always understands:
+              <ul>
+                <li><b>number: </b> 0, 1, 2, ..., 9, many</li>
+                <li><b>color: </b> red, cyan, brown, yellow, orange</li>
+                <li><b>action: </b> remove, add [color] </li>
+                <li><b>condition: </b> top [color], row = [number], height &gt; [number], has [color], etc. </li>
+                <li><b>if: </b> [action] if [condition]
+                  <ul>
+                    <li>add red if col = 1 or col = 8 or row = 1 or row = 8</li>
+                    <li>add red if row &lt; 3</li>
+                    <li>remove if top red</li>
+                  </ul>
+                </li>
+                <li><b>control: </b> [action] then [action], repeat [action] 3 times
+                  <ul>
+                    <li>repeat remove if has red many times</li>
+                    <li>remove then add red if top yellow </li>
+                    <li>repeat add red 3 times if top yellow or row &lt; 3 </li>
+                    <li>[remove then add red then add red] if height &lt; 1</li>
+                    <li>repeat add red then add yellow 5 times if height &gt; 0 </li>
+                  </ul>
+                </li>
+                <li><b>(advanced) relative condition: </b> relativepos_of [condition]
+                <ul>
+                  <li>add yellow if leftof top red</li>
+                  <li>add yellow if rightof col = 3</li>
+                  <li>add yellow if backof col = row </li>
+                  <li>add yellow if rightof frontof [row = 4 and col = 4]</li>
+                </ul>
+                </li>
+                <li><b>(advanced) extremes: </b> largest X in [condition]
+                <ul>
+                  <li>add yellow if largest row in all</li>
+                  <li>add yellow if smallest col in top red</li>
+                </ul>
+                </li>
+                <li><b>(advanced) inside: </b> inside [[condition]]
+                <ul>
+                  <li>add red if inside [top red]</li>
+                  <li>add red if inside [col = 1 or col = 4]</li>
+                  <li>add cyan if inside [ [ row = 1 or row = 4 ] and [col = 1 or col = 4] ] </li>
+                </ul>
+                </li>
+              </ul>
+            </p>
+            <h3>But it's not accepting my teachings! </h3>
+            <ul>
+              <li>
+                SHRDLURN understands everything in green boxes, blue are words it knows but not used correctly, red are unknowns.</li>
+              <li> <span style="color:red;">blah </span>
+              <span class="color-good">add red if height &lt; 1 </span>
+              <span style="color:blue;" ;="">then </span>
+              <span style="color:blue;" ;="">if </span><span style="color:red;">someblah </span>
+              <span class="color-good">add red </span>
+              <span class="color-good">remove red </span> </li>
+              <li> If there are several green boxes, then it understands each box, but not how they are combined. For example, <span class="color-good">add red </span>
+              <span class="color-good">remove red </span> needs to be changed to <span class="color-good">add red then remove red </span></li>
+              <li> Still, if nothing works, close the definition window and teach something else!</li>
+            </ul>
+            <p> English is hard for beginners, which is why we need your help teaching SHRDLURN!</p>
+            <a class="button--closed help-toggle" href="#" >Okay, got it! (click here or press ESC key to close this window)</a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-container" id="keyboard_shortcuts">
+        <div class="modal">
+          <div class="modal-header">
+            Keyboard Shortcuts
+          </div>
+          <div class="modal-body">
+            <p>To make your life easier, we made the follow keyboard shortcuts so that you can rapidly build with SHRDLURN!</p>
+            <p>
+              <strong>enter:</strong> enter (try)<br />
+              <strong>accept:</strong> shift-enter (✓)<br />
+              <strong>define:</strong> crtl-d (teach)<br />
+              <strong>↑:</strong> up<br />
+              <strong>↓:</strong> down<br />
+              <strong>undo:</strong> ctrl-z<br />
+              <strong>redo:</strong> shift-ctrl-z
+            </p>
+            <p><a href="" class="keyboard-toggle">Got it? Great. Click to close this now (or press esc).</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700" rel="stylesheet">
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

@@ -63,6 +63,7 @@ export default class Game {
           this.Setting.status("SHRDLURN did not understand", query);
           this.Setting.promptDefine();
           this.Logger.log({ type: "queryUnknown", msg: query });
+          this.Setting.toggleAccept();
         } else {
           this.Setting.removePromptDefine();
           this.responses = formval;
@@ -70,6 +71,7 @@ export default class Game {
           this.query = query;
           this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and ✓ to confirm.`, `${query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
           this.Logger.log({ type: "query", msg: query });
+          this.Setting.toggleAccept();
         }
 
         if (configs.debugMode) {
@@ -85,6 +87,7 @@ export default class Game {
     if (this.getSteps() >= this.maxTargetSteps) {
       this.Setting.status("you've reached the maxinum number of steps", "can't accept");
       this.Logger.log({ type: "meta", msg: "max steps" });
+      this.Setting.toggleAccept();
     } else if (this.responses.length > 0) {
       this.Sempre.query({ q: this.query, accept: this.responses[this.selectedResp].rank, sessionId: this.sessionId }, () => {});
 
@@ -94,6 +97,7 @@ export default class Game {
       this.history.push({ query: this.query, type: "accept", state: this.currentState, stepN: this.getSteps() + 1 });
       this.resetResponses();
       this.update();
+      this.Setting.toggleAccept();
     } else {
       this.Setting.status("✓: can't accept nothing, say something first");
     }
@@ -123,9 +127,9 @@ export default class Game {
 
   update() {
     /* Update the canvas */
-    let afterStruct = configs.emptyStruct;
+    let afterStruct = this.currentState;
     if (this.responses.length > 0) afterStruct = this.responses[this.selectedResp].value;
-    /* TODO:  this.Setting.renderCanvas([this.currentState, afterStruct]); */
+    this.Setting.renderCanvas(afterStruct);
 
     /* Update the history */
     this.Setting.renderHistory(this.history);

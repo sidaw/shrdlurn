@@ -16,6 +16,7 @@ class App {
     this.activeHistoryElem = -1;
     this.awesomplete = {};
     this.helpOn = false;
+    this.keyboardOn = false;
 
     this.updateRandomUtterances();
 
@@ -52,13 +53,13 @@ class App {
     }
 
     this.Game.enter(this.consoleElem.value);
-    this.consoleElem.value = "";
 
     this.updateRandomUtterances();
   }
 
   accept() {
     this.Game.accept();
+    this.consoleElem.value = "";
     this.consoleElem.focus();
     this.updateRandomUtterances();
   }
@@ -87,6 +88,13 @@ class App {
     this.Setting.closeDefineInterface();
     this.Game.defineSuccess = "";
     this.defineState = false;
+  }
+
+  toggleDefineInterface() {
+    if (this.defineState) {
+      this.closeDefineInterface();
+    }
+    this.openDefineInterface();
   }
 
   undo() {
@@ -156,10 +164,11 @@ class App {
   updateRandomUtterances() {
     this.Sempre.query({ q: "(autocomplete \"\")", sessionId: this.Game.sessionId }, (resp) => {
       const autocompletes = resp.autocompletes;
-      let randomStrings = "";
-      for (const ac of autocompletes) {
-        randomStrings += `<span>${ac}</span><br>`;
-      }
+      // let randomStrings = "";
+      // for (const ac of autocompletes) {
+      //   randomStrings += `<span>${ac}</span><br>`;
+      // }
+      const randomStrings = `<span>${autocompletes[0]}</span>`;
       document.getElementById(configs.randomElemId).innerHTML = randomStrings;
     });
   }
@@ -171,7 +180,12 @@ class App {
 
   toggleHelp() {
     this.helpOn = !this.helpOn;
-    document.getElementById(configs.referenceElemId).classList.toggle("hidden");
+    document.getElementById(configs.elems.helpMe).classList.toggle("active");
+  }
+
+  toggleKeyboard() {
+    this.keyboardOn = !this.keyboardOn;
+    document.getElementById(configs.elems.keyboard).classList.toggle("active");
   }
 }
 
@@ -184,7 +198,7 @@ document.getElementById(configs.buttons.accept).addEventListener("click", () => 
 document.getElementById(configs.buttons.prev).addEventListener("click", () => A.prev(), false);
 document.getElementById(configs.buttons.next).addEventListener("click", () => A.next(), false);
 document.getElementById(configs.buttons.clear).addEventListener("click", () => A.clear(), false);
-document.getElementById(configs.buttons.paraphrase).addEventListener("click", () => A.openDefineInterface(), false);
+document.getElementById(configs.buttons.toggleDefine).addEventListener("click", () => A.toggleDefineInterface(), false);
 document.getElementById(configs.consoleElemId).addEventListener("keyup", () => true);
 document.getElementById(configs.buttons.define).addEventListener("click", () => A.enter(), false);
 document.getElementById(configs.buttons.close_define).addEventListener("click", () => A.closeDefineInterface(), false);
@@ -192,13 +206,18 @@ document.getElementById(configs.buttons.define_instead).addEventListener("click"
 document.getElementById(configs.buttons.skip).addEventListener("click", () => A.skip(), false);
 document.getElementById(configs.buttons.reset).addEventListener("click", (e) => { e.preventDefault(); A.resetAllProgress(); }, false);
 
-const helpButtons = document.querySelectorAll(".help-button, .close-help");
-for (const helpButton of helpButtons) {
-  helpButton.addEventListener("click", (e) => {
-    e.preventDefault();
-    A.toggleHelp();
-  });
+function openAndCloseSetter(selector, callback, callbackObj) {
+  const buttons = document.querySelectorAll(selector);
+  for (const button of buttons) {
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      callback.apply(callbackObj);
+    });
+  }
 }
+
+openAndCloseSetter(".help-toggle", A.toggleHelp, A);
+openAndCloseSetter(".keyboard-toggle", A.toggleKeyboard, A);
 
 document.getElementById("command_history").addEventListener("click", (e) => {
   let index = 0;
@@ -256,6 +275,8 @@ window.onkeydown = (e) => {
         A.closeDefineInterface();
       } else if (A.helpOn) {
         A.toggleHelp();
+      } else if (A.keyboardOn) {
+        A.toggleKeyboard();
       }
       break;
     case Hotkeys.UNDO:
