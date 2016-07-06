@@ -14,8 +14,8 @@ configs.defaultSessionId = "deadbeef";
 configs.emptyStruct = [];
 
 configs.mainCanvas = "main_canvas";
-configs.targetCanvas = "canvastarget";
-configs.consoleElemId = "maintextarea";
+configs.targetCanvas = "target_canvas";
+configs.consoleElemId = "console";
 configs.historyElemId = "command_history";
 configs.statusElemId = "status";
 configs.currentCmdElemId = "currentcmd";
@@ -26,6 +26,36 @@ configs.reactionElemId = "reaction";
 configs.defineElemId = "definetextarea";
 configs.defineButton = "define_phrase_button";
 configs.definePromptElemId = "show_define_status";
+configs.randomElemId = "random";
+configs.referenceElemId = "reference";
+
+configs.elems = {
+  helpMe: "helpme",
+  keyboard: "keyboard_shortcuts",
+  currSteps: "curr_steps",
+  consoleGroup: "console_group",
+  defineInterface: "define_interface",
+  console: "console",
+  defineConsole: "definetextarea",
+  defineStatus: "define_status",
+  defineHeader: "define_header",
+  definePrompt: "define_prompt",
+};
+
+configs.buttons = {
+  do: "dobutton",
+  accept: "flyingaccept",
+  prev: "prevbutton",
+  next: "nextbutton",
+  clear: "clearbutton",
+  paraphrase: "paraphrase",
+  define: "define_phrase_button",
+  close_define: "close_define_interface",
+  define_instead: "define_instead",
+  skip: "skip_button",
+  reset: "reset_all_progress",
+  toggleDefine: "toggledefine",
+};
 
 configs.difficulty = 3;
 configs.defaultSkips = 2;

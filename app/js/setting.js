@@ -51,8 +51,8 @@ export default class Setting {
   }
 
   renderTarget(state) {
-    this.renderBoard(this.isoTarget, this.targetScale);
-    this.renderBlocks(this.isoTarget, state, this.targetScale);
+    this.renderBoard(this.isoTarget, this.targetScale, this.targetTranslate);
+    this.renderBlocks(this.isoTarget, state, this.targetScale, this.targetTranslate);
   }
 
   renderCanvas(state) {
@@ -60,8 +60,8 @@ export default class Setting {
     this.renderBlocks(this.iso, state);
   }
 
-  renderBoard(iso, scalingFactor = 1) {
-    const translateBy = this.translateFactor * this.basicUnit * scalingFactor;
+  renderBoard(iso, scalingFactor = 1, translateFactor = 0) {
+    const translateBy = translateFactor * this.basicUnit * scalingFactor;
     for (let x = this.width - 1; x >= 0; x--) {
       for (let y = this.width - 1; y >= 0; y--) {
         iso.add(
@@ -75,13 +75,14 @@ export default class Setting {
             this.baseHeight * scalingFactor
           )
           .rotateZ(this.centerPoint, this.rotation)
-          .translate(translateBy, translateBy, translateBy)
+          .translate(translateBy, -translateBy, -4.5 * translateBy),
+          new Color(144, 144, 144)
         );
       }
     }
   }
 
-  renderBlocks(iso, state, scalingFactor = 1) {
+  renderBlocks(iso, state, scalingFactor = 1, translateFactor = 0) {
     const blocks = this.sortBlocks(state);
     for (const block of blocks) {
       const color = configs.colorMap[block.color];
@@ -91,12 +92,12 @@ export default class Setting {
       } else {
         blockColor = new Color(color[0], color[1], color[2]);
       }
-      iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor), blockColor);
+      iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor), blockColor);
     }
   }
 
-  makeBlock(x, y, z, scalingFactor = 1) {
-    const translateBy = this.translateFactor * this.basicUnit * scalingFactor;
+  makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0) {
+    const translateBy = translateFactor * this.basicUnit * scalingFactor;
     return Shape.Prism(
       Point((x + (x * this.borderWidth)) * scalingFactor,
             (y + (y * this.borderWidth)) * scalingFactor,
@@ -105,7 +106,7 @@ export default class Setting {
       this.basicUnit * scalingFactor, this.basicUnit * scalingFactor, this.basicUnit * scalingFactor
     )
     .rotateZ(this.centerPoint, this.rotation)
-    .translate(translateBy, translateBy, translateBy);
+    .translate(translateBy, -translateBy, -4.5 * translateBy);
   }
 
   sortBlocks(blocks) {
@@ -182,9 +183,9 @@ export default class Setting {
   }
 
   setSteps(poss, max) {
-    const currSteps = document.querySelectorAll(`.${configs.possStepsElemId}`);
-    for (const currStep of currSteps) {
-      currStep.innerHTML = poss;
+    const possSteps = document.querySelectorAll(`.${configs.possStepsElemId}`);
+    for (const possStep of possSteps) {
+      possStep.innerHTML = poss;
     }
 
     const maxSteps = document.querySelectorAll(`.${configs.maxStepsElemId}`);
@@ -194,7 +195,7 @@ export default class Setting {
   }
 
   updateSteps(steps) {
-    const currSteps = document.querySelectorAll(`.${configs.currStepsElemId}`);
+    const currSteps = document.querySelectorAll(`.${configs.elems.currSteps}`);
     for (const currStep of currSteps) {
       currStep.innerHTML = steps;
     }
@@ -206,35 +207,36 @@ export default class Setting {
       return false;
     }
 
-    const defineInterface = document.getElementById("define_interface");
-    defineInterface.classList.remove("hidden");
+    const defineInterface = document.getElementById(configs.elems.defineInterface);
+    defineInterface.classList.add("active");
 
-    document.getElementById(configs.consoleElemId).classList.add("hidden");
-    document.getElementById("mainbuttons").classList.add("hidden");
-
-    const defineStatus = document.getElementById("define_status");
+    const defineStatus = document.getElementById(configs.elems.defineStatus);
     defineStatus.innerHTML = `Teach SHRDLURN ${query}.`;
+
+    const toggleButton = document.getElementById(configs.buttons.toggleDefine);
+    toggleButton.innerHTML = "Return";
 
     this.tryDefine(query, false, canAnswer, coverage);
 
-    document.getElementById(configs.defineElemId).focus();
+    document.getElementById(configs.elems.defineConsole).focus();
     return true;
   }
 
   closeDefineInterface() {
-    const defineInterface = document.getElementById("define_interface");
-    defineInterface.classList.add("hidden");
+    const defineInterface = document.getElementById(configs.elems.defineInterface);
+    defineInterface.classList.remove("active");
 
-    document.getElementById("define_phrase_button").innerHTML = "try";
+    const toggleButton = document.getElementById(configs.buttons.toggleDefine);
+    toggleButton.innerHTML = "Define";
 
-    const consoleElem = document.getElementById(configs.consoleElemId);
-    consoleElem.classList.remove("hidden");
+    removePromptDefine();
+
+    const consoleElem = document.getElementById(configs.elems.console);
     consoleElem.focus();
-    document.getElementById("mainbuttons").classList.remove("hidden");
   }
 
   tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "") {
-    const defineHeader = document.getElementById("define_header");
+    const defineHeader = document.getElementById(configs.elems.defineHeader);
     document.getElementById(configs.definePromptElemId).classList.add("hidden");
 
     if (!refineDefine) {
@@ -323,11 +325,11 @@ export default class Setting {
   }
 
   promptDefine() {
-    document.getElementById(configs.definePromptElemId).classList.remove("hidden");
+    document.getElementById(configs.elems.definePrompt).classList.remove("hidden");
   }
 
   removePromptDefine() {
-    document.getElementById(configs.definePromptElemId).classList.add("hidden");
+    document.getElementById(configs.elems.definePrompt).classList.add("hidden");
   }
 
   setSkips(skipsLeft) {
@@ -337,5 +339,9 @@ export default class Setting {
     } else {
       document.getElementById("skip_button").classList.add("hidden");
     }
+  }
+
+  toggleAccept() {
+    document.getElementById(configs.elems.consoleGroup).classList.toggle("accepting");
   }
 }

@@ -7,114 +7,107 @@
     <title>SHRDLURN</title>
   </head>
   <body>
+    <div class="header">
+      <div class="logo">
+        <span class="l-r">S</span><span class="l-y">H</span><span class="l-o">R</span><span class="l-b">D</span><span class="l-r">L</span><span class="l-y">U</span><span class="l-o">R</span><span class="l-b">N</span>
+        <span class="sublogo">A Stanford NLP Project</span>
+      </div>
+      <div class="nav">
+        <div class="help-toggle">Help Me</div>
+        <div class="keyboard-toggle">Keyboard Shortcuts</div>
+        <div>Restart Tutorial</div>
+        <div id="reset_all_progress">Reset All Progress</div>
+      </div>
+    </div>
     <div class="container">
-      <div class="panel">
-        <div class="canvas-header ch-target">target</div>
-        <canvas id="canvastarget" width="650" height="600"></canvas>
-        <div class="panel-block">
-          possible in <span class="possible_steps" style="font-weight:bold;">0</span> steps<br />
-          must be completed in <span class="max_steps" style="font-weight:bold;">100</span> steps
-        </div>
-        <button class="button button--big panel-block" id="skip_button">skip (<span id="skips_left">2</span> left) &rarr;</button>
-        <!-- <div class="panel-block">game points: 0</div> -->
-        <div class="panel-block">
-          <strong>keyboard shortcuts:</strong><br />
-          ↵: enter (try)<br />
-          ✓: shift-enter (accept)<br />
-          ~: crtl-d (teach)<br />
-          ↑: up<br />
-          ↓: down<br />
-          undo: ctrl-z<br />
-          redo: shift-ctrl-z
-        </div>
-        <div class="panel-block">
-          <a href="" class="help-button">Help me</a>
-        </div>
-        <div class="panel-block">
-          <a href="" id="reset_all_progress">reset ALL progress</a>
-        </div>
-        <div class="panel-block">
-          go back to tutorial
-        </div>
-        <div class="panel-block">
-          <strong>SHRDLURN already learned:</strong><br />
-          <div id="random_utterances"></div>
-        </div>
-      </div>
       <div class="main">
-        <!-- Canvas -->
-        <div class="canvas-header ch-before">before action</div>
-        <div class="canvas-header ch-after">after action</div>
-        <canvas id="main_canvas" width="1300" height="1200"></canvas>
-        <div class="col-info hidden">col 1</div>
-        <div class="row-info hidden">row 1</div>
-        <div class="col-info-8 hidden">col 8</div>
-        <div class="row-info-8 hidden">row 8</div>
-        <div class="curr-buttons hidden">
-          <button id="clear_button" class="button button--big">clear</button>
-          <!-- TODO: Submit! <button id="submit-button" class="button button--big">submit</button> -->
+        <div id="define_prompt" class="canvas-prompt hidden">
+          <h1>SHRDLURN does not understand.</h1>
+          <hr>
+          <p>Help SHRDLURN learn by teaching the phrase you attempted to instruct SHRDLURN with by defining it.</p>
+          <button type="button" class="bold-button" id="define_instead">Ok. TEACH SHRDLURN.</button>
         </div>
-        <!-- TODO: REJECT BUTTON! -->
-        <div class="meta-actions hidden">
-          <button id="flyingaccept" class="button button--solved" ctitle="take this action (shift-enter)">&#x2713;</button>
-          <button class="button button--solved" id="paraphrase"
-          ctitle="teach SHRDLURN what you mean">~</button>
-          <button class="button button--solved (up key)" id="prevbutton"
-          ctitle="show previous action">&uarr; </button>
-          <button class="button button--solved" id="nextbutton"
-          ctitle="show next action (down key)">&darr; </button>
-        </div>
-        <span id="show_define_status" class="hidden">
-          didn't understand. <br/>
-          <a href='' id='define_instead' class='define-this'>
-            please teach (ctrl-d)!</a>
-        </span>
-
-        <!-- Interaction areas -->
-        <div id="chat" style="center">
-          <div id="statusinfo">
-            &nbsp; <span id="reaction"><img class="emojione" alt=":rolling_eyes:" src="http://cdn.jsdelivr.net/emojione/assets/png/1f644.png"></span>
-            <span id="currentcmd"><b>No command</b> </span>,
-            <span id="status">type one!</span>
+        <canvas id="main_canvas" width="1536" height="1200"></canvas>
+        <div class="define-area" id="define_interface">
+          <div class="status">
+            <span class="reaction"><img class="emojione" alt=":rolling_eyes:" src="http://cdn.jsdelivr.net/emojione/assets/png/1f642.png"></span>
+            <span id="define_header"></span>
+              <div id="show_define_status"></div>
+              <div id="define_phrase_button"></div>
+              <div id="show_define_status"></div>
+              <div id="define_phrase"></div>
+              <div id="close_define_interface"></div>
           </div>
-
-          <div id="define_interface" class="hidden">
-            <span class="b-header"><span id="define_header"></span>
-            </span>
-
-            <hr/>
-            <div class="define-inputs">
-              <input class="awesomplete" type="text" id="definetextarea" placeholder="write a definition here" maxlength="100"/>
-              <button class="button button--big" id="define_phrase_button" ctitle="enter definition (enter key)">try it</button>
-              <button class="button button--big button--closed" id="close_define_interface"  ctitle="close the teaching panel (esc or ctrl-d)">close</button>
+          <div class="input-group">
+            <input type="text" id="definetextarea" />
+            <div class="buttons-at-end">
+              <button type="button" class="enter-button" id="try_define">try</button>
+              <button type="button" class="accept-button" id="define_phrase">define</button>
             </div>
-            <span class="helpertext">
-              <span id="define_status">
-                what you said
-              </span>
-            <a href="" class="reference_link">But it doesn't work, I need help...</a>
-            </span>
           </div>
-
-          <input type="text" id="maintextarea" placeholder="type your command here! e.g. add red if top yellow" maxlength="100"/>
-          <div class="buttons" id="mainbuttons">
-            <button class="button button--solved" id="dobutton" ctitle="enter command (enter key)">&crarr;</button>
+          <div class="examples">
+            <span id="define_status"></span>
           </div>
-
-          <fieldset class="command-history-container">
-            <legend>recipe steps <span id="recipe_steps">(<span class="curr_steps">0</span>/<span class="max_steps">100</span>)</span></legend>
-            <div id="command_history"></div>
-          </fieldset>
+        </div>
+        <div class="console-area">
+          <div id="statusinfo" class="status">
+            &nbsp; <span class="reaction" id="reaction"><img class="emojione" alt=":rolling_eyes:" src="http://cdn.jsdelivr.net/emojione/assets/png/1f644.png"></span>
+            <div>
+              <span id="currentcmd"><b>No command</b></span>, <span id="status">type one!</span>
+            </div>
+          </div>
+          <div class="input-group" id="console_group">
+            <input type="text" id="console">
+            <div class="buttons-at-end">
+              <button type="button" class="remove-button">&times;</button>
+              <button type="button" class="enter-button" id="dobutton">enter</button>
+              <button type="button" class="accept-button" id="flyingaccept">accept</button>
+            </div>
+          </div>
+          <div class="examples">
+            <strong>example query:</strong> <span id="random"></span>
+          </div>
+        </div>
+        <div class="meta-buttons">
+          <button type="button" id="clearbutton">clear</button>
+          <!-- TODO: <button type="button">submit</button> -->
+          <br>
+          <button type="button" id="toggledefine">define</button>
+          <button type="button" id="prevbutton">&uarr;</button>
+          <button type="button" id="nextbutton">&darr;</button>
         </div>
       </div>
-
-      <!-- Modals -->
-      <div class="modals">
-        <div class="modal-container hidden" id="reference">
-          <div class="modal" style="overflow-y:scroll;">
-            <h1>Help for SHRDLURN (esc to close)</h1>
-
-            <hr><br>
+      <div class="panel">
+        <div class="target card">
+          <div class="card-header">
+            Target
+            <button type="button" id="skip_button" class="seethrough">skip (<span id="skips_left">2</span> left)</button>
+          </div>
+          <div class="target-footer">
+            <div>
+              <div>possible: <span class="possible_steps" style="font-weight:bold;">5</span> steps</div>
+            </div>
+            <div>
+              <div>maximum: <span class="max_steps" style="font-weight:bold;">15</span> steps</div>
+            </div>
+          </div>
+          <canvas id="target_canvas" width="512" height="800"></canvas>
+        </div>
+        <div class="history">
+          <div class="card-header">
+            Recipe Steps (<span class="curr_steps">0</span>/<span class="max_steps">100</span>)
+          </div>
+          <div class="history-steps" id="command_history"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modals">
+      <div class="modal-container" id="helpme">
+        <div class="modal">
+          <div class="modal-header">
+            Help for SHRDLURN (esc to close)
+          </div>
+          <div class="modal-body">
             <p> The goal is to teach SHRDLURN (the computer) to understand more English. You have to define things in a way that can already be understood by SHRDLURN.
               This includes anything that you or others have already taught it,
               as well as the core language below, which it always understands:
@@ -177,12 +170,32 @@
               <li> Still, if nothing works, close the definition window and teach something else!</li>
             </ul>
             <p> English is hard for beginners, which is why we need your help teaching SHRDLURN!</p>
-            <a class="button--closed" class="close-help" href="" >Okay, got it! (click here or press ESC key to close this window)</a>
+            <a class="button--closed help-toggle" href="#" >Okay, got it! (click here or press ESC key to close this window)</a>
           </div>
         </div>
       </div>
+      <div class="modal-container" id="keyboard_shortcuts">
+        <div class="modal">
+          <div class="modal-header">
+            Keyboard Shortcuts
+          </div>
+          <div class="modal-body">
+            <p>To make your life easier, we made the follow keyboard shortcuts so that you can rapidly build with SHRDLURN!</p>
+            <p>
+              <strong>enter:</strong> enter (try)<br />
+              <strong>accept:</strong> shift-enter (✓)<br />
+              <strong>define:</strong> crtl-d (teach)<br />
+              <strong>↑:</strong> up<br />
+              <strong>↓:</strong> down<br />
+              <strong>undo:</strong> ctrl-z<br />
+              <strong>redo:</strong> shift-ctrl-z
+            </p>
+            <p><a href="" class="keyboard-toggle">Got it? Great. Click to close this now (or press esc).</a></p>
+          </div>
+        </div>
       </div>
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,700">
+    </div>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700" rel="stylesheet">
     <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
