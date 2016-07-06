@@ -17,6 +17,7 @@ class App {
     this.awesomplete = {};
     this.helpOn = false;
     this.keyboardOn = false;
+    this.watchOutForDefine = false;
 
     this.updateRandomUtterances();
 
@@ -43,6 +44,7 @@ class App {
         this.consoleElem.focus();
       }
 
+      this.watchOutForDefine = true;
       return;
     }
 
@@ -93,8 +95,9 @@ class App {
   toggleDefineInterface() {
     if (this.defineState) {
       this.closeDefineInterface();
+    } else {
+      this.openDefineInterface();
     }
-    this.openDefineInterface();
   }
 
   undo() {
@@ -187,6 +190,21 @@ class App {
     this.keyboardOn = !this.keyboardOn;
     document.getElementById(configs.elems.keyboard).classList.toggle("active");
   }
+
+  putBack() {
+    this.Setting.toggleAccept();
+    this.Setting.removePromptDefine();
+    this.consoleElem.value = "";
+    this.consoleElem.focus();
+  }
+
+  defining() {
+    if (this.watchOutForDefine) {
+      this.Setting.toggleDefineButton();
+      this.watchOutForDefine = false;
+    }
+    this.Setting.promptTryDefine();
+  }
 }
 
 const A = new App();
@@ -201,9 +219,10 @@ document.getElementById(configs.buttons.clear).addEventListener("click", () => A
 document.getElementById(configs.buttons.toggleDefine).addEventListener("click", () => A.toggleDefineInterface(), false);
 document.getElementById(configs.consoleElemId).addEventListener("keyup", () => true);
 document.getElementById(configs.buttons.define).addEventListener("click", () => A.enter(), false);
-document.getElementById(configs.buttons.close_define).addEventListener("click", () => A.closeDefineInterface(), false);
 document.getElementById(configs.buttons.define_instead).addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); }, false);
 document.getElementById(configs.buttons.skip).addEventListener("click", () => A.skip(), false);
+document.getElementById(configs.buttons.putBack).addEventListener("click", () => A.putBack(), false);
+document.getElementById(configs.elems.defineConsole).addEventListener("keydown", (e) => A.defining(e), false);
 
 function openAndCloseSetter(selector, callback, callbackObj) {
   const buttons = document.querySelectorAll(selector);
@@ -270,12 +289,12 @@ window.onkeydown = (e) => {
       A.openDefineInterface();
       break;
     case Hotkeys.ESC:
-      if (A.defineState) {
-        A.closeDefineInterface();
-      } else if (A.helpOn) {
+      if (A.helpOn) {
         A.toggleHelp();
       } else if (A.keyboardOn) {
         A.toggleKeyboard();
+      } else if (A.defineState) {
+        A.closeDefineInterface();
       }
       break;
     case Hotkeys.UNDO:

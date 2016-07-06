@@ -55,6 +55,8 @@ configs.buttons = {
   skip: "skip_button",
   reset: "reset_all_progress",
   toggleDefine: "toggledefine",
+  putBack: "putbackbutton",
+  tryDefine: "try_define",
 };
 
 configs.difficulty = 3;

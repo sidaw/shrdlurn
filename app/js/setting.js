@@ -25,18 +25,18 @@ export default class Setting {
     this.renderCanvas(configs.emptyStruct);
     this.renderTarget(configs.emptyStruct);
 
-    /* TODO: TEMPORARY FAKE DATA UNTIL SEMPRE IS UPDATED */
-    const fake = [
-      { x: 5, y: 3, z: 0, color: "Red", names: ["S", "A"] },
-    ];
-
-    const fakeTarget = [
-      { x: 3, y: 2, z: 0, color: "Brown" },
-    ];
-
-    this.renderCanvas(fake);
-    this.renderTarget(fakeTarget);
-    /* END TODO */
+    // /* TODO: TEMPORARY FAKE DATA UNTIL SEMPRE IS UPDATED */
+    // const fake = [
+    //   { x: 5, y: 3, z: 0, color: "Red", names: ["S", "A"] },
+    // ];
+    //
+    // const fakeTarget = [
+    //   { x: 3, y: 2, z: 0, color: "Brown" },
+    // ];
+    //
+    // this.renderCanvas(fake);
+    // this.renderTarget(fakeTarget);
+    // /* END TODO */
   }
 
   renderTarget(state) {
@@ -122,6 +122,21 @@ export default class Setting {
     });
   }
 
+  computeDiff(state, newState) {
+    const state1 = new Set(this.squashToCoordinates(state));
+    const state2 = new Set(this.squashToCoordinates(newState));
+
+    const difference = new Set([...state1].filter(c => !state2.has(c)));
+    const intersection = new Set([...state1].filter(c => state2.has(c)));
+
+    return Array.from(difference).map((c) => (Object.assign(c, { names: [...c.names, "_new"] })))
+      .concat(Array.from(intersection));
+  }
+
+  squashToCoordinates(struct) {
+    return struct.map((c) => ({ x: c.x, y: c.y, z: c.z }));
+  }
+
   equalityCheck(struct1, struct2) {
     return struct1 === struct2;
   }
@@ -205,6 +220,8 @@ export default class Setting {
     const toggleButton = document.getElementById(configs.buttons.toggleDefine);
     toggleButton.innerHTML = "Return";
 
+    this.removePromptDefine();
+
     this.tryDefine(query, false, canAnswer, coverage);
 
     document.getElementById(configs.elems.defineConsole).focus();
@@ -218,7 +235,7 @@ export default class Setting {
     const toggleButton = document.getElementById(configs.buttons.toggleDefine);
     toggleButton.innerHTML = "Define";
 
-    removePromptDefine();
+    this.removePromptDefine();
 
     const consoleElem = document.getElementById(configs.elems.console);
     consoleElem.focus();
@@ -226,7 +243,7 @@ export default class Setting {
 
   tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "") {
     const defineHeader = document.getElementById(configs.elems.defineHeader);
-    document.getElementById(configs.definePromptElemId).classList.add("hidden");
+    document.getElementById(configs.elems.definePrompt).classList.add("hidden");
 
     if (!refineDefine) {
       if (canAnswer) {
@@ -332,5 +349,13 @@ export default class Setting {
 
   toggleAccept() {
     document.getElementById(configs.elems.consoleGroup).classList.toggle("accepting");
+  }
+
+  promptTryDefine() {
+    document.getElementById(configs.buttons.tryDefine).classList.add("active");
+  }
+
+  toggleDefineButton() {
+    document.getElementById(configs.buttons.define).classList.add("active");
   }
 }

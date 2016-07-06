@@ -31,21 +31,16 @@
           <div class="status">
             <span class="reaction"><img class="emojione" alt=":rolling_eyes:" src="http://cdn.jsdelivr.net/emojione/assets/png/1f642.png"></span>
             <span id="define_header"></span>
-              <div id="show_define_status"></div>
-              <div id="define_phrase_button"></div>
-              <div id="show_define_status"></div>
-              <div id="define_phrase"></div>
-              <div id="close_define_interface"></div>
           </div>
           <div class="input-group">
             <input type="text" id="definetextarea" />
             <div class="buttons-at-end">
               <button type="button" class="enter-button" id="try_define">try</button>
-              <button type="button" class="accept-button" id="define_phrase">define</button>
+              <button type="button" class="accept-button" id="define_phrase_button">define</button>
             </div>
           </div>
           <div class="examples">
-            <span id="define_status"></span>
+            <span id="define_status"></span>&nbsp;<a href="" class="help-toggle">But it doesn't work, I need help...</a>
           </div>
         </div>
         <div class="console-area">
@@ -58,7 +53,7 @@
           <div class="input-group" id="console_group">
             <input type="text" id="console">
             <div class="buttons-at-end">
-              <button type="button" class="remove-button">&times;</button>
+              <button type="button" class="remove-button" id="putbackbutton">&times;</button>
               <button type="button" class="enter-button" id="dobutton">enter</button>
               <button type="button" class="accept-button" id="flyingaccept">accept</button>
             </div>

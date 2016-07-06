@@ -69,7 +69,7 @@ export default class Game {
           this.responses = formval;
           this.selectedResp = 0;
           this.query = query;
-          this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and ✓ to confirm.`, `${query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
+          this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and accept to confirm.`, `${query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
           this.Logger.log({ type: "query", msg: query });
           this.Setting.toggleAccept();
         }
@@ -128,7 +128,9 @@ export default class Game {
   update() {
     /* Update the canvas */
     let afterStruct = this.currentState;
-    if (this.responses.length > 0) afterStruct = this.responses[this.selectedResp].value;
+    if (this.responses.length > 0) {
+      afterStruct = this.Setting.computeDiff(this.currentState, this.responses[this.selectedResp].value);
+    }
     this.Setting.renderCanvas(afterStruct);
 
     /* Update the history */
@@ -160,7 +162,7 @@ export default class Game {
           this.responses = formval;
           this.update();
           this.Setting.tryDefine(query, true, true);
-          document.getElementById(configs.defineButton).innerHTML = "define";
+          this.Setting.toggleDefineButton();
         }
       });
       return false;
