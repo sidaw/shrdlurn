@@ -1,8 +1,10 @@
 const configs = {};
 
-if (configs.SEMPRE_URL === undefined) {
+if (process.env.NODE_ENV === "local")
+  configs.SEMPRE_URL = "http://localhost:8400";
+else
   configs.SEMPRE_URL = "http://jonsson.stanford.edu:8401";
-}
+
 
 configs.loggerServer = "ws://hydrogen.samginn.com:4000/socket";
 configs.loggerOn = false;
@@ -12,7 +14,7 @@ configs.debugMode = false;
 configs.defaultSessionId = "deadbeef";
 
 configs.emptyStruct = [];
-configs.defaultStruct = configs.emptyStruct;
+configs.defaultStruct = [{x:1,y:1,z:1,color:"Red", names:["s"]}];
 
 configs.mainCanvas = "main_canvas";
 configs.targetCanvas = "target_canvas";
@@ -91,12 +93,25 @@ configs.targets = [
 configs.store = sessionStorage;
 
 /* http://www.colourlovers.com/palette/1473/Ocean_Five */
+// configs.colorMap = {
+//   Red: [204, 51, 63], /* Red */
+//   Orange: [235, 104, 65], /* Orange */
+//   Yellow: [237, 201, 81], /* Yellow */
+//   Cyan: [0, 160, 176], /* Cyan */
+//   Brown: [106, 74, 60], /* Brown */
+// };
+
+/* http://colrd.com/palette/23813/?download=css */
 configs.colorMap = {
-  Red: [204, 51, 63], /* Red */
-  Cyan: [0, 160, 176], /* Cyan */
-  Brown: [106, 74, 60], /* Brown */
-  Yellow: [237, 201, 81], /* Yellow */
-  Orange: [235, 104, 65], /* Orange */
+  Red: [209, 0, 0],
+  Orange: [255, 102, 34],
+  Yellow: [255, 218, 33],
+  Green: [51, 221, 0],
+  Blue: [17, 51, 204],
+  Black: [10, 10, 10],
+  White: [255,255,240],
+  Pink: [255,20,147],
+  Brown: [139,69,19]
 };
 
 export default configs;
