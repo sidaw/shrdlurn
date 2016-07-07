@@ -22,21 +22,8 @@ export default class Setting {
     this.targetScale = 0.5;
     this.targetTranslate = -2;
 
-    this.renderCanvas(configs.emptyStruct);
-    this.renderTarget(configs.emptyStruct);
-
-    // /* TODO: TEMPORARY FAKE DATA UNTIL SEMPRE IS UPDATED */
-    // const fake = [
-    //   { x: 5, y: 3, z: 0, color: "Red", names: ["S", "A"] },
-    // ];
-    //
-    // const fakeTarget = [
-    //   { x: 3, y: 2, z: 0, color: "Brown" },
-    // ];
-    //
-    // this.renderCanvas(fake);
-    // this.renderTarget(fakeTarget);
-    // /* END TODO */
+    this.renderCanvas(configs.defaultStruct);
+    this.renderTarget(configs.defaultStruct);
   }
 
   renderTarget(state) {
@@ -50,6 +37,7 @@ export default class Setting {
   }
 
   renderBoard(iso, scalingFactor = 1, translateFactor = 0) {
+    iso.canvas.clear();
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
     for (let x = this.width - 1; x >= 0; x--) {
       for (let y = this.width - 1; y >= 0; y--) {
@@ -77,7 +65,7 @@ export default class Setting {
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
-        blockColor = new Color(color[0], color[1], color[2], 0.5);
+        blockColor = new Color(color[0], color[1], color[2], 0.4);
       } else {
         blockColor = new Color(color[0], color[1], color[2]);
       }
@@ -122,19 +110,24 @@ export default class Setting {
     });
   }
 
-  computeDiff(state, newState) {
-    const state1 = new Set(this.squashToCoordinates(state));
-    const state2 = new Set(this.squashToCoordinates(newState));
-
-    const difference = new Set([...state1].filter(c => !state2.has(c)));
-    const intersection = new Set([...state1].filter(c => state2.has(c)));
-
-    return Array.from(difference).map((c) => (Object.assign(c, { names: [...c.names, "_new"] })))
-      .concat(Array.from(intersection));
+  stateIncludes(state, obj) {
+    for (const c of state) {
+      if (c.x === obj.x &&
+          c.y === obj.y &&
+          c.z === obj.z &&
+          c.color === obj.color) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  squashToCoordinates(struct) {
-    return struct.map((c) => ({ x: c.x, y: c.y, z: c.z }));
+  computeDiff(state, newState) {
+    const difference = newState.filter(c => !this.stateIncludes(state, c));
+    const intersection = state.filter(c => this.stateIncludes(newState, c));
+
+    return difference.map((c) => (Object.assign({}, c, { names: [...c.names, "_new"] })))
+      .concat(intersection);
   }
 
   equalityCheck(struct1, struct2) {
@@ -347,8 +340,12 @@ export default class Setting {
     }
   }
 
-  toggleAccept() {
-    document.getElementById(configs.elems.consoleGroup).classList.toggle("accepting");
+  promptAccept() {
+    document.getElementById(configs.elems.consoleGroup).classList.add("accepting");
+  }
+
+  removeAccept() {
+    document.getElementById(configs.elems.consoleGroup).classList.remove("accepting");
   }
 
   promptTryDefine() {

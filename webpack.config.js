@@ -5,8 +5,7 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const config = module.exports = {
-  //devtool: "source-map",
-  devtool: "eval",
+  devtool: "eval-source-map",
   entry: {
     application: [
       "webpack/hot/only-dev-server",

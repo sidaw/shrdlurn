@@ -192,8 +192,10 @@ class App {
   }
 
   putBack() {
-    this.Setting.toggleAccept();
+    this.Setting.removeAccept();
     this.Setting.removePromptDefine();
+    this.Game.resetResponses();
+    this.Game.update();
     this.consoleElem.value = "";
     this.consoleElem.focus();
   }
