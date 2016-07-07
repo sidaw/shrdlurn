@@ -12,6 +12,7 @@ configs.debugMode = false;
 configs.defaultSessionId = "deadbeef";
 
 configs.emptyStruct = [];
+configs.defaultStruct = configs.emptyStruct;
 
 configs.mainCanvas = "main_canvas";
 configs.targetCanvas = "target_canvas";
