@@ -46,8 +46,12 @@ export default class Game {
 
   querySempre(querystr) {
     const query = this.Sempre.formatQuery(querystr);
+    var contextCommand = "(context)";
+    if (this.currentState) {
+      const currentState = JSON.stringify(JSON.stringify(this.currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))));
+      contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${currentState}) (name b) (name c))))`;
+    } 
 
-    const contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${this.currentState}) (name b) (name c))))`;
     const contextCmds = { q: contextCommand, sessionId: this.sessionId };
 
     this.Sempre.query(contextCmds, () => {
@@ -129,6 +133,7 @@ export default class Game {
     /* Update the canvas */
     let afterStruct = this.currentState;
     if (this.responses.length > 0) afterStruct = this.responses[this.selectedResp].value;
+    console.log(afterStruct);
     this.Setting.renderCanvas(afterStruct);
 
     /* Update the history */

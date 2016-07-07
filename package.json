@@ -77,6 +77,7 @@
     "awesomplete": "^1.1.0",
     "isomer": "^0.2.6",
     "phoenix": "^1.2.0",
+    "sanitize.css": "^4.1.0",
     "whatwg-fetch": "^1.0.0"
   }
 }

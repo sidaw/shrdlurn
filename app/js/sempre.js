@@ -45,11 +45,11 @@ export default class SempreClient {
 
   formatValue(value) {
     if (typeof value === "undefined") return "";
-
+    // "[[5,5,1,\"Blue\",[]],[5,5,2,\"Red\",[]],[5,4,2,\"Green\",[]]]"
     const valueArray = JSON.parse(value);
 
-    /* TODO: const valueArray = [[1, 1, 0, "Red", []], [1, 1, 1, "Orange", []]]; */
-
+    // const valueArray = [[1, 1, 0, "Red", []], [1, 1, 1, "Orange", []]]; 
+    
     return valueArray.map((c) => (
       {
         x: c[0],
