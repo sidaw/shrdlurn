@@ -48,8 +48,8 @@ export default class SempreClient {
     // "[[5,5,1,\"Blue\",[]],[5,5,2,\"Red\",[]],[5,4,2,\"Green\",[]]]"
     const valueArray = JSON.parse(value);
 
-    // const valueArray = [[1, 1, 0, "Red", []], [1, 1, 1, "Orange", []]]; 
-    
+    // const valueArray = [[1, 1, 0, "Red", []], [1, 1, 1, "Orange", []]];
+
     return valueArray.map((c) => (
       {
         x: c[0],
@@ -195,8 +195,8 @@ export default class SempreClient {
     fetch(`${configs.SEMPRE_URL}/sempre?format=lisp2json&${cmdstr.join("&")}`)
       .then((response) => response.json())
       .then((json) => callback(json))
-      .catch((ex) => {
-        console.log("xmlhttp issue?", ex);
-      });
+      // .catch((ex) => {
+      //   console.log("xmlhttp issue?", ex);
+      // });
   }
 }

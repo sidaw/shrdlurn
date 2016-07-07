@@ -22,21 +22,8 @@ export default class Setting {
     this.targetScale = 0.5;
     this.targetTranslate = -2;
 
-    this.renderCanvas(configs.emptyStruct);
-    this.renderTarget(configs.emptyStruct);
-
-    /* TODO: TEMPORARY FAKE DATA UNTIL SEMPRE IS UPDATED */
-    const fake = [
-      { x: 5, y: 3, z: 0, color: "Red", names: ["S", "A"] },
-    ];
-
-    const fakeTarget = [
-      { x: 3, y: 2, z: 0, color: "Brown" },
-    ];
-
-    this.renderCanvas(fake);
-    this.renderTarget(fakeTarget);
-    /* END TODO */
+    this.renderCanvas(configs.defaultStruct);
+    this.renderTarget(configs.defaultStruct);
   }
 
   renderTarget(state) {
@@ -50,6 +37,7 @@ export default class Setting {
   }
 
   renderBoard(iso, scalingFactor = 1, translateFactor = 0) {
+    iso.canvas.clear();
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
     for (let x = this.width - 1; x >= 0; x--) {
       for (let y = this.width - 1; y >= 0; y--) {
@@ -77,7 +65,7 @@ export default class Setting {
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
-        blockColor = new Color(color[0], color[1], color[2], 0.5);
+        blockColor = new Color(color[0], color[1], color[2], 0.4);
       } else {
         blockColor = new Color(color[0], color[1], color[2]);
       }
@@ -120,6 +108,26 @@ export default class Setting {
 
       return 0;
     });
+  }
+
+  stateIncludes(state, obj) {
+    for (const c of state) {
+      if (c.x === obj.x &&
+          c.y === obj.y &&
+          c.z === obj.z &&
+          c.color === obj.color) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  computeDiff(state, newState) {
+    const difference = newState.filter(c => !this.stateIncludes(state, c));
+    const intersection = state.filter(c => this.stateIncludes(newState, c));
+
+    return difference.map((c) => (Object.assign({}, c, { names: [...c.names, "_new"] })))
+      .concat(intersection);
   }
 
   equalityCheck(struct1, struct2) {
@@ -205,6 +213,8 @@ export default class Setting {
     const toggleButton = document.getElementById(configs.buttons.toggleDefine);
     toggleButton.innerHTML = "Return";
 
+    this.removePromptDefine();
+
     this.tryDefine(query, false, canAnswer, coverage);
 
     document.getElementById(configs.elems.defineConsole).focus();
@@ -218,7 +228,7 @@ export default class Setting {
     const toggleButton = document.getElementById(configs.buttons.toggleDefine);
     toggleButton.innerHTML = "Define";
 
-    removePromptDefine();
+    this.removePromptDefine();
 
     const consoleElem = document.getElementById(configs.elems.console);
     consoleElem.focus();
@@ -226,7 +236,7 @@ export default class Setting {
 
   tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "") {
     const defineHeader = document.getElementById(configs.elems.defineHeader);
-    document.getElementById(configs.definePromptElemId).classList.add("hidden");
+    document.getElementById(configs.elems.definePrompt).classList.add("hidden");
 
     if (!refineDefine) {
       if (canAnswer) {
@@ -330,7 +340,19 @@ export default class Setting {
     }
   }
 
-  toggleAccept() {
-    document.getElementById(configs.elems.consoleGroup).classList.toggle("accepting");
+  promptAccept() {
+    document.getElementById(configs.elems.consoleGroup).classList.add("accepting");
+  }
+
+  removeAccept() {
+    document.getElementById(configs.elems.consoleGroup).classList.remove("accepting");
+  }
+
+  promptTryDefine() {
+    document.getElementById(configs.buttons.tryDefine).classList.add("active");
+  }
+
+  toggleDefineButton() {
+    document.getElementById(configs.buttons.define).classList.add("active");
   }
 }
