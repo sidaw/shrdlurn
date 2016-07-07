@@ -3,4 +3,4 @@
 # we just copy some files over
 
 cp -r ../shrdlurn-acl16-demo/index.html ../shrdlurn-acl16-demo/dist ./acl16
-cp -r ../shrdlurn/index.html ../shrdlurn/dist ./rich
+cp -r ../shrdlurn/dst/* ./magnetic/
