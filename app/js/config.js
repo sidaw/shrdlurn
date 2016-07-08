@@ -1,9 +1,10 @@
 const configs = {};
 
-if (process.env.NODE_ENV === "local")
+if (process.env.NODE_ENV === "local") {
   configs.SEMPRE_URL = "http://localhost:8400";
-else
+} else {
   configs.SEMPRE_URL = "http://jonsson.stanford.edu:8401";
+}
 
 
 configs.loggerServer = "ws://hydrogen.samginn.com:4000/socket";
@@ -14,7 +15,7 @@ configs.debugMode = false;
 configs.defaultSessionId = "deadbeef";
 
 configs.emptyStruct = [];
-configs.defaultStruct = [{ x: 1, y: 1, z: 0, color: "Red", names: ["s"] }];
+configs.defaultStruct = [{ x: 0, y: 1, z: 0, color: "Red", names: ["s"] }];
 
 configs.mainCanvas = "main_canvas";
 configs.targetCanvas = "target_canvas";
@@ -60,6 +61,7 @@ configs.buttons = {
   toggleDefine: "toggledefine",
   putBack: "putbackbutton",
   tryDefine: "try_define",
+  rotateIcons: "rotate-icons",
 };
 
 configs.difficulty = 3;

@@ -18,7 +18,8 @@ export default class Setting {
     this.borderWidth = -0.15;
     this.baseHeight = 0.1;
     this.centerPoint = Point(this.width / 2, this.width / 2, this.width / 2);
-    this.rotation = Math.PI / 12;
+    this.rotation = (Math.PI / 12);
+    this.rotational = "A";
     this.targetScale = 0.5;
     this.targetTranslate = -2;
 
@@ -73,8 +74,32 @@ export default class Setting {
     }
   }
 
-  makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0) {
+  makeBlock(bx, by, z, scalingFactor = 1, translateFactor = 0) {
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
+
+    let x = bx;
+    let y = by;
+
+    switch (this.rotational) {
+      case -1:
+        x = bx;
+        y = by;
+        break;
+      case -2:
+        x = by;
+        y = this.width - 1 - bx;
+        break;
+      case 1:
+        x = this.width - 1 - by;
+        y = bx;
+        break;
+      case 2:
+        x = this.width - 1 - bx;
+        y = this.width - 1 - by;
+        break;
+      default:
+    }
+
     return Shape.Prism(
       Point((x + (x * this.borderWidth)) * scalingFactor,
             (y + (y * this.borderWidth)) * scalingFactor,
@@ -95,15 +120,15 @@ export default class Setting {
       }
 
       if (a.x > b.x) {
-        return -1;
+        return 1 * this.rotational;
       } else if (a.x < b.x) {
-        return 1;
+        return -1 * this.rotational;
       }
 
       if (a.y > b.y) {
-        return -1;
+        return 1 * this.rotational;
       } else if (a.y < b.y) {
-        return 1;
+        return -1 * this.rotational;
       }
 
       return 0;
@@ -354,5 +379,9 @@ export default class Setting {
 
   toggleDefineButton() {
     document.getElementById(configs.buttons.define).classList.add("active");
+  }
+
+  rotate(rotation) {
+    this.rotational = parseInt(rotation, 10);
   }
 }

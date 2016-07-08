@@ -463,3 +463,50 @@ button {
   color: green;
   border: 2px solid green;
 }
+
+.rotate-icons {
+  position: absolute;
+  top: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  flex-wrap: wrap;
+
+  & > div {
+    padding: 5px;
+    margin: 3%;
+    width: 44%;
+    height: 44%;
+    border-style: solid;
+    border-color: #FFF;
+    background-color: #FFF;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15),
+                0 1.5px 2.5px rgba(0,0,0,0.08);
+
+    &:hover,
+    &.active {
+      background-color: @cyan;
+      cursor: pointer;
+    }
+  }
+
+  #rtl {
+    border-left-radius: 10px;
+    border-top-left-radius: 100%
+  }
+
+  #rbl {
+    border-left-radius: 10px;
+    border-bottom-left-radius: 100%
+  }
+
+  #rtr {
+    border-right-radius: 10px;
+    border-top-right-radius: 100%
+  }
+
+  #rbr {
+    border-right-radius: 10px;
+    border-bottom-right-radius: 100%;
+  }
+}
