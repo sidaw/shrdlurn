@@ -61,7 +61,32 @@ export default class Setting {
   }
 
   renderBlocks(iso, state, scalingFactor = 1, translateFactor = 0) {
-    const blocks = this.sortBlocks(state);
+    const blocks = this.sortBlocks(state.map((b) => {
+      let x = b.x;
+      let y = b.y;
+
+      switch (this.rotational) {
+        case -1:
+          x = b.x;
+          y = b.y;
+          break;
+        case -2:
+          x = b.y;
+          y = this.width - 1 - b.x;
+          break;
+        case 1:
+          x = this.width - 1 - b.y;
+          y = b.x;
+          break;
+        case 2:
+          x = this.width - 1 - b.x;
+          y = this.width - 1 - b.y;
+          break;
+        default:
+      }
+
+      return {...b, x: x, y: y}
+    }));
     for (const block of blocks) {
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
@@ -74,31 +99,8 @@ export default class Setting {
     }
   }
 
-  makeBlock(bx, by, z, scalingFactor = 1, translateFactor = 0) {
+  makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0) {
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
-
-    let x = bx;
-    let y = by;
-
-    switch (this.rotational) {
-      case -1:
-        x = bx;
-        y = by;
-        break;
-      case -2:
-        x = by;
-        y = this.width - 1 - bx;
-        break;
-      case 1:
-        x = this.width - 1 - by;
-        y = bx;
-        break;
-      case 2:
-        x = this.width - 1 - bx;
-        y = this.width - 1 - by;
-        break;
-      default:
-    }
 
     return Shape.Prism(
       Point((x + (x * this.borderWidth)) * scalingFactor,
@@ -120,15 +122,15 @@ export default class Setting {
       }
 
       if (a.x > b.x) {
-        return 1 * this.rotational;
+        return -1;
       } else if (a.x < b.x) {
-        return -1 * this.rotational;
+        return 1;
       }
 
       if (a.y > b.y) {
-        return 1 * this.rotational;
+        return -1;
       } else if (a.y < b.y) {
-        return -1 * this.rotational;
+        return 1;
       }
 
       return 0;
