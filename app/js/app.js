@@ -207,6 +207,16 @@ class App {
     }
     this.Setting.promptTryDefine();
   }
+
+  rotate(el) {
+    const rotateIcons = document.querySelectorAll(`.${configs.buttons.rotateIcons} > div`);
+    for (const rotateIcon of rotateIcons) {
+      rotateIcon.classList.remove("active");
+    }
+    el.classList.add("active");
+    this.Setting.rotate(el.getAttribute("data-rotate"));
+    this.Game.update();
+  }
 }
 
 const A = new App();
@@ -246,6 +256,11 @@ document.getElementById("command_history").addEventListener("click", (e) => {
   index = getHistoryElems().length - parseInt(e.target.getAttribute("data-stepN"), 10) - 1;
   A.revert(index);
 }, false);
+
+const rotateIcons = document.querySelectorAll(`.${configs.buttons.rotateIcons} > div`);
+for (const rotateIcon of rotateIcons) {
+  rotateIcon.addEventListener("click", (e) => A.rotate(e.target), false);
+}
 
 /* Keyboard shortcuts */
 

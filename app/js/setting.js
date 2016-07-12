@@ -18,7 +18,8 @@ export default class Setting {
     this.borderWidth = -0.15;
     this.baseHeight = 0.1;
     this.centerPoint = Point(this.width / 2, this.width / 2, this.width / 2);
-    this.rotation = Math.PI / 12;
+    this.rotation = (Math.PI / 12);
+    this.rotational = "A";
     this.targetScale = 0.5;
     this.targetTranslate = -2;
 
@@ -60,7 +61,32 @@ export default class Setting {
   }
 
   renderBlocks(iso, state, scalingFactor = 1, translateFactor = 0) {
-    const blocks = this.sortBlocks(state);
+    const blocks = this.sortBlocks(state.map((b) => {
+      let x = b.x;
+      let y = b.y;
+
+      switch (this.rotational) {
+        case -1:
+          x = b.x;
+          y = b.y;
+          break;
+        case -2:
+          x = b.y;
+          y = this.width - 1 - b.x;
+          break;
+        case 1:
+          x = this.width - 1 - b.y;
+          y = b.x;
+          break;
+        case 2:
+          x = this.width - 1 - b.x;
+          y = this.width - 1 - b.y;
+          break;
+        default:
+      }
+
+      return {...b, x: x, y: y}
+    }));
     for (const block of blocks) {
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
@@ -75,6 +101,7 @@ export default class Setting {
 
   makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0) {
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
+
     return Shape.Prism(
       Point((x + (x * this.borderWidth)) * scalingFactor,
             (y + (y * this.borderWidth)) * scalingFactor,
@@ -354,5 +381,9 @@ export default class Setting {
 
   toggleDefineButton() {
     document.getElementById(configs.buttons.define).classList.add("active");
+  }
+
+  rotate(rotation) {
+    this.rotational = parseInt(rotation, 10);
   }
 }
