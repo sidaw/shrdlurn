@@ -5,6 +5,7 @@ import Isomer,
        { Point,
          Shape,
          Color,
+         Canvas
        } from "isomer";
 
 /* eslint-disable new-cap */
@@ -33,13 +34,15 @@ export default class Setting {
   }
 
   renderCanvas(state) {
-    this.renderBoard(this.iso);
+    // this.renderBoard(this.iso);
+    this.iso.canvas.clear();
     this.renderBlocks(this.iso, state);
   }
 
   renderBoard(iso, scalingFactor = 1, translateFactor = 0) {
     iso.canvas.clear();
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
+    const color = new Color(144, 144, 144);
     for (let x = this.width - 1; x >= 0; x--) {
       for (let y = this.width - 1; y >= 0; y--) {
         iso.add(
@@ -54,7 +57,7 @@ export default class Setting {
           )
           .rotateZ(this.centerPoint, this.rotation)
           .translate(translateBy, -translateBy, -4.5 * translateBy),
-          new Color(144, 144, 144)
+          color
         );
       }
     }
@@ -87,6 +90,9 @@ export default class Setting {
 
       return {...b, x: x, y: y}
     }));
+
+    const selected = blocks.filter((b) => b.names && b.names.length > 0);
+
     for (const block of blocks) {
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
@@ -94,9 +100,21 @@ export default class Setting {
         blockColor = new Color(color[0], color[1], color[2], 0.4);
       } else {
         blockColor = new Color(color[0], color[1], color[2]);
+        if (selected.length > 0 && !selected.includes(block)) {
+          console.log("darkening!");
+          blockColor = this.darken(blockColor);
+        }
       }
       iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor), blockColor);
     }
+  }
+
+  darken(color) {
+    return new Color(this.darkenValue(color.r), this.darkenValue(color.g), this.darkenValue(color.b));
+  }
+
+  darkenValue(value, factor = 0.5) {
+    return Math.min(value * factor, 1);
   }
 
   makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0) {

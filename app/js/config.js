@@ -15,7 +15,7 @@ configs.debugMode = false;
 configs.defaultSessionId = "deadbeef";
 
 configs.emptyStruct = [];
-configs.defaultStruct = [{ x: 0, y: 1, z: 0, color: "Red", names: ["s"] }];
+configs.defaultStruct = configs.emptyStruct;
 
 configs.mainCanvas = "main_canvas";
 configs.targetCanvas = "target_canvas";
@@ -54,7 +54,6 @@ configs.buttons = {
   clear: "clearbutton",
   paraphrase: "paraphrase",
   define: "define_phrase_button",
-  close_define: "close_define_interface",
   define_instead: "define_instead",
   skip: "skip_button",
   reset: "reset_all_progress",
@@ -62,6 +61,7 @@ configs.buttons = {
   putBack: "putbackbutton",
   tryDefine: "try_define",
   rotateIcons: "rotate-icons",
+  closeDefine: "close_define",
 };
 
 configs.difficulty = 3;
