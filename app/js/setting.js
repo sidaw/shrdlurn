@@ -126,12 +126,14 @@ export default class Setting {
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
-        blockColor = new Color(color[0], color[1], color[2], 0.2);
+        blockColor = new Color(color[0], color[1], color[2], 0.25);
       } else {
         blockColor = new Color(color[0], color[1], color[2], 0.88);
-        if (selected.length > 0 && !selected.includes(block)) {
-          console.log("darkening!");
-          blockColor = this.darken(blockColor);
+        if (selected.length > 0 && selected.includes(block)) {
+	  blockColor = new Color(color[0], color[1], color[2], 0.25);
+          /* console.log("darkening!");
+	  blockColor = this.darken(blockColor);
+	  blockColor.a = 0.4; */
         }
       }
       iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor), blockColor);
@@ -139,11 +141,12 @@ export default class Setting {
   }
 
   darken(color) {
-    return new Color(this.darkenValue(color.r), this.darkenValue(color.g), this.darkenValue(color.b));
+    return new Color(this.darkenValue(color.r), this.darkenValue(color.g), this.darkenValue(color.b), color.a);
   }
 
-  darkenValue(value, factor = 0.6) {
-    return Math.min(value * factor, 1);
+  darkenValue(value, factor = 0.5) {
+    const graystandard = 128;
+    return factor*graystandard + (1-factor)*value;
   }
 
   makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0) {
