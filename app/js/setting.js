@@ -5,7 +5,8 @@ import Isomer,
        { Point,
          Shape,
          Color,
-         Canvas
+         Canvas,
+	 Path
        } from "isomer";
 
 /* eslint-disable new-cap */
@@ -15,9 +16,9 @@ export default class Setting {
     this.iso = new Isomer(document.getElementById(configs.mainCanvas));
     this.isoTarget = new Isomer(document.getElementById(configs.targetCanvas));
     this.basicUnit = 0.8;
-    this.width = 12;
-    this.borderWidth = -0.15;
-    this.baseHeight = 0.1;
+    this.width = 10;
+    this.borderWidth = -0.2;
+    this.baseHeight = 0.0;
     this.centerPoint = Point(this.width / 2, this.width / 2, this.width / 2);
     this.rotation = (Math.PI / 12);
     this.rotational = "A";
@@ -29,14 +30,43 @@ export default class Setting {
   }
 
   renderTarget(state) {
-    this.renderBoard(this.isoTarget, this.targetScale, this.targetTranslate);
+    this.renderGrid(this.isoTarget, this.targetScale, this.targetTranslate);
     this.renderBlocks(this.isoTarget, state, this.targetScale, this.targetTranslate);
   }
 
   renderCanvas(state) {
-    // this.renderBoard(this.iso);
-    this.iso.canvas.clear();
+    this.renderGrid(this.iso);
     this.renderBlocks(this.iso, state);
+  }
+
+  renderGrid(iso, scalingFactor = 1, translateFactor = 0) {
+    iso.canvas.clear();
+    const translateBy = translateFactor * this.basicUnit * scalingFactor;
+    const color = new Color(50, 50, 50);
+    const unit = this.basicUnit * scalingFactor;
+    for (let x = 0; x < this.width + 1; x++) {
+      iso.add(new Path([
+	new Point(x*unit, 0, 0),
+	new Point(x*unit, this.width*unit, 0),
+	new Point(x*unit, 0, 0)
+      ])
+      .rotateZ(this.centerPoint, this.rotation)
+      .translate(translateBy, -translateBy, -4.5 * translateBy),
+      color
+      );
+      
+      const y = x;
+      iso.add(new Path([
+	new Point(0, y*unit, 0),
+	new Point(this.width*unit, y*unit, 0),
+	new Point(0, y*unit, 0)
+      ])
+      .rotateZ(this.centerPoint, this.rotation)
+      .translate(translateBy, -translateBy, -4.5 * translateBy),
+      color
+      );
+    }
+    
   }
 
   renderBoard(iso, scalingFactor = 1, translateFactor = 0) {
@@ -96,9 +126,9 @@ export default class Setting {
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
-        blockColor = new Color(color[0], color[1], color[2], 0.4);
+        blockColor = new Color(color[0], color[1], color[2], 0.2);
       } else {
-        blockColor = new Color(color[0], color[1], color[2]);
+        blockColor = new Color(color[0], color[1], color[2], 0.88);
         if (selected.length > 0 && !selected.includes(block)) {
           console.log("darkening!");
           blockColor = this.darken(blockColor);
@@ -112,7 +142,7 @@ export default class Setting {
     return new Color(this.darkenValue(color.r), this.darkenValue(color.g), this.darkenValue(color.b));
   }
 
-  darkenValue(value, factor = 0.5) {
+  darkenValue(value, factor = 0.6) {
     return Math.min(value * factor, 1);
   }
 
