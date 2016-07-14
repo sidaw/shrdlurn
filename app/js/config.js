@@ -15,7 +15,7 @@ configs.debugMode = false;
 configs.defaultSessionId = "deadbeef";
 
 configs.emptyStruct = [];
-configs.defaultStruct = [{ x: 0, y: 1, z: 0, color: "Red", names: ["s"] }];
+configs.defaultStruct = configs.emptyStruct;
 
 configs.mainCanvas = "main_canvas";
 configs.targetCanvas = "target_canvas";
