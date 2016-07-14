@@ -91,8 +91,7 @@ export default class Setting {
       return {...b, x: x, y: y}
     }));
 
-    const selected = blocks.filter((b) => b.names && b.names.length > 0);
-
+    const selected = blocks.filter((b) => b.names && b.names.includes("S"));
     for (const block of blocks) {
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
@@ -169,7 +168,7 @@ export default class Setting {
 
   computeDiff(state, newState) {
     const difference = newState.filter(c => !this.stateIncludes(state, c));
-    const intersection = state.filter(c => this.stateIncludes(newState, c));
+    const intersection = newState.filter(c => this.stateIncludes(state, c));
 
     return difference.map((c) => (Object.assign({}, c, { names: [...c.names, "_new"] })))
       .concat(intersection);
