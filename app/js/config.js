@@ -54,7 +54,6 @@ configs.buttons = {
   clear: "clearbutton",
   paraphrase: "paraphrase",
   define: "define_phrase_button",
-  close_define: "close_define_interface",
   define_instead: "define_instead",
   skip: "skip_button",
   reset: "reset_all_progress",
@@ -62,6 +61,7 @@ configs.buttons = {
   putBack: "putbackbutton",
   tryDefine: "try_define",
   rotateIcons: "rotate-icons",
+  closeDefine: "close_define",
 };
 
 configs.difficulty = 3;

@@ -185,6 +185,13 @@ button {
   width: 90%;
 }
 
+.define-area {
+  background-color: rgba(60, 60, 60, 0.08);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
 .input-group {
   width: 100%;
   background-color: #FFF;
@@ -444,6 +451,36 @@ button {
 
 #define_header {
   font-weight: 900;
+  padding-right: 50px;
+}
+
+#close_define {
+  position: absolute;
+  right: 10px;
+  opacity: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  color: rgb(150, 150, 150);
+  box-shadow: none;
+  border-radius: 50%;
+  border: 3px solid rgb(150, 150, 150);
+  line-height: 0.7;
+  height: 25px;
+  width: 25px;
+  font-size: 2rem;
+  letter-spacing: 5px;
+  padding: 0;
+  padding-left: 6px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 999;
+
+  &:hover {
+    border-color: @cyan;
+    color: @cyan;
+  }
 }
 
 .canvas-prompt {
@@ -456,7 +493,6 @@ button {
   background-color: #FFF;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15),
               0 3px 5px rgba(0,0,0,0.08);
-
 }
 
 .color-good {

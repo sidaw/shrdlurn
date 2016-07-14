@@ -235,6 +235,7 @@ document.getElementById(configs.buttons.define_instead).addEventListener("click"
 document.getElementById(configs.buttons.skip).addEventListener("click", () => A.skip(), false);
 document.getElementById(configs.buttons.putBack).addEventListener("click", () => A.putBack(), false);
 document.getElementById(configs.elems.defineConsole).addEventListener("keydown", (e) => A.defining(e), false);
+document.getElementById(configs.buttons.closeDefine).addEventListener("click", () => A.closeDefineInterface());
 
 function openAndCloseSetter(selector, callback, callbackObj) {
   const buttons = document.querySelectorAll(selector);
