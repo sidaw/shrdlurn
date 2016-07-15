@@ -22,7 +22,7 @@ export default class Logger {
 
   log(e) {
     if (configs.loggerOn) {
-      const message = `${this.strip(e.type)}:${this.strip(e.msg)}`;
+      const message = `${e.type}:${JSON.stringify(e.msg)}`;
       this.chan.push("log:event", { message: message });
     }
   }
@@ -31,27 +31,28 @@ export default class Logger {
     // http://stackoverflow.com/questions/14129953/how-to-encode-a-string-in-javascript-for-displaying-in-html
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
-}
 
-//   this.submit = function(username, name, wall, steps) {
-//     this.chan.push('struct:submit', { username: this.strip(username), name: this.strip(name), wall: this.strip(wall), steps: steps });
-//   }
-//
-//   this.getStructs = function() {
-//     this.chan.push("struct:index", {}, 10000)
-//       .receive("ok", function(msg) {
-//         var structs = msg["structs"];
-//         var structs_list = document.getElementById("user_structs");
-//         structs_list.innerHTML = "";
-//         for (var i = 0; i < structs.length; i++) {
-//           var elem = document.createElement("li");
-//           elem.setAttribute("data-wall", structs[i].wall);
-//           elem.setAttribute("data-steps", structs[i].steps);
-//           elem.innerHTML = "<canvas id='usercanvas" + i + "' width='100%' height='100px'></canvas><br>" + Logger.strip(structs[i].name) + " by " + Logger.strip(structs[i].username);
-//           structs_list.appendChild(elem);
-//           elem.addEventListener("click", loadStruct);
-//           PS.Main.renderUserTargetJSON("[" + structs[i].wall + "]")("usercanvas" + i)();
-//         }
-//       });
-//   }
-// }
+  submit(username, name, state, steps) {
+    this.chan.push("struct:submit", { username: this.strip(username), name: this.strip(name), state: JSON.stringify(state), nsteps: steps });
+  }
+
+  getStructs(Setting, loadStruct) {
+    if (!configs.loggerOn) { return false; }
+    this.chan.push("struct:index", {}, 10000)
+      .receive("ok", (msg) => {
+        const structs = msg.structs;
+        const structsList = document.getElementById("user_structs");
+        structsList.innerHTML = "";
+        for (let i = 0; i < structs.length; i++) {
+          const elem = document.createElement("li");
+          const state = JSON.parse(structs[i].state);
+          elem.setAttribute("data-state", JSON.stringify(state));
+          elem.setAttribute("data-nsteps", structs[i].nsteps);
+          elem.innerHTML = `<canvas id='usercanvas${i}' class='usercanvas' width='400px' height='400px'></canvas><br>by ${this.strip(structs[i].username)}`;
+          structsList.appendChild(elem);
+          elem.addEventListener("click", loadStruct);
+          Setting.renderUserCanvas(state, `usercanvas${i}`);
+        }
+      });
+  }
+}

@@ -1,3 +1,4 @@
+import "babel-polyfill"
 import Awesomplete from "awesomplete";
 import Game from "./game";
 import configs from "./config";
@@ -17,6 +18,7 @@ class App {
     this.awesomplete = {};
     this.helpOn = false;
     this.keyboardOn = false;
+    this.structuresOn = false;
     this.watchOutForDefine = false;
 
     this.updateRandomUtterances();
@@ -191,6 +193,19 @@ class App {
     document.getElementById(configs.elems.keyboard).classList.toggle("active");
   }
 
+  toggleStructures() {
+    if (!this.structuresOn) {
+      this.Game.Logger.getStructs(this.Game.Setting, (e) => {
+        const target = e.target.parentNode;
+        this.Game.setTarget([-1, JSON.parse(target.getAttribute("data-nsteps")), JSON.parse(target.getAttribute("data-state"))]);
+        this.toggleStructures();
+      });
+    }
+
+    this.structuresOn = !this.structuresOn;
+    document.getElementById(configs.elems.structures).classList.toggle("active");
+  }
+
   putBack() {
     this.Setting.removeAccept();
     this.Setting.removePromptDefine();
@@ -216,6 +231,15 @@ class App {
     el.classList.add("active");
     this.Setting.rotate(el.getAttribute("data-rotate"));
     this.Game.update();
+    this.Game.updateTarget();
+  }
+
+  submitStruct() {
+    const { sessionId, currentState } = this.Game;
+    const nSteps = this.Game.getSteps();
+
+    this.Game.Logger.submit(sessionId, "xyz", currentState, nSteps);
+    alert("Submitted your structure!");
   }
 }
 
@@ -236,6 +260,7 @@ document.getElementById(configs.buttons.skip).addEventListener("click", () => A.
 document.getElementById(configs.buttons.putBack).addEventListener("click", () => A.putBack(), false);
 document.getElementById(configs.elems.defineConsole).addEventListener("keydown", (e) => A.defining(e), false);
 document.getElementById(configs.buttons.closeDefine).addEventListener("click", () => A.closeDefineInterface());
+document.getElementById(configs.buttons.submitButton).addEventListener("click", () => A.submitStruct());
 
 function openAndCloseSetter(selector, callback, callbackObj) {
   const buttons = document.querySelectorAll(selector);
@@ -249,6 +274,7 @@ function openAndCloseSetter(selector, callback, callbackObj) {
 
 openAndCloseSetter(".help-toggle", A.toggleHelp, A);
 openAndCloseSetter(".keyboard-toggle", A.toggleKeyboard, A);
+openAndCloseSetter(".structures-toggle", A.toggleStructures, A);
 
 document.getElementById("command_history").addEventListener("click", (e) => {
   let index = 0;
@@ -311,6 +337,8 @@ window.onkeydown = (e) => {
         A.toggleHelp();
       } else if (A.keyboardOn) {
         A.toggleKeyboard();
+      } else if (A.structuresOn) {
+        A.toggleStructures();
       } else if (A.defineState) {
         A.closeDefineInterface();
       }

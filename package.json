@@ -20,7 +20,8 @@
       "stage-0"
     ],
     "plugins": [
-      "transform-es2015-template-literals"
+      "transform-es2015-template-literals",
+      "transform-async-to-generator"
     ]
   },
   "eslintConfig": {
@@ -52,7 +53,9 @@
   "devDependencies": {
     "babel-core": "^6.10.4",
     "babel-loader": "^6.2.4",
+    "babel-plugin-transform-async-to-generator": "^6.8.0",
     "babel-plugin-transform-es2015-template-literals": "^6.8.0",
+    "babel-polyfill": "^6.9.1",
     "babel-preset-es2015-webpack": "^6.4.1",
     "babel-preset-stage-0": "^6.5.0",
     "css-loader": "^0.23.1",

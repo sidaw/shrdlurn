@@ -28,6 +28,8 @@ export default class Game {
   }
 
   setTarget(targetStruct) {
+    console.log(targetStruct);
+
     this.targetIdx = targetStruct[0];
     this.targetStruct = targetStruct[2];
     this.maxTargetSteps = targetStruct[1] * configs.difficulty;
@@ -36,6 +38,10 @@ export default class Game {
     this.Setting.setSteps(targetStruct[1], this.maxTargetSteps);
 
     this.Logger.log({ type: "target", msg: this.targetStruct });
+  }
+
+  updateTarget() {
+    this.Setting.renderTarget(this.targetStruct);
   }
 
   enter(query) {
@@ -97,7 +103,7 @@ export default class Game {
 
       this.currentState = this.responses[this.selectedResp].value;
       this.Setting.status(`✓: accepted, enter another command`);
-      this.Logger.log({ type: "accept", msg: `${this.query}:${this.currentState}` });
+      this.Logger.log({ type: "accept", msg: `${this.query}:${JSON.stringify(this.currentState)}` });
       this.history.push({ query: this.query, type: "accept", state: this.currentState, stepN: this.getSteps() + 1 });
       this.resetResponses();
       this.update();
