@@ -29,7 +29,7 @@ export default class Game {
 
   setTarget(targetStruct) {
     console.log(targetStruct);
-    
+
     this.targetIdx = targetStruct[0];
     this.targetStruct = targetStruct[2];
     this.maxTargetSteps = targetStruct[1] * configs.difficulty;
@@ -38,6 +38,10 @@ export default class Game {
     this.Setting.setSteps(targetStruct[1], this.maxTargetSteps);
 
     this.Logger.log({ type: "target", msg: this.targetStruct });
+  }
+
+  updateTarget() {
+    this.Setting.renderTarget(this.targetStruct);
   }
 
   enter(query) {

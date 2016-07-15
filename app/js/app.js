@@ -231,6 +231,7 @@ class App {
     el.classList.add("active");
     this.Setting.rotate(el.getAttribute("data-rotate"));
     this.Game.update();
+    this.Game.updateTarget();
   }
 
   submitStruct() {
