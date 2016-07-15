@@ -65,6 +65,7 @@ const config = module.exports = {
 };
 
 if (process.env.NODE_ENV === "production") {
+  config.devtool = "eval";
   config.plugins.push(
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin({ minimize: true })
