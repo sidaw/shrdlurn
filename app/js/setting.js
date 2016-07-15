@@ -39,34 +39,41 @@ export default class Setting {
     this.renderBlocks(this.iso, state);
   }
 
+  renderUserCanvas(state, elemId) {
+    console.log(state);
+    const iso = new Isomer(document.getElementById(elemId));
+    this.renderGrid(iso, 0.6);
+    this.renderBlocks(iso, state, 0.6);
+  }
+
   renderGrid(iso, scalingFactor = 1, translateFactor = 0) {
     iso.canvas.clear();
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
-    const color = new Color(50, 50, 50);
+    const color = new Color(150, 150, 150);
     const unit = this.basicUnit * scalingFactor;
     for (let x = 0; x < this.width + 1; x++) {
       iso.add(new Path([
-	new Point(x*unit, 0, 0),
-	new Point(x*unit, this.width*unit, 0),
-	new Point(x*unit, 0, 0)
+      	new Point(x*unit, 0, 0),
+      	new Point(x*unit, this.width*unit, 0),
+      	new Point(x*unit, 0, 0)
       ])
       .rotateZ(this.centerPoint, this.rotation)
       .translate(translateBy, -translateBy, -4.5 * translateBy),
       color
       );
-      
+
       const y = x;
       iso.add(new Path([
-	new Point(0, y*unit, 0),
-	new Point(this.width*unit, y*unit, 0),
-	new Point(0, y*unit, 0)
+      	new Point(0, y*unit, 0),
+      	new Point(this.width*unit, y*unit, 0),
+      	new Point(0, y*unit, 0)
       ])
       .rotateZ(this.centerPoint, this.rotation)
       .translate(translateBy, -translateBy, -4.5 * translateBy),
       color
       );
     }
-    
+
   }
 
   renderBoard(iso, scalingFactor = 1, translateFactor = 0) {

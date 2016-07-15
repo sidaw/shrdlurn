@@ -8,7 +8,7 @@ if (process.env.NODE_ENV === "local") {
 
 
 configs.loggerServer = "ws://hydrogen.samginn.com:4000/socket";
-configs.loggerOn = false;
+configs.loggerOn = true;
 
 configs.debugMode = false;
 
@@ -44,6 +44,7 @@ configs.elems = {
   defineStatus: "define_status",
   defineHeader: "define_header",
   definePrompt: "define_prompt",
+  structures: "structures",
 };
 
 configs.buttons = {
@@ -62,6 +63,7 @@ configs.buttons = {
   tryDefine: "try_define",
   rotateIcons: "rotate-icons",
   closeDefine: "close_define",
+  submitButton: "submitbutton",
 };
 
 configs.difficulty = 3;
