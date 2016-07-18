@@ -40,7 +40,6 @@ export default class Setting {
   }
 
   renderUserCanvas(state, elemId) {
-    console.log(state);
     const iso = new Isomer(document.getElementById(elemId));
     this.renderGrid(iso, 0.6);
     this.renderBlocks(iso, state, 0.6);
