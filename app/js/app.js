@@ -281,13 +281,25 @@ class App {
   }
 
   submitStruct() {
-    const name = document.getElementById(configs.elems.submitConsole);
-    const { sessionId, currentState, history } = this.Game;
-    const state = JSON.stringify(JSON.stringify(currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))));
-    const historySteps = history.map(h => (h.query));
-    const cmds = { q: `(submit "${name}" ${state} ${historySteps})`, sessionId };
+    const name = document.getElementById(configs.elems.submitConsole).value;
+    const { sessionId, currentState } = this.Game;
+    const state = currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]));
+    const cmds = { q: `(submit (name "${name}") (formula "${JSON.stringify(JSON.stringify(state))}"))`, sessionId };
 
     this.Sempre.query(cmds, () => {
+      fetch(`${configs.structsServer}/structs/submit`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          state: state,
+          nsteps: this.Game.getSteps(),
+        }),
+      });
+
       alert("Submitted your structure!");
       this.closeSubmit();
     });
