@@ -311,6 +311,8 @@ export default class Setting {
     const toggleButton = document.getElementById(configs.buttons.toggleDefine);
     toggleButton.innerHTML = "Define";
 
+    document.querySelector('#define_interface .input-group').classList.remove("accepting");
+
     this.removePromptDefine();
 
     const consoleElem = document.getElementById(configs.elems.console);
@@ -320,6 +322,7 @@ export default class Setting {
   tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "") {
     const defineHeader = document.getElementById(configs.elems.defineHeader);
     document.getElementById(configs.elems.definePrompt).classList.add("hidden");
+    document.querySelector('#define_interface .input-group').classList.remove("accepting");
 
     if (!refineDefine) {
       if (canAnswer) {
@@ -330,6 +333,7 @@ export default class Setting {
     } else {
       if (canAnswer) {
         defineHeader.innerHTML = `SHRDLURN understands the definition, "${query}". If this is correct, click "define" to submit the definition.`;
+        document.querySelector('#define_interface .input-group').classList.add("accepting");
       } else {
         defineHeader.innerHTML = `Still don't understand "${this.intelHighlight(coverage)}". Please rephrase:`;
       }

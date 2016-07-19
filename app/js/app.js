@@ -36,6 +36,11 @@ class App {
   }
 
   enter() {
+    if (this.submitOn) {
+      this.submitStruct();
+      return;
+    }
+
     if (this.defineState) {
       // TODO: Validate define length!
       const defined = this.Game.define(this.defineElem.value);
@@ -277,10 +282,10 @@ class App {
 
   submitStruct() {
     const name = document.getElementById(configs.elems.submitConsole);
-    const { sessionId, currentState } = this.Game;
-    const nSteps = this.Game.getSteps();
+    const { sessionId, currentState, history } = this.Game;
     const state = JSON.stringify(JSON.stringify(currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))));
-    const cmds = { q: `(submit "${name}" ${state} ${nSteps})`, sessionId };
+    const historySteps = history.map(h => (h.query));
+    const cmds = { q: `(submit "${name}" ${state} ${historySteps})`, sessionId };
 
     this.Sempre.query(cmds, () => {
       alert("Submitted your structure!");
@@ -301,6 +306,7 @@ document.getElementById(configs.buttons.clear).addEventListener("click", () => A
 document.getElementById(configs.buttons.toggleDefine).addEventListener("click", () => A.toggleDefineInterface(), false);
 document.getElementById(configs.consoleElemId).addEventListener("keyup", () => true);
 document.getElementById(configs.buttons.define).addEventListener("click", () => A.enter(), false);
+document.getElementById(configs.buttons.tryDefine).addEventListener("click", () => { A.Game.defineSuccess = ""; A.enter(); }, false);
 document.getElementById(configs.buttons.define_instead).addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); }, false);
 document.getElementById(configs.buttons.skip).addEventListener("click", () => A.skip(), false);
 document.getElementById(configs.buttons.putBack).addEventListener("click", () => A.putBack(), false);
@@ -371,6 +377,7 @@ window.onkeydown = (e) => {
       break;
     case Hotkeys.SHIFTENTER:
       e.preventDefault();
+      if (A.defineState) { A.enter(); break; }
       A.accept();
       break;
     case Hotkeys.ENTER:
