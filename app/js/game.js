@@ -102,7 +102,7 @@ export default class Game {
       this.currentState = this.responses[this.selectedResp].value;
       this.Setting.status(`✓: accepted, enter another command`);
       this.Logger.log({ type: "accept", msg: `${this.query}:${JSON.stringify(this.currentState)}` });
-      this.history.push({ query: this.query, type: "accept", state: this.currentState, stepN: this.getSteps() + 1 });
+      this.history.push({ query: this.query, type: "accept", state: this.currentState, stepN: this.getSteps() + 1, formula: this.responses[this.selectedResp].formula });
       this.resetResponses();
       this.update();
       this.Setting.removeAccept();
@@ -233,7 +233,7 @@ export default class Game {
   }
 
   initialHistory() {
-    return [{ type: "initial", query: "intial", state: configs.defaultStruct, stepN: 0 }];
+    return [{ type: "initial", query: "initial", state: configs.defaultStruct, stepN: 0, formula: "" }];
   }
 
   getRandomTarget() {

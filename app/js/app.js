@@ -200,11 +200,14 @@ class App {
   }
 
   toggleStructures() {
+    console.log("structuring...");
     if (!this.structuresOn) {
       /* Get the structs */
+      console.log("get the structs");
       fetch(`${configs.structsServer}/structs`)
         .then((response) => response.json())
         .then((json) => {
+          console.log(json);
           const structs = json.structs;
           const structsList = document.getElementById("user_structs");
           structsList.innerHTML = "";
@@ -222,7 +225,8 @@ class App {
             const elem = document.createElement("li");
             elem.setAttribute("data-state", JSON.stringify(state));
             elem.setAttribute("data-nsteps", structs[i].nsteps);
-            elem.innerHTML = `<canvas id='usercanvas${i}' class='usercanvas' width='400px' height='400px'></canvas><br>${structs[i].name} by sam`;
+            const recipeSteps = structs[i].history.map((h) => h.query);
+            elem.innerHTML = `<canvas id='usercanvas${i}' class='usercanvas' width='600px' height='600px'></canvas><div class='structs-meta'>${structs[i].name}<p class='structs-meta-history'>${recipeSteps.join("; ")}</p></div>`;
             structsList.appendChild(elem);
             elem.addEventListener("click", (e) => {
               const target = e.target.parentNode;
@@ -282,9 +286,10 @@ class App {
 
   submitStruct() {
     const name = document.getElementById(configs.elems.submitConsole).value;
-    const { sessionId, currentState } = this.Game;
+    const { sessionId, currentState, history } = this.Game;
     const state = currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]));
-    const cmds = { q: `(submit (name "${name}") (formula "${JSON.stringify(JSON.stringify(state))}"))`, sessionId };
+    const formulas = history.map(h => (h.formula));
+    const cmds = { q: `(submit (name "${name}") (formula "${JSON.stringify(formulas)}"))`, sessionId };
 
     this.Sempre.query(cmds, () => {
       fetch(`${configs.structsServer}/structs/submit`, {
@@ -297,6 +302,7 @@ class App {
           name: name,
           state: state,
           nsteps: this.Game.getSteps(),
+          history: this.Game.history,
         }),
       });
 
