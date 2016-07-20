@@ -7,8 +7,8 @@ if (process.env.NODE_ENV === "local") {
 }
 
 
-configs.loggerServer = "ws://hydrogen.samginn.com:4000/socket";
-configs.loggerOn = true;
+configs.structsServer = "http://jonsson.stanford.edu:8410";
+configs.loggerOn = false;
 
 configs.debugMode = false;
 
@@ -45,6 +45,8 @@ configs.elems = {
   defineHeader: "define_header",
   definePrompt: "define_prompt",
   structures: "structures",
+  submitInterface: "submit_interface",
+  submitConsole: "submittextarea",
 };
 
 configs.buttons = {
@@ -64,6 +66,8 @@ configs.buttons = {
   rotateIcons: "rotate-icons",
   closeDefine: "close_define",
   submitButton: "submitbutton",
+  submitStructure: "confirm_submit_structure",
+  closeSubmit: "close_submit",
 };
 
 configs.difficulty = 3;

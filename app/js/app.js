@@ -20,6 +20,7 @@ class App {
     this.keyboardOn = false;
     this.structuresOn = false;
     this.watchOutForDefine = false;
+    this.submitOn = false;
 
     this.updateRandomUtterances();
 
@@ -35,6 +36,11 @@ class App {
   }
 
   enter() {
+    if (this.submitOn) {
+      this.submitStruct();
+      return;
+    }
+
     if (this.defineState) {
       // TODO: Validate define length!
       const defined = this.Game.define(this.defineElem.value);
@@ -195,11 +201,37 @@ class App {
 
   toggleStructures() {
     if (!this.structuresOn) {
-      this.Game.Logger.getStructs(this.Game.Setting, (e) => {
-        const target = e.target.parentNode;
-        this.Game.setTarget([-1, JSON.parse(target.getAttribute("data-nsteps")), JSON.parse(target.getAttribute("data-state"))]);
-        this.toggleStructures();
-      });
+      /* Get the structs */
+      fetch(`${configs.structsServer}/structs`)
+        .then((response) => response.json())
+        .then((json) => {
+          const structs = json.structs;
+          const structsList = document.getElementById("user_structs");
+          structsList.innerHTML = "";
+          for (let i = 0; i < structs.length; i++) {
+            const state = structs[i].state.map((c) => (
+              {
+                x: c[0],
+                y: c[1],
+                z: c[2],
+                color: c[3],
+                names: c[4],
+              }
+            ));
+
+            const elem = document.createElement("li");
+            elem.setAttribute("data-state", JSON.stringify(state));
+            elem.setAttribute("data-nsteps", structs[i].nsteps);
+            elem.innerHTML = `<canvas id='usercanvas${i}' class='usercanvas' width='400px' height='400px'></canvas><br>${structs[i].name} by sam`;
+            structsList.appendChild(elem);
+            elem.addEventListener("click", (e) => {
+              const target = e.target.parentNode;
+              this.Game.setTarget([-1, JSON.parse(target.getAttribute("data-nsteps")), JSON.parse(target.getAttribute("data-state"))]);
+              this.toggleStructures();
+            });
+            this.Setting.renderUserCanvas(state, `usercanvas${i}`);
+          }
+        });
     }
 
     this.structuresOn = !this.structuresOn;
@@ -234,12 +266,43 @@ class App {
     this.Game.updateTarget();
   }
 
-  submitStruct() {
-    const { sessionId, currentState } = this.Game;
-    const nSteps = this.Game.getSteps();
+  openSubmit() {
+    const submitInterface = document.getElementById(configs.elems.submitInterface);
+    submitInterface.classList.add("active");
+    document.getElementById(configs.elems.submitConsole).focus();
+    this.submitOn = true;
+  }
 
-    this.Game.Logger.submit(sessionId, "xyz", currentState, nSteps);
-    alert("Submitted your structure!");
+  closeSubmit() {
+    const submitInterface = document.getElementById(configs.elems.submitInterface);
+    submitInterface.classList.remove("active");
+    document.getElementById(configs.elems.console).focus();
+    this.submitOn = false;
+  }
+
+  submitStruct() {
+    const name = document.getElementById(configs.elems.submitConsole).value;
+    const { sessionId, currentState } = this.Game;
+    const state = currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]));
+    const cmds = { q: `(submit (name "${name}") (formula "${JSON.stringify(JSON.stringify(state))}"))`, sessionId };
+
+    this.Sempre.query(cmds, () => {
+      fetch(`${configs.structsServer}/structs/submit`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          state: state,
+          nsteps: this.Game.getSteps(),
+        }),
+      });
+
+      alert("Submitted your structure!");
+      this.closeSubmit();
+    });
   }
 }
 
@@ -255,12 +318,16 @@ document.getElementById(configs.buttons.clear).addEventListener("click", () => A
 document.getElementById(configs.buttons.toggleDefine).addEventListener("click", () => A.toggleDefineInterface(), false);
 document.getElementById(configs.consoleElemId).addEventListener("keyup", () => true);
 document.getElementById(configs.buttons.define).addEventListener("click", () => A.enter(), false);
+document.getElementById(configs.buttons.tryDefine).addEventListener("click", () => { A.Game.defineSuccess = ""; A.enter(); }, false);
 document.getElementById(configs.buttons.define_instead).addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); }, false);
 document.getElementById(configs.buttons.skip).addEventListener("click", () => A.skip(), false);
 document.getElementById(configs.buttons.putBack).addEventListener("click", () => A.putBack(), false);
 document.getElementById(configs.elems.defineConsole).addEventListener("keydown", (e) => A.defining(e), false);
 document.getElementById(configs.buttons.closeDefine).addEventListener("click", () => A.closeDefineInterface());
-document.getElementById(configs.buttons.submitButton).addEventListener("click", () => A.submitStruct());
+document.getElementById(configs.buttons.submitButton).addEventListener("click", () => A.openSubmit());
+document.getElementById(configs.buttons.closeSubmit).addEventListener("click", () => A.closeSubmit());
+document.getElementById(configs.buttons.submitStructure).addEventListener("click", () => A.submitStruct());
+
 
 function openAndCloseSetter(selector, callback, callbackObj) {
   const buttons = document.querySelectorAll(selector);
@@ -322,6 +389,7 @@ window.onkeydown = (e) => {
       break;
     case Hotkeys.SHIFTENTER:
       e.preventDefault();
+      if (A.defineState) { A.enter(); break; }
       A.accept();
       break;
     case Hotkeys.ENTER:
@@ -338,6 +406,8 @@ window.onkeydown = (e) => {
       } else if (A.keyboardOn) {
         A.toggleKeyboard();
       } else if (A.structuresOn) {
+        A.toggleStructures();
+      } else if (A.submitOn) {
         A.toggleStructures();
       } else if (A.defineState) {
         A.closeDefineInterface();
