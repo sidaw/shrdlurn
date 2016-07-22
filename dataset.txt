@@ -1,0 +1,9 @@
+---
+target: state, startingState, time (metadata, etc...)
+"reset" (logical form) (state)
+(defined "add red eafsdfasdf" /as/ "add red left") (logical form)
+"add red left" (logical form) (state)
+success!
+---
+
+also include undos

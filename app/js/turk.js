@@ -1,3 +1,19 @@
+import { getParameterByName } from "./util";
+import configs from "./config";
+
+export function getTurkId() {
+  const mturkid = getParameterByName("mturkid");
+  if (mturkid) return mturkid;
+  return configs.defaultSessionId;
+}
+
+export function getTurkCode(targetIdx, nSteps, state) {
+  const mturkid = getTurkId();
+  const stringifiedState = JSON.stringify(state.map(c => ([c.x, c.y, c.z, c.color, c.names])));
+  const encodedData = window.btoa(unescape(encodeURIComponent(`${mturkid}:win:${targetIdx}:${nSteps}:${stringifiedState}:Yummy`)));
+  return encodedData;
+}
+
 // var turk = {};
 // (function(exports) {
 //   "use strict";

@@ -1,6 +1,7 @@
 import configs from "./config";
 import Logger from "./logger";
 import { getStore, setStore } from "./util";
+import { getTurkId, getTurkCode } from "./turk";
 
 export default class Game {
   constructor(setting, sempreClient) {
@@ -25,6 +26,11 @@ export default class Game {
     this.Setting.renderHistory(this.history);
 
     this.Logger = new Logger(this.sessionId);
+
+    /* For turking purposes */
+    if (process.env.NODE_ENV === "turk" || process.env.NODE_ENV === "turkproduction") {
+      this.sessionId = getTurkId();
+    }
   }
 
   setTarget(targetStruct) {
@@ -116,12 +122,17 @@ export default class Game {
   }
 
   win() {
-    alert("You've did it! Congratulations! You've made the target! Try another one now.");
+    const usedTargets = getStore("usedTargetsv1", []);
+    usedTargets.push(this.targetIdx);
+    setStore("usedTargetsv1", usedTargets);
     this.Logger.log({ type: "win", msg: this.getSteps() });
 
-    const usedTargets = getStore("usedTargets", []);
-    usedTargets.push(this.targetIdx);
-    usedTargets.setStore("usedTargets", usedTargets);
+    if (process.env.NODE_ENV === "turk" || process.env.NODE_ENV === "turkproduction") {
+      const turkcode = getTurkCode(`v1,${this.targetIdx}`, this.getSteps(), this.currentState);
+      alert(`Congratulations! You have successfully completed the task. Please copy this confirmation code and submit it to complete the hit: ${turkcode}`);
+    } else {
+      alert("You've did it! Congratulations! You've made the target! Try another one now.");
+    }
 
     this.setTarget(this.getRandomTarget());
     this.clear();
@@ -237,10 +248,10 @@ export default class Game {
   }
 
   getRandomTarget() {
-    const usedTargets = getStore("usedTargets", []);
+    const usedTargets = getStore("usedTargetsv1", []);
     if (usedTargets.length === configs.targets.length) {
       alert("You've completed all targets! Resetting...");
-      setStore("usedTargets", []);
+      setStore("usedTargetsv1", []);
     }
 
     let targetIdx = -1;
@@ -254,7 +265,7 @@ export default class Game {
   skipTarget() {
     this.skipsLeft--;
     this.Setting.setSkips(this.skipsLeft);
-    const usedTargets = getStore("usedTargets", []);
+    const usedTargets = getStore("usedTargetsv1", []);
     if (configs.targets.length - usedTargets.length > 1) {
       let randomTarget = [];
       do {

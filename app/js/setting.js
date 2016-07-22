@@ -214,7 +214,22 @@ export default class Setting {
   }
 
   equalityCheck(struct1, struct2) {
-    return struct1 === struct2;
+    if (struct1 === struct2) return true;
+    if (struct1 == null || struct2 == null) return false;
+    if (struct1.length != struct2.length) return false;
+
+    const a = this.sortBlocks(struct1);
+    const b = this.sortBlocks(struct2);
+
+    for (let i = 0; i < a.length; ++i) {
+      if (a[i].x !== b[i].x ||
+          b[i].y !== b[i].y ||
+          b[i].z !== b[i].z ||
+          b[i].color !== b[i].color) {
+        return false;
+      }
+    }
+    return true;
   }
 
   status(msg, query = "", prob = 0) {

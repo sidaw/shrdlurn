@@ -64,7 +64,7 @@ const config = module.exports = {
   ],
 };
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "turkproduction") {
   config.devtool = "eval";
   config.plugins.push(
     new webpack.optimize.DedupePlugin(),
