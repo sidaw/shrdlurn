@@ -1,30 +1,23 @@
-import { Socket } from "phoenix";
+import io from "socket.io-client";
 import configs from "./config";
 
 export default class Logger {
   constructor(sessionId) {
-    // if (configs.loggerOn) {
-    //   const socket = new Socket(configs.loggerServer, {
-    //     logger: ((kind, msg, data) => { console.log(`${kind}: ${msg}`, data) })
-    //   });
-    //
-    //   socket.connect();
-    //   socket.onOpen(ev => { console.log("OPEN", ev) });
-    //   socket.onError(ev => { console.log("ERROR", ev) });
-    //   socket.onClose(ev => { console.log("CLOSE", ev) });
-    //
-    //   this.chan = socket.channel(`session:${sessionId}`, {});
-    //   this.chan.join();
-    //   this.chan.onError(e => console.log("something went wrong", e));
-    //   this.chan.onClose(e => console.log("channel closed", e));
-    // }
+    this.sessionId = sessionId;
+    this.socket = null;
+
+    if (configs.loggerOn) {
+      this.socket = io(configs.loggerServer);
+      this.socket.on("connect", () => {
+        console.log("Logging socket connected");
+      });
+    }
   }
 
   log(e) {
-    // if (configs.loggerOn) {
-    //   const message = `${e.type}:${JSON.stringify(e.msg)}`;
-    //   this.chan.push("log:event", { message: message });
-    // }
+    if (this.socket) {
+      this.socket.emit("log", { sessionId: this.sessionId.replace(/&/g, "amp;"), type: e.type, message: e.msg.join("%") });
+    }
   }
 
   strip(str) {

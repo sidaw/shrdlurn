@@ -26,6 +26,7 @@ export default class Game {
     this.Setting.renderHistory(this.history);
 
     this.Logger = new Logger(this.sessionId);
+    this.Logger.log({ type: "start", msg: [this.currentState] });
 
     /* For turking purposes */
     if (process.env.NODE_ENV === "turk" || process.env.NODE_ENV === "turkproduction") {
@@ -41,7 +42,7 @@ export default class Game {
     this.Setting.renderTarget(this.targetStruct);
     this.Setting.setSteps(targetStruct[1], this.maxTargetSteps);
 
-    this.Logger.log({ type: "target", msg: this.targetStruct });
+    this.Logger.log({ type: "target", msg: [JSON.stringify(this.targetStruct)] });
   }
 
   updateTarget() {
@@ -76,7 +77,7 @@ export default class Game {
           this.query = query;
           this.Setting.status("SHRDLURN did not understand", query);
           this.Setting.promptDefine();
-          this.Logger.log({ type: "queryUnknown", msg: query });
+          this.Logger.log({ type: "queryUnknown", msg: [query] });
           this.Setting.promptAccept();
         } else {
           this.Setting.removePromptDefine();
@@ -84,7 +85,7 @@ export default class Game {
           this.selectedResp = 0;
           this.query = query;
           this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and accept to confirm.`, `${query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
-          this.Logger.log({ type: "query", msg: query });
+          this.Logger.log({ type: "query", msg: [query] });
           this.Setting.promptAccept();
         }
 
@@ -100,14 +101,14 @@ export default class Game {
   accept() {
     if (this.getSteps() >= this.maxTargetSteps) {
       this.Setting.status("you've reached the maxinum number of steps", "can't accept");
-      this.Logger.log({ type: "meta", msg: "max steps" });
+      this.Logger.log({ type: "meta", msg: ["max steps"] });
       this.Setting.removeAccept();
     } else if (this.responses.length > 0) {
       this.Sempre.query({ q: this.query, accept: this.responses[this.selectedResp].rank, sessionId: this.sessionId }, () => {});
 
       this.currentState = this.responses[this.selectedResp].value;
       this.Setting.status(`✓: accepted, enter another command`);
-      this.Logger.log({ type: "accept", msg: `${this.query}:${JSON.stringify(this.currentState)}` });
+      this.Logger.log({ type: "accept", msg: [this.query, JSON.stringify(this.currentState), JSON.stringify(this.responses[this.selectedResp].formula)] });
       this.history.push({ query: this.query, type: "accept", state: this.currentState, stepN: this.getSteps() + 1, formula: this.responses[this.selectedResp].formula });
       this.resetResponses();
       this.update();
@@ -125,7 +126,7 @@ export default class Game {
     const usedTargets = getStore("usedTargetsv1", []);
     usedTargets.push(this.targetIdx);
     setStore("usedTargetsv1", usedTargets);
-    this.Logger.log({ type: "win", msg: this.getSteps() });
+    this.Logger.log({ type: "win", msg: [this.targetIdx, this.getSteps(), JSON.stringify(this.history.map(h => ([h.query, h.formula])))] });
 
     if (process.env.NODE_ENV === "turk" || process.env.NODE_ENV === "turkproduction") {
       const turkcode = getTurkCode(`v1,${this.targetIdx}`, this.getSteps(), this.currentState);
@@ -162,7 +163,7 @@ export default class Game {
     if (this.defineSuccess.length === 0 || query !== this.defineSuccess) {
       const cmds = { q: `(uttdef "${this.Sempre.formatQuery(query)}" -1)`, sessionId: this.sessionId };
 
-      this.Logger.log({ type: "trydefine", msg: query });
+      this.Logger.log({ type: "trydefine", msg: [query] });
 
       this.Sempre.query(cmds, (response) => {
         const formval = this.Sempre.parseSEMPRE(response.candidates);
@@ -192,9 +193,9 @@ export default class Game {
     const cmds = { q: text, sessionId: this.sessionId };
     const newPhrase = this.query;
 
-    this.Sempre.query(cmds, () => {
+    this.Sempre.query(cmds, (resp) => {
       this.history.push({ query: `defined "${this.query}" as "${this.defineSuccess}"`, type: "define" });
-      this.Logger.log({ type: "define", msg: `defined ${this.query} as ${this.defineSuccess}` });
+      this.Logger.log({ type: "define", msg: [this.query, this.defineSuccess, JSON.stringify(resp.candidates[0].formula)] });
       this.defineSuccess = "";
       this.resetResponses();
       this.update();
@@ -205,7 +206,7 @@ export default class Game {
   }
 
   clear() {
-    this.Logger.log({ type: "clear", msg: "" });
+    this.Logger.log({ type: "clear", msg: [""] });
     this.resetResponses();
     this.history = this.initialHistory();
     this.currentState = configs.emptyStruct;
@@ -220,7 +221,7 @@ export default class Game {
       this.selectedResp++;
       this.update();
       this.Setting.status("↓: showing the next one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
-      this.Logger.log({ type: "scroll", msg: "next" });
+      this.Logger.log({ type: "scroll", msg: ["next"] });
     } else {
       this.Setting.status("↓: already showing the last one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
     }
@@ -233,7 +234,7 @@ export default class Game {
       this.selectedResp--;
       this.update();
       this.Setting.status("↑: showing the previous one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
-      this.Logger.log({ type: "scroll", msg: "prev" });
+      this.Logger.log({ type: "scroll", msg: ["prev"] });
     } else {
       this.Setting.status("↑: already showing the first one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
     }
@@ -271,7 +272,7 @@ export default class Game {
       do {
         randomTarget = this.getRandomTarget();
       } while (randomTarget[0] === this.targetIdx);
-      this.Logger.log({ type: "skip", msg: this.targetStruct[1] });
+      this.Logger.log({ type: "skip", msg: [JSON.stringify(this.targetStruct[1])] });
       this.setTarget(randomTarget);
     } else {
       alert("Sorry, this is the last target. No skips possible.");

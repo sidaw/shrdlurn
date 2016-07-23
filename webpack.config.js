@@ -26,6 +26,7 @@ const config = module.exports = {
   },
 
   module: {
+    noParse: ["ws"],
     loaders: [
       {
         test: /\.js$/,
@@ -40,9 +41,14 @@ const config = module.exports = {
       }, {
         test: /\.html$/,
         loader: "html-loader",
+      }, {
+        test: /\.json$/,
+        loader: "json-loader",
       },
     ],
   },
+
+  externals: ["ws"],
 
   postcss() {
     return [autoprefixer({ browsers: ["last 2 versions"] })];

@@ -8,7 +8,8 @@ if (process.env.NODE_ENV === "local") {
 
 
 configs.structsServer = "http://jonsson.stanford.edu:8410";
-configs.loggerOn = false;
+configs.loggerServer = "http://jonsson.stanford.edu:8410";
+configs.loggerOn = true;
 
 configs.debugMode = false;
 
