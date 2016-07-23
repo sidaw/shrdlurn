@@ -1,6 +1,6 @@
 import configs from "./config";
 import Logger from "./logger";
-import { getStore, setStore } from "./util";
+import { getStore, setStore, getParameterByName } from "./util";
 import { getTurkId, getTurkCode } from "./turk";
 
 export default class Game {
@@ -26,7 +26,7 @@ export default class Game {
     this.Setting.renderHistory(this.history);
 
     this.Logger = new Logger(this.sessionId);
-    this.Logger.log({ type: "start", msg: [this.currentState] });
+    this.Logger.log({ type: "start", msg: [this.currentState, getParameterByName("mtaskid")] });
 
     /* For turking purposes */
     if (process.env.NODE_ENV === "turk" || process.env.NODE_ENV === "turkproduction") {

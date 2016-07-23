@@ -9,8 +9,7 @@ export function getTurkId() {
 
 export function getTurkCode(targetIdx, nSteps, state) {
   const mturkid = getTurkId();
-  const stringifiedState = JSON.stringify(state.map(c => ([c.x, c.y, c.z, c.color, c.names])));
-  const encodedData = window.btoa(unescape(encodeURIComponent(`${mturkid}:win:${targetIdx}:${nSteps}:${stringifiedState}:Yummy`)));
+  const encodedData = window.btoa(unescape(encodeURIComponent(`${mturkid}:win:${targetIdx}:${nSteps}:${state.length}:Yummy`)));
   return encodedData;
 }
 

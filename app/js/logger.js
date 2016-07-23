@@ -16,7 +16,7 @@ export default class Logger {
 
   log(e) {
     if (this.socket) {
-      this.socket.emit("log", { sessionId: this.sessionId.replace(/&/g, "amp;"), type: e.type, message: e.msg.join("%") });
+      this.socket.emit("log", { sessionId: this.sessionId.replace(/&/g, "amp;"), timestamp: Date.now(), type: e.type, message: e.msg.join("%") });
     }
   }
 
