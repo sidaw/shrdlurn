@@ -26,6 +26,7 @@ const config = module.exports = {
   },
 
   module: {
+    noParse: ["ws"],
     loaders: [
       {
         test: /\.js$/,
@@ -40,9 +41,14 @@ const config = module.exports = {
       }, {
         test: /\.html$/,
         loader: "html-loader",
+      }, {
+        test: /\.json$/,
+        loader: "json-loader",
       },
     ],
   },
+
+  externals: ["ws"],
 
   postcss() {
     return [autoprefixer({ browsers: ["last 2 versions"] })];
@@ -64,7 +70,7 @@ const config = module.exports = {
   ],
 };
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV === "production" || process.env.NODE_ENV === "turkproduction") {
   config.devtool = "eval";
   config.plugins.push(
     new webpack.optimize.DedupePlugin(),
