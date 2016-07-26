@@ -78,6 +78,7 @@ class App {
     this.Game.clear();
     this.consoleElem.focus();
     this.updateRandomUtterances();
+    this.Game.Logger.log({ type: "clear", msg: "" });
   }
 
   next() {
@@ -130,6 +131,7 @@ class App {
   revert(index) {
     this.Game = this.Setting.revertHistory(index, this.Game);
     this.activeHistoryElem = index;
+    this.Game.Logger.log({ type: "revert", msg: { index: index } })
   }
 
   setupAutocomplete() {
@@ -292,6 +294,7 @@ class App {
     const cmds = { q: `(submit (name "${name}") (formula "${JSON.stringify(formulas)}"))`, sessionId };
 
     this.Sempre.query(cmds, () => {
+      this.Game.Logger.log({ type: "submit", msg: { name, state } });
       fetch(`${configs.structsServer}/structs/submit`, {
         method: "POST",
         headers: {
