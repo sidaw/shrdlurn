@@ -1,4 +1,4 @@
-# Interactive semantic client
+# Interactive semantic parsing client
 Currently in progress, and focuses on a blocks world.
 
 ## Information
