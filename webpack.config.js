@@ -34,7 +34,7 @@ const config = module.exports = {
         loader: "babel",
       }, {
         test: /\.less$/,
-        loader: ExtractTextPlugin.extract("style", "css!postcss-loader!less"),
+        loader: ExtractTextPlugin.extract({ fallbackLoader: "style-loader", loader: "css-loader!postcss!less" }),
       }, {
         test: /\.png$/,
         loader: "url-loader?limit=10000",
@@ -48,7 +48,7 @@ const config = module.exports = {
     ],
   },
 
-  externals: ["ws"],
+  externals: "ws",
 
   postcss() {
     return [autoprefixer({ browsers: ["last 2 versions"] })];
