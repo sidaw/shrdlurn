@@ -124,11 +124,12 @@ export default class Setting {
         default:
       }
 
-      return {...b, x: x, y: y}
+      return { ...b, x: x, y: y };
     }));
 
     const selected = blocks.filter((b) => b.names && b.names.includes("S"));
     for (const block of blocks) {
+      console.log(block);
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
@@ -136,13 +137,14 @@ export default class Setting {
       } else {
         blockColor = new Color(color[0], color[1], color[2], 0.88);
         if (selected.length > 0 && selected.includes(block)) {
-	  blockColor = new Color(color[0], color[1], color[2], 0.25);
-          /* console.log("darkening!");
-	  blockColor = this.darken(blockColor);
-	  blockColor.a = 0.4; */
+	         blockColor = new Color(color[0], color[1], color[2], 0.25);
         }
       }
-      iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor), blockColor);
+      if (block.color === "Anchor") {
+        iso.add(this.makeBlock(block.x, block.y, -0.1, scalingFactor, translateFactor, 0.1), blockColor);
+      } else {
+        iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor), blockColor);
+      }
     }
   }
 
@@ -155,7 +157,7 @@ export default class Setting {
     return factor*graystandard + (1-factor)*value;
   }
 
-  makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0) {
+  makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0, basicUnit = this.basicUnit) {
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
 
     return Shape.Prism(
@@ -163,7 +165,7 @@ export default class Setting {
             (y + (y * this.borderWidth)) * scalingFactor,
             (z + this.baseHeight + (this.borderWidth * z)) * scalingFactor
            ),
-      this.basicUnit * scalingFactor, this.basicUnit * scalingFactor, this.basicUnit * scalingFactor
+      this.basicUnit * scalingFactor, this.basicUnit * scalingFactor, basicUnit * scalingFactor
     )
     .rotateZ(this.centerPoint, this.rotation)
     .translate(translateBy, -translateBy, -4.5 * translateBy);

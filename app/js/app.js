@@ -227,7 +227,12 @@ class App {
             const elem = document.createElement("li");
             elem.setAttribute("data-state", JSON.stringify(state));
             elem.setAttribute("data-nsteps", structs[i].nsteps);
-            const recipeSteps = structs[i].history.map((h) => h.query);
+
+            /* Hide recipe steps for turkers */
+            let recipeSteps = [];
+            if (!(process.env.NODE_ENV === "turk" || process.env.NODE_ENV === "turkproduction")) {
+              recipeSteps = structs[i].history.map((h) => h.query);
+            }
             elem.innerHTML = `<canvas id='usercanvas${i}' class='usercanvas' width='600px' height='600px'></canvas><div class='structs-meta'>${structs[i].name}<p class='structs-meta-history'>${recipeSteps.join("; ")}</p></div>`;
             structsList.appendChild(elem);
             elem.addEventListener("click", (e) => {
