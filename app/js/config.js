@@ -126,7 +126,9 @@ configs.colorMap = {
   Black: [10, 10, 10],
   White: [255, 255, 240],
   Pink: [255, 20, 147],
-  Brown: [139, 69, 19]
+  Brown: [139, 69, 19],
+  Anchor: [0, 160, 176],
+  Gray: [144, 144, 144],
 };
 
 export default configs;
