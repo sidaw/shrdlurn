@@ -1,21 +1,7 @@
-## Basic instructions
-Reach the "goal" from the "start" by teaching the computer your language. Type a command, use ↓ and ↑ to select the right answer, then use ✓ to express your approval.
-You can play a lot faster if you use the hotkeys listed on the right side panel.
+# Interactive semantic parsing client
+Currently in progress, and focuses on a blocks world.
 
-In the beginning, the computer knows nothing about language, has no built-in vocabulary, and it does not matter what language you want to teach, as long as you are precise and consistent. However, we do assume that ``words" are separated by space, and it would be helpful if you use  meaningful spaces in whatever language. 
+## Information
+- The older version associated with our paper [Learning language games through interaction](http://arxiv.org/abs/1606.02447) is in the [acl16-demo branch](https://github.com/sidaw/shrdlurn/tree/acl16-demo).
 
-### Hints and Strategies
-- You can always skip ambiguous or difficult examples
-- Being concise and always use the same words for the same action is better if you want to finish quickly (remember it knows nothing, and learn everything from what you say, and has no knowledge of synonyms).
-- The emoji indicates how surprised the computer is
-- If you have trouble making progress, consider being vague and use the wildcard *. i.e. "put * on the leftmost red", and approve the right action for that.
-- You can teach with low penality by describing what the computer likes to do, instead of finding what you said
-
-
-## Technical
-
-
-## Acknowledgements
-- The server uses [SEMPRE](https://github.com/percyliang/sempre).
-- PureScript code to render the cubes and the dev setup is adapted from the [cube composer](https://github.com/sharkdp/cube-composer) by [David Peter](http://david-peter.de/), which in turn uses [Isomer](https://github.com/jdan/isomer). Everything is under the MIT license.
-- Emojis are provided for free by [Emoji One](http://emojione.com/)
+- The parser uses on [SEMPRE](https://github.com/percyliang/sempre) and with modifications for actions and interaction in [my fork](https://github.com/sidaw/sempre-interactive).
