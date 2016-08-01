@@ -139,8 +139,7 @@ export default class SempreClient {
     for (let i = 0; i < valid.length; i++) {
       const qapair = {};
       qapair.value = this.formatValue(valid[i].value);
-      qapair.formula = this.formatFormula(valid[i].formula);
-      // qapair.raw = valid[i];
+      qapair.formula = valid[i].formula;
       qapair.score = valid[i].score.toFixed(7);
       qapair.rank = i;
       qapair.prob = valid[i].prob;
@@ -150,7 +149,8 @@ export default class SempreClient {
 
     const nbestdict = lstqapairs.reduce((nbd, nbest) => {
       const mynbd = nbd;
-      mynbd[nbest.value] = this.combine(nbd[nbest.value], nbest);
+      const key = JSON.stringify(nbest.value);
+      mynbd[key] = this.combine(nbd[key], nbest);
       return mynbd;
     }, {});
 
@@ -173,8 +173,8 @@ export default class SempreClient {
   }
 
   formatQuery(ques) {
-    const sanity = ques.replace(/(\+|-|%)/g, " $1 ")
-                       .replace(/(\(|\))/g, "")
+    const sanity = ques.replace(/(\+|-|%|;)/g, " $1 ")
+                       .replace(/(\(|\))/g, "") // disables commands
                        .replace(/"/g, "")
                        .replace(/=/g, "= ")
                        .replace(/(>|<)/g, " $1")
