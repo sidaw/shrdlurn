@@ -129,7 +129,6 @@ export default class Setting {
 
     const selected = blocks.filter((b) => b.names && b.names.includes("S"));
     for (const block of blocks) {
-      console.log(block);
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {

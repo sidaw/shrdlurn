@@ -57,7 +57,7 @@ export default class Game {
 
   querySempre(querystr) {
     const query = this.Sempre.formatQuery(querystr);
-    var contextCommand = "(context)";
+    let contextCommand = "(context)";
     if (this.currentState) {
       const currentState = JSON.stringify(JSON.stringify(this.currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))));
       contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${currentState}) (name b) (name c))))`;
@@ -77,7 +77,7 @@ export default class Game {
           this.query = query;
           this.Setting.status("SHRDLURN did not understand", query);
           this.Setting.promptDefine();
-          this.Logger.log({ type: "queryUnknown", msg: { query: query } });
+          this.Logger.log({ type: "queryUnknown", msg: { query } });
           this.Setting.promptAccept();
         } else {
           this.Setting.removePromptDefine();
@@ -85,7 +85,7 @@ export default class Game {
           this.selectedResp = 0;
           this.query = query;
           this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and accept to confirm.`, `${query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
-          this.Logger.log({ type: "query", msg: { query: query } });
+          this.Logger.log({ type: "query", msg: { query } });
           this.Setting.promptAccept();
         }
 
@@ -163,7 +163,7 @@ export default class Game {
     if (this.defineSuccess.length === 0 || query !== this.defineSuccess) {
       const cmds = { q: `(uttdef "${this.Sempre.formatQuery(query)}" -1)`, sessionId: this.sessionId };
 
-      this.Logger.log({ type: "trydefine", msg: { query: query } });
+      this.Logger.log({ type: "trydefine", msg: { query } });
 
       this.Sempre.query(cmds, (response) => {
         const formval = this.Sempre.parseSEMPRE(response.candidates);
