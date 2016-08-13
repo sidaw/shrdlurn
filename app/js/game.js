@@ -190,6 +190,7 @@ export default class Game {
 
         if (defCore || defNoCover || defNoParse) {
           this.taggedCover = response.taggedcover;
+          console.log(response);
           this.Setting.tryDefine(query, true, false, this.taggedCover, commandResponse, this.query);
         } else {
           this.defineSuccess = query;

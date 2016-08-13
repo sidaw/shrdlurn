@@ -64,6 +64,7 @@ class App {
         this.Setting.tryDefine(this.Game.defineSuccess, true, true);
         this.Setting.toggleDefineButton();
         document.querySelector("#define_interface .input-group").classList.add("accepting");
+        this.pastDefine = this.defineElem.value;
         return;
       }
 
