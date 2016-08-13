@@ -54,6 +54,8 @@ class App {
     }
 
     if (this.defineState) {
+      if (this.defineElem.value.length === 0) return;
+
       if (this.tutorial && this.tutorialStep === 6) {
         this.Game.defineSuccess = this.defineElem.value;
         this.Game.selectedResp = 0;
@@ -61,6 +63,7 @@ class App {
         this.Game.update();
         this.Setting.tryDefine(this.Game.defineSuccess, true, true);
         this.Setting.toggleDefineButton();
+        document.querySelector("#define_interface .input-group").classList.add("accepting");
         return;
       }
 
@@ -77,11 +80,17 @@ class App {
         this.Setting.closeDefineInterface();
         this.consoleElem.value = defined;
         this.consoleElem.focus();
+        this.pastDefine = "";
+        this.Setting.removeAccept();
+      } else {
+        this.pastDefine = this.defineElem.value;
       }
 
       this.watchOutForDefine = true;
       return;
     }
+
+    if (this.consoleElem.value.length === 0) return;
 
     if (this.activeHistoryElem > 0) {
       const historyElems = getHistoryElems();
@@ -375,6 +384,7 @@ class App {
       nextTutorial.classList.add("active");
     } else {
       this.endTutorial();
+      this.clear();
     }
   }
 
@@ -382,7 +392,6 @@ class App {
     setStore("completed_tutorial", true);
     this.tutorial = false;
     this.Game.Logger.log({ type: "tutorial", msg: "end" });
-    this.clear();
   }
 
   restartTutorial() {
@@ -405,6 +414,10 @@ class App {
 
   monitorConsole() {
     if (this.Setting.accepting() && this.consoleElem.value !== this.Game.query) this.Setting.removeAccept();
+  }
+
+  monitorDefine() {
+    if (this.Setting.defineAccepting() && this.defineElem.value !== this.pastDefine) this.Setting.removeDefineAccept();
   }
 }
 
@@ -431,6 +444,7 @@ document.getElementById(configs.buttons.submitStructure).addEventListener("click
 document.getElementById(configs.buttons.start).addEventListener("click", () => A.start());
 document.getElementById(configs.buttons.restartTutorial).addEventListener("click", () => A.restartTutorial());
 document.getElementById(configs.consoleElemId).addEventListener("keyup", () => A.monitorConsole());
+document.getElementById(configs.defineElemId).addEventListener("keyup", () => A.monitorDefine());
 
 for (const dT of document.getElementsByClassName(configs.buttons.define_instead)) {
   dT.addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); });
@@ -513,6 +527,8 @@ window.onkeydown = (e) => {
       break;
     case Hotkeys.ENTER:
       e.preventDefault();
+      if (A.Setting.accepting()) { A.accept(); break; }
+      if (A.Setting.defineAccepting()) { A.enter(); break; }
       A.enter();
       break;
     case Hotkeys.TEACH:

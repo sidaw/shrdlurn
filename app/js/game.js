@@ -88,7 +88,6 @@ export default class Game {
           this.Logger.log({ type: "queryUnknown", msg: { query } });
           this.Setting.promptAccept();
         } else {
-          this.Setting.removePromptDefine();
           this.responses = formval;
           this.selectedResp = 0;
           this.query = query;
@@ -122,9 +121,11 @@ export default class Game {
       this.resetResponses();
       this.update();
       this.Setting.removeAccept();
+      this.Setting.removePromptDefine();
       this.accepted++;
       this.Logger.getAccepted()
         .then((accepted) => this.Setting.updateAccepted(accepted, this.accepted));
+      this.query = "";
 
       if (this.Setting.equalityCheck(this.currentState, this.targetStruct)) {
         this.win();
@@ -195,7 +196,7 @@ export default class Game {
           this.selectedResp = 0;
           this.responses = formval;
           this.update();
-          this.Setting.tryDefine(query, true, true);
+          this.Setting.tryDefine(query, true, true, [], [], "", this.responses.length);
           this.Setting.toggleDefineButton();
         }
       });
@@ -229,6 +230,7 @@ export default class Game {
   }
 
   next() {
+    this.Setting.promptDefine();
     if (this.responses.length <= 0) {
       this.Setting.status("↓: can't scroll, say something or ⎌");
     } else if (this.selectedResp !== this.responses.length - 1) {
@@ -238,12 +240,10 @@ export default class Game {
       this.Logger.log({ type: "scroll", msg: "next" });
     } else {
       this.Setting.status("↓: already showing the last one, try defining instead by clicking define.", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
-      this.Setting.promptDefine();
     }
   }
 
   prev() {
-    this.Setting.removePromptDefine();
     if (this.responses.length <= 0) {
       this.Setting.status("↑: can't scroll, say something or ⎌");
     } else if (this.selectedResp !== 0) {

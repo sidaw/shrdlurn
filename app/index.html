@@ -43,8 +43,8 @@
           <div class="input-group">
             <input type="text" id="definetextarea" />
             <div class="buttons-at-end">
-              <button type="button" class="enter-button" id="try_define">try</button>
-              <button type="button" class="accept-button" id="define_phrase_button">define</button>
+              <button type="button" class="enter-button" id="try_define" title="see how the computer inteprets this new utterance">try</button>
+              <button type="button" class="accept-button" id="define_phrase_button" title="define the initial phrase as your new definition">define</button>
             </div>
           </div>
           <div class="examples">
@@ -74,9 +74,9 @@
           <div class="input-group" id="console_group">
             <input type="text" id="console">
             <div class="buttons-at-end">
-              <button type="button" class="remove-button" id="putbackbutton">&times;</button>
-              <button type="button" class="enter-button" id="dobutton">try</button>
-              <button type="button" class="accept-button" id="flyingaccept">accept</button>
+              <button type="button" class="remove-button" id="putbackbutton" title="puts back to previous state">&times;</button>
+              <button type="button" class="enter-button" id="dobutton" title="instructs the computer to do this action (enter)">try</button>
+              <button type="button" class="accept-button" id="flyingaccept" title="tells the computer this intepretation of the action was correct (shift+enter)">accept</button>
             </div>
           </div>
           <div class="examples">
@@ -84,12 +84,12 @@
           </div>
         </div>
         <div class="meta-buttons">
-          <button type="button" id="clearbutton">clear</button>
-          <button type="button" id="submitbutton" class="hidden">submit</button>
+          <button type="button" id="clearbutton" title="clears the current state and history">clear</button>
+          <button type="button" id="submitbutton" class="hidden" title="submits your structure to the gallery">submit</button>
           <br>
-          <button type="button" id="toggledefine">define</button>
-          <button type="button" id="prevbutton">&uarr;</button>
-          <button type="button" id="nextbutton">&darr;</button>
+          <button type="button" id="toggledefine" title="opens the define interface to teach the computer (ctrl+d)">define</button>
+          <button type="button" id="prevbutton" title="scrolls to the previous option when available (up arrow)">&uarr;</button>
+          <button type="button" id="nextbutton" title="scrolls to the next option when available (down arrow)">&darr;</button>
         </div>
       </div>
       <div class="panel">
@@ -114,7 +114,7 @@
         </div>
         <div class="history">
           <div class="card-header">
-            Recipe Steps (<span class="curr_steps">0</span>/<span class="max_steps">100</span>)
+            History (<span class="curr_steps">0</span> / <span class="max_steps">100</span> max)
           </div>
           <div class="history-steps" id="command_history"></div>
         </div>

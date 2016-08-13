@@ -129,21 +129,26 @@ export default class Setting {
 
     const selected = blocks.filter((b) => b.names && b.names.includes("S"));
     for (const block of blocks) {
+      let selectedBlockYes = false;
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
         blockColor = new Color(color[0], color[1], color[2], 0.2);
       } else {
-        blockColor = new Color(color[0], color[1], color[2], 0.5);
+        blockColor = new Color(color[0], color[1], color[2], 0.88);
         if (selected.length > 0 && selected.includes(block) && block.color != "Anchor") {
 	        // blockColor = new Color(color[0], color[1], color[2], 0);
-          iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor, this.basicUnit, true), new Color(30, 30, 30, 1));
+          selectedBlockYes = true;
         }
       }
       if (block.color === "Anchor") {
         iso.add(this.makeBlock(block.x, block.y, -0.01, scalingFactor, translateFactor, 0.01), this.darken(blockColor));
       } else {
         iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor), blockColor);
+      }
+
+      if (selectedBlockYes) {
+        iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor, this.basicUnit, true), new Color(0, 160, 176, 0.125));
       }
     }
   }
@@ -159,7 +164,7 @@ export default class Setting {
 
   makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0, basicUnit = this.basicUnit, highlighted = false) {
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
-    const shifter = highlighted ? basicUnit * 0.5 : 0;
+    const shifter = highlighted ? basicUnit * 0.4 : 0;
 
     return Shape.Prism(
       Point((x + (x * this.borderWidth)) * scalingFactor + (shifter / 2),
@@ -312,7 +317,7 @@ export default class Setting {
     defineStatus.innerHTML = `Teach SHRDLURN ${query}.`;
 
     const toggleButton = document.getElementById(configs.buttons.toggleDefine);
-    toggleButton.innerHTML = "Return";
+    toggleButton.innerHTML = "Cancel";
 
     this.removePromptDefine();
 
@@ -337,7 +342,7 @@ export default class Setting {
     consoleElem.focus();
   }
 
-  tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "") {
+  tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "", options = 1) {
     const defineHeader = document.getElementById(configs.elems.defineHeader);
     document.getElementById(configs.elems.definePrompt).classList.add("hidden");
     document.querySelector('#define_interface .input-group').classList.remove("accepting");
@@ -350,7 +355,7 @@ export default class Setting {
       }
     } else {
       if (canAnswer) {
-        defineHeader.innerHTML = `SHRDLURN understands the definition, "${query}". If this is correct, click "define" to submit the definition.`;
+        defineHeader.innerHTML = `SHRDLURN understands the definition, "${query}" (got ${options} options). If this is correct, click "define" to submit the definition.`;
         document.querySelector('#define_interface .input-group').classList.add("accepting");
       } else {
         defineHeader.innerHTML = `Still don't understand "${this.intelHighlight(coverage)}". Please rephrase:`;
@@ -474,5 +479,13 @@ export default class Setting {
   updateAccepted(systemTaught, userTaught) {
     document.getElementById("systemTaught").innerHTML = systemTaught;
     document.getElementById("userTaught").innerHTML = userTaught;
+  }
+
+  defineAccepting() {
+    return document.querySelector('#define_interface .input-group').classList.contains("accepting");
+  }
+
+  removeDefineAccept() {
+    document.querySelector('#define_interface .input-group').classList.remove("accepting");
   }
 }
