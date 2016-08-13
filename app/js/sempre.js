@@ -164,22 +164,22 @@ export default class SempreClient {
 
   sempreFormat(ques) {
     return ques.replace(/\+/g, " __+ ")
-               .replace(/\(/g, " [ ")
-               .replace(/\)/g, " ] ")
-               .replace(/\+/g, " + ")
-               .replace(/-/g, " - ")
-               .replace(/\*/g, " * ")
-               .replace(/\//g, " / ");
+      .replace(/\(/g, " [ ")
+      .replace(/\)/g, " ] ")
+      .replace(/\+/g, " + ")
+      .replace(/-/g, " - ")
+      .replace(/\*/g, " * ")
+      .replace(/\//g, " / ");
   }
 
   formatQuery(ques) {
     const sanity = ques.replace(/(\+|-|%|;)/g, " $1 ")
-                       .replace(/(\(|\))/g, "") // disables commands
-                       .replace(/"/g, "")
-                       .replace(/=/g, "= ")
-                       .replace(/(>|<)/g, " $1")
-                       .replace(/(>|<)(?!=)/g, "$1 ")
-                       .replace(/([^><])=/g, "$1 =");
+      .replace(/(\(|\))/g, "") // disables commands
+      .replace(/"/g, "")
+      .replace(/=/g, "= ")
+      .replace(/(>|<)/g, " $1")
+      .replace(/(>|<)(?!=)/g, "$1 ")
+      .replace(/([^><])=/g, "$1 =");
     if (configs.debugMode) {
       console.log(sanity);
     }
@@ -195,8 +195,8 @@ export default class SempreClient {
     fetch(`${configs.SEMPRE_URL}/sempre?format=lisp2json&${cmdstr.join("&")}`)
       .then((response) => response.json())
       .then((json) => callback(json))
-      // .catch((ex) => {
-      //   console.log("xmlhttp issue?", ex);
-      // });
+      .catch((ex) => {
+        console.log("xmlhttp issue?", ex);
+      });
   }
 }

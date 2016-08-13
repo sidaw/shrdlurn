@@ -3,7 +3,7 @@ const configs = {};
 if (process.env.NODE_ENV === "local") {
   configs.SEMPRE_URL = "http://localhost:8400";
 } else {
-  configs.SEMPRE_URL = "http://jonsson.stanford.edu:8401";
+  configs.SEMPRE_URL = "http://jonsson.stanford.edu:8409";
 }
 
 
@@ -15,7 +15,7 @@ configs.debugMode = false;
 
 configs.defaultSessionId = "deadbeef";
 
-configs.emptyStruct = [];
+configs.emptyStruct = [{ x: 3, y: 3, z: 0, color: "Anchor", names: ["S"] }];
 configs.defaultStruct = configs.emptyStruct;
 
 configs.mainCanvas = "main_canvas";
@@ -48,6 +48,7 @@ configs.elems = {
   structures: "structures",
   submitInterface: "submit_interface",
   submitConsole: "submittextarea",
+  welcome: "welcome",
 };
 
 configs.buttons = {
@@ -69,6 +70,8 @@ configs.buttons = {
   submitButton: "submitbutton",
   submitStructure: "confirm_submit_structure",
   closeSubmit: "close_submit",
+  start: "start_button",
+  restartTutorial: "restart_tutorial",
 };
 
 configs.difficulty = 3;
@@ -102,7 +105,10 @@ configs.defaultSkips = 2;
 /* eslint-disable */
 configs.targets = [
   [10, [{ x: 0, y: 0, z: 0, color: "Red" }]],
-  [1, [{"x":1,"y":1,"z":0,"color":"Red","names":[]},{"x":2,"y":2,"z":1,"color":"Orange","names":[]},{"x":2,"y":2,"z":0,"color":"Orange","names":[]},{"x":3,"y":3,"z":0,"color":"Yellow","names":[]},{"x":1,"y":3,"z":0,"color":"Green","names":[]},{"x":3,"y":1,"z":0,"color":"Blue","names":[]}]],
+  [15, [{"x":3,"y":5,"z":0,"color":"Brown","names":[]},{"x":6,"y":6,"z":0,"color":"Brown","names":[]},{"x":4,"y":2,"z":2,"color":"Yellow","names":[]},{"x":4,"y":4,"z":0,"color":"Brown","names":[]},{"x":6,"y":1,"z":0,"color":"Green","names":[]},{"x":3,"y":6,"z":0,"color":"Brown","names":[]},{"x":6,"y":3,"z":1,"color":"Red","names":[]},{"x":5,"y":1,"z":2,"color":"Blue","names":[]},{"x":4,"y":3,"z":2,"color":"Red","names":[]},{"x":5,"y":3,"z":0,"color":"Brown","names":[]},{"x":4,"y":1,"z":1,"color":"Green","names":[]},{"x":4,"y":5,"z":0,"color":"Brown","names":[]},{"x":3,"y":3,"z":1,"color":"Red","names":[]},{"x":3,"y":1,"z":0,"color":"Green","names":[]},{"x":5,"y":2,"z":2,"color":"Yellow","names":[]},{"x":4,"y":6,"z":0,"color":"Brown","names":[]},{"x":5,"y":4,"z":0,"color":"Brown","names":[]},{"x":5,"y":3,"z":2,"color":"Red","names":[]},{"x":6,"y":1,"z":2,"color":"Blue","names":[]},{"x":5,"y":5,"z":0,"color":"Brown","names":[]},{"x":4,"y":3,"z":1,"color":"Red","names":[]},{"x":3,"y":1,"z":2,"color":"Blue","names":[]},{"x":6,"y":3,"z":0,"color":"Brown","names":[]},{"x":5,"y":1,"z":1,"color":"Green","names":[]},{"x":3,"y":3,"z":0,"color":"Brown","names":[]},{"x":6,"y":2,"z":2,"color":"Yellow","names":[]},{"x":4,"y":1,"z":0,"color":"Green","names":[]},{"x":6,"y":4,"z":0,"color":"Brown","names":[]},{"x":5,"y":6,"z":0,"color":"Brown","names":[]},{"x":3,"y":2,"z":2,"color":"Yellow","names":[]},{"x":3,"y":4,"z":0,"color":"Brown","names":[]},{"x":6,"y":3,"z":2,"color":"Red","names":[]},{"x":6,"y":1,"z":1,"color":"Green","names":[]},{"x":6,"y":5,"z":0,"color":"Brown","names":[]},{"x":5,"y":3,"z":1,"color":"Red","names":[]},{"x":4,"y":1,"z":2,"color":"Blue","names":[]},{"x":5,"y":1,"z":0,"color":"Green","names":[]},{"x":4,"y":3,"z":0,"color":"Brown","names":[]},{"x":3,"y":1,"z":1,"color":"Green","names":[]},{"x":3,"y":3,"z":2,"color":"Red","names":[]}]],
+  [16, [{"x":3,"y":4,"z":5,"color":"Green","names":[]},{"x":4,"y":2,"z":5,"color":"Green","names":[]},{"x":2,"y":4,"z":4,"color":"Green","names":[]},{"x":3,"y":2,"z":4,"color":"Green","names":[]},{"x":5,"y":4,"z":1,"color":"Brown","names":[]},{"x":5,"y":5,"z":4,"color":"Green","names":[]},{"x":6,"y":3,"z":4,"color":"Green","names":[]},{"x":4,"y":4,"z":0,"color":"Brown","names":[]},{"x":4,"y":5,"z":3,"color":"Brown","names":[]},{"x":5,"y":3,"z":3,"color":"Brown","names":[]},{"x":3,"y":5,"z":2,"color":"Brown","names":[]},{"x":5,"y":2,"z":5,"color":"Green","names":[]},{"x":4,"y":3,"z":2,"color":"Brown","names":[]},{"x":4,"y":4,"z":5,"color":"Green","names":[]},{"x":4,"y":2,"z":4,"color":"Green","names":[]},{"x":3,"y":3,"z":1,"color":"Brown","names":[]},{"x":3,"y":4,"z":4,"color":"Green","names":[]},{"x":3,"y":6,"z":5,"color":"Green","names":[]},{"x":6,"y":5,"z":4,"color":"Green","names":[]},{"x":5,"y":4,"z":0,"color":"Brown","names":[]},{"x":2,"y":6,"z":4,"color":"Green","names":[]},{"x":5,"y":5,"z":3,"color":"Brown","names":[]},{"x":5,"y":3,"z":2,"color":"Brown","names":[]},{"x":4,"y":5,"z":2,"color":"Brown","names":[]},{"x":4,"y":3,"z":1,"color":"Brown","names":[]},{"x":3,"y":5,"z":1,"color":"Brown","names":[]},{"x":5,"y":2,"z":4,"color":"Green","names":[]},{"x":3,"y":3,"z":0,"color":"Brown","names":[]},{"x":5,"y":4,"z":5,"color":"Green","names":[]},{"x":4,"y":6,"z":5,"color":"Green","names":[]},{"x":4,"y":4,"z":4,"color":"Green","names":[]},{"x":3,"y":6,"z":4,"color":"Green","names":[]},{"x":3,"y":4,"z":3,"color":"Brown","names":[]},{"x":5,"y":3,"z":1,"color":"Brown","names":[]},{"x":3,"y":3,"z":5,"color":"Green","names":[]},{"x":5,"y":5,"z":2,"color":"Brown","names":[]},{"x":4,"y":3,"z":0,"color":"Brown","names":[]},{"x":5,"y":6,"z":5,"color":"Green","names":[]},{"x":2,"y":3,"z":4,"color":"Green","names":[]},{"x":4,"y":5,"z":1,"color":"Brown","names":[]},{"x":6,"y":2,"z":4,"color":"Green","names":[]},{"x":4,"y":6,"z":4,"color":"Green","names":[]},{"x":5,"y":4,"z":4,"color":"Green","names":[]},{"x":3,"y":5,"z":0,"color":"Brown","names":[]},{"x":4,"y":4,"z":3,"color":"Brown","names":[]},{"x":4,"y":3,"z":5,"color":"Green","names":[]},{"x":3,"y":4,"z":2,"color":"Brown","names":[]},{"x":3,"y":5,"z":5,"color":"Green","names":[]},{"x":3,"y":3,"z":4,"color":"Green","names":[]},{"x":2,"y":5,"z":4,"color":"Green","names":[]},{"x":6,"y":4,"z":4,"color":"Green","names":[]},{"x":5,"y":5,"z":1,"color":"Brown","names":[]},{"x":5,"y":3,"z":0,"color":"Brown","names":[]},{"x":5,"y":6,"z":4,"color":"Green","names":[]},{"x":5,"y":4,"z":3,"color":"Brown","names":[]},{"x":4,"y":5,"z":0,"color":"Brown","names":[]},{"x":4,"y":4,"z":2,"color":"Brown","names":[]},{"x":5,"y":3,"z":5,"color":"Green","names":[]},{"x":3,"y":4,"z":1,"color":"Brown","names":[]},{"x":4,"y":3,"z":4,"color":"Green","names":[]},{"x":4,"y":5,"z":5,"color":"Green","names":[]},{"x":3,"y":3,"z":3,"color":"Brown","names":[]},{"x":5,"y":5,"z":0,"color":"Brown","names":[]},{"x":3,"y":5,"z":4,"color":"Green","names":[]},{"x":6,"y":6,"z":4,"color":"Green","names":[]},{"x":5,"y":4,"z":2,"color":"Brown","names":[]},{"x":3,"y":2,"z":5,"color":"Green","names":[]},{"x":4,"y":4,"z":1,"color":"Brown","names":[]},{"x":2,"y":2,"z":4,"color":"Green","names":[]},{"x":3,"y":4,"z":0,"color":"Brown","names":[]},{"x":5,"y":5,"z":5,"color":"Green","names":[]},{"x":5,"y":3,"z":4,"color":"Green","names":[]},{"x":4,"y":5,"z":4,"color":"Green","names":[]},{"x":4,"y":3,"z":3,"color":"Brown","names":[]},{"x":3,"y":5,"z":3,"color":"Brown","names":[]},{"x":3,"y":3,"z":2,"color":"Brown","names":[]}]],
+  [8, [{"x":3,"y":1,"z":2,"color":"Green","names":[]},{"x":3,"y":6,"z":3,"color":"Green","names":[]},{"x":3,"y":0,"z":3,"color":"Green","names":[]},{"x":3,"y":3,"z":0,"color":"Red","names":[]},{"x":3,"y":4,"z":2,"color":"Green","names":[]},{"x":3,"y":0,"z":4,"color":"Green","names":[]},{"x":3,"y":2,"z":2,"color":"Green","names":[]},{"x":3,"y":5,"z":2,"color":"Green","names":[]},{"x":3,"y":6,"z":4,"color":"Green","names":[]},{"x":3,"y":0,"z":5,"color":"Green","names":[]},{"x":3,"y":3,"z":1,"color":"Red","names":[]},{"x":3,"y":6,"z":5,"color":"Green","names":[]},{"x":3,"y":6,"z":2,"color":"Green","names":[]},{"x":3,"y":0,"z":2,"color":"Green","names":[]},{"x":3,"y":3,"z":2,"color":"Red","names":[]}]],
+  [13, [{"x":2,"y":1,"z":0,"color":"Green","names":[]},{"x":2,"y":3,"z":1,"color":"Red","names":[]},{"x":0,"y":3,"z":2,"color":"Red","names":[]},{"x":1,"y":3,"z":0,"color":"Red","names":[]},{"x":3,"y":0,"z":0,"color":"Red","names":[]},{"x":3,"y":2,"z":1,"color":"Red","names":[]},{"x":2,"y":2,"z":0,"color":"Green","names":[]},{"x":0,"y":0,"z":0,"color":"Green","names":[]},{"x":1,"y":3,"z":2,"color":"Red","names":[]},{"x":3,"y":3,"z":1,"color":"Red","names":[]},{"x":3,"y":1,"z":0,"color":"Red","names":[]},{"x":0,"y":3,"z":1,"color":"Red","names":[]},{"x":2,"y":3,"z":0,"color":"Red","names":[]},{"x":3,"y":0,"z":2,"color":"Red","names":[]},{"x":0,"y":1,"z":0,"color":"Green","names":[]},{"x":3,"y":2,"z":0,"color":"Red","names":[]},{"x":3,"y":1,"z":2,"color":"Red","names":[]},{"x":1,"y":0,"z":0,"color":"Green","names":[]},{"x":0,"y":2,"z":0,"color":"Green","names":[]},{"x":2,"y":3,"z":2,"color":"Red","names":[]},{"x":3,"y":3,"z":0,"color":"Red","names":[]},{"x":1,"y":3,"z":1,"color":"Red","names":[]},{"x":1,"y":1,"z":0,"color":"Green","names":[]},{"x":0,"y":3,"z":0,"color":"Red","names":[]},{"x":3,"y":2,"z":2,"color":"Red","names":[]},{"x":3,"y":0,"z":1,"color":"Red","names":[]},{"x":2,"y":0,"z":0,"color":"Green","names":[]},{"x":1,"y":2,"z":0,"color":"Green","names":[]},{"x":3,"y":1,"z":1,"color":"Red","names":[]},{"x":3,"y":3,"z":2,"color":"Red","names":[]}]],
 ];
 
 configs.store = sessionStorage;

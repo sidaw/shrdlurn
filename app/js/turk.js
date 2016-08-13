@@ -13,6 +13,12 @@ export function getTurkCode(targetIdx, nSteps, state) {
   return encodedData;
 }
 
+export function getTurkHit() {
+  const hitnum = getParameterByName("mhitid");
+  if (hitnum && hitnum < configs.targets.length) return hitnum;
+  return 0;
+}
+
 // var turk = {};
 // (function(exports) {
 //   "use strict";

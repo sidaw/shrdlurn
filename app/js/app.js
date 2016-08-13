@@ -1,10 +1,10 @@
-import "babel-polyfill"
+import "babel-polyfill";
 import Awesomplete from "awesomplete";
 import Game from "./game";
 import configs from "./config";
 import Setting from "./setting";
 import Sempre from "./sempre";
-import { getHistoryElems, resetStore } from "./util";
+import { getHistoryElems, resetStore, getStore, setStore } from "./util";
 
 class App {
   constructor() {
@@ -22,9 +22,13 @@ class App {
     this.watchOutForDefine = false;
     this.submitOn = false;
 
+    this.tutorial = !getStore("completed_tutorial", false);
+    this.tutorialStep = 1;
+
     this.updateRandomUtterances();
 
-    this.generateTarget();
+    // this.generateTarget();
+    this.setupAutocomplete();
 
     this.consoleElem.focus();
   }
@@ -32,7 +36,6 @@ class App {
   generateTarget() {
     /* Generate Target at Random */
     this.Game.setTarget(this.Game.getRandomTarget());
-    this.setupAutocomplete();
   }
 
   enter() {
@@ -41,9 +44,33 @@ class App {
       return;
     }
 
+    if (this.tutorial && this.tutorialStep === 5) {
+      this.Setting.promptDefine();
+      this.Game.resetResponses();
+      this.Game.taggedCover = [["$Action", "add"], ["$Number", "3"], ["$Color", "red"], ["$UNK", "on", "top", "of", "green"]];
+      this.Game.query = "add 3 red on top of green";
+      this.Setting.status("SHRDLURN did not understand (click define to define this)", this.Game.query);
+      return;
+    }
+
     if (this.defineState) {
+      if (this.tutorial && this.tutorialStep === 6) {
+        this.Game.defineSuccess = this.defineElem.value;
+        this.Game.selectedResp = 0;
+        this.Game.responses = [{ "value": [{ "x": 3, "y": 4, "z": 3, "color": "Red", "names": [] }, { "x": 3, "y": 4, "z": 0, "color": "Green", "names": [] }, { "x": 3, "y": 3, "z": 0, "color": "Red", "names": ["S"] }, { "x": 3, "y": 4, "z": 2, "color": "Red", "names": [] }, { "x": 3, "y": 4, "z": 1, "color": "Red", "names": [] }], "formula": "(:for (color green) (:loop (number 3) (: add red top)))", "formulas": ["(:for (color green) (:loop (number 3) (: add red top)))"], "prob": null, "probs": ["NaN"], "pprob": null, "pprobs": [null], "score": 1.0824721, "rank": 0, "count": 1, "maxprob": null, "maxpprob": null }];
+        this.Game.update();
+        this.Setting.tryDefine(this.Game.defineSuccess, true, true);
+        this.Setting.toggleDefineButton();
+        return;
+      }
+
       // TODO: Validate define length!
-      const defined = this.Game.define(this.defineElem.value);
+      let defined = this.Game.define(this.defineElem.value);
+
+      if (this.tutorial && this.tutorialStep === 7) {
+        defined = "add 3 red on top of green";
+      }
+
       if (defined) {
         this.defineState = false;
         this.defineElem.value = "";
@@ -131,7 +158,7 @@ class App {
   revert(index) {
     this.Game = this.Setting.revertHistory(index, this.Game);
     this.activeHistoryElem = index;
-    this.Game.Logger.log({ type: "revert", msg: { index: index } })
+    this.Game.Logger.log({ type: "revert", msg: { index } });
   }
 
   setupAutocomplete() {
@@ -192,6 +219,17 @@ class App {
   }
 
   toggleHelp() {
+    if (!this.helpOn) {
+      this.Sempre.query({ q: "(autocomplete \"\")", sessionId: this.Game.sessionId }, (resp) => {
+        const autocompletes = resp.autocompletes;
+        let randomStrings = "";
+        for (const ac of autocompletes) {
+          randomStrings += `<span>${ac}</span><br>`;
+        }
+        document.getElementById("help_examples").innerHTML = randomStrings;
+      });
+    }
+
     this.helpOn = !this.helpOn;
     document.getElementById(configs.elems.helpMe).classList.toggle("active");
   }
@@ -307,8 +345,8 @@ class App {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: name,
-          state: state,
+          name,
+          state,
           nsteps: this.Game.getSteps(),
           history: this.Game.history,
         }),
@@ -317,6 +355,56 @@ class App {
       alert("Submitted your structure!");
       this.closeSubmit();
     });
+  }
+
+  start() {
+    document.getElementById(configs.elems.welcome).classList.remove("active");
+    if (this.tutorial) this.openTutorial();
+  }
+
+  openTutorial() {
+    document.getElementById("tutorial-1").classList.add("active");
+    this.Game.Logger.log({ type: "tutorial", msg: "start" });
+  }
+
+  nextTutorial() {
+    document.getElementById(`tutorial-${this.tutorialStep}`).classList.remove("active");
+    this.tutorialStep++;
+    const nextTutorial = document.getElementById(`tutorial-${this.tutorialStep}`);
+    if (nextTutorial) {
+      nextTutorial.classList.add("active");
+    } else {
+      this.endTutorial();
+    }
+  }
+
+  endTutorial() {
+    setStore("completed_tutorial", true);
+    this.tutorial = false;
+    this.Game.Logger.log({ type: "tutorial", msg: "end" });
+    this.clear();
+  }
+
+  restartTutorial() {
+    this.tutorial = true;
+    setStore("completed_tutorial", false);
+    this.tutorialStep = 1;
+    this.openTutorial();
+  }
+
+  prevTutorial() {
+    document.getElementById(`tutorial-${this.tutorialStep}`).classList.remove("active");
+    this.tutorialStep--;
+    document.getElementById(`tutorial-${this.tutorialStep}`).classList.add("active");
+  }
+
+  skipTutorial() {
+    document.getElementById(`tutorial-${this.tutorialStep}`).classList.remove("active");
+    this.endTutorial();
+  }
+
+  monitorConsole() {
+    if (this.Setting.accepting() && this.consoleElem.value !== this.Game.query) this.Setting.removeAccept();
   }
 }
 
@@ -333,7 +421,6 @@ document.getElementById(configs.buttons.toggleDefine).addEventListener("click", 
 document.getElementById(configs.consoleElemId).addEventListener("keyup", () => true);
 document.getElementById(configs.buttons.define).addEventListener("click", () => A.enter(), false);
 document.getElementById(configs.buttons.tryDefine).addEventListener("click", () => { A.Game.defineSuccess = ""; A.enter(); }, false);
-document.getElementById(configs.buttons.define_instead).addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); }, false);
 document.getElementById(configs.buttons.skip).addEventListener("click", () => A.skip(), false);
 document.getElementById(configs.buttons.putBack).addEventListener("click", () => A.putBack(), false);
 document.getElementById(configs.elems.defineConsole).addEventListener("keydown", (e) => A.defining(e), false);
@@ -341,7 +428,25 @@ document.getElementById(configs.buttons.closeDefine).addEventListener("click", (
 document.getElementById(configs.buttons.submitButton).addEventListener("click", () => A.openSubmit());
 document.getElementById(configs.buttons.closeSubmit).addEventListener("click", () => A.closeSubmit());
 document.getElementById(configs.buttons.submitStructure).addEventListener("click", () => A.submitStruct());
+document.getElementById(configs.buttons.start).addEventListener("click", () => A.start());
+document.getElementById(configs.buttons.restartTutorial).addEventListener("click", () => A.restartTutorial());
+document.getElementById(configs.consoleElemId).addEventListener("keyup", () => A.monitorConsole());
 
+for (const dT of document.getElementsByClassName(configs.buttons.define_instead)) {
+  dT.addEventListener("click", (e) => { e.preventDefault(); A.openDefineInterface(); });
+}
+
+for (const nT of document.getElementsByClassName("next-tutorial")) {
+  nT.addEventListener("click", () => A.nextTutorial());
+}
+
+for (const nT of document.getElementsByClassName("prev-tutorial")) {
+  nT.addEventListener("click", () => A.prevTutorial());
+}
+
+for (const nT of document.getElementsByClassName("skip-tutorial")) {
+  nT.addEventListener("click", (e) => { e.preventDefault(); A.skipTutorial(); });
+}
 
 function openAndCloseSetter(selector, callback, callbackObj) {
   const buttons = document.querySelectorAll(selector);
