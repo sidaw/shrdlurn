@@ -69,10 +69,12 @@ class App {
       }
 
       // TODO: Validate define length!
-      let defined = this.Game.define(this.defineElem.value);
 
+      let defined = "";
       if (this.tutorial && this.tutorialStep === 7) {
         defined = "add 3 red on top of green";
+      } else {
+        defined = this.Game.define(this.defineElem.value);
       }
 
       if (defined) {
