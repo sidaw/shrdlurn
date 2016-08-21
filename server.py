@@ -13,14 +13,20 @@ CORS(app)
 socketio = SocketIO(app)
 
 STRUCTS_FILE = "/afs/cs.stanford.edu/u/samginn/shrdlurn/structs.json"
+ACCEPTED_FILE = "/afs/cs.stanford.edu/u/samginn/shrdlurn/accepted.txt"
 
 @app.route("/")
 def index():
-    return "Hello World!"
+	return "Hello World!"
 
 @app.route("/structs")
 def get_structs():
 	with open(STRUCTS_FILE) as f:
+		return f.read()
+
+@app.route("/statistics")
+def get_statistics():
+	with open(ACCEPTED_FILE) as f:
 		return f.read()
 
 @app.route("/structs/submit", methods=["POST"])
@@ -39,6 +45,18 @@ def handle_message(message):
 
 @socketio.on('log')
 def handle_log(message):
+	if message["type"] == "accept":
+		with open(ACCEPTED_FILE, 'r+') as f:
+			fileData = f.read()
+			if fileData != "":
+				data = int(fileData)
+			else:
+				data = 0
+
+			f.seek(0)
+			f.write(str(data + 1))
+			f.truncate()
+
 	with open('log/' + message["sessionId"]  + '.json' , 'a') as f:
 		json.dump(message, f)
 		f.write('\n')

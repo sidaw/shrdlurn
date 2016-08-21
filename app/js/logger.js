@@ -22,7 +22,13 @@ export default class Logger {
 
   strip(str) {
     // http://stackoverflow.com/questions/14129953/how-to-encode-a-string-in-javascript-for-displaying-in-html
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  getAccepted() {
+    return fetch(`${configs.structsServer}/statistics`)
+      .then((response) => response.text())
+      .then((text) => text);
   }
 
   // submit(username, name, state, steps) {

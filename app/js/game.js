@@ -1,7 +1,7 @@
 import configs from "./config";
 import Logger from "./logger";
 import { getStore, setStore, getParameterByName } from "./util";
-import { getTurkId, getTurkCode } from "./turk";
+import { getTurkId, getTurkCode, getTurkHit } from "./turk";
 
 export default class Game {
   constructor(setting, sempreClient) {
@@ -17,7 +17,7 @@ export default class Game {
 
     this.targetStruct = configs.defaultStruct;
     this.targetIdx = -1;
-    this.maxTargetSteps = 0;
+    this.maxTargetSteps = 100;
     this.skipsLeft = configs.defaultSkips;
 
     this.Sempre = sempreClient;
@@ -25,13 +25,21 @@ export default class Game {
     this.Setting = setting;
     this.Setting.renderHistory(this.history);
 
-    this.Logger = new Logger(this.sessionId);
-    this.Logger.log({ type: "start", msg: { taskid: getParameterByName("mtaskid"), startingState: this.currentState } });
-
     /* For turking purposes */
     if (process.env.NODE_ENV === "turk" || process.env.NODE_ENV === "turkproduction") {
       this.sessionId = getTurkId();
+      this.Logger = new Logger(this.sessionId);
+      const targetIdx = getTurkHit();
+      this.setTarget([targetIdx, ...configs.targets[targetIdx]]);
+      this.Logger.log({ type: "start", msg: { taskid: getParameterByName("mtaskid"), startingState: this.currentState } });
+    } else {
+      this.Logger = new Logger(this.sessionId);
+      this.Logger.log({ type: "start", msg: { taskid: "localtest", startingState: this.currentState } });
     }
+
+    this.accepted = 0;
+    this.Logger.getAccepted()
+      .then((accepted) => this.Setting.updateAccepted(accepted, this.accepted));
   }
 
   setTarget(targetStruct) {
@@ -57,7 +65,7 @@ export default class Game {
 
   querySempre(querystr) {
     const query = this.Sempre.formatQuery(querystr);
-    var contextCommand = "(context)";
+    let contextCommand = "(context)";
     if (this.currentState) {
       const currentState = JSON.stringify(JSON.stringify(this.currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))));
       contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${currentState}) (name b) (name c))))`;
@@ -75,17 +83,16 @@ export default class Game {
           console.log("no answer from sempre");
           this.resetResponses();
           this.query = query;
-          this.Setting.status("SHRDLURN did not understand", query);
+          this.Setting.status("SHRDLURN did not understand (click define to define this)", query);
           this.Setting.promptDefine();
-          this.Logger.log({ type: "queryUnknown", msg: { query: query } });
+          this.Logger.log({ type: "queryUnknown", msg: { query } });
           this.Setting.promptAccept();
         } else {
-          this.Setting.removePromptDefine();
           this.responses = formval;
           this.selectedResp = 0;
           this.query = query;
-          this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and accept to confirm.`, `${query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
-          this.Logger.log({ type: "query", msg: { query: query } });
+          this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and accept to confirm, or click define to define a new one.`, `${query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
+          this.Logger.log({ type: "query", msg: { query } });
           this.Setting.promptAccept();
         }
 
@@ -107,18 +114,26 @@ export default class Game {
       this.Sempre.query({ q: this.query, accept: this.responses[this.selectedResp].rank, sessionId: this.sessionId }, () => {});
 
       this.currentState = this.responses[this.selectedResp].value;
+
+      console.log(this.currentState);
+
       this.Setting.status(`✓: accepted, enter another command`);
       this.Logger.log({ type: "accept", msg: { query: this.query, state: this.currentState, formula: this.responses[this.selectedResp].formula } });
       this.history.push({ query: this.query, type: "accept", state: this.currentState, stepN: this.getSteps() + 1, formula: this.responses[this.selectedResp].formula });
       this.resetResponses();
       this.update();
       this.Setting.removeAccept();
+      this.Setting.removePromptDefine();
+      this.accepted++;
+      this.Logger.getAccepted()
+        .then((accepted) => this.Setting.updateAccepted(accepted, this.accepted));
+      this.query = "";
+
+      if (this.Setting.equalityCheck(this.currentState, this.targetStruct)) {
+        this.win();
+      }
     } else {
       this.Setting.status("✓: can't accept nothing, say something first");
-    }
-
-    if (this.Setting.equalityCheck(this.currentState, this.targetStruct)) {
-      this.win();
     }
   }
 
@@ -130,7 +145,8 @@ export default class Game {
 
     if (process.env.NODE_ENV === "turk" || process.env.NODE_ENV === "turkproduction") {
       const turkcode = getTurkCode(`v1,${this.targetIdx}`, this.getSteps(), this.currentState);
-      alert(`Congratulations! You have successfully completed the task. Please copy this confirmation code and submit it to complete the hit: ${turkcode}`);
+      document.getElementById("turkcode").innerHTML = turkcode;
+      document.getElementById("turkdone").classList.add("active");
     } else {
       alert("You've did it! Congratulations! You've made the target! Try another one now.");
     }
@@ -150,6 +166,7 @@ export default class Game {
     let afterStruct = this.currentState;
     if (this.responses.length > 0) {
       afterStruct = this.Setting.computeDiff(this.currentState, this.responses[this.selectedResp].value);
+      console.log(this.responses[this.selectedResp].formula);
     }
     this.Setting.renderCanvas(afterStruct);
 
@@ -163,7 +180,7 @@ export default class Game {
     if (this.defineSuccess.length === 0 || query !== this.defineSuccess) {
       const cmds = { q: `(uttdef "${this.Sempre.formatQuery(query)}" -1)`, sessionId: this.sessionId };
 
-      this.Logger.log({ type: "trydefine", msg: { query: query } });
+      this.Logger.log({ type: "trydefine", msg: { query } });
 
       this.Sempre.query(cmds, (response) => {
         const formval = this.Sempre.parseSEMPRE(response.candidates);
@@ -175,13 +192,14 @@ export default class Game {
 
         if (defCore || defNoCover || defNoParse) {
           this.taggedCover = response.taggedcover;
+          console.log(response);
           this.Setting.tryDefine(query, true, false, this.taggedCover, commandResponse, this.query);
         } else {
           this.defineSuccess = query;
           this.selectedResp = 0;
           this.responses = formval;
           this.update();
-          this.Setting.tryDefine(query, true, true);
+          this.Setting.tryDefine(query, true, true, [], [], "", this.responses.length);
           this.Setting.toggleDefineButton();
         }
       });
@@ -215,6 +233,7 @@ export default class Game {
   }
 
   next() {
+    this.Setting.promptDefine();
     if (this.responses.length <= 0) {
       this.Setting.status("↓: can't scroll, say something or ⎌");
     } else if (this.selectedResp !== this.responses.length - 1) {
@@ -223,7 +242,7 @@ export default class Game {
       this.Setting.status("↓: showing the next one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
       this.Logger.log({ type: "scroll", msg: "next" });
     } else {
-      this.Setting.status("↓: already showing the last one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
+      this.Setting.status("↓: already showing the last one, try defining instead by clicking define.", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
     }
   }
 

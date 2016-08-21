@@ -129,21 +129,26 @@ export default class Setting {
 
     const selected = blocks.filter((b) => b.names && b.names.includes("S"));
     for (const block of blocks) {
-      console.log(block);
+      let selectedBlockYes = false;
       const color = configs.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
-        blockColor = new Color(color[0], color[1], color[2], 0.25);
+        blockColor = new Color(color[0], color[1], color[2], 0.2);
       } else {
         blockColor = new Color(color[0], color[1], color[2], 0.88);
-        if (selected.length > 0 && selected.includes(block)) {
-	         blockColor = new Color(color[0], color[1], color[2], 0.25);
+        if (selected.length > 0 && selected.includes(block) && block.color != "Anchor") {
+	        // blockColor = new Color(color[0], color[1], color[2], 0);
+          selectedBlockYes = true;
         }
       }
       if (block.color === "Anchor") {
-        iso.add(this.makeBlock(block.x, block.y, -0.1, scalingFactor, translateFactor, 0.1), blockColor);
+        iso.add(this.makeBlock(block.x, block.y, -0.01, scalingFactor, translateFactor, 0.01), this.darken(blockColor));
       } else {
         iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor), blockColor);
+      }
+
+      if (selectedBlockYes) {
+        iso.add(this.makeBlock(block.x, block.y, block.z, scalingFactor, translateFactor, this.basicUnit, true), new Color(0, 160, 176, 0.125));
       }
     }
   }
@@ -157,15 +162,16 @@ export default class Setting {
     return factor*graystandard + (1-factor)*value;
   }
 
-  makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0, basicUnit = this.basicUnit) {
+  makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0, basicUnit = this.basicUnit, highlighted = false) {
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
+    const shifter = highlighted ? basicUnit * 0.4 : 0;
 
     return Shape.Prism(
-      Point((x + (x * this.borderWidth)) * scalingFactor,
-            (y + (y * this.borderWidth)) * scalingFactor,
-            (z + this.baseHeight + (this.borderWidth * z)) * scalingFactor
+      Point((x + (x * this.borderWidth)) * scalingFactor + (shifter / 2),
+            (y + (y * this.borderWidth)) * scalingFactor + (shifter / 2),
+            (z + this.baseHeight + (this.borderWidth * z)) * scalingFactor + (shifter / 2)
            ),
-      this.basicUnit * scalingFactor, this.basicUnit * scalingFactor, basicUnit * scalingFactor
+      this.basicUnit * scalingFactor - shifter, this.basicUnit * scalingFactor - shifter, basicUnit * scalingFactor - shifter
     )
     .rotateZ(this.centerPoint, this.rotation)
     .translate(translateBy, -translateBy, -4.5 * translateBy);
@@ -216,12 +222,12 @@ export default class Setting {
   }
 
   equalityCheck(struct1, struct2) {
-    if (struct1 === struct2) return true;
-    if (struct1 == null || struct2 == null) return false;
-    if (struct1.length != struct2.length) return false;
+    const a = this.sortBlocks(struct1).filter((b) => b.color !== "Anchor");
+    const b = this.sortBlocks(struct2).filter((b) => b.color !== "Anchor");
 
-    const a = this.sortBlocks(struct1);
-    const b = this.sortBlocks(struct2);
+    if (a === b) return true;
+    if (a == null || b == null) return false;
+    if (a.length != b.length) return false;
 
     for (let i = 0; i < a.length; ++i) {
       if (a[i].x !== b[i].x ||
@@ -311,7 +317,7 @@ export default class Setting {
     defineStatus.innerHTML = `Teach SHRDLURN ${query}.`;
 
     const toggleButton = document.getElementById(configs.buttons.toggleDefine);
-    toggleButton.innerHTML = "Return";
+    toggleButton.innerHTML = "Cancel";
 
     this.removePromptDefine();
 
@@ -336,7 +342,7 @@ export default class Setting {
     consoleElem.focus();
   }
 
-  tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "") {
+  tryDefine(query, refineDefine, canAnswer, coverage = [], commandResponse = [], oldQuery = "", options = 1) {
     const defineHeader = document.getElementById(configs.elems.defineHeader);
     document.getElementById(configs.elems.definePrompt).classList.add("hidden");
     document.querySelector('#define_interface .input-group').classList.remove("accepting");
@@ -349,7 +355,7 @@ export default class Setting {
       }
     } else {
       if (canAnswer) {
-        defineHeader.innerHTML = `SHRDLURN understands the definition, "${query}". If this is correct, click "define" to submit the definition.`;
+        defineHeader.innerHTML = `SHRDLURN understands the definition, "${query}" (got ${options} options). If this is correct, click "define" to submit the definition.`;
         document.querySelector('#define_interface .input-group').classList.add("accepting");
       } else {
         defineHeader.innerHTML = `Still don't understand "${this.intelHighlight(coverage)}". Please rephrase:`;
@@ -428,11 +434,13 @@ export default class Setting {
   }
 
   promptDefine() {
-    document.getElementById(configs.elems.definePrompt).classList.remove("hidden");
+    //document.getElementById(configs.elems.definePrompt).classList.remove("hidden");
+    document.getElementById(configs.buttons.toggleDefine).classList.add("bold-button");
   }
 
   removePromptDefine() {
-    document.getElementById(configs.elems.definePrompt).classList.add("hidden");
+    //document.getElementById(configs.elems.definePrompt).classList.add("hidden");
+    document.getElementById(configs.buttons.toggleDefine).classList.remove("bold-button");
   }
 
   setSkips(skipsLeft) {
@@ -452,6 +460,10 @@ export default class Setting {
     document.getElementById(configs.elems.consoleGroup).classList.remove("accepting");
   }
 
+  accepting() {
+    return document.getElementById(configs.elems.consoleGroup).classList.contains("accepting");
+  }
+
   promptTryDefine() {
     document.getElementById(configs.buttons.tryDefine).classList.add("active");
   }
@@ -462,5 +474,18 @@ export default class Setting {
 
   rotate(rotation) {
     this.rotational = parseInt(rotation, 10);
+  }
+
+  updateAccepted(systemTaught, userTaught) {
+    document.getElementById("systemTaught").innerHTML = systemTaught;
+    document.getElementById("userTaught").innerHTML = userTaught;
+  }
+
+  defineAccepting() {
+    return document.querySelector('#define_interface .input-group').classList.contains("accepting");
+  }
+
+  removeDefineAccept() {
+    document.querySelector('#define_interface .input-group').classList.remove("accepting");
   }
 }

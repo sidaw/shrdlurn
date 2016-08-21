@@ -16,7 +16,7 @@
         <div class="structures-toggle">Structures</div>
         <div class="help-toggle">Help Me</div>
         <div class="keyboard-toggle">Keyboard Shortcuts</div>
-        <div class="hidden">Restart Tutorial</div>
+        <div class="hidden" id="restart_tutorial">Restart Tutorial</div>
       </div>
     </div>
     <div class="container">
@@ -25,7 +25,7 @@
           <h1>SHRDLURN does not understand.</h1>
           <hr>
           <p>Help SHRDLURN learn by teaching the phrase you attempted to instruct SHRDLURN with by defining it.</p>
-          <button type="button" class="bold-button" id="define_instead">Ok. TEACH SHRDLURN.</button>
+          <button type="button" class="bold-button define_instead">Ok. TEACH SHRDLURN.</button>
         </div>
         <div class="rotate-icons">
           <div id="rtl" data-rotate="-2"></div>
@@ -43,8 +43,8 @@
           <div class="input-group">
             <input type="text" id="definetextarea" />
             <div class="buttons-at-end">
-              <button type="button" class="enter-button" id="try_define">try</button>
-              <button type="button" class="accept-button" id="define_phrase_button">define</button>
+              <button type="button" class="enter-button" id="try_define" title="see how the computer inteprets this new utterance">try</button>
+              <button type="button" class="accept-button" id="define_phrase_button" title="define the initial phrase as your new definition">define</button>
             </div>
           </div>
           <div class="examples">
@@ -74,9 +74,9 @@
           <div class="input-group" id="console_group">
             <input type="text" id="console">
             <div class="buttons-at-end">
-              <button type="button" class="remove-button" id="putbackbutton">&times;</button>
-              <button type="button" class="enter-button" id="dobutton">enter</button>
-              <button type="button" class="accept-button" id="flyingaccept">accept</button>
+              <button type="button" class="remove-button" id="putbackbutton" title="puts back to previous state">&times;</button>
+              <button type="button" class="enter-button" id="dobutton" title="instructs the computer to do this action (enter)">try</button>
+              <button type="button" class="accept-button" id="flyingaccept" title="tells the computer this intepretation of the action was correct (shift+enter)">accept</button>
             </div>
           </div>
           <div class="examples">
@@ -84,19 +84,19 @@
           </div>
         </div>
         <div class="meta-buttons">
-          <button type="button" id="clearbutton">clear</button>
-          <button type="button" id="submitbutton">submit</button>
+          <button type="button" id="clearbutton" title="clears the current state and history">clear</button>
+          <button type="button" id="submitbutton" class="" title="submits your structure to the gallery">submit</button>
           <br>
-          <button type="button" id="toggledefine">define</button>
-          <button type="button" id="prevbutton">&uarr;</button>
-          <button type="button" id="nextbutton">&darr;</button>
+          <button type="button" id="toggledefine" title="opens the define interface to teach the computer (ctrl+d)">define</button>
+          <button type="button" id="prevbutton" title="scrolls to the previous option when available (up arrow)">&uarr;</button>
+          <button type="button" id="nextbutton" title="scrolls to the next option when available (down arrow)">&darr;</button>
         </div>
       </div>
       <div class="panel">
         <div class="target card">
           <div class="card-header">
             Target
-            <button type="button" id="skip_button" class="seethrough">skip (<span id="skips_left">2</span> left)</button>
+            <button type="button" id="skip_button" class="seethrough hidden">skip (<span id="skips_left">2</span> left)</button>
           </div>
           <div class="target-footer">
             <div>
@@ -108,9 +108,13 @@
           </div>
           <canvas id="target_canvas" width="512" height="800"></canvas>
         </div>
+        <div class="statistics">
+          Of the <strong id="systemTaught">16</strong> phrases the computer has learned, you've taught it <strong id="userTaught">0</strong>.
+          <br />
+        </div>
         <div class="history">
           <div class="card-header">
-            Recipe Steps (<span class="curr_steps">0</span>/<span class="max_steps">100</span>)
+            History (<span class="curr_steps">0</span> / <span class="max_steps">100</span> max)
           </div>
           <div class="history-steps" id="command_history"></div>
         </div>
@@ -128,48 +132,45 @@
               as well as the core language below, which it always understands:
               <ul>
                 <li><b>number: </b> 0, 1, 2, ..., 9, many</li>
-                <li><b>color: </b> red, cyan, brown, yellow, orange</li>
+                <li><b>color: </b> red, orange, yellow, green, blue, white, black, pink, and brown.</li>
                 <li><b>action: </b> remove, add [color] </li>
-                <li><b>condition: </b> top [color], row = [number], height &gt; [number], has [color], etc. </li>
-                <li><b>if: </b> [action] if [condition]
+                <li><b>direction: </b> top, bot, left, right, front, back, very left</li>
+                <li><b>control: </b> [action] ; [action], repeat 3 [ action ]
                   <ul>
-                    <li>add red if col = 1 or col = 8 or row = 1 or row = 8</li>
-                    <li>add red if row &lt; 3</li>
-                    <li>remove if top red</li>
+                    <li>repeat 3 [ remove red ]</li>
+                    <li>repeat 2 [ add red all ; add pink ]</li>
                   </ul>
                 </li>
-                <li><b>control: </b> [action] then [action], repeat [action] 3 times
+                <li><b>sets: </b> select
                   <ul>
-                    <li>repeat remove if has red many times</li>
-                    <li>remove then add red if top yellow </li>
-                    <li>repeat add red 3 times if top yellow or row &lt; 3 </li>
-                    <li>[remove then add red then add red] if height &lt; 1</li>
-                    <li>repeat add red then add yellow 5 times if height &gt; 0 </li>
+                    <li>select very top of all</li>
+                    <li>select has color red</li>
+                    <li>select this and not very left and not very right</li>
+                    <li>select nothing</li>
+                    <li>for has color brown [ add green ]</li>
+                    <li>for very top of has color red [ repeat 2 [ add yellow left ] ]</li>
+                    <li>isolate selected [ add red left ]</li>
                   </ul>
                 </li>
-                <li><b>(advanced) relative condition: </b> relativepos_of [condition]
-                <ul>
-                  <li>add yellow if leftof top red</li>
-                  <li>add yellow if rightof col = 3</li>
-                  <li>add yellow if backof col = row </li>
-                  <li>add yellow if rightof frontof [row = 4 and col = 4]</li>
-                </ul>
+                <li><b>move:</b> move [direction] (this moves the selected cubes)
+                  <ul>
+                    <i>If you first select blocks, you can then move them like so:</i>
+                    <li>move left</li>
+                    <li>repeat 3 [ move left ]</li>
+                  </ul>
                 </li>
-                <li><b>(advanced) extremes: </b> largest X in [condition]
-                <ul>
-                  <li>add yellow if largest row in all</li>
-                  <li>add yellow if smallest col in top red</li>
-                </ul>
-                </li>
-                <li><b>(advanced) inside: </b> inside [[condition]]
-                <ul>
-                  <li>add red if inside [top red]</li>
-                  <li>add red if inside [col = 1 or col = 4]</li>
-                  <li>add cyan if inside [ [ row = 1 or row = 4 ] and [col = 1 or col = 4] ] </li>
-                </ul>
+                <li>
+                  <b>update:</b> (updates/changes current selection)
+                  <ul>
+                    <li>update color green</li>
+                  </ul>
                 </li>
               </ul>
             </p>
+            <h3>Player-generated examples:</h3>
+            <div id="help_examples">
+
+            </div>
             <h3>But it's not accepting my teachings! </h3>
             <ul>
               <li>
@@ -209,6 +210,17 @@
           </div>
         </div>
       </div>
+      <div class="modal-container" id="turkdone">
+        <div class="modal">
+          <div class="modal-header">Congratulations!</div>
+          <div class="modal-body">
+            <p>
+              You have successfully completed the task. Please copy this confirmation code and submit it to complete the hit:
+            </p>
+            <pre id="turkcode">000</pre>
+          </div>
+        </div>
+      </div>
       <div class="modal-container" id="structures">
         <div class="modal">
           <div class="modal-header">
@@ -217,6 +229,165 @@
           <div class="modal-body">
             <p>Below are a collection of user-submitted structures. Click on one to load it. Or <a href="" class="structures-toggle">click here or press ESC to close this dialog.</a></p>
             <ul id="user_structs"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-container active" id="welcome">
+        <div class="modal">
+          <div class="modal-header">
+            Welcome to SHRDLURN!
+          </div>
+          <div class="modal-body">
+            <p>
+              SHRDLURN is a Stanford research project to teach computers to understand English.
+            </p>
+            <p>
+              We need your help!
+            </p>
+            <button class="bold-button" id="start_button">Click to Get Started</button>
+            <img src="img/tree.png" />
+          </div>
+        </div>
+      </div>
+      <div class="tutorials">
+        <div id="tutorial-1" class="tutorial">
+          <div class="tutorial-header">
+            Tutorial
+          </div>
+          <div class="tutorial-body">
+            <p>SHRDLURN is an attempt to see how well computers can be taught to learn English.</p>
+            <p>We will ask you to build a target structure using blocks by instructing the computer in plain English.</p>
+            <p>Think of the blocks as a bunch of magnets which you can attach to other blocks, front, right, left, or back. You instruct the computer in plain English.</p>
+            <p>Try it out by writing <code>add red</code> in the white bar to the left and click try (or hit enter).</p>
+            <p>Click next after you hit try.</p>
+            <button class="next-tutorial">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-2" class="tutorial">
+          <div class="tutorial-header">
+            Good start!
+          </div>
+          <div class="tutorial-body">
+            <p>But, remember, we are teaching the computer so we need to always tell it whether it did as told or not. "add red" should add a red block on the highlighted base square. If the computer successfully did that, you need to click <b>"accept"</b> or hit shift-enter to tell the computer that what you told it to do was correct.</p>
+            <p>
+              Click next after you accepted it.
+            </p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-3" class="tutorial">
+          <div class="tutorial-header">
+            Perfect!
+          </div>
+          <div class="tutorial-body">
+            <p>Now, build on top of the red block by typing <code>add green left</code>. Hit try and then accept it if the computer's intepretation was correct.</p>
+            <p>Click next after you have accepted "add green left".</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <!-- <div id="tutorial-4" class="tutorial">
+          <div class="tutorial-header">
+            Great! Let's talk goals.
+          </div>
+          <div class="tutorial-body">
+            <p>The computer already knows a very simple language. Your goal is to teach it more advanced English. For instance, type <code>repeat 3 [ add red ]</code> and hit try.</p>
+            <p>The computer might have multiple interpretations. If this is the case, you can scroll through the options with the up and down arrow keys and then accept the correct one. Everytime you do this, the computer learns and next time the computer will give you the correct interpretation sooner.</p>
+            <p>Click next after you have accepted the correct intepretation that has 3 red blocks stacked on top of the red block.</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div> -->
+        <div id="tutorial-4" class="tutorial">
+          <div class="tutorial-header">
+            Teaching it...
+          </div>
+          <div class="tutorial-body">
+            <p>Try <code>add 3 red on top of green</code>.</p>
+            <p>When you hit try, the computer will tell you it doesn't understand what you mean (or it might give you a bunch of wrong interpretations). This is good! This means we have the opportunity to teach it. Click the highlighted <strong>"define"</strong> button to enter the define mode.</p>
+            <p>Click next once you have clicked "define" to enter the define mode.</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-5" class="tutorial">
+          <div class="tutorial-header">
+            Defining things
+          </div>
+          <div class="tutorial-body">
+            <p>The computer always makes actions in relation to other objects. So, to do what we want here, we can define the more advanced phrase with <code>for green [ repeat 3 [ add red ]]</code>. Notice that we first select the block that we want to act upon and then we add the 3 red blocks by repeating.</p>
+            <p>We can teach the computer by defining more complex phrases like this with simple instructions the computer already understands. For a list of basic commands the computer knows, you can click "help me" in the top bar.</p>
+            <p>Click try once you type that in to make sure the computer correctly understood this new definition. Then, click next.</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-6" class="tutorial">
+          <div class="tutorial-header">
+            Great!
+          </div>
+          <div class="tutorial-body">
+            <p>Now that we confirmed that the computer understood this new definition, we have to officially define it by clicking <b>define</b> like we do when we have to accept things. But, always make sure that the computer understood what you meant by trying it first! If you define the wrong intepretation, the computer will get confused. You can always scroll to see more interpretations.</p>
+            <p>Click next after you hit define.</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-7" class="tutorial">
+          <div class="tutorial-header">Almost there</div>
+          <div class="tutorial-body">
+            <p>Awesome job! The computer now learned what you meant. The more you do this, the more advanced the computer will become.</p>
+            <p>This is one of the most important parts. Throughout you trying to build your target, you should try to use simple terms like "red tower" or "orange 3 x 4 cube" and then define them more precisely with the basic language so that you can use them later and teach the computer effectively.</p>
+            <p>You can go ahead and hit <b>try and then accept</b> the 3 red blocks being added on top of the green block.</p>
+            <p>Click next after you have done so.</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-8" class="tutorial">
+          <div class="tutorial-header">One last thing</div>
+          <div class="tutorial-body">
+            <p>Most of the time, we will build structures by selecting certain blocks and building off of them.</p>
+            <p>Let's try something like that now.</p>
+            <p>Try and accept: <code>select very top of has color red</code></p>
+            <p>Almost every time, your actions will follow the tick-tock of select-action, meaning that you will first perform a select action, and then perform an actual action as we will do next. You have enormous power in selection, you can select the "very left" of something, the "right" of something. Just doing "select very top" will select the very top of the current selection, but when paired with "of has color red", we select the very top of red.</p>
+            <p>Click next after you have done so.</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-9" class="tutorial">
+          <div class="tutorial-header">Cool!</div>
+          <div class="tutorial-body">
+            <p>Notice that the selected cubes are now highlighted by having glowing centers.</p>
+            <p>You can now perform actions on these selected cubes individually.</p>
+            <p>Try this, try and accept: <code>add orange front</code>. You'll notice that it adds to the front of your selected cubes.</p>
+            <p>Click next after you have accepted the two orange blocks added at the very top.</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-10" class="tutorial">
+          <div class="tutorial-header">Neat! Last step.</div>
+          <div class="tutorial-body">
+            <p>You can also move things into place. Since the very top red cubes are already selected, you can just type: <code>repeat 2 [ move back ]</code> and the top red cubes should move 2 squares back.</p>
+            <p>You can always deselect everything by trying and accepting "select nothing".</p>
+            <p>Click next after you have accepted "repeat 2 [ move back ]".</p>
+            <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
+          </div>
+          <a href="#" class="skip-tutorial">skip tutorial</a>
+        </div>
+        <div id="tutorial-11" class="tutorial">
+          <div class="tutorial-header">All done!</div>
+          <div class="tutorial-body">
+            <p>Congratulations! You have successfully completed the tutorial.</p>
+            <p>Now we will ask you to build a target structure in a maximum number of steps. Try to use as natural as language as possible to instruct the computer. When the computer doesn't understand, click the "define" button to teach the computer what you mean using its simple, basic language!</p>
+            <p>So, go out and try to build the target structure on the top right using language, teaching the computer and defining new things!</p>
+            <p>Good luck!</p>
+            <p>Hint: Be sure to check out the "help me" for examples.</p>
+            <button class="next-tutorial">Finish</button>
           </div>
         </div>
       </div>
