@@ -115,6 +115,8 @@ export default class Game {
 
       this.currentState = this.responses[this.selectedResp].value;
 
+      console.log(this.currentState);
+
       this.Setting.status(`✓: accepted, enter another command`);
       this.Logger.log({ type: "accept", msg: { query: this.query, state: this.currentState, formula: this.responses[this.selectedResp].formula } });
       this.history.push({ query: this.query, type: "accept", state: this.currentState, stepN: this.getSteps() + 1, formula: this.responses[this.selectedResp].formula });

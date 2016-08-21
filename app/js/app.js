@@ -44,7 +44,7 @@ class App {
       return;
     }
 
-    if (this.tutorial && this.tutorialStep === 5) {
+    if (this.tutorial && this.tutorialStep === 4) {
       this.Setting.promptDefine();
       this.Game.resetResponses();
       this.Game.taggedCover = [["$Action", "add"], ["$Number", "3"], ["$Color", "red"], ["$UNK", "on", "top", "of", "green"]];
@@ -56,7 +56,7 @@ class App {
     if (this.defineState) {
       if (this.defineElem.value.length === 0) return;
 
-      if (this.tutorial && this.tutorialStep === 6) {
+      if (this.tutorial && this.tutorialStep === 5) {
         this.Game.defineSuccess = this.defineElem.value;
         this.Game.selectedResp = 0;
         this.Game.responses = [{ "value": [{ "x": 3, "y": 4, "z": 3, "color": "Red", "names": [] }, { "x": 3, "y": 4, "z": 0, "color": "Green", "names": [] }, { "x": 3, "y": 3, "z": 0, "color": "Red", "names": ["S"] }, { "x": 3, "y": 4, "z": 2, "color": "Red", "names": [] }, { "x": 3, "y": 4, "z": 1, "color": "Red", "names": [] }], "formula": "(:for (color green) (:loop (number 3) (: add red top)))", "formulas": ["(:for (color green) (:loop (number 3) (: add red top)))"], "prob": null, "probs": ["NaN"], "pprob": null, "pprobs": [null], "score": 1.0824721, "rank": 0, "count": 1, "maxprob": null, "maxpprob": null }];
@@ -71,7 +71,7 @@ class App {
       // TODO: Validate define length!
 
       let defined = "";
-      if (this.tutorial && this.tutorialStep === 7) {
+      if (this.tutorial && this.tutorialStep === 6) {
         defined = "add 3 red on top of green";
       } else {
         defined = this.Game.define(this.defineElem.value);
@@ -288,6 +288,7 @@ class App {
             elem.addEventListener("click", (e) => {
               const target = e.target.parentNode;
               this.Game.setTarget([-1, JSON.parse(target.getAttribute("data-nsteps")), JSON.parse(target.getAttribute("data-state"))]);
+              this.Game.currentState =
               this.toggleStructures();
             });
             this.Setting.renderUserCanvas(state, `usercanvas${i}`);
@@ -345,22 +346,22 @@ class App {
     const name = document.getElementById(configs.elems.submitConsole).value;
     const { sessionId, currentState, history } = this.Game;
     const state = currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]));
-    const formulas = history.map(h => (h.formula));
-    const cmds = { q: `(submit (name "${name}") (formula "${JSON.stringify(formulas)}"))`, sessionId };
+    // const formulas = history.map(h => (h.formula));
+    const cmds = { q: `(submit "${name}" "${JSON.stringify(state)}")`, sessionId };
 
     this.Sempre.query(cmds, () => {
       this.Game.Logger.log({ type: "submit", msg: { name, state } });
       fetch(`${configs.structsServer}/structs/submit`, {
         method: "POST",
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name,
           state,
           nsteps: this.Game.getSteps(),
-          history: this.Game.history,
+          history,
         }),
       });
 
@@ -530,7 +531,7 @@ window.onkeydown = (e) => {
       break;
     case Hotkeys.ENTER:
       e.preventDefault();
-      if (A.Setting.accepting()) { A.accept(); break; }
+      if (A.Setting.accepting() && !A.defineState) { A.accept(); break; }
       if (A.Setting.defineAccepting()) { A.enter(); break; }
       A.enter();
       break;

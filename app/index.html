@@ -13,7 +13,7 @@
         <span class="sublogo">A Stanford NLP Project</span>
       </div>
       <div class="nav">
-        <!-- <div class="structures-toggle">Structures</div> -->
+        <div class="structures-toggle">Structures</div>
         <div class="help-toggle">Help Me</div>
         <div class="keyboard-toggle">Keyboard Shortcuts</div>
         <div class="hidden" id="restart_tutorial">Restart Tutorial</div>
@@ -85,7 +85,7 @@
         </div>
         <div class="meta-buttons">
           <button type="button" id="clearbutton" title="clears the current state and history">clear</button>
-          <button type="button" id="submitbutton" class="hidden" title="submits your structure to the gallery">submit</button>
+          <button type="button" id="submitbutton" class="" title="submits your structure to the gallery">submit</button>
           <br>
           <button type="button" id="toggledefine" title="opens the define interface to teach the computer (ctrl+d)">define</button>
           <button type="button" id="prevbutton" title="scrolls to the previous option when available (up arrow)">&uarr;</button>
@@ -149,6 +149,7 @@
                     <li>select nothing</li>
                     <li>for has color brown [ add green ]</li>
                     <li>for very top of has color red [ repeat 2 [ add yellow left ] ]</li>
+                    <li>isolate selected [ add red left ]</li>
                   </ul>
                 </li>
                 <li><b>move:</b> move [direction] (this moves the selected cubes)
@@ -156,6 +157,12 @@
                     <i>If you first select blocks, you can then move them like so:</i>
                     <li>move left</li>
                     <li>repeat 3 [ move left ]</li>
+                  </ul>
+                </li>
+                <li>
+                  <b>update:</b> (updates/changes current selection)
+                  <ul>
+                    <li>update color green</li>
                   </ul>
                 </li>
               </ul>
@@ -281,7 +288,7 @@
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
         </div>
-        <div id="tutorial-4" class="tutorial">
+        <!-- <div id="tutorial-4" class="tutorial">
           <div class="tutorial-header">
             Great! Let's talk goals.
           </div>
@@ -292,8 +299,8 @@
             <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
-        </div>
-        <div id="tutorial-5" class="tutorial">
+        </div> -->
+        <div id="tutorial-4" class="tutorial">
           <div class="tutorial-header">
             Teaching it...
           </div>
@@ -305,7 +312,7 @@
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
         </div>
-        <div id="tutorial-6" class="tutorial">
+        <div id="tutorial-5" class="tutorial">
           <div class="tutorial-header">
             Defining things
           </div>
@@ -317,7 +324,7 @@
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
         </div>
-        <div id="tutorial-7" class="tutorial">
+        <div id="tutorial-6" class="tutorial">
           <div class="tutorial-header">
             Great!
           </div>
@@ -328,7 +335,7 @@
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
         </div>
-        <div id="tutorial-8" class="tutorial">
+        <div id="tutorial-7" class="tutorial">
           <div class="tutorial-header">Almost there</div>
           <div class="tutorial-body">
             <p>Awesome job! The computer now learned what you meant. The more you do this, the more advanced the computer will become.</p>
@@ -339,7 +346,7 @@
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
         </div>
-        <div id="tutorial-9" class="tutorial">
+        <div id="tutorial-8" class="tutorial">
           <div class="tutorial-header">One last thing</div>
           <div class="tutorial-body">
             <p>Most of the time, we will build structures by selecting certain blocks and building off of them.</p>
@@ -351,7 +358,7 @@
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
         </div>
-        <div id="tutorial-10" class="tutorial">
+        <div id="tutorial-9" class="tutorial">
           <div class="tutorial-header">Cool!</div>
           <div class="tutorial-body">
             <p>Notice that the selected cubes are now highlighted by having glowing centers.</p>
@@ -362,7 +369,7 @@
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
         </div>
-        <div id="tutorial-11" class="tutorial">
+        <div id="tutorial-10" class="tutorial">
           <div class="tutorial-header">Neat! Last step.</div>
           <div class="tutorial-body">
             <p>You can also move things into place. Since the very top red cubes are already selected, you can just type: <code>repeat 2 [ move back ]</code> and the top red cubes should move 2 squares back.</p>
@@ -372,7 +379,7 @@
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
         </div>
-        <div id="tutorial-12" class="tutorial">
+        <div id="tutorial-11" class="tutorial">
           <div class="tutorial-header">All done!</div>
           <div class="tutorial-body">
             <p>Congratulations! You have successfully completed the tutorial.</p>
