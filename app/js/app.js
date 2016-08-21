@@ -347,7 +347,7 @@ class App {
     const { sessionId, currentState, history } = this.Game;
     const state = currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]));
     // const formulas = history.map(h => (h.formula));
-    const cmds = { q: `(submit "${name}" "${JSON.stringify(state)}")`, sessionId };
+    const cmds = { q: `(submit "${name}" "${JSON.stringify(JSON.stringify(state))}")`, sessionId };
 
     this.Sempre.query(cmds, () => {
       this.Game.Logger.log({ type: "submit", msg: { name, state } });
