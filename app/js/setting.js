@@ -349,7 +349,7 @@ export default class Setting {
 
     if (!refineDefine) {
       if (canAnswer) {
-        defineHeader.innerHTML = `Already understand ${query}, teach another meaning?`;
+        defineHeader.innerHTML = `Already understand "${query}", teach another meaning?`;
       } else {
         defineHeader.innerHTML = `Didn't understand "${this.intelHighlight(coverage)}". Please rephrase:`;
       }

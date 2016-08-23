@@ -83,16 +83,16 @@ export default class Game {
           console.log("no answer from sempre");
           this.resetResponses();
           this.query = query;
-          this.Setting.status("SHRDLURN did not understand (click define to define this)", query);
+          this.Setting.status("SHRDLURN did not understand (click define to define this)", this.query);
           this.Setting.promptDefine();
-          this.Logger.log({ type: "queryUnknown", msg: { query } });
+          this.Logger.log({ type: "queryUnknown", msg: { query: this.query } });
           this.Setting.promptAccept();
         } else {
           this.responses = formval;
           this.selectedResp = 0;
           this.query = query;
-          this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and accept to confirm, or click define to define a new one.`, `${query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
-          this.Logger.log({ type: "query", msg: { query } });
+          this.Setting.status(`got ${this.responses.length} options, use &darr; and &uarr; to scroll, and accept to confirm, or click define to define a new one.`, `${this.query} (#1/${this.responses.length})`, this.responses[0].maxprop | -1);
+          this.Logger.log({ type: "query", msg: { query: this.query } });
           this.Setting.promptAccept();
         }
 
@@ -115,7 +115,7 @@ export default class Game {
 
       this.currentState = this.responses[this.selectedResp].value;
 
-      console.log(this.currentState);
+      console.log(JSON.stringify(this.currentState));
 
       this.Setting.status(`✓: accepted, enter another command`);
       this.Logger.log({ type: "accept", msg: { query: this.query, state: this.currentState, formula: this.responses[this.selectedResp].formula } });
