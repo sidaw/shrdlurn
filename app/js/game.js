@@ -187,12 +187,11 @@ export default class Game {
         const commandResponse = response.commandResponse;
 
         const defCore = commandResponse.indexOf("Core") !== -1;
-        const defNoCover = commandResponse.indexOf("NoCover") !== -1;
-        const defNoParse = commandResponse.indexOf("NoParse") !== -1;
+        // const defNoCover = commandResponse.indexOf("NoCover") !== -1;
+        // const defNoParse = commandResponse.indexOf("NoParse") !== -1;
 
-        if (defCore || defNoCover || defNoParse) {
+        if (defCore) {
           this.taggedCover = response.taggedcover;
-          console.log(response);
           this.Setting.tryDefine(query, true, false, this.taggedCover, commandResponse, this.query);
         } else {
           this.defineSuccess = query;
