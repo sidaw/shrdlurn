@@ -14,7 +14,8 @@
     "test": "echo 'No tests'",
     "local": "cross-env NODE_ENV=local node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot",
     "turk:start": "cross-env NODE_ENV=turk node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot",
-    "turk:build": "cross-env NODE_ENV=turkproduction node ./node_modules/webpack/bin/webpack --progress -p"
+    "turk:build": "cross-env NODE_ENV=turkproduction node ./node_modules/webpack/bin/webpack --progress -p",
+    "turk:deploy": "npm run turk:build && gcloud copy-files dst/ hydrogen:/var/www/hydrogen.samginn.com/public/shrdlurn/"
   },
   "babel": {
     "presets": [

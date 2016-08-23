@@ -47,8 +47,8 @@ class App {
     if (this.tutorial && this.tutorialStep === 4) {
       this.Setting.promptDefine();
       this.Game.resetResponses();
-      this.Game.taggedCover = [["$Action", "add"], ["$Number", "3"], ["$Color", "red"], ["$UNK", "on", "top", "of", "green"]];
-      this.Game.query = "add 3 red on top of green";
+      this.Game.taggedCover = [["$Action", "add"], ["$Color", "red"], ["$UNK", "on", "top", "of", "green"], ["$Number", "3"], ["$UNK", "times"]];
+      this.Game.query = "add red on top of green 3 times";
       this.Setting.status("SHRDLURN did not understand (click define to define this)", this.Game.query);
       return;
     }
@@ -72,7 +72,7 @@ class App {
 
       let defined = "";
       if (this.tutorial && this.tutorialStep === 6) {
-        defined = "add 3 red on top of green";
+        defined = "add red on top of green 3 times";
       } else {
         defined = this.Game.define(this.defineElem.value);
       }
@@ -345,7 +345,12 @@ class App {
   submitStruct() {
     const name = document.getElementById(configs.elems.submitConsole).value;
     const { sessionId, currentState, history } = this.Game;
-    const state = currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]));
+    const state = currentState
+      .map(c => ([c.x, c.y, c.z, c.color, c.names]))
+      .filter((b) => (
+        b[3] !== "Anchor" || b[4].length > 0
+      ))
+      .map(c => ([c.x, c.y, c.z, c.color, []]));
     // const formulas = history.map(h => (h.formula));
     const cmds = { q: `(submit "${name}" "${JSON.stringify(JSON.stringify(state))}")`, sessionId };
 
