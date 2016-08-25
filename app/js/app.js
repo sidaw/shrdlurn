@@ -288,7 +288,9 @@ class App {
             elem.addEventListener("click", (e) => {
               const target = e.target.parentNode;
               this.Game.setTarget([-1, JSON.parse(target.getAttribute("data-nsteps")), JSON.parse(target.getAttribute("data-state"))]);
-              this.Game.currentState =
+              console.log(this.Game.currentState);
+              // this.Game.currentState = JSON.parse(target.getAttribute("data-state"));
+              this.Game.update();
               this.toggleStructures();
             });
             this.Setting.renderUserCanvas(state, `usercanvas${i}`);
