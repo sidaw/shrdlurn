@@ -138,13 +138,17 @@ export default class SempreClient {
 
     for (let i = 0; i < valid.length; i++) {
       const qapair = {};
-      qapair.value = this.formatValue(valid[i].value);
-      qapair.formula = valid[i].formula;
-      qapair.score = valid[i].score.toFixed(7);
-      qapair.rank = i;
-      qapair.prob = valid[i].prob;
-      qapair.pprob = valid[i].pprob;
-      lstqapairs.push(qapair);
+      try {
+        qapair.value = this.formatValue(valid[i].value);
+        qapair.formula = valid[i].formula;
+        qapair.score = valid[i].score.toFixed(7);
+        qapair.rank = i;
+        qapair.prob = valid[i].prob;
+        qapair.pprob = valid[i].pprob;
+        lstqapairs.push(qapair);
+      } catch (e) {
+        console.log("ERROR!", e, valid[i].value);
+      }
     }
 
     const nbestdict = lstqapairs.reduce((nbd, nbest) => {

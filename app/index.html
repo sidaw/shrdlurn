@@ -13,7 +13,7 @@
         <span class="sublogo">A Stanford NLP Project</span>
       </div>
       <div class="nav">
-        <!-- <div class="structures-toggle">Structures</div> -->
+        <div class="structures-toggle">Structures</div>
         <div class="help-toggle">Help Me</div>
         <div class="keyboard-toggle">Keyboard Shortcuts</div>
         <div class="hidden" id="restart_tutorial">Restart Tutorial</div>
@@ -85,7 +85,7 @@
         </div>
         <div class="meta-buttons">
           <button type="button" id="clearbutton" title="clears the current state and history">clear</button>
-          <button type="button" id="submitbutton" class="hidden" title="submits your structure to the gallery">submit</button>
+          <button type="button" id="submitbutton" class="" title="submits your structure to the gallery">submit</button>
           <br>
           <button type="button" id="toggledefine" title="opens the define interface to teach the computer (ctrl+d)">define</button>
           <button type="button" id="prevbutton" title="scrolls to the previous option when available (up arrow)">&uarr;</button>
@@ -264,7 +264,7 @@
           <div class="tutorial-body">
             <p>SHRDLURN is an attempt to see how well computers can be taught to learn English.</p>
             <p>We will ask you to build a target structure using blocks by instructing the computer in plain, natural English.</p>
-            <p>Think of the blocks as a bunch of colored magnets (<strong>red, orange, yellow, green, blue, and brown</strong>) which you can attach to other blocks (using the directions <strong>front, back, left, right, top, bot, very left, very top, etc...</strong>).</p>
+            <p>Think of the blocks as a bunch of colored magnets (<strong>red, orange, yellow, green, blue, and brown</strong>) which you can attach to other blocks (using the directions <strong>front, back, left, right, top, and bot</strong>; you can also do <strong>very left, very top</strong>, etc...)</p>
             <p>Try it out by writing <code>add red top 3 times</code> in the white bar to the left and click try (or hit enter).</p>
             <p>Click next after you hit try.</p>
             <button class="next-tutorial">Next</button>
@@ -352,7 +352,7 @@
             <p>Awesome job! The computer now learned what you meant. The more you do this, the more advanced the computer will become.</p>
             <p>This is one of the most important parts. Throughout you trying to build your target, you should try to use simple terms like "red tower", "orange 3 x 4 cube", or "add orange below", and then define them more precisely with the basic language so that you can use them later and teach the computer effectively.</p>
             <p>Pretend that you are teaching a small child, so when you define things, you have to be precise.</p>
-            <p>You can go ahead and hit <b>try and then accept</b> the 3 red blocks being added on top of the green block.</p>
+            <p>But, the computer again might have many interpretations. Go ahead and <strong>hit try</strong>. And then scroll until you <strong>accept</strong> the 3 red blocks being added on top of the green block.</p>
             <p>Click next after you have done so.</p>
             <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
           </div>
@@ -363,7 +363,7 @@
           <div class="tutorial-body">
             <p>Most of the time, we will build structures by selecting certain blocks and building off of our selection.</p>
             <p>Let's try something like that now.</p>
-            <p>Try and accept: <code>select very top of has color red</code></p>
+            <p><strong>Try and accept</strong>: <code>select very right of has color red</code></p>
             <p>Almost every time, your actions will follow the tick-tock of select-action, meaning that you will first perform a select action, and then perform an actual action as we will do next. Just doing "select very top" will select the very top of the current selection, but when paired with "of has color red", we select the very top of red.</p>
             <p>Click next after you have tried and accepted the above query.</p>
             <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
@@ -376,8 +376,8 @@
             <p>Notice that the selected cubes are now highlighted by having glowing centers.</p>
             <p>You have enormous power in selection, you can select the "very left" of something, the "right" of something, "the very right or the very left", etc.... And you can define more by just using natural language and the define interface we just demonstrated!</p>
             <p>You can now perform actions on these selected cubes individually.</p>
-            <p>Try this, try and accept: <code>add orange front</code>. You'll notice that it adds to the front of your selected cubes.</p>
-            <p>Click next after you have accepted the two orange blocks added at the very top.</p>
+            <p>Try this, <strong>try and accept</strong>: <code>add orange front</code>. You'll notice that it adds to the front of your selected cubes.</p>
+            <p>Click next after you have accepted the three orange blocks added.</p>
             <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
@@ -387,7 +387,7 @@
           <div class="tutorial-body">
             <p>You can also move things into place. Since the very top red cubes are already selected, you can just type: <code>move back 2 times</code> and the top red cubes should move 2 squares back.</p>
             <p>You can always deselect everything by trying and accepting "select nothing".</p>
-            <p>Click next after you have accepted "move back 2 times".</p>
+            <p>Click next after you have <strong>accepted</strong> "move back 2 times".</p>
             <button class="prev-tutorial">Previous</button> <button class="next-tutorial bold-button">Next</button>
           </div>
           <a href="#" class="skip-tutorial">skip tutorial</a>
@@ -396,9 +396,8 @@
           <div class="tutorial-header">All done!</div>
           <div class="tutorial-body">
             <p>Congratulations! You have successfully completed the tutorial.</p>
-            <p>Now, you will build the target structure in the top right. You must build it in less than the maximum number of steps shown.</p>
-            <p><strong>Try to use as natural as language as possible to instruct the computer</strong>. When the computer doesn't understand, click the <strong>"define"</strong> button to teach the computer what you mean using its simple, basic language! We want you to define lots of things utterances!</p>
-            <p>So, go out and try to build the target structure on the top right using language, teaching the computer and defining new things!</p>
+            <p><strong>Try to use as natural language as possible to instruct the computer</strong>. When the computer doesn't understand, click the <strong>"define"</strong> button to teach the computer what you mean using its simple, basic language! We want you to define lots of things utterances!</p>
+            <p>Now, try to build the target structure on the top right using natural language, teaching the computer, and defining new things! Remember: you have to do it in the maxinum number of steps, but definitions don't count towards that limit!</p>
             <p>Good luck!</p>
             <p>Hint: Be sure to check out the "help me" for examples of how to define things.</p>
             <button class="next-tutorial">Finish</button>

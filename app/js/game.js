@@ -73,6 +73,8 @@ export default class Game {
 
     const contextCmds = { q: contextCommand, sessionId: this.sessionId };
 
+    this.Logger.log({ type: "queryAttempt", msg: { query: querystr } });
+
     this.Sempre.query(contextCmds, () => {
       const cmds = { q: query, sessionId: this.sessionId };
       this.Sempre.query(cmds, (response) => {
@@ -118,7 +120,7 @@ export default class Game {
       console.log(JSON.stringify(this.currentState));
 
       this.Setting.status(`✓: accepted, enter another command`);
-      this.Logger.log({ type: "accept", msg: { query: this.query, state: this.currentState, formula: this.responses[this.selectedResp].formula } });
+      this.Logger.log({ type: "accept", msg: { query: this.query, state: this.currentState, formula: this.responses[this.selectedResp].formula, index: this.selectedResp } });
       this.history.push({ query: this.query, type: "accept", state: this.currentState, stepN: this.getSteps() + 1, formula: this.responses[this.selectedResp].formula });
       this.resetResponses();
       this.update();
@@ -187,12 +189,11 @@ export default class Game {
         const commandResponse = response.commandResponse;
 
         const defCore = commandResponse.indexOf("Core") !== -1;
-        const defNoCover = commandResponse.indexOf("NoCover") !== -1;
-        const defNoParse = commandResponse.indexOf("NoParse") !== -1;
+        // const defNoCover = commandResponse.indexOf("NoCover") !== -1;
+        // const defNoParse = commandResponse.indexOf("NoParse") !== -1;
 
-        if (defCore || defNoCover || defNoParse) {
+        if (defCore) {
           this.taggedCover = response.taggedcover;
-          console.log(response);
           this.Setting.tryDefine(query, true, false, this.taggedCover, commandResponse, this.query);
         } else {
           this.defineSuccess = query;
@@ -213,7 +214,7 @@ export default class Game {
 
     this.Sempre.query(cmds, (resp) => {
       this.history.push({ query: `defined "${this.query}" as "${this.defineSuccess}"`, type: "define" });
-      this.Logger.log({ type: "define", msg: [this.query, this.defineSuccess, JSON.stringify(resp.candidates[0].formula)] });
+      this.Logger.log({ type: "define", msg: { query: this.query, defined: this.defineSuccess, formula: JSON.stringify(resp.candidates[0].formula) } });
       this.defineSuccess = "";
       this.resetResponses();
       this.update();
@@ -240,7 +241,7 @@ export default class Game {
       this.selectedResp++;
       this.update();
       this.Setting.status("↓: showing the next one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
-      this.Logger.log({ type: "scroll", msg: "next" });
+      this.Logger.log({ type: "scroll", msg: "next", index: this.selectedResp });
     } else {
       this.Setting.status("↓: already showing the last one, try defining instead by clicking define.", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
     }
@@ -253,7 +254,7 @@ export default class Game {
       this.selectedResp--;
       this.update();
       this.Setting.status("↑: showing the previous one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
-      this.Logger.log({ type: "scroll", msg: "prev" });
+      this.Logger.log({ type: "scroll", msg: "prev", index: this.selectedResp });
     } else {
       this.Setting.status("↑: already showing the first one", `${this.query} (#${this.selectedResp + 1}/${this.responses.length})`, this.responses[0].maxprop | -1);
     }

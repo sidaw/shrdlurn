@@ -59,7 +59,7 @@ class App {
       if (this.tutorial && this.tutorialStep === 5) {
         this.Game.defineSuccess = this.defineElem.value;
         this.Game.selectedResp = 0;
-        this.Game.responses = [{ "value": [{ "x": 3, "y": 4, "z": 3, "color": "Red", "names": [] }, { "x": 3, "y": 4, "z": 0, "color": "Green", "names": [] }, { "x": 3, "y": 3, "z": 0, "color": "Red", "names": ["S"] }, { "x": 3, "y": 4, "z": 2, "color": "Red", "names": [] }, { "x": 3, "y": 4, "z": 1, "color": "Red", "names": [] }], "formula": "(:for (color green) (:loop (number 3) (: add red top)))", "formulas": ["(:for (color green) (:loop (number 3) (: add red top)))"], "prob": null, "probs": ["NaN"], "pprob": null, "pprobs": [null], "score": 1.0824721, "rank": 0, "count": 1, "maxprob": null, "maxpprob": null }];
+        this.Game.responses = [{ "value": [{ "x": 3, "y": 4, "z": 0, "color": "Green", "names": [] }, { "x": 3, "y": 4, "z": 1, "color": "Red", "names": [] }, { "x": 3, "y": 4, "z": 2, "color": "Red", "names": [] }, { "x": 3, "y": 3, "z": 0, "color": "Red", "names": ["S"] }, { "x": 3, "y": 4, "z": 3, "color": "Red", "names": [] }, { "x": 3, "y": 3, "z": 1, "color": "Red", "names": [] }, { "x": 3, "y": 3, "z": 2, "color": "Red", "names": [] }], "formula": "(:for (color green) (:loop (number 3) (: add red top)))", "formulas": ["(:for (color green) (:loop (number 3) (: add red top)))"], "prob": null, "probs": ["NaN"], "pprob": null, "pprobs": [null], "score": 1.0824721, "rank": 0, "count": 1, "maxprob": null, "maxpprob": null }];
         this.Game.update();
         this.Setting.tryDefine(this.Game.defineSuccess, true, true);
         this.Setting.toggleDefineButton();
@@ -288,7 +288,9 @@ class App {
             elem.addEventListener("click", (e) => {
               const target = e.target.parentNode;
               this.Game.setTarget([-1, JSON.parse(target.getAttribute("data-nsteps")), JSON.parse(target.getAttribute("data-state"))]);
-              this.Game.currentState =
+              console.log(this.Game.currentState);
+              // this.Game.currentState = JSON.parse(target.getAttribute("data-state"));
+              this.Game.update();
               this.toggleStructures();
             });
             this.Setting.renderUserCanvas(state, `usercanvas${i}`);
