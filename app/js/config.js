@@ -1,7 +1,7 @@
 const configs = {};
 
 if (process.env.NODE_ENV === "local") {
-  configs.SEMPRE_URL = "http://localhost:8400";
+  configs.SEMPRE_URL = "http://localhost:8410";
 } else {
   configs.SEMPRE_URL = "http://jonsson.stanford.edu:8409";
 }
@@ -15,7 +15,7 @@ configs.debugMode = false;
 
 configs.defaultSessionId = "deadbeef";
 
-configs.emptyStruct = [{ x: 3, y: 3, z: 0, color: "Anchor", names: ["S"] }];
+configs.emptyStruct = [{ x: 0, y: 0, z: 0, color: "Red", names: ["S"] }];
 configs.defaultStruct = configs.emptyStruct;
 
 configs.mainCanvas = "main_canvas";

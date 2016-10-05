@@ -348,11 +348,11 @@ class App {
     const name = document.getElementById(configs.elems.submitConsole).value;
     const { sessionId, currentState, history } = this.Game;
     const state = currentState
-      .map(c => ([c.x, c.y, c.z, c.color, c.names]))
-      .filter((b) => (
-        b[3] !== "Anchor" || b[4].length > 0
-      ))
-      .map(c => ([c.x, c.y, c.z, c.color, []]));
+      .map(c => ([c.x, c.y, c.z, c.color, []]))
+       //.filter((b) => (
+       //  b[3] !== "Anchor" || b[4].length > 0
+       //))
+      //.map(c => ([c.x, c.y, c.z, c.color, []]));
     // const formulas = history.map(h => (h.formula));
     const cmds = { q: `(submit "${name}" "${JSON.stringify(JSON.stringify(state))}")`, sessionId };
 

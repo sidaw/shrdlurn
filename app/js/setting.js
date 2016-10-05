@@ -15,15 +15,18 @@ export default class Setting {
   constructor() {
     this.iso = new Isomer(document.getElementById(configs.mainCanvas));
     this.isoTarget = new Isomer(document.getElementById(configs.targetCanvas));
-    this.basicUnit = 0.8;
-    this.width = 10;
+    this.basicUnit = 0.75;
+    this.width = 1;
     this.borderWidth = -0.2;
     this.baseHeight = 0.0;
-    this.centerPoint = Point(this.width / 2, this.width / 2, this.width / 2);
+    //this.centerPoint = Point(this.width / 2, this.width / 2, this.width / 2);
+    this.centerPoint = Point(0, 0, 0);
     this.rotation = (Math.PI / 12);
     this.rotational = "A";
-    this.targetScale = 0.5;
-    this.targetTranslate = -2;
+    this.targetScale = 1;
+    this.targetTranslate = 0;
+    this.offset = 2;
+    this.groundRadius = 2;
 
     this.renderCanvas(configs.defaultStruct);
     this.renderTarget(configs.defaultStruct);
@@ -41,34 +44,36 @@ export default class Setting {
 
   renderUserCanvas(state, elemId) {
     const iso = new Isomer(document.getElementById(elemId));
-    this.renderGrid(iso, 0.6, -1);
+    //this.renderGrid(iso, 0.6, -1);
     this.renderBlocks(iso, state, 0.6, -1);
   }
 
   renderGrid(iso, scalingFactor = 1, translateFactor = 0) {
     iso.canvas.clear();
     const translateBy = translateFactor * this.basicUnit * scalingFactor;
-    const color = new Color(150, 150, 150);
+    const color = new Color(50, 50, 50);
     const unit = this.basicUnit * scalingFactor;
-    for (let x = 0; x < this.width + 1; x++) {
+    const gridwidth = this.basicUnit * scalingFactor
+    const groundwidth = 2 * this.groundRadius + 1;
+    for (let x = 0; x < groundwidth + 1; x++) {
       iso.add(new Path([
       	new Point(x*unit, 0, 0),
-      	new Point(x*unit, this.width*unit, 0),
+      	new Point(x*unit, groundwidth *unit, 0),
       	new Point(x*unit, 0, 0)
       ])
-      .rotateZ(this.centerPoint, this.rotation)
-      .translate(translateBy, -translateBy, -4.5 * translateBy),
+      .translate(gridwidth*this.offset, gridwidth*this.offset, 0)
+      .rotateZ(this.centerPoint, this.rotation),
       color
       );
 
       const y = x;
       iso.add(new Path([
       	new Point(0, y*unit, 0),
-      	new Point(this.width*unit, y*unit, 0),
+      	new Point(groundwidth*unit, y*unit, 0),
       	new Point(0, y*unit, 0)
       ])
-      .rotateZ(this.centerPoint, this.rotation)
-      .translate(translateBy, -translateBy, -4.5 * translateBy),
+      .translate(gridwidth*this.offset, gridwidth*this.offset, 0)
+      .rotateZ(this.centerPoint, this.rotation),
       color
       );
     }
@@ -92,7 +97,7 @@ export default class Setting {
             this.baseHeight * scalingFactor
           )
           .rotateZ(this.centerPoint, this.rotation)
-          .translate(translateBy, -translateBy, -4.5 * translateBy),
+          .translate(translateBy, translateBy, 0),
           color
         );
       }
@@ -163,7 +168,8 @@ export default class Setting {
   }
 
   makeBlock(x, y, z, scalingFactor = 1, translateFactor = 0, basicUnit = this.basicUnit, highlighted = false) {
-    const translateBy = translateFactor * this.basicUnit * scalingFactor;
+    const gridWidth = this.basicUnit * scalingFactor
+    const translateBy = translateFactor * gridWidth;
     const shifter = highlighted ? basicUnit * 0.4 : 0;
 
     return Shape.Prism(
@@ -173,8 +179,9 @@ export default class Setting {
            ),
       this.basicUnit * scalingFactor - shifter, this.basicUnit * scalingFactor - shifter, basicUnit * scalingFactor - shifter
     )
-    .rotateZ(this.centerPoint, this.rotation)
-    .translate(translateBy, -translateBy, -4.5 * translateBy);
+      .translate((this.offset+this.groundRadius)*gridWidth, (this.offset+this.groundRadius)*gridWidth, 0)
+      .rotateZ(this.centerPoint, this.rotation);
+
   }
 
   sortBlocks(blocks) {
