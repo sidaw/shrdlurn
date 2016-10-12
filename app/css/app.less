@@ -338,6 +338,10 @@ button {
   box-shadow: 0 4px 16px rgba(0,0,0,0.15),
               0 3px 5px rgba(0,0,0,0.08);
   margin-bottom: 30px;
+
+  & p {
+    padding: 10px 15px 30px;
+  }
 }
 
 .target {
@@ -646,4 +650,25 @@ button {
 code {
   background-color: @bgColor;
   padding: 5px 9px;
+}
+
+body:not(.freebuild) {
+  & .structures-toggle,
+  & #submitbutton {
+    display: none;
+  }
+}
+
+.freeBuildInstr {
+  display: none;
+}
+
+body.freebuild {
+  & .target {
+    display: none;
+  }
+
+  & .freeBuildInstr {
+    display: block;
+  }
 }

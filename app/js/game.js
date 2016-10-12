@@ -1,7 +1,7 @@
 import configs from "./config";
 import Logger from "./logger";
 import { getStore, setStore, getParameterByName } from "./util";
-import { getTurkId, getTurkCode, getTurkHit } from "./turk";
+import { getTurkId, getTurkCode, getTurkHit, freeTask } from "./turk";
 
 export default class Game {
   constructor(setting, sempreClient) {
@@ -20,6 +20,8 @@ export default class Game {
     this.maxTargetSteps = 100;
     this.skipsLeft = configs.defaultSkips;
 
+    this.freeBuild = false;
+
     this.Sempre = sempreClient;
 
     this.Setting = setting;
@@ -35,6 +37,14 @@ export default class Game {
     } else {
       this.Logger = new Logger(this.sessionId);
       this.Logger.log({ type: "start", msg: { taskid: "localtest", startingState: this.currentState } });
+    }
+
+    if (freeTask()) {
+      this.freeBuild = true;
+      this.maxTargetSteps = Infinity;
+      this.targetStruct = [];
+      this.targetIdx = -1;
+      document.getElementsByTagName("body")[0].classList.add("freebuild")
     }
 
     this.accepted = 0;
@@ -108,7 +118,7 @@ export default class Game {
   }
 
   accept() {
-    if (this.getSteps() >= this.maxTargetSteps) {
+    if (!this.freeBuild && this.getSteps() >= this.maxTargetSteps) {
       this.Setting.status("you've reached the maxinum number of steps", "can't accept");
       this.Logger.log({ type: "meta", msg: "max steps reached" });
       this.Setting.removeAccept();
@@ -140,6 +150,7 @@ export default class Game {
   }
 
   win() {
+    if (this.freeBuild) return
     const usedTargets = getStore("usedTargetsv1", []);
     usedTargets.push(this.targetIdx);
     setStore("usedTargetsv1", usedTargets);

@@ -331,6 +331,12 @@ class App {
   }
 
   openSubmit() {
+    const nBlocks = this.Game.currentState.length;
+    if (nBlocks < configs.minSubmitBlocks || nBlocks > configs.maxSubmitBlocks) {
+      alert("You can only submit structures with more than " + configs.minSubmitBlocks + " and less than " + configs.maxSubmitBlocks + " blocks!");
+      return
+    }
+
     const submitInterface = document.getElementById(configs.elems.submitInterface);
     submitInterface.classList.add("active");
     document.getElementById(configs.elems.submitConsole).focus();
@@ -368,7 +374,7 @@ class App {
           name,
           state,
           nsteps: this.Game.getSteps(),
-          history,
+          history: history.map((h) => ({ query: h.query, formula: h.formula })),
         }),
       });
 

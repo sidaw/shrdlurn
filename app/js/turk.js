@@ -19,6 +19,12 @@ export function getTurkHit() {
   return 0;
 }
 
+export function freeTask() {
+  const freebuild = getParameterByName("freebuild");
+  if (freebuild && freebuild !== "false") return true
+  return false
+}
+
 // var turk = {};
 // (function(exports) {
 //   "use strict";

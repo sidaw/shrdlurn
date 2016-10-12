@@ -7,8 +7,8 @@ if (process.env.NODE_ENV === "local") {
 }
 
 
-configs.structsServer = "http://jonsson.stanford.edu:8410";
-configs.loggerServer = "http://jonsson.stanford.edu:8410";
+configs.structsServer = "http://jonsson.stanford.edu:8408";
+configs.loggerServer = "http://jonsson.stanford.edu:8408";
 configs.loggerOn = true;
 
 configs.debugMode = false;
@@ -122,5 +122,8 @@ configs.colorMap = {
   Anchor: [0, 160, 176],
   Gray: [144, 144, 144],
 };
+
+configs.minSubmitBlocks = 4;
+configs.maxSubmitBlocks = 2000;
 
 export default configs;
