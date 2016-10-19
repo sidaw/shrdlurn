@@ -7,90 +7,26 @@
   },
   "author": "Sida Wang <sidaw@cs.stanford.edu>",
   "license": "MIT",
-  "homepage": "https://github.com/sidaw/shrdlurn",
-  "scripts": {
-    "start": "cross-env NODE_ENV=development node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot",
-    "build": "cross-env NODE_ENV=production node ./node_modules/webpack/bin/webpack --progress -p",
-    "test": "echo 'No tests'",
-    "local": "cross-env NODE_ENV=local node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot",
-    "start:turk": "cross-env NODE_ENV=turk node ./node_modules/webpack-dev-server/bin/webpack-dev-server --inline --hot",
-    "build:turk": "cross-env NODE_ENV=turkproduction node ./node_modules/webpack/bin/webpack --progress -p",
-    "deploy:turk": "npm run build:turk && gcloud compute copy-files dst/* hydrogen:/var/www/hydrogen.samginn.com/public/shrdlurn/",
-    "deploy:turkjonsson": "npm run build:turk && scp dst/* jamie:~sidaw/public_html/shrdlurnturk"
-  },
-  "babel": {
-    "presets": [
-      "es2015-webpack",
-      "es2016",
-      "stage-0"
-    ],
-    "plugins": [
-      "transform-es2015-template-literals",
-      "transform-async-to-generator",
-      "transform-object-rest-spread"
-    ]
-  },
-  "eslintConfig": {
-    "parse": "babel-eslint",
-    "extends": "airbnb",
-    "env": {
-      "browser": true,
-      "node": true
-    },
-    "rules": {
-      "max-len": 0,
-      "quotes": [
-        2,
-        "double",
-        {
-          "avoidEscape": true,
-          "allowTemplateLiterals": true
-        }
-      ]
-    },
-    "settings": {
-      "import/resolver": {
-        "webpack": {
-          "config": "./webpack.dev.js"
-        }
-      }
-    }
-  },
+  "homepage": "http://nlp.stanford.com/~samginn/shrdlurn",
   "devDependencies": {
-    "babel-core": "^6.10.4",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-async-to-generator": "^6.8.0",
-    "babel-plugin-transform-es2015-template-literals": "^6.8.0",
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
-    "babel-polyfill": "^6.9.1",
-    "babel-preset-es2015-webpack": "^6.4.1",
-    "babel-preset-es2016": "^6.11.3",
-    "babel-preset-stage-0": "^6.5.0",
-    "cross-env": "^2.0.0",
-    "css-loader": "^0.23.1",
-    "eslint": "^2.13.1",
-    "eslint-config-airbnb": "^9.0.1",
-    "eslint-plugin-import": "^1.9.2",
-    "eslint-plugin-jsx-a11y": "^1.5.3",
-    "eslint-plugin-react": "^5.2.2",
-    "extract-text-webpack-plugin": "^2.0.0-beta.3",
-    "file-loader": "^0.9.0",
-    "html-loader": "^0.4.3",
-    "html-webpack-plugin": "^2.21.0",
-    "json-loader": "^0.5.4",
-    "less": "^2.7.1",
-    "less-loader": "^2.2.3",
-    "postcss-loader": "^0.9.1",
-    "style-loader": "^0.13.1",
-    "url-loader": "^0.5.7",
-    "webpack": "^2.1.0-beta.13",
-    "webpack-dev-server": "^2.1.0-beta.0"
+    "react-scripts": "0.6.1"
   },
   "dependencies": {
-    "awesomplete": "^1.1.0",
-    "isomer": "^0.2.6",
-    "sanitize.css": "^4.1.0",
-    "socket.io-client": "^1.4.8",
-    "whatwg-fetch": "^1.0.0"
+    "normalize.css": "^5.0.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
+    "react-redux": "^4.4.5",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "deploy": "npm run build && rsync -r build/ samginn@jamie.stanford.edu:~samginn/www/shrdlurn"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
   }
 }
