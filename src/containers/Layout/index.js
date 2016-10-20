@@ -10,7 +10,7 @@ const Layout = ({children}) => (
 )
 
 Layout.propTypes = {
-  children: React.PropTypes.children
+  children: React.PropTypes.object
 }
 
 export default Layout

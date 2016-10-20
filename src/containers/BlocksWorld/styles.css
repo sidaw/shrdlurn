@@ -1,0 +1,25 @@
+.BlocksWorld {
+  height: 100%;
+  width: 100%;
+  padding: 50px 10px 0; /* .Header height = 50px */
+  display: flex;
+  justify-content: center;
+}
+
+.BlocksWorld > div {
+  flex-shrink: 0;
+}
+
+.BlocksWorld-mainblocks {
+  margin: 0 20px;
+}
+
+.BlocksWorld-mainblocks .Blocks {
+  width: 825px;
+  height: 600px;
+}
+
+.BlocksWorld-left,
+.BlocksWorld-right {
+  width: 250px;
+}

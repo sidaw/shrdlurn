@@ -12,6 +12,8 @@
     "react-scripts": "0.6.1"
   },
   "dependencies": {
+    "classnames": "^2.2.5",
+    "isomer": "^0.2.6",
     "normalize.css": "^5.0.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -21,6 +23,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "local": "REACT_APP_SERVER=local react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",

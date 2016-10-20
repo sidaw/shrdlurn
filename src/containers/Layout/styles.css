@@ -4,14 +4,20 @@ body,
 .container {
   width: 100%;
   height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  background-color: rgb(244, 244, 244);
 }
 
-body {
-  font-family: "Lato";
+html {
   font-size: 62.5%;
 }
 
-.container {
-  background-color: rgb(244, 244, 244);
+body {
+  font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
   font-size: 1.6rem;
+}
+
+* {
+  box-sizing: border-box;
 }

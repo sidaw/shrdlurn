@@ -1,0 +1,75 @@
+.History {
+  width: 250px;
+  margin-right: 10px;
+  max-height: 100%;
+  /*overflow-y: scroll;*/
+}
+
+.History-item {
+  background-color: #FFF;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(51,51,51,0.15);
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.History-row {
+  position: relative;
+  /*padding: 5px;*/
+}
+
+.History-row.defining {
+  background-color: rgb(230, 230, 230);
+}
+
+.History-row.defining:first-child {
+  padding-top: 50px;
+}
+
+.History-row.defining + .History-row:not(.defining) {
+  margin-top: 20px;
+}
+
+.History-item:hover {
+  background-color: rgba(0, 160, 176, 0.3);
+}
+
+.History-addSpacer {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: -10px;
+  width: 0;
+  height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+
+  border-left: 10px solid rgba(0, 160, 176, 0.6);
+  cursor: pointer;
+}
+
+.History-row:hover .History-addSpacer {
+  display: block;
+}
+
+.History-addSpacer:hover {
+  border-left: 10px solid rgba(0, 160, 176, 1);
+}
+
+.History-define-buttons {
+  position: absolute;
+  right: -70px;
+  top: 10px;
+}
+
+.History-define-buttons button {
+  font-size: 0.6rem;
+  line-height: 1.2;
+  height: 22px;
+}
+
+.History-define-buttons button:hover {
+  background-color: rgba(0, 160, 176, 1);
+  color: #FFF;
+  cursor: pointer;
+}
