@@ -5,6 +5,7 @@ import Isomer,
          Color,
          Path
        } from "isomer";
+import { sortBlocks } from "helpers/blocks"
 
 class Blocks extends React.Component {
   static propTypes = {
@@ -99,7 +100,7 @@ class Blocks extends React.Component {
   renderBlocks() {
     const { width, scale, translate, basicUnit } = this.config
 
-    const blocks = this.sortBlocks(this.props.blocks.map((b) => {
+    const blocks = sortBlocks(this.props.blocks.map((b) => {
       let x = b.x;
       let y = b.y;
 
@@ -176,30 +177,6 @@ class Blocks extends React.Component {
     )
       .translate((offset+groundRadius)*gridWidth, (offset+groundRadius)*gridWidth, 0)
       .rotateZ(centerPoint, rotation);
-  }
-
-  sortBlocks(blocks) {
-    return blocks.sort((a, b) => {
-      if (a.z > b.z) {
-        return 1;
-      } else if (a.z < b.z) {
-        return -1;
-      }
-
-      if (a.x > b.x) {
-        return -1;
-      } else if (a.x < b.x) {
-        return 1;
-      }
-
-      if (a.y > b.y) {
-        return -1;
-      } else if (a.y < b.y) {
-        return 1;
-      }
-
-      return 0;
-    });
   }
 
   render() {

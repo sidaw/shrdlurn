@@ -5,10 +5,8 @@ function sendContext(history, sessionId) {
   let contextCommand = "(context)"
 
   if (history.length > 0) {
-    console.log("SENDING CONTEXT")
     const currentState = history[history.length - 1].value
     const prevState = JSON.stringify(JSON.stringify(currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))))
-    console.log(prevState)
     contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${prevState}) (name b) (name c))))`
   }
 
@@ -25,7 +23,6 @@ const Actions = {
 
       return sendContext(history, sessionId)
         .then((eh) => {
-          console.log(eh)
           const query = formatQuery(q)
           const cmds = { q: query, sessionId: sessionId }
 
@@ -73,6 +70,8 @@ const Actions = {
         type: Constants.ACCEPT,
         el: selected
       })
+
+      return true
     }
   }
 }

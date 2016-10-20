@@ -192,16 +192,15 @@ export function SEMPREquery(cmds, callback) {
   const cmdstr = []
   for (const k in cmds) {
     if ({}.hasOwnProperty.call(cmds, k)) {
-
       cmdstr.push(`${k}=${encodeURIComponent(cmds[k])}`)
-
-      return fetch(`${SEMPRE_URL}/sempre?format=lisp2json&${cmdstr.join("&")}`)
-        .then((response) => {
-          return response.json()
-        })
-        .catch((ex) => {
-          console.log("fetch issue?", ex)
-        })
     }
   }
+
+  return fetch(`${SEMPRE_URL}/sempre?format=lisp2json&${cmdstr.join("&")}`)
+    .then((response) => {
+      return response.json()
+    })
+    .catch((ex) => {
+      console.log("fetch issue?", ex)
+    })
 }
