@@ -7,20 +7,16 @@ class CommandBar extends React.Component {
   static propTypes = {
     buttonText: React.PropTypes.string,
     status: React.PropTypes.string,
-    query: React.PropTypes.func,
+    handleQuery: React.PropTypes.func,
+    query: React.PropTypes.string,
+    changeQuery: React.PropTypes.func,
     onUp: React.PropTypes.func,
     onDown: React.PropTypes.func,
-    changeStatus: React.PropTypes.func
-  }
-
-  constructor(props) {
-    super(props)
-
-    this.state = { command: "" }
+    changeStatus: React.PropTypes.func,
   }
 
   handleChange(e) {
-    this.setState({ command: e.target.value })
+    this.props.changeQuery(e.target.value)
 
     if (this.props.status === "accept")
       this.props.changeStatus("try")
@@ -39,15 +35,15 @@ class CommandBar extends React.Component {
   }
 
   handleClick() {
-    if (this.state.command.length === 0) return
+    if (this.props.query.length === 0) return
 
-    this.props.query(this.state.command)
+    this.props.handleQuery(this.props.query)
     if (this.props.status === "accept")
-      this.setState({ command: "" })
+      this.props.changeQuery("")
   }
 
   render() {
-    const active = this.props.status === "try" && this.state.command.length > 0
+    const active = this.props.status === "try" && this.props.query.length > 0
     const accepting = this.props.status === "accept"
 
     return (
@@ -56,7 +52,7 @@ class CommandBar extends React.Component {
           type="text"
           ref="commandbar"
           placeholder="Tell the computer what to do..."
-          value={this.state.command}
+          value={this.props.query}
           onChange={(e) => this.handleChange(e)}
           onKeyDown={(e) => this.handleKeyDown(e) }
         />

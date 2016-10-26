@@ -76,6 +76,27 @@ const Actions = {
     }
   },
 
+  define: (defineAs, defineIdx) => {
+    return (dispatch, getState) => {
+      const { sessionId } = getState().user
+      const { history } = getState().world
+
+      const defineHist = history.slice(defineIdx - 1, history.length).map(h => [h.text, h.formula])
+
+      /* TODO: define things that have definitions within them? -- what to do about logical form? */
+
+      const query = `(uttdef "${defineAs}" ${JSON.stringify(defineHist)})`
+
+      SEMPREquery({ q: query, sessionId: sessionId })
+
+      dispatch({
+        type: Constants.DEFINE,
+        text: defineAs,
+        idx: defineIdx
+      })
+    }
+  },
+
   revert: (idx) => {
     return (dispatch) => {
       dispatch({
@@ -116,6 +137,15 @@ const Actions = {
       dispatch({
         type: Constants.SET_STATUS,
         status
+      })
+    }
+  },
+
+  setQuery: (query) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_QUERY,
+        query
       })
     }
   }

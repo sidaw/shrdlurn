@@ -22,7 +22,7 @@ class BlocksWorld extends React.Component {
 
     this.defaultState = [{ x: 0, y: 0, z: 0, color: "Red", names: ["S"] }]
 
-    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: Infinity, query: "" }
+    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: Infinity, shouldDefine: false }
     this.maxSteps = () => this.state.possSteps * 3
   }
 
@@ -42,11 +42,13 @@ class BlocksWorld extends React.Component {
     if (this.props.world.status === "try") {
       this.props.dispatch(Actions.tryQuery(query))
         .then(r => {
-          if (r) {
-            this.setState({ query: query })
-          } else {
+          if (!r) {
             /* Try query unsuccessful, prompt for definition */
-            alert("SHRDLURN did not understand your utterance. Try defining it!") /* TODO! */
+            this.setState({ shouldDefine: true })
+            alert("SHRDLURN did not understand your utterance. Try defining it!")
+            this.props.dispatch(Actions.setQuery(""))
+          } else {
+            this.setState({ shouldDefine: false })
           }
         })
     } else if (this.props.world.status === "accept") {
@@ -60,7 +62,7 @@ class BlocksWorld extends React.Component {
       /* Otherwise, just accept normally */
       const r = this.props.dispatch(Actions.accept(query, this.state.selectedResp))
       if (r) {
-        this.setState({ selectedResp: 0, query: "" })
+        this.setState({ selectedResp: 0 })
       }
     } else {
       console.log("uh oh...")
@@ -140,7 +142,7 @@ class BlocksWorld extends React.Component {
     return (
       <div className="BlocksWorld">
         <div className="BlocksWorld-left">
-          <History currentQuery={this.props.world.status === "accept" ? this.state.query : ""} />
+          <History shouldDefine={this.state.shouldDefine} />
         </div>
         <div className="BlocksWorld-mainblocks">
           <Blocks blocks={currentState} width={1650} height={1200} />
@@ -154,7 +156,9 @@ class BlocksWorld extends React.Component {
             </div>
           </div>
           <CommandBar
-            query={(query) => this.handleQuery(query) }
+            query={this.props.world.query}
+            changeQuery={(q) => this.props.dispatch(Actions.setQuery(q))}
+            handleQuery={(query) => this.handleQuery(query) }
             changeStatus={(newStatus) => this.handleStatusChange(newStatus)}
             onUp={() => this.upSelected()}
             onDown={() => this.downSelected()}

@@ -10,12 +10,16 @@
 
 .History-rows {
   width: 100%;
-  box-shadow: 0 3px 6px rgba(51,51,51,0.15);
 }
 
 .History-row,
 .History-item {
   width: 100%;
+}
+
+.History-row,
+.History-row.squashing .History-item {
+  box-shadow: 0 3px 6px rgba(51,51,51,0.15);
 }
 
 .History-item {
@@ -41,7 +45,7 @@
   padding: 8px 5px;
 }
 
-.History-row.next {
+.History-row.next .History-item {
   opacity: 0.3;
 }
 
@@ -57,6 +61,13 @@
   color: #000;
 }
 
+.History-item-num-squashing {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: rgba(0, 160, 176, 0.7);
+}
+
 .History-item-text {
   margin-left: 5px;
 }
@@ -67,4 +78,55 @@
 
 ::-webkit-scrollbar-thumb {
   background-color: rgba(230, 230, 230, 0.5);
+}
+
+.History-row.squashing {
+  background-color: #efefef;
+  padding: 0 10px;
+}
+
+.History-row.squashing:first-child {
+  padding-top: 15px;
+}
+
+.History-row.lastsquasher {
+  padding-bottom: 15px;
+}
+
+.History-row.squashing + .History-row:not(.squashing) {
+  margin-top: 20px;
+}
+
+.History-row-squasher {
+  padding-top: 20px !important;
+}
+
+.History-row-squasher-label {
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+}
+
+.History-row-squasher-endlabel {
+  font-size: 0.9em;
+  clear: both;
+}
+
+.History-row-squasher-input {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.History-row-squasher.lastsquasher {
+  margin-bottom: 20px;
+}
+
+.History-row-squasher button {
+  font-size: 1rem;
+  line-height: 1.2;
+  height: 30px;
+  padding: 2px 5px;
+  margin-bottom: 10px;
+  float: right;
+  cursor: pointer;
 }
