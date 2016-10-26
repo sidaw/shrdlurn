@@ -1,11 +1,12 @@
 import Constants from "constants/actions"
 import { formatQuery, SEMPREquery, parseSEMPRE } from "helpers/sempre"
 
-function sendContext(history, sessionId) {
+function sendContext(history, current_history_idx, sessionId) {
   let contextCommand = "(context)"
 
   if (history.length > 0) {
-    const currentState = history[history.length - 1].value
+    const idx = current_history_idx >= 0 ? current_history_idx : history.length - 1
+    const currentState = history[idx].value
     const prevState = JSON.stringify(JSON.stringify(currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))))
     contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${prevState}) (name b) (name c))))`
   }
@@ -19,14 +20,14 @@ const Actions = {
   tryQuery: (q) => {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
-      const { history } = getState().world
+      const { history, current_history_idx } = getState().world
 
-      return sendContext(history, sessionId)
+      return sendContext(history, current_history_idx, sessionId)
         .then((eh) => {
           const query = formatQuery(q)
           const cmds = { q: query, sessionId: sessionId }
 
-          SEMPREquery(cmds)
+          return SEMPREquery(cmds)
             .then((response) => {
               const formval = parseSEMPRE(response.candidates)
 
@@ -57,21 +58,65 @@ const Actions = {
     }
   },
 
-  accept: (query, selectedResp) => {
+  accept: (text, selectedResp) => {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
       const { responses } = getState().world
 
       const selected = responses[selectedResp]
 
-      SEMPREquery({ q: query, accept: selected.rank, sessionId: sessionId }, () => {});
+      SEMPREquery({ q: text, accept: selected.rank, sessionId: sessionId }, () => {});
 
       dispatch({
         type: Constants.ACCEPT,
-        el: selected
+        el: {...selected, text}
       })
 
       return true
+    }
+  },
+
+  revert: (idx) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.REVERT,
+        idx: idx
+      })
+    }
+  },
+
+  undo: () => {
+    return (dispatch, getState) => {
+      const { current_history_idx, history } = getState().world
+
+      const idx = current_history_idx !== 0 ? (current_history_idx >= 0 ? current_history_idx - 1 : history.length - 2) : current_history_idx
+
+      dispatch({
+        type: Constants.REVERT,
+        idx: idx
+      })
+    }
+  },
+
+  redo: () => {
+    return (dispatch, getState) => {
+      const { current_history_idx, history } = getState().world
+
+      const idx = current_history_idx !== history.length - 1 ? (current_history_idx >= 0 ? current_history_idx + 1 : -1) : current_history_idx
+
+      dispatch({
+        type: Constants.REVERT,
+        idx: idx
+      })
+    }
+  },
+
+  setStatus: (status) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_STATUS,
+        status
+      })
     }
   }
 }

@@ -22,30 +22,53 @@ class BlocksWorld extends React.Component {
 
     this.defaultState = [{ x: 0, y: 0, z: 0, color: "Red", names: ["S"] }]
 
-    this.state = { selectedResp: 0, status: "try", targetIdx: -1, target: [], possSteps: Infinity }
+    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: Infinity, query: "" }
+    this.maxSteps = () => this.state.possSteps * 3
   }
 
   componentDidMount() {
-    this.props.dispatch(Actions.pushToHistory({ text: "initial", value: this.defaultState }))
     const randomTarget = genRandomTarget()
     this.setState({ target: randomTarget[2], possSteps: randomTarget[1], targetIdx: randomTarget[0] })
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.world.history.length > 0 && this.equalityCheck(this.props.world.history[this.props.world.history.length - 1].value, this.state.target)) {
+      /* WIN! */
+      alert("You've won!!!!")
+    }
+  }
+
   handleQuery(query) {
-    if (this.state.status === "try") {
-      const r = this.props.dispatch(Actions.tryQuery(query))
-      if (r) this.setState({ status: "accept" })
-    } else if (this.state.status === "accept") {
-      /* TODO:  Win check! */
+    if (this.props.world.status === "try") {
+      this.props.dispatch(Actions.tryQuery(query))
+        .then(r => {
+          if (r) {
+            this.setState({ query: query })
+          } else {
+            /* Try query unsuccessful, prompt for definition */
+            alert("SHRDLURN did not understand your utterance. Try defining it!") /* TODO! */
+          }
+        })
+    } else if (this.props.world.status === "accept") {
+      /* Max steps check */
+      if (this.props.world.history.length >= this.maxSteps) {
+        alert("You've reached the maximum number of steps, undo some steps in order to add more.")
+        this.setState({ selectedResp: 0 })
+        return
+      }
+
+      /* Otherwise, just accept normally */
       const r = this.props.dispatch(Actions.accept(query, this.state.selectedResp))
-      if (r) this.setState({ status: "try", selectedResp: 0 })
+      if (r) {
+        this.setState({ selectedResp: 0, query: "" })
+      }
     } else {
       console.log("uh oh...")
     }
   }
 
   handleStatusChange(newStatus) {
-    this.setState({ status: newStatus })
+    this.props.dispatch(Actions.setStatus(newStatus))
   }
 
   stateIncludes(state, obj) {
@@ -100,27 +123,29 @@ class BlocksWorld extends React.Component {
   }
 
   render() {
-    const { responses, history } = this.props.world
-    // const history = [{text: "add 6 red"}, {text: "add 3 orange"}, {text: "add orange"}, {text: "add red"}, {text: "initial"}]
-    // const currentState = [{x: 0, y: 0, z: 0, color: "Red", names: []}, {x: -1, y: 0, z: 0, color: "Blue", names: []}, {x: 0, y: 0, z: 1, color: "Orange", names: []}]
-    let currentState = this.defaultState
+    const { responses, history, current_history_idx } = this.props.world
 
-    if (this.state.status === "accept" && responses.length > 0) {
-      currentState = this.computeDiff(history[history.length - 1].value || [], responses[this.state.selectedResp].value)
+    let currentState = this.defaultState
+    const idx = current_history_idx >= 0 ? current_history_idx : history.length - 1
+
+    if (this.props.world.status === "accept" && responses.length > 0) {
+
+      currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
     } else {
-      if (history.length > 0)
-        currentState = history[history.length - 1].value
+      if (history.length > 0) {
+        currentState = history[idx].value
+      }
     }
 
     return (
       <div className="BlocksWorld">
         <div className="BlocksWorld-left">
-          {/* <History history={history} /> */}
+          <History currentQuery={this.props.world.status === "accept" ? this.state.query : ""} />
         </div>
         <div className="BlocksWorld-mainblocks">
           <Blocks blocks={currentState} width={1650} height={1200} />
           <div className="BlocksWorld-status">
-            <div className={classnames("BlocksWorld-statusmsg", {"active": this.state.status === "accept"})}>
+            <div className={classnames("BlocksWorld-statusmsg", {"active": this.props.world.status === "accept" && responses.length > 0})}>
               <span>{this.state.selectedResp + 1} / {responses.length} possible interpretations</span>
               <div className="BlocksWorld-buttons">
                 <button onClick={() => this.upSelected()}>&uarr;</button>
@@ -133,7 +158,7 @@ class BlocksWorld extends React.Component {
             changeStatus={(newStatus) => this.handleStatusChange(newStatus)}
             onUp={() => this.upSelected()}
             onDown={() => this.downSelected()}
-            status={this.state.status}
+            status={this.props.world.status}
           />
         </div>
         <div className="BlocksWorld-right">

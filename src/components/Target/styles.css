@@ -10,6 +10,12 @@
   flex-direction: column;
 }
 
+@media (max-height: 600px) {
+  .Target {
+    margin-top: 0;
+  }
+}
+
 .Target-header {
   font-size: 1.8rem;
   font-weight: 900;

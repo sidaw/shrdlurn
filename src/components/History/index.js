@@ -1,13 +1,21 @@
 import React from "react"
 import classnames from "classnames"
+import { connect } from "react-redux"
+import Actions from "actions/world"
 
 import "./styles.css"
 
 class History extends React.Component {
+  static propTypes = {
+    history: React.PropTypes.array,
+
+    dispatch: React.PropTypes.func
+  }
+
   constructor(props) {
     super(props)
 
-    this.state = { defineSpacer: null, history: props.history, newdefiner: "" }
+    this.state = { defineSpacer: null, newdefiner: "" }
   }
 
   addSpacer(idx) {
@@ -15,22 +23,39 @@ class History extends React.Component {
   }
 
   renderHistory() {
-    return this.state.history.map((h, idx) => {
-      const defining = this.state.defineSpacer != null && idx < this.state.defineSpacer ? true : false
+    const { history, current_history_idx } = this.props
+
+    const historyItems = history.slice()
+
+    return historyItems.reverse().map((h, idx) => {
+      const stepN = this.props.history.length - idx
       return (
-        <div key={idx} className={classnames("History-row", {"defining": defining })}>
-          {(() => {
-            if (this.state.defineSpacer == null) {
-              return (<div className="History-addSpacer" onClick={(e) => this.addSpacer(idx)} />)
-            }
-          })()}
-          <div className="History-item">
-            {this.state.history.length - idx}.&nbsp;
-            {h.text}
+        <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1})}>
+          <div className="History-item" onClick={() => this.props.dispatch(Actions.revert(stepN - 1))}>
+            <div className="History-item-num">{stepN}</div>
+            <div className="History-item-text">{h.text}</div>
           </div>
         </div>
       )
     })
+
+
+    // return this.state.history.map((h, idx) => {
+    //   const defining = this.state.defineSpacer != null && idx < this.state.defineSpacer ? true : false
+    //   return (
+    //     <div key={idx} className={classnames("History-row", {"defining": defining })}>
+    //       {(() => {
+    //         if (this.state.defineSpacer == null) {
+    //           return (<div className="History-addSpacer" onClick={(e) => this.addSpacer(idx)} />)
+    //         }
+    //       })()}
+    //       <div className="History-item">
+    //         {this.state.history.length - idx}.&nbsp;
+    //         {h.text}
+    //       </div>
+    //     </div>
+    //   )
+    // })
   }
 
   handleDefinition() {
@@ -56,10 +81,29 @@ class History extends React.Component {
             )
           }
         })()}
-        {this.renderHistory()}
+        <div className="History-rows">
+          {(() => {
+            if (this.props.currentQuery !== "") {
+              return (
+                <div key="temp" className="History-row next">
+                  <div className="History-item">
+                    <div className="History-item-num">{this.props.history.length + 1}</div>
+                    <div className="History-item-text">{this.props.currentQuery}</div>
+                  </div>
+                </div>
+              )
+            }
+          })()}
+          {this.renderHistory()}
+        </div>
       </div>
     )
   }
 }
 
-export default History
+const mapStateToProps = (state) => ({
+  history: state.world.history,
+  current_history_idx: state.world.current_history_idx
+})
+
+export default connect(mapStateToProps)(History)
