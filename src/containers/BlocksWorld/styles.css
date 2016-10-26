@@ -1,0 +1,72 @@
+.BlocksWorld {
+  height: 100%;
+  width: 100%;
+  padding: 50px 10px 0; /* .Header height = 50px */
+  display: flex;
+  justify-content: center;
+}
+
+.BlocksWorld > div {
+  flex-shrink: 0;
+}
+
+.BlocksWorld-mainblocks {
+  margin: 0 20px;
+}
+
+.BlocksWorld-mainblocks .Blocks {
+  width: 825px;
+  height: 600px;
+}
+
+.BlocksWorld-left,
+.BlocksWorld-right {
+  width: 250px;
+}
+
+.BlocksWorld-right {
+  display: flex;
+  align-items: center;
+}
+
+.BlocksWorld-status {
+  position: relative;
+  width: 80%; /* .CommandBar .width */
+}
+
+.BlocksWorld-statusmsg {
+  opacity: 0;
+  position: absolute;
+  top: -50px;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  transition: opacity 0.2s ease;
+}
+
+.BlocksWorld-statusmsg.active {
+  opacity: 1;
+}
+
+.BlocksWorld-statusmsg span {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.BlocksWorld-buttons button {
+  height: 32px;
+  width: 32px;
+  font-size: 1.4rem;
+  background-color: #FFF;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.BlocksWorld-buttons button:hover {
+  background-color: rgb(0, 160, 176);
+  color: #FFF;
+}
