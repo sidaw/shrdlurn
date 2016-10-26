@@ -5,4 +5,3 @@ npm-debug.log
 coverage
 build
 .DS_Store
-.env
