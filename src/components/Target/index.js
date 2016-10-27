@@ -8,7 +8,7 @@ const Target = ({ target, possibleSteps }) => {
     <div className="Target">
       <div className="Target-header">Target</div>
       <div className="Target-struct">
-        <Blocks blocks={target} isoConfig={{scale: 0.6, offset: 0}} width={550} height={400} />
+        <Blocks blocks={target} isoConfig={{scale: 0.6, offset: 0}} width={660} height={480} />
       </div>
       <div className="Target-metadata">
         <div key="poss"><strong>{possibleSteps}</strong>&nbsp;possible steps</div>

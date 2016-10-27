@@ -148,6 +148,14 @@ const Actions = {
         query
       })
     }
+  },
+
+  resetResponses: () => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.RESET_RESPONSES
+      })
+    }
   }
 }
 

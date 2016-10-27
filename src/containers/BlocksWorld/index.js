@@ -114,8 +114,12 @@ class BlocksWorld extends React.Component {
 
   upSelected() {
     const selectedResp = this.state.selectedResp
-    if (selectedResp < this.props.world.responses.length - 1)
+    if (selectedResp < this.props.world.responses.length - 1) {
       this.setState({ selectedResp: selectedResp + 1 })
+    } else {
+      this.setState({ shouldDefine: true, selectedResp: 0 })
+      this.props.dispatch(Actions.resetResponses())
+    }
   }
 
   downSelected() {

@@ -28,6 +28,8 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, status: action.status }
     case Constants.SET_QUERY:
       return { ...state, query: action.query }
+    case Constants.RESET_RESPONSES:
+      return { ...state, status: "try", query: "", responses: []}
     default:
       return state
   }
