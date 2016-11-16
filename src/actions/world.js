@@ -85,7 +85,7 @@ const Actions = {
 
       /* TODO: define things that have definitions within them? -- what to do about logical form? */
 
-      const query = `(uttdef "${defineAs}" ${JSON.stringify(defineHist)})`
+      const query = `(uttdef "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
 
       SEMPREquery({ q: query, sessionId: sessionId })
 
