@@ -25,14 +25,17 @@ class CommandBar extends React.Component {
   handleKeyDown(e) {
     if (e.keyCode === 13) {
       this.handleClick()
-    } else if (e.keyCode === 38) {
+    } else if (e.keyCode === 40) {
       e.preventDefault()
       this.props.onUp()
-    } else if (e.keyCode === 40) {
+    } else if (e.keyCode === 38) {
       e.preventDefault()
       this.props.onDown()
     }
   }
+
+  /* TODO: add instructions */
+  /* TODO: better informative definitional message */
 
   handleClick() {
     if (this.props.query.length === 0) return

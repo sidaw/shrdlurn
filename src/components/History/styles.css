@@ -62,10 +62,8 @@
 }
 
 .History-item-num-squashing {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background-color: rgba(0, 160, 176, 0.7);
+  color: rgba(0, 160, 176, 1);
+  font-weight: 700;
 }
 
 .History-item-text {
@@ -121,12 +119,23 @@
   margin-bottom: 20px;
 }
 
-.History-row-squasher button {
+.History-row-squasher-sublabel {
+  display: block;
+  clear: both;
+}
+
+.History-defbuttons {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.History-defbuttons button {
   font-size: 1rem;
   line-height: 1.2;
   height: 30px;
   padding: 2px 5px;
-  margin-bottom: 10px;
   float: right;
   cursor: pointer;
 }

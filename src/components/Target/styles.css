@@ -1,5 +1,4 @@
 .Target {
-  margin-top: -8%;
   right: 0;
   width: 350px;
   background-color: #FFF;
@@ -10,11 +9,13 @@
   flex-direction: column;
 }
 
+/* TODO: FIX target alignment */
+/*
 @media (max-height: 600px) {
   .Target {
     margin-top: 0;
   }
-}
+}*/
 
 .Target-header {
   font-size: 1.8rem;
@@ -24,6 +25,7 @@
   align-items: center;
   height: 40px;
   border-bottom: 1px solid #efefef;
+  justify-content: space-between;
 }
 
 .Target-struct {
@@ -54,4 +56,20 @@
 
 .Target-metadata > div:first-child {
   border-right: 1px solid #efefef;
+}
+
+
+.BlocksWorld-right.collapsed .Target {
+  width: 50px;
+  overflow: hidden;
+}
+
+.BlocksWorld-right.collapsed .Target-struct,
+.BlocksWorld-right.collapsed .Target-metadata,
+.BlocksWorld-right.collapsed .Target-header-name {
+  display: none;
+}
+
+.Target-header-arrow {
+  cursor: pointer;
 }

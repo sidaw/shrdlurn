@@ -54,7 +54,7 @@ class History extends React.Component {
             >
               {(() => {
                 if (stepN >= this.state.defineN) {
-                  return <div className="History-item-num-squashing"></div>
+                  return <div className="History-item-num-squashing">{stepN}</div>
                 } else {
                   return <span>{stepN}</span>
                 }
@@ -62,10 +62,22 @@ class History extends React.Component {
             </div>
             <div className="History-item-text">{h.text}</div>
           </div>
+          {(() => {
+            if (this.state.squashing && stepN === this.state.defineN) {
+              return (
+                <div className="History-defbuttons">
+                  <button className="active" onClick={() => this.handleDefine()}>Finish Definition</button>
+                  <button onClick={() => this.setState({ defineN: Infinity, squashing: false, newdefiner: "" })}>Cancel</button>
+                </div>
+              )
+            }
+          })()}
         </div>
       )
     })
   }
+
+  /* TODO: ... if nothing in the set */
 
   render() {
     return (
@@ -75,12 +87,9 @@ class History extends React.Component {
           if (this.state.squashing) {
             return (
               <div key="squash" className={classnames("History-row", "squashing", "History-row-squasher", {"lastsquasher": this.state.defineN > this.props.history.length && !(this.props.query !== "" && this.props.status === "accept")})}>
-                <div className="History-row-squasher-label">define this set of actions as:</div>
+                <div className="History-row-squasher-label">define this:</div>
                 <input type="text" className="History-row-squasher-input" ref="squasher" placeholder="(e.g. build a chair, add red on all sides)" value={this.state.newdefiner} onChange={(e) => this.setState({newdefiner:e.target.value})} />
-                <button className="active" onClick={() => this.handleDefine()}>Define</button>
-                <button onClick={() => this.setState({ defineN: Infinity, squashing: false, newdefiner: "" })}>Cancel</button>
-
-                <div className="History-row-squasher-endlabel">(you can keep adding to this set...)</div>
+                <div className="History-row-squasher-sublabel">as this set of actions:</div>
               </div>
             )
           }

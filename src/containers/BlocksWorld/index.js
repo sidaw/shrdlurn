@@ -45,7 +45,6 @@ class BlocksWorld extends React.Component {
           if (!r) {
             /* Try query unsuccessful, prompt for definition */
             this.setState({ shouldDefine: true })
-            alert("SHRDLURN did not understand your utterance. Try defining it!")
             this.props.dispatch(Actions.setQuery(""))
           } else {
             this.setState({ shouldDefine: false })
@@ -118,14 +117,16 @@ class BlocksWorld extends React.Component {
       this.setState({ selectedResp: selectedResp + 1 })
     } else {
       this.setState({ shouldDefine: true, selectedResp: 0 })
+      // TODO: on scroll when prompt define, be able to scroll back
       this.props.dispatch(Actions.resetResponses())
     }
   }
 
   downSelected() {
     const selectedResp = this.state.selectedResp
-    if (selectedResp > 0)
+    if (selectedResp > 0) {
       this.setState({ selectedResp: selectedResp - 1 })
+    }
   }
 
   render() {
@@ -169,9 +170,7 @@ class BlocksWorld extends React.Component {
             status={this.props.world.status}
           />
         </div>
-        <div className="BlocksWorld-right">
-          <Target target={this.state.target} possibleSteps={this.state.possSteps} />
-        </div>
+        <Target target={this.state.target} possibleSteps={this.state.possSteps} />
       </div>
     )
   }
