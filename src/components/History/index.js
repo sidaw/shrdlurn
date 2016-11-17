@@ -84,7 +84,7 @@ class History extends React.Component {
     return (
       <div className="History">
         <h2>History</h2>
-        <button className="History-openDefine" onClick={() => { this.props.dispatch(Actions.openDefine()) }}>Define</button>
+        <button className={classnames("History-openDefine", {"active": this.props.defining})} onClick={() => { this.props.dispatch(Actions.openDefine()) }}>Define</button>
         {(() => {
           if (this.props.defining) {
             return (

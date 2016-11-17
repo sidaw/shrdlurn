@@ -183,7 +183,8 @@
   font-size: 1.2rem;
 }
 
-.History-openDefine:hover {
+.History-openDefine:hover,
+.History-openDefine.active {
   background-color: rgba(0, 160, 176, 0.8);
   color: #FFF;
   cursor: pointer;
