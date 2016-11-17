@@ -13,6 +13,7 @@ class CommandBar extends React.Component {
     onUp: React.PropTypes.func,
     onDown: React.PropTypes.func,
     changeStatus: React.PropTypes.func,
+    defining: React.PropTypes.bool
   }
 
   handleChange(e) {
@@ -34,9 +35,6 @@ class CommandBar extends React.Component {
     }
   }
 
-  /* TODO: add instructions */
-  /* TODO: better informative definitional message */
-
   handleClick() {
     if (this.props.query.length === 0) return
 
@@ -48,6 +46,13 @@ class CommandBar extends React.Component {
   render() {
     const active = this.props.status === "try" && this.props.query.length > 0
     const accepting = this.props.status === "accept"
+
+    let statusMsg = "Enter a command for the computer."
+    if (this.props.status === "accept") {
+      statusMsg = "Click accept if the computer correctly intepreted what you meant, scroll to see other intepretations, or revise your command."
+    } else if (this.props.defining) {
+      statusMsg = <span>Enter a command to add to the <strong>current definition</strong>. You can only accept things that the computer understands.</span>
+    }
 
     return (
       <div className="CommandBar">
@@ -65,6 +70,7 @@ class CommandBar extends React.Component {
         >
           {this.props.status}
         </button>
+        <div className="CommandBar-status">{statusMsg}</div>
       </div>
     )
   }

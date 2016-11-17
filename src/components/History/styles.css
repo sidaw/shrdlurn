@@ -1,6 +1,7 @@
 .History {
   width: 250px;
   margin-right: 10px;
+  position: relative;
 }
 
 .History h2 {
@@ -79,8 +80,14 @@
 }
 
 .History-row.squashing {
-  background-color: #efefef;
+  background-color: rgba(0, 160, 176, 0.1);
   padding: 0 10px;
+  position: relative;
+  box-shadow: none;
+}
+
+.History-row.squashing:last-child {
+  box-shadow: 0 3px 6px rgba(51, 51, 51, 0.15);
 }
 
 .History-row.squashing:first-child {
@@ -124,6 +131,12 @@
   clear: both;
 }
 
+.History-row-squasher-subsublabel {
+  font-size: 0.8em;
+  margin: 10px;
+  display: block;
+}
+
 .History-defbuttons {
   width: 100%;
   display: flex;
@@ -137,5 +150,41 @@
   height: 30px;
   padding: 2px 5px;
   float: right;
+  cursor: pointer;
+}
+
+.History-row-squasher-close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 2rem;
+  cursor: pointer;
+  border: 2px solid rgba(66, 66, 66, 0.2);
+  border-radius: 50%;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: rgba(66, 66, 66, 0.8);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.History-row-squasher-close:hover {
+  color: rgb(66, 66, 66);
+  border-color: rgba(66, 66, 66, 0.7);
+}
+
+.History-openDefine {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  font-size: 1.2rem;
+}
+
+.History-openDefine:hover {
+  background-color: rgba(0, 160, 176, 0.8);
+  color: #FFF;
   cursor: pointer;
 }

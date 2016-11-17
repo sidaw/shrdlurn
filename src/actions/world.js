@@ -83,17 +83,31 @@ const Actions = {
 
       const defineHist = history.slice(defineIdx - 1, history.length).map(h => [h.text, h.formula])
 
-      /* TODO: define things that have definitions within them? -- what to do about logical form? */
-
       const query = `(uttdef "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
 
+      /* Submit the define command */
       SEMPREquery({ q: query, sessionId: sessionId })
+        .then((r) => {
+          /* Then, we need to get the associated formula for this definition to
+           * properly populate the history in order to in the future define
+           * things with definitions in them. */
+          sendContext(history, -1, sessionId)
+            .then((eh) => {
+              const query = formatQuery(defineAs)
+              SEMPREquery({ q: query, sessionId: sessionId})
+                .then((response) => {
+                  const formval = parseSEMPRE(response.candidates)
+                  const topFormula = formval[0].formula
 
-      dispatch({
-        type: Constants.DEFINE,
-        text: defineAs,
-        idx: defineIdx
-      })
+                  dispatch({
+                    type: Constants.DEFINE,
+                    text: defineAs,
+                    idx: defineIdx,
+                    formula: topFormula
+                  })
+                })
+            })
+        })
     }
   },
 
@@ -154,6 +168,22 @@ const Actions = {
     return (dispatch) => {
       dispatch({
         type: Constants.RESET_RESPONSES
+      })
+    }
+  },
+
+  closeDefine: () => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.CLOSE_DEFINE
+      })
+    }
+  },
+
+  openDefine: () => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.OPEN_DEFINE
       })
     }
   }

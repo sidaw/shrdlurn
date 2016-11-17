@@ -54,3 +54,10 @@ button.accepting {
   float: right;
   margin-left: 3%;
 }
+
+.CommandBar-status {
+  font-size: 1.6rem;
+  padding-top: 65px;
+  display: block;
+  max-width: 600px;
+}

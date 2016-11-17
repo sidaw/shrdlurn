@@ -22,7 +22,7 @@ class BlocksWorld extends React.Component {
 
     this.defaultState = [{ x: 0, y: 0, z: 0, color: "Red", names: ["S"] }]
 
-    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: Infinity, shouldDefine: false }
+    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: Infinity }
     this.maxSteps = () => this.state.possSteps * 3
   }
 
@@ -44,10 +44,10 @@ class BlocksWorld extends React.Component {
         .then(r => {
           if (!r) {
             /* Try query unsuccessful, prompt for definition */
-            this.setState({ shouldDefine: true })
+            this.props.dispatch(Actions.openDefine())
             this.props.dispatch(Actions.setQuery(""))
           } else {
-            this.setState({ shouldDefine: false })
+            // this.setState({ shouldDefine: false })
           }
         })
     } else if (this.props.world.status === "accept") {
@@ -116,9 +116,9 @@ class BlocksWorld extends React.Component {
     if (selectedResp < this.props.world.responses.length - 1) {
       this.setState({ selectedResp: selectedResp + 1 })
     } else {
-      this.setState({ shouldDefine: true, selectedResp: 0 })
-      // TODO: on scroll when prompt define, be able to scroll back
-      this.props.dispatch(Actions.resetResponses())
+      // this.setState({ selectedResp: 0 })
+      this.props.dispatch(Actions.openDefine())
+      // this.props.dispatch(Actions.resetResponses())
     }
   }
 
@@ -126,6 +126,10 @@ class BlocksWorld extends React.Component {
     const selectedResp = this.state.selectedResp
     if (selectedResp > 0) {
       this.setState({ selectedResp: selectedResp - 1 })
+    }
+
+    if (this.props.world.defining && selectedResp === this.props.world.responses.length - 1) {
+      this.props.dispatch(Actions.closeDefine())
     }
   }
 
@@ -147,7 +151,7 @@ class BlocksWorld extends React.Component {
     return (
       <div className="BlocksWorld">
         <div className="BlocksWorld-left">
-          <History shouldDefine={this.state.shouldDefine} />
+          <History />
         </div>
         <div className="BlocksWorld-mainblocks">
           <Blocks blocks={currentState} width={1650} height={1200} />
@@ -168,6 +172,7 @@ class BlocksWorld extends React.Component {
             onUp={() => this.upSelected()}
             onDown={() => this.downSelected()}
             status={this.props.world.status}
+            defining={this.props.world.defining}
           />
         </div>
         <Target target={this.state.target} possibleSteps={this.state.possSteps} />
