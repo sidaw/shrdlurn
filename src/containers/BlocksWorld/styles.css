@@ -6,10 +6,6 @@
   justify-content: center;
 }
 
-.BlocksWorld > div {
-  flex-shrink: 0;
-}
-
 .BlocksWorld-mainblocks {
   margin: 0 20px;
 }
