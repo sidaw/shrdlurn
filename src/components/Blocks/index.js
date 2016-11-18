@@ -6,6 +6,7 @@ import Isomer,
          Path
        } from "isomer";
 import { sortBlocks } from "helpers/blocks"
+import deepEqual from "deep-equal"
 
 /* TODO: make blocks in the center responsive -- squish to 60% of the screen size */
 
@@ -18,7 +19,8 @@ class Blocks extends React.Component {
   }
 
   static defaultProps = {
-    isoConfig: {}
+    isoConfig: {},
+    blocks: []
   }
 
   constructor(props) {
@@ -61,7 +63,11 @@ class Blocks extends React.Component {
 
   componentDidMount() {
     const iso =  new Isomer(this.refs.blocksCanvas);
-    this.setState({ iso: iso });
+    this.setState({ iso: iso })
+  }
+
+  shouldComponentUpdate(prevProps, prevState) {
+    return !deepEqual(this.props, prevProps) || !deepEqual(prevState, this.state)
   }
 
   componentDidUpdate() {
@@ -131,7 +137,7 @@ class Blocks extends React.Component {
     }));
 
     for (const block of blocks) {
-      let selectedBlockYes = false;
+      // let selectedBlockYes = false;
       const color = this.colorMap[block.color];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
