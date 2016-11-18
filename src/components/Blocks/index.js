@@ -52,6 +52,7 @@ class Blocks extends React.Component {
       Pink: [255, 20, 147],
       Brown: [139, 69, 19],
       Anchor: [0, 160, 176],
+      Fake: [255, 255, 255],
       Gray: [144, 144, 144]
     }
 
@@ -100,7 +101,7 @@ class Blocks extends React.Component {
   }
 
   renderBlocks() {
-    const { width, scale, translate, basicUnit } = this.config
+    const { width, basicUnit } = this.config
 
     const blocks = sortBlocks(this.props.blocks.map((b) => {
       let x = b.x;
@@ -129,7 +130,6 @@ class Blocks extends React.Component {
       return { ...b, x: x, y: y };
     }));
 
-    const selected = blocks.filter((b) => b.names && b.names.includes("S"));
     for (const block of blocks) {
       let selectedBlockYes = false;
       const color = this.colorMap[block.color];
@@ -138,18 +138,16 @@ class Blocks extends React.Component {
         blockColor = new Color(color[0], color[1], color[2], 0.2);
       } else {
         blockColor = new Color(color[0], color[1], color[2], 0.88);
-        if (selected.length > 0 && selected.includes(block) && block.color !== "Anchor") {
-          // blockColor = new Color(color[0], color[1], color[2], 0);
-          selectedBlockYes = true;
-        }
       }
-      if (block.color === "Anchor") {
-        this.state.iso.add(this.makeBlock(block.x, block.y, -0.01, scale, translate, 0.01), this.darken(blockColor));
+
+      if (block.color === "Fake") {
+        blockColor = new Color(color[0], color[1], color[2], 0.5);
+        this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
       } else {
         this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
       }
 
-      if (selectedBlockYes) {
+      if (block.names && block.names.includes("S")) {
         this.state.iso.add(this.makeBlock(block.x, block.y, block.z, basicUnit, true), new Color(0, 160, 176, 0.125));
       }
     }
