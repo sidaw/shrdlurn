@@ -1,0 +1,191 @@
+.History {
+  width: 250px;
+  margin-right: 10px;
+  position: relative;
+}
+
+.History h2 {
+  font-weight: bold;
+  letter-spacing: 0px;
+}
+
+.History-rows {
+  width: 100%;
+}
+
+.History-row,
+.History-item {
+  width: 100%;
+}
+
+.History-row,
+.History-row.squashing .History-item {
+  box-shadow: 0 3px 6px rgba(51,51,51,0.15);
+}
+
+.History-item {
+  background-color: #FFF;
+  display: flex;
+  cursor: pointer;
+}
+
+.History-item:hover {
+  background-color: rgba(0, 160, 176, 0.1);
+}
+
+.History-row.active .History-item {
+  background-color: rgba(0, 160, 176, 0.8);
+  color: #FFF;
+}
+
+.History-row:not(:nth-child(1)) .History-item {
+  border-top: 1px solid rgb(220, 220, 220);
+}
+
+.History-item > div {
+  padding: 8px 5px;
+}
+
+.History-row.next .History-item {
+  opacity: 0.3;
+}
+
+.History-item-num {
+  min-width: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid rgb(230, 230, 230);
+  background-color: rgb(250, 250, 250);
+  font-weight: 100;
+  flex-shrink: 0;
+  color: #000;
+}
+
+.History-item-num-squashing {
+  color: rgba(0, 160, 176, 1);
+  font-weight: 700;
+}
+
+.History-item-text {
+  margin-left: 5px;
+}
+
+::-webkit-scrollbar {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(230, 230, 230, 0.5);
+}
+
+.History-row.squashing {
+  background-color: rgba(0, 160, 176, 0.1);
+  padding: 0 10px;
+  position: relative;
+  box-shadow: none;
+}
+
+.History-row.squashing:last-child {
+  box-shadow: 0 3px 6px rgba(51, 51, 51, 0.15);
+}
+
+.History-row.squashing:first-child {
+  padding-top: 15px;
+}
+
+.History-row.lastsquasher {
+  padding-bottom: 15px;
+}
+
+.History-row.squashing + .History-row:not(.squashing) {
+  margin-top: 20px;
+}
+
+.History-row-squasher {
+  padding-top: 20px !important;
+}
+
+.History-row-squasher-label {
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+}
+
+.History-row-squasher-endlabel {
+  font-size: 0.9em;
+  clear: both;
+}
+
+.History-row-squasher-input {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.History-row-squasher.lastsquasher {
+  margin-bottom: 20px;
+}
+
+.History-row-squasher-sublabel {
+  display: block;
+  clear: both;
+}
+
+.History-row-squasher-subsublabel {
+  font-size: 0.8em;
+  margin: 10px;
+  display: block;
+}
+
+.History-defbuttons {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.History-defbuttons button {
+  font-size: 1rem;
+  line-height: 1.2;
+  height: 30px;
+  padding: 2px 5px;
+  float: right;
+  cursor: pointer;
+}
+
+.History-row-squasher-close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 2rem;
+  cursor: pointer;
+  border: 2px solid rgba(66, 66, 66, 0.2);
+  border-radius: 50%;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: rgba(66, 66, 66, 0.8);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.History-row-squasher-close:hover {
+  color: rgb(66, 66, 66);
+  border-color: rgba(66, 66, 66, 0.7);
+}
+
+.History-openDefine {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  font-size: 1.2rem;
+}
+
+.History-openDefine:hover,
+.History-openDefine.active {
+  background-color: rgba(0, 160, 176, 0.8);
+  color: #FFF;
+  cursor: pointer;
+}

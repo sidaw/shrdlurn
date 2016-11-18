@@ -1,0 +1,63 @@
+input {
+  width: 100%;
+  background-color: #FFF;
+  font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 2.2rem;
+  line-height: 1.4;
+  padding: 10px;
+  border: 0;
+  box-shadow: 0 6px 16px rgba(51,51,51,0.15);
+  outline: none;
+}
+
+button {
+  font-size: 1.4rem;
+  line-height: 1.6;
+  height: 40px;
+  width: auto;
+  padding: 5px 10px;
+  margin: 5px;
+  font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+  font-weight: 900;
+  border: 0;
+  text-transform: uppercase;
+  color: #000;
+  background-color: rgb(220, 220, 220);
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15),
+              0 1.5px 2.5px rgba(0,0,0,0.08);
+  transition: 0.2s ease background-color;
+  outline: none;
+}
+
+button.active {
+  background-color: rgb(0, 160, 176);
+  color: #FFF;
+  cursor: pointer;
+}
+
+button.active:hover {
+  background-color: rgb(30, 190, 206);
+}
+
+button.accepting {
+  background-color: rgb(60, 220, 236);
+}
+
+.CommandBar input {
+  width: 80%;
+  float: left;
+}
+
+.CommandBar button {
+  width: 15%;
+  float: right;
+  margin-left: 3%;
+}
+
+.CommandBar-status {
+  font-size: 1.6rem;
+  padding-top: 65px;
+  display: block;
+  max-width: 600px;
+}

@@ -1,0 +1,75 @@
+.Target {
+  right: 0;
+  width: 350px;
+  background-color: #FFF;
+  height: 350px;
+  position: absolute;
+  box-shadow: 0 4px 8px rgba(51,51,51,0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+/* TODO: FIX target alignment */
+/*
+@media (max-height: 600px) {
+  .Target {
+    margin-top: 0;
+  }
+}*/
+
+.Target-header {
+  font-size: 1.8rem;
+  font-weight: 900;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  border-bottom: 1px solid #efefef;
+  justify-content: space-between;
+}
+
+.Target-struct {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Target-struct .Blocks {
+  width: 330px;
+  height: 240px;
+}
+
+.Target-metadata {
+  width: 100%;
+  display: flex;
+  border-top: 1px solid #efefef;
+}
+
+.Target-metadata > div {
+  width: 50%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Target-metadata > div:first-child {
+  border-right: 1px solid #efefef;
+}
+
+
+.BlocksWorld-right.collapsed .Target {
+  width: 50px;
+  overflow: hidden;
+}
+
+.BlocksWorld-right.collapsed .Target-struct,
+.BlocksWorld-right.collapsed .Target-metadata,
+.BlocksWorld-right.collapsed .Target-header-name {
+  display: none;
+}
+
+.Target-header-arrow {
+  cursor: pointer;
+}
