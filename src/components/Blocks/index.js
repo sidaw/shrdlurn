@@ -7,6 +7,8 @@ import Isomer,
        } from "isomer";
 import { sortBlocks } from "helpers/blocks"
 
+/* TODO: make blocks in the center responsive -- squish to 60% of the screen size */
+
 class Blocks extends React.Component {
   static propTypes = {
     blocks: React.PropTypes.array,

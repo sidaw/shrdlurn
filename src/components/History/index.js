@@ -48,7 +48,7 @@ class History extends React.Component {
       const stepN = this.props.history.length - idx
       return (
         <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1, "squashing": this.props.defining && stepN >= this.state.defineN, "lastsquasher": this.props.defining && stepN === this.state.defineN})}>
-          <div className="History-item" onClick={() => this.props.dispatch(Actions.revert(stepN - 1))} onDoubleClick={() => this.props.dispatch(Actions.setQuery(h.text))}>
+          <div className="History-item" onClick={() => this.props.dispatch(Actions.revert(stepN - 1))} onDoubleClick={() => { this.props.dispatch(Actions.setQuery(h.text)); console.log(h) }}>
             <div
               className="History-item-num"
               onMouseEnter={() => { if (!this.props.defining) this.setState({ defineN: stepN })}}
