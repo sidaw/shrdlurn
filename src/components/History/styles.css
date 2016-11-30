@@ -1,7 +1,13 @@
 .History {
   width: 250px;
-  margin-right: 10px;
-  position: relative;
+  background-color: inherit;
+  left: 20px;
+  height: 90%;
+  overflow-y: scroll;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
 }
 
 .History h2 {
@@ -179,7 +185,7 @@
 .History-openDefine {
   position: absolute;
   right: 0;
-  top: -10px;
+  top: 15px;
   font-size: 1.2rem;
 }
 

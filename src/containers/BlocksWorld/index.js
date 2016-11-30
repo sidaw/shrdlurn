@@ -60,6 +60,8 @@ class BlocksWorld extends React.Component {
 
       /* Otherwise, just accept normally */
       const r = this.props.dispatch(Actions.accept(query, this.state.selectedResp))
+
+      this.props.dispatch(Actions.refreshExample())
       if (r) {
         this.setState({ selectedResp: 0 })
       }
@@ -173,6 +175,7 @@ class BlocksWorld extends React.Component {
             onDown={() => this.downSelected()}
             status={this.props.world.status}
             defining={this.props.world.defining}
+            exampleQuery={this.props.world.exampleQuery}
           />
         </div>
         <Target target={this.state.target} possibleSteps={this.state.possSteps} />
