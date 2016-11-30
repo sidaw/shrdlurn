@@ -186,6 +186,22 @@ const Actions = {
         type: Constants.OPEN_DEFINE
       })
     }
+  },
+
+  refreshExample: () => {
+    return (dispatch, getState) => {
+      const { sessionId } = getState().user
+
+      const query = `(autocomplete "")`
+
+      SEMPREquery({ q: query, sessionId: sessionId })
+        .then((r) => {
+          dispatch({
+            type: Constants.REFRESH_EXAMPLE,
+            query: r.autocompletes[0]
+          })
+        })
+    }
   }
 }
 
