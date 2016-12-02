@@ -147,14 +147,15 @@ class Blocks extends React.Component {
       }
 
       if (block.color === "Fake") {
-        blockColor = new Color(color[0], color[1], color[2], 0.5);
-        this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
+        //blockColor = new Color(244,244,244, 0.2);
+        //this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
       } else {
         this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
       }
 
       if (block.names && block.names.includes("S")) {
-        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, basicUnit, true), new Color(0, 160, 176, 0.125));
+        //this.state.iso.add(this.makeBlock(block.x, block.y, block.z, basicUnit, true), new Color(0, 160, 176, 0.125));
+        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, basicUnit, true), new Color(0, 0, 0, 0.5));
       }
     }
   }
@@ -172,7 +173,7 @@ class Blocks extends React.Component {
     const { scale, groundRadius, offset, rotation, centerPoint, borderWidth, baseHeight, basicUnit } = this.config
 
     const gridWidth = unitWidth * scale
-    const shifter = highlighted ? unitWidth * 0.4 : 0;
+    const shifter = highlighted ? unitWidth * 0.6 : 0;
 
     return Shape.Prism(
       Point((x + (x * borderWidth)) * scale + (shifter / 2),
