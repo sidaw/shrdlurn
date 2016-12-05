@@ -202,6 +202,23 @@ const Actions = {
           })
         })
     }
+  },
+
+  setPin: () => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_PIN
+      })
+    }
+  },
+
+  removePin: (idx) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.REMOVE_PIN,
+        idx
+      })
+    }
   }
 }
 
