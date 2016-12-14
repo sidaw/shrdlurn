@@ -58,7 +58,9 @@ class BlocksWorld extends React.Component {
             this.props.dispatch(Actions.setPin())
             this.props.dispatch(Actions.resetResponses())
             this.props.dispatch(Actions.setQuery(""))
+            this.setState({ selectedResp: 0 })
           } else {
+            this.setState({ selectedResp: 0 })
             // this.setState({ shouldDefine: false })
           }
         })

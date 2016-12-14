@@ -2,7 +2,7 @@
   width: 270px;
   background-color: inherit;
   left: 20px;
-  height: 90%;
+  height: 70%;
   overflow-y: scroll;
   position: absolute;
   display: flex;
@@ -72,6 +72,10 @@
 .History-item-num-squashing {
   color: rgba(0, 160, 176, 1);
   font-weight: 700;
+  background-color: rgba(0, 160, 176, 1);
+  border-radius: 50%;
+  height: 18px;
+  width: 18px;
 }
 
 .History-item-num-squashing.last:before {

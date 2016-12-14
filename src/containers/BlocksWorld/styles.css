@@ -4,6 +4,8 @@
   padding: 50px 10px 0; /* .Header height = 50px */
   display: flex;
   justify-content: center;
+  position: absolute;
+  z-index: 999999;
 }
 
 .BlocksWorld-mainblocks {

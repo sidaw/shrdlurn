@@ -4,8 +4,8 @@ import { getTurkCode } from "helpers/turk"
 import "./styles.css"
 
 const Win = ({ targetIdx, nSteps, nBlocks }) => (
-  <div className="Win">
-    <div>
+  <div className="Win modal-container">
+    <div className="modal">
       <div className="modal-header">Congratulations! You have won!</div>
       <div className="modal-body">
         <p>
