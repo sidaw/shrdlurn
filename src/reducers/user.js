@@ -1,7 +1,8 @@
 import Constants from "constants/actions"
+import Strings from "constants/strings"
 
 const initialState = {
-  sessionId: "deadbeef"
+  sessionId: Strings.DEFAULT_SESSIONID
 }
 
 export default function reducer(state = initialState, action = {}) {

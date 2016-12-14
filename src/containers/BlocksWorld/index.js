@@ -2,10 +2,12 @@ import React from "react"
 import { connect } from "react-redux"
 import classnames from "classnames"
 import Actions from "actions/world"
+import Logger from "actions/logger"
 import History from "components/History"
 import Blocks from "components/Blocks"
 import CommandBar from "components/CommandBar"
 import Target from "components/Target"
+import Win from "components/Win"
 import { genRandomTarget } from "helpers/util"
 import { sortBlocks } from "helpers/blocks"
 
@@ -22,19 +24,28 @@ class BlocksWorld extends React.Component {
 
     this.defaultState = [{ x: 0, y: 0, z: 0, color: "Fake", names: ["S"] }]
 
-    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: Infinity }
+    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: Infinity, win: false }
     this.maxSteps = () => this.state.possSteps * 3
   }
 
   componentDidMount() {
     const randomTarget = genRandomTarget()
     this.setState({ target: randomTarget[2], possSteps: randomTarget[1], targetIdx: randomTarget[0] })
+
+    this.props.dispatch(Logger.log({ type: "start", msg: { targetIdx: randomTarget[0], target: randomTarget[2] }}))
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.world.history.length > 0 && this.equalityCheck(this.props.world.history[this.props.world.history.length - 1].value, this.state.target)) {
       /* WIN! */
-      alert("You've won!!!!")
+      this.win()
+    }
+  }
+
+  win() {
+    if (!this.state.win) {
+      this.props.dispatch(Logger.log({ type: "win", msg: { steps: this.props.world.history.length } }))
+      this.setState({ win: true })
     }
   }
 
@@ -119,6 +130,7 @@ class BlocksWorld extends React.Component {
     const selectedResp = this.state.selectedResp
     if (selectedResp < this.props.world.responses.length - 1) {
       this.setState({ selectedResp: selectedResp + 1 })
+      this.props.dispatch(Logger.log({ type: "scroll", msg: { dir: "up" }}))
     } else {
       // this.setState({ selectedResp: 0 })
       // this.props.dispatch(Actions.openDefine())
@@ -130,6 +142,7 @@ class BlocksWorld extends React.Component {
     const selectedResp = this.state.selectedResp
     if (selectedResp > 0) {
       this.setState({ selectedResp: selectedResp - 1 })
+      this.props.dispatch(Logger.log({ type: "scroll", msg: { dir: "down" }}))
     }
 
     // if (this.props.world.defining && selectedResp === this.props.world.responses.length - 1) {
@@ -185,6 +198,9 @@ class BlocksWorld extends React.Component {
           />
         </div>
         <Target target={this.state.target} possibleSteps={this.state.possSteps} />
+        {this.state.win &&
+          <Win targetIdx={this.state.targetIdx} nSteps={history.length} nBlocks={currentState.length} />
+        }
       </div>
     )
   }
