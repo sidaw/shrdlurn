@@ -1,7 +1,13 @@
 .History {
-  width: 250px;
-  margin-right: 10px;
-  position: relative;
+  width: 270px;
+  background-color: inherit;
+  left: 20px;
+  height: 90%;
+  overflow-y: scroll;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
 }
 
 .History h2 {
@@ -11,6 +17,7 @@
 
 .History-rows {
   width: 100%;
+  padding-right: 15px;
 }
 
 .History-row,
@@ -65,6 +72,16 @@
 .History-item-num-squashing {
   color: rgba(0, 160, 176, 1);
   font-weight: 700;
+}
+
+.History-item-num-squashing.last:before {
+  content: "->";
+  position: absolute;
+  transform: translateX(-15px);
+}
+
+.History-row.squashing .History-item-num-squashing.last:before {
+  display: none;
 }
 
 .History-item-text {
@@ -179,7 +196,7 @@
 .History-openDefine {
   position: absolute;
   right: 0;
-  top: -10px;
+  top: 15px;
   font-size: 1.2rem;
 }
 
@@ -188,4 +205,12 @@
   background-color: rgba(0, 160, 176, 0.8);
   color: #FFF;
   cursor: pointer;
+}
+
+.History-row.pin {
+  transform: translateX(15px);
+}
+
+.History-rows-squash-container {
+  padding-right: 15px;
 }

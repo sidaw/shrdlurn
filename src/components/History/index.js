@@ -39,6 +39,22 @@ class History extends React.Component {
     /* TODO: how to reject definitions? */
   }
 
+  setPin() {
+    this.props.dispatch(Actions.setPin())
+  }
+
+  openDefine(e, stepN, h, idx) {
+    e.stopPropagation()
+    if (h.type !== "pin") {
+      this.setState({ defineN: stepN })
+    } else {
+      this.setState({ newdefiner: h.text, defineN: stepN + 1 })
+      this.props.dispatch(Actions.removePin(idx))
+    }
+
+    this.props.dispatch(Actions.openDefine())
+  }
+
   renderHistory() {
     const { history, current_history_idx } = this.props
 
@@ -47,17 +63,17 @@ class History extends React.Component {
     return historyItems.reverse().map((h, idx) => {
       const stepN = this.props.history.length - idx
       return (
-        <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1, "squashing": this.props.defining && stepN >= this.state.defineN, "lastsquasher": this.props.defining && stepN === this.state.defineN})}>
+        <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1, "squashing": this.props.defining && stepN >= this.state.defineN, "lastsquasher": this.props.defining && stepN === this.state.defineN, "pin": h.type === "pin"})}>
           <div className="History-item" onClick={() => this.props.dispatch(Actions.revert(stepN - 1))} onDoubleClick={() => { this.props.dispatch(Actions.setQuery(h.text)); console.log(h) }}>
             <div
               className="History-item-num"
               onMouseEnter={() => { if (!this.props.defining) this.setState({ defineN: stepN })}}
               onMouseLeave={() => { if (!this.props.defining) this.setState({ defineN: Infinity }) }}
-              onClick={(e) => { e.stopPropagation(); this.props.dispatch(Actions.openDefine()); this.setState({ defineN: stepN });}}
+              onClick={(e) => this.openDefine(e, stepN, h, idx)}
             >
               {(() => {
                 if (stepN >= this.state.defineN) {
-                  return <div className="History-item-num-squashing">{stepN}</div>
+                  return <div className={classnames("History-item-num-squashing", {"last": stepN === this.state.defineN})}>{stepN}</div>
                 } else {
                   return <span>{stepN}</span>
                 }
@@ -88,14 +104,16 @@ class History extends React.Component {
         {(() => {
           if (this.props.defining) {
             return (
-              <div key="squash" className={classnames("History-row", "squashing", "History-row-squasher", {"lastsquasher": this.state.defineN > this.props.history.length && !(this.props.query !== "" && this.props.status === "accept")})}>
-                <div className="History-row-squasher-close" onClick={() => { this.setState({ defineN: Infinity, newdefiner: "" }); this.props.dispatch(Actions.closeDefine()) }}>&times;</div>
-                <div className="History-row-squasher-label">define this:</div>
-                <input type="text" className="History-row-squasher-input" ref="squasher" placeholder="(e.g. build a chair, add red on all sides)" value={this.state.newdefiner} onChange={(e) => this.setState({newdefiner:e.target.value})} />
-                <div className="History-row-squasher-sublabel">as this set of actions:</div>
-                {this.state.defineN - 1 === this.props.history.length && !(this.props.query !== "" && this.props.status === "accept") &&
-                  <span className="History-row-squasher-subsublabel">(no actions yet)</span>
-                }
+              <div className="History-rows-squash-container">
+                <div key="squash" className={classnames("History-row", "squashing", "History-row-squasher", {"lastsquasher": this.state.defineN > this.props.history.length && !(this.props.query !== "" && this.props.status === "accept")})}>
+                  <div className="History-row-squasher-close" onClick={() => { this.setState({ defineN: Infinity, newdefiner: "" }); this.props.dispatch(Actions.closeDefine()) }}>&times;</div>
+                  <div className="History-row-squasher-label">define this:</div>
+                  <input type="text" className="History-row-squasher-input" ref="squasher" placeholder="(e.g. build a chair, add red on all sides)" value={this.state.newdefiner} onChange={(e) => this.setState({newdefiner:e.target.value})} />
+                  <div className="History-row-squasher-sublabel">as this set of actions:</div>
+                  {this.state.defineN - 1 === this.props.history.length && !(this.props.query !== "" && this.props.status === "accept") &&
+                    <span className="History-row-squasher-subsublabel">(no actions yet)</span>
+                  }
+                </div>
               </div>
             )
           }
@@ -104,7 +122,7 @@ class History extends React.Component {
           {(() => {
             if (this.props.query !== "" && this.props.status === "accept") {
               return (
-                <div key="temp" className={classnames("History-row", "next", {"squashing": this.props.defining, "lastsquasher": this.props.defining && this.state.defineN > this.props.history.length})}>
+                <div key="temp" className={classnames("History-row", "next", {"squashing": this.props.defining, "lastsquasher": this.props.defining && this.state.defineN > this.props.history.length})} onClick={() => this.setPin()}>
                   <div className="History-item">
                     <div className="History-item-num">{this.props.history.length + 1}</div>
                     <div className="History-item-text">{this.props.query}</div>

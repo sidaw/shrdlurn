@@ -6,7 +6,8 @@ const initialState = {
   current_history_idx: -1,
   status: "try",
   query: "",
-  defining: false
+  defining: false,
+  exampleQuery: "add red 3 times"
 }
 
 export default function reducer(state = initialState, action = {}) {
@@ -35,6 +36,15 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, defining: true }
     case Constants.CLOSE_DEFINE:
       return { ...state, defining: false }
+    case Constants.REFRESH_EXAMPLE:
+      return { ...state, exampleQuery: action.query }
+    case Constants.SET_PIN:
+      let newHistoryWithPin = [...state.history, {text: state.query, type: "pin", value: state.history[state.history.length - 1].value, formula: "()"}]
+      return { ...state, history: newHistoryWithPin, query: initialState.query, responses: initialState.responses, status: initialState.status }
+    case Constants.REMOVE_PIN:
+      let newHistoryWithoutPin = state.history.slice()
+      newHistoryWithoutPin.splice(action.idx, 1)
+      return { ...state, history: newHistoryWithoutPin }
     default:
       return state
   }

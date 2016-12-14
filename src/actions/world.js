@@ -186,6 +186,39 @@ const Actions = {
         type: Constants.OPEN_DEFINE
       })
     }
+  },
+
+  refreshExample: () => {
+    return (dispatch, getState) => {
+      const { sessionId } = getState().user
+
+      const query = `(autocomplete "")`
+
+      SEMPREquery({ q: query, sessionId: sessionId })
+        .then((r) => {
+          dispatch({
+            type: Constants.REFRESH_EXAMPLE,
+            query: r.autocompletes[0]
+          })
+        })
+    }
+  },
+
+  setPin: () => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_PIN
+      })
+    }
+  },
+
+  removePin: (idx) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.REMOVE_PIN,
+        idx
+      })
+    }
   }
 }
 

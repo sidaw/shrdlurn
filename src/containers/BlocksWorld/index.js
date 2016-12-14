@@ -43,8 +43,9 @@ class BlocksWorld extends React.Component {
       this.props.dispatch(Actions.tryQuery(query))
         .then(r => {
           if (!r) {
-            /* Try query unsuccessful, prompt for definition */
-            this.props.dispatch(Actions.openDefine())
+            /* Try query unsuccessful, set it as a pin */
+            this.props.dispatch(Actions.setPin())
+            this.props.dispatch(Actions.resetResponses())
             this.props.dispatch(Actions.setQuery(""))
           } else {
             // this.setState({ shouldDefine: false })
@@ -60,6 +61,8 @@ class BlocksWorld extends React.Component {
 
       /* Otherwise, just accept normally */
       const r = this.props.dispatch(Actions.accept(query, this.state.selectedResp))
+
+      this.props.dispatch(Actions.refreshExample())
       if (r) {
         this.setState({ selectedResp: 0 })
       }
@@ -117,7 +120,7 @@ class BlocksWorld extends React.Component {
       this.setState({ selectedResp: selectedResp + 1 })
     } else {
       // this.setState({ selectedResp: 0 })
-      this.props.dispatch(Actions.openDefine())
+      // this.props.dispatch(Actions.openDefine())
       // this.props.dispatch(Actions.resetResponses())
     }
   }
@@ -128,9 +131,9 @@ class BlocksWorld extends React.Component {
       this.setState({ selectedResp: selectedResp - 1 })
     }
 
-    if (this.props.world.defining && selectedResp === this.props.world.responses.length - 1) {
-      this.props.dispatch(Actions.closeDefine())
-    }
+    // if (this.props.world.defining && selectedResp === this.props.world.responses.length - 1) {
+    //   this.props.dispatch(Actions.closeDefine())
+    // }
   }
 
   render() {
@@ -173,6 +176,7 @@ class BlocksWorld extends React.Component {
             onDown={() => this.downSelected()}
             status={this.props.world.status}
             defining={this.props.world.defining}
+            exampleQuery={this.props.world.exampleQuery}
           />
         </div>
         <Target target={this.state.target} possibleSteps={this.state.possSteps} />
