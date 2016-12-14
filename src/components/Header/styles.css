@@ -13,6 +13,7 @@
   font-size: 1.8rem;
   position: absolute;
   top: 0;
+  z-index: 9999999;
 }
 
 .Header-logo {
