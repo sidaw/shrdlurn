@@ -5,7 +5,7 @@ function sendContext(history, current_history_idx, sessionId) {
   let contextCommand = "(context)"
 
   if (history.length > 0) {
-    const idx = current_history_idx >= 0 ? current_history_idx : history.length - 1
+    const idx = current_history_idx >= 0 && current_history_idx < history.length ? current_history_idx : history.length - 1
     const currentState = history[idx].value
     const prevState = JSON.stringify(JSON.stringify(currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))))
     contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${prevState}) (name b) (name c))))`

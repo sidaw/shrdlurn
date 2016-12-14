@@ -105,12 +105,13 @@ class BlocksWorld extends React.Component {
 
     for (let i = 0; i < a.length; ++i) {
       if (a[i].x !== b[i].x ||
-          b[i].y !== b[i].y ||
-          b[i].z !== b[i].z ||
-          b[i].color !== b[i].color) {
+          a[i].y !== b[i].y ||
+          a[i].z !== b[i].z ||
+          a[i].color !== b[i].color) {
         return false;
       }
     }
+
     return true;
   }
 
@@ -147,7 +148,11 @@ class BlocksWorld extends React.Component {
       currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
     } else {
       if (history.length > 0) {
-        currentState = history[idx].value
+        try {
+          currentState = history[idx].value
+        } catch (e) {
+          currentState = history[history.length - 1].value
+        }
       }
     }
 

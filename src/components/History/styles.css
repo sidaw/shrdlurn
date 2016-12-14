@@ -211,6 +211,32 @@
   transform: translateX(15px);
 }
 
+.History-row.pin .History-item {
+  background-color: rgba(255, 173, 0, 0.5);
+}
+
 .History-rows-squash-container {
   padding-right: 15px;
+}
+
+.History-item-deletepin {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+}
+
+.History-item:hover .History-item-deletepin {
+  display: flex;
+}
+
+.History-item-deletepin:hover {
+  border-color: rgba(0, 0, 0, 1);
+  background-color: rgba(0, 0, 0, 0.1);
 }
