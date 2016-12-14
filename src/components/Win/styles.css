@@ -1,0 +1,9 @@
+.Win > div {
+  height: 300px;
+  width: 500px;
+}
+
+.Win code {
+  max-width: 100%;
+  word-wrap: break-word;
+}

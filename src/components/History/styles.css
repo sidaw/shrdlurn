@@ -2,7 +2,7 @@
   width: 270px;
   background-color: inherit;
   left: 20px;
-  height: 90%;
+  height: 70%;
   overflow-y: scroll;
   position: absolute;
   display: flex;
@@ -72,6 +72,10 @@
 .History-item-num-squashing {
   color: rgba(0, 160, 176, 1);
   font-weight: 700;
+  background-color: rgba(0, 160, 176, 1);
+  border-radius: 50%;
+  height: 18px;
+  width: 18px;
 }
 
 .History-item-num-squashing.last:before {
@@ -211,6 +215,32 @@
   transform: translateX(15px);
 }
 
+.History-row.pin .History-item {
+  background-color: rgba(255, 173, 0, 0.5);
+}
+
 .History-rows-squash-container {
   padding-right: 15px;
+}
+
+.History-item-deletepin {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+}
+
+.History-item:hover .History-item-deletepin {
+  display: flex;
+}
+
+.History-item-deletepin:hover {
+  border-color: rgba(0, 0, 0, 1);
+  background-color: rgba(0, 0, 0, 0.1);
 }

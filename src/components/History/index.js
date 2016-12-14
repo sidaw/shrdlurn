@@ -48,8 +48,8 @@ class History extends React.Component {
     if (h.type !== "pin") {
       this.setState({ defineN: stepN })
     } else {
-      this.setState({ newdefiner: h.text, defineN: stepN + 1 })
-      this.props.dispatch(Actions.removePin(idx))
+      this.setState({ newdefiner: h.text, defineN: stepN })
+      this.props.dispatch(Actions.removePin(stepN - 1))
     }
 
     this.props.dispatch(Actions.openDefine())
@@ -58,18 +58,20 @@ class History extends React.Component {
   renderHistory() {
     const { history, current_history_idx } = this.props
 
-    const historyItems = history.slice()
+    const historyItems = history.slice().reverse()
 
-    return historyItems.reverse().map((h, idx) => {
+    const topPinIdx = historyItems.findIndex((el) => el.type === "pin")
+
+    return historyItems.map((h, idx) => {
       const stepN = this.props.history.length - idx
       return (
         <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1, "squashing": this.props.defining && stepN >= this.state.defineN, "lastsquasher": this.props.defining && stepN === this.state.defineN, "pin": h.type === "pin"})}>
           <div className="History-item" onClick={() => this.props.dispatch(Actions.revert(stepN - 1))} onDoubleClick={() => { this.props.dispatch(Actions.setQuery(h.text)); console.log(h) }}>
             <div
               className="History-item-num"
-              onMouseEnter={() => { if (!this.props.defining) this.setState({ defineN: stepN })}}
-              onMouseLeave={() => { if (!this.props.defining) this.setState({ defineN: Infinity }) }}
-              onClick={(e) => this.openDefine(e, stepN, h, idx)}
+              onMouseEnter={() => { if (!this.props.defining && (topPinIdx === -1  || idx <= topPinIdx)) this.setState({ defineN: stepN })}}
+              onMouseLeave={() => { if (!this.props.defining && (topPinIdx === -1 || idx <= topPinIdx)) this.setState({ defineN: Infinity }) }}
+              onClick={(e) => { if (topPinIdx === -1 || idx <= topPinIdx) { this.openDefine(e, stepN, h, idx) } }}
             >
               {(() => {
                 if (stepN >= this.state.defineN) {
@@ -79,7 +81,12 @@ class History extends React.Component {
                 }
               })()}
             </div>
-            <div className="History-item-text">{h.text}</div>
+            <div className="History-item-text">
+              {h.text}
+              {h.type === "pin" &&
+                <div className="History-item-deletepin" onClick={() => this.props.dispatch(Actions.removePin(stepN - 1))}>&times;</div>
+              }
+            </div>
           </div>
           {(() => {
             if (this.props.defining && stepN === this.state.defineN) {

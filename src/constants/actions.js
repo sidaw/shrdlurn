@@ -15,7 +15,9 @@ const Actions = {
   SET_PIN: "SET_PIN",
   REMOVE_PIN: "REMOVE_PIN",
 
-  SESSION_ID: "SESSION_ID"
+  SESSION_ID: "SESSION_ID",
+
+  OPEN_LOGGING_SOCKET: "OPEN_LOGGING_SOCKET",
 }
 
 export default Actions

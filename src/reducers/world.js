@@ -44,7 +44,7 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.REMOVE_PIN:
       let newHistoryWithoutPin = state.history.slice()
       newHistoryWithoutPin.splice(action.idx, 1)
-      return { ...state, history: newHistoryWithoutPin }
+      return { ...state, history: newHistoryWithoutPin, current_history_idx: initialState.current_history_idx }
     default:
       return state
   }

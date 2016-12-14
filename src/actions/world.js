@@ -1,11 +1,12 @@
 import Constants from "constants/actions"
 import { formatQuery, SEMPREquery, parseSEMPRE } from "helpers/sempre"
+import Logger from "actions/logger"
 
 function sendContext(history, current_history_idx, sessionId) {
   let contextCommand = "(context)"
 
   if (history.length > 0) {
-    const idx = current_history_idx >= 0 ? current_history_idx : history.length - 1
+    const idx = current_history_idx >= 0 && current_history_idx < history.length ? current_history_idx : history.length - 1
     const currentState = history[idx].value
     const prevState = JSON.stringify(JSON.stringify(currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))))
     contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${prevState}) (name b) (name c))))`
@@ -32,8 +33,10 @@ const Actions = {
               const formval = parseSEMPRE(response.candidates)
 
               if (formval === null || formval === undefined) {
+                dispatch(Logger.log({ type: "tryFail", msg: { query: q }}))
                 return false
               } else {
+                dispatch(Logger.log({ type: "try", msg: { query: q, responses: formval.length } }))
                 dispatch({
                   type: Constants.TRY_QUERY,
                   responses: formval
@@ -67,6 +70,8 @@ const Actions = {
 
       SEMPREquery({ q: text, accept: selected.rank, sessionId: sessionId }, () => {});
 
+      dispatch(Logger.log({ type: "accept", msg: { query: text, rank: selected.rank, formula: selected.formula } }))
+
       dispatch({
         type: Constants.ACCEPT,
         el: {...selected, text}
@@ -99,6 +104,8 @@ const Actions = {
                   const formval = parseSEMPRE(response.candidates)
                   const topFormula = formval[0].formula
 
+                  dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: defineIdx, length: defineHist.length, formula: topFormula } }))
+
                   dispatch({
                     type: Constants.DEFINE,
                     text: defineAs,
@@ -113,6 +120,8 @@ const Actions = {
 
   revert: (idx) => {
     return (dispatch) => {
+      dispatch(Logger.log({ type: "revert", msg: { idx: idx }}))
+
       dispatch({
         type: Constants.REVERT,
         idx: idx
