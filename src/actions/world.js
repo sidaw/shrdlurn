@@ -1,15 +1,15 @@
 import Constants from "constants/actions"
-import { formatQuery, SEMPREquery, parseSEMPRE } from "helpers/sempre"
+import { SEMPREquery, parseSEMPRE } from "helpers/sempre"
 import Logger from "actions/logger"
 
 function sendContext(history, current_history_idx, sessionId) {
-  let contextCommand = "(context)"
+  let contextCommand = "(:context)"
 
   if (history.length > 0) {
     const idx = current_history_idx >= 0 && current_history_idx < history.length ? current_history_idx : history.length - 1
     const currentState = history[idx].value
     const prevState = JSON.stringify(JSON.stringify(currentState.map(c => ([c.x, c.y, c.z, c.color, c.names]))))
-    contextCommand = `(context (graph NaiveKnowledgeGraph ((string ${prevState}) (name b) (name c))))`
+    contextCommand = `(:context ${prevState})`
   }
 
   const contextCmds = { q: contextCommand, sessionId: sessionId }
@@ -25,7 +25,7 @@ const Actions = {
 
       return sendContext(history, current_history_idx, sessionId)
         .then((eh) => {
-          const query = formatQuery(q)
+          const query = q
           const cmds = { q: query, sessionId: sessionId }
 
           return SEMPREquery(cmds)
@@ -68,7 +68,7 @@ const Actions = {
 
       const selected = responses[selectedResp]
 
-      SEMPREquery({ q: text, accept: selected.rank, sessionId: sessionId }, () => {});
+      SEMPREquery({ q: text, accept: selected.rank, sessionId: sessionId }, () => {})
 
       dispatch(Logger.log({ type: "accept", msg: { query: text, rank: selected.rank, formula: selected.formula } }))
 
@@ -88,7 +88,7 @@ const Actions = {
 
       const defineHist = history.slice(defineIdx - 1, history.length).map(h => [h.text, h.formula])
 
-      const query = `(uttdef "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
+      const query = `(:def "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
 
       /* Submit the define command */
       SEMPREquery({ q: query, sessionId: sessionId })
@@ -98,7 +98,7 @@ const Actions = {
            * things with definitions in them. */
           sendContext(history, -1, sessionId)
             .then((eh) => {
-              const query = formatQuery(defineAs)
+              const query = defineAs
               SEMPREquery({ q: query, sessionId: sessionId})
                 .then((response) => {
                   const formval = parseSEMPRE(response.candidates)
@@ -201,7 +201,7 @@ const Actions = {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
 
-      const query = `(autocomplete "")`
+      const query = `(:autocomplete "")`
 
       SEMPREquery({ q: query, sessionId: sessionId })
         .then((r) => {

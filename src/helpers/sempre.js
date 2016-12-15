@@ -174,17 +174,17 @@ export function parseSEMPRE(valid) {
 //     .replace(/\*/g, " * ")
 //     .replace(/\//g, " / ");
 // }
-
-export function formatQuery(ques) {
-  const sanity = ques.replace(/(\+|-|%|;)/g, " $1 ")
-    .replace(/(\(|\))/g, "") // disables commands
-    .replace(/"/g, "")
-    .replace(/=/g, "= ")
-    .replace(/(>|<)/g, " $1")
-    .replace(/(>|<)(?!=)/g, "$1 ")
-    .replace(/([^><])=/g, "$1 =");
-  return sanity;
-}
+//
+// export function formatQuery(ques) {
+//   const sanity = ques.replace(/(\+|-|%|;)/g, " $1 ")
+//     .replace(/(\(|\))/g, "") // disables commands
+//     .replace(/"/g, "")
+//     .replace(/=/g, "= ")
+//     .replace(/(>|<)/g, " $1")
+//     .replace(/(>|<)(?!=)/g, "$1 ")
+//     .replace(/([^><])=/g, "$1 =");
+//   return sanity;
+// }
 
 const SEMPRE_URL = process.env.REACT_APP_SERVER === 'local' ? `http://localhost:${process.env.REACT_APP_SERVER_PORT}` : `http://jonsson.stanford.edu:${process.env.REACT_APP_SERVER_PORT}`
 
