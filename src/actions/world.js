@@ -86,7 +86,7 @@ const Actions = {
       const { sessionId } = getState().user
       const { history } = getState().world
 
-      const defineHist = history.slice(defineIdx - 1, history.length).map(h => [h.text, h.formula])
+      const defineHist = history.slice(defineIdx - 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
 
       const query = `(:def "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
 

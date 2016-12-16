@@ -244,3 +244,17 @@
   border-color: rgba(0, 0, 0, 1);
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+.History-row.squashing.pin {
+  transform: none;
+}
+
+.History-row.squashing.pin .History-item {
+  /*display: none;*/
+  height: 0;
+  overflow: hidden;
+}
+
+.History-row.pin ~ .History-row .History-item {
+  opacity: 0.55;
+}

@@ -49,7 +49,6 @@ class History extends React.Component {
       this.setState({ defineN: stepN })
     } else {
       this.setState({ newdefiner: h.text, defineN: stepN })
-      this.props.dispatch(Actions.removePin(stepN - 1))
     }
 
     this.props.dispatch(Actions.openDefine())
