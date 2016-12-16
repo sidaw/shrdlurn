@@ -45,6 +45,10 @@ export default function reducer(state = initialState, action = {}) {
       let newHistoryWithoutPin = state.history.slice()
       newHistoryWithoutPin.splice(action.idx, 1)
       return { ...state, history: newHistoryWithoutPin, current_history_idx: initialState.current_history_idx }
+    case Constants.MARK_PIN:
+      const markedHistory = state.history.slice()
+      markedHistory[markedHistory.length - 1] = { ...markedHistory[markedHistory.length - 1], type: "pin" }
+      return { ...state, history: markedHistory }
     default:
       return state
   }
