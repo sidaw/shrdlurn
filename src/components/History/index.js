@@ -43,11 +43,31 @@ class History extends React.Component {
     this.props.dispatch(Actions.setPin())
   }
 
+  clickDefine() {
+    const { history } = this.props
+
+    if (history.length <= 1) return
+
+    const topPinIdx = history.findIndex((el) => el.type === "pin")
+
+    if (topPinIdx === -1) {
+      this.props.dispatch(Actions.markTopAsPin())
+    } else {
+      // we have to mutate the state here directly to avoid a race condition
+      // we are guaranteed this mutation is harmless because the next function
+      // uses setState to update appropriately -- think of this as an optimistic
+      // update to the state.
+      this.state.defineN = topPinIdx + 1 // eslint-disable-line
+      this.openDefine(new Event("opendefine"), topPinIdx + 1, history[topPinIdx], history.length - 1 - topPinIdx)
+    }
+  }
+
   openDefine(e, stepN, h, idx) {
     e.stopPropagation()
     if (h.type !== "pin") {
       this.setState({ defineN: stepN })
     } else {
+      console.log("DEFINE", stepN)
       this.setState({ newdefiner: h.text, defineN: stepN })
     }
 
@@ -70,7 +90,7 @@ class History extends React.Component {
               className="History-item-num"
               onMouseEnter={() => { if (!this.props.defining && (topPinIdx === -1  || idx <= topPinIdx)) this.setState({ defineN: stepN })}}
               onMouseLeave={() => { if (!this.props.defining && (topPinIdx === -1 || idx <= topPinIdx)) this.setState({ defineN: Infinity }) }}
-              onClick={(e) => { if (topPinIdx === -1 || idx <= topPinIdx) { this.openDefine(e, stepN, h, idx) } }}
+              onClick={(e) => { if (topPinIdx === -1 || idx <= topPinIdx) { console.log(stepN, idx); this.openDefine(e, stepN, h, idx) } }}
             >
               {(() => {
                 if (stepN >= this.state.defineN) {
@@ -103,10 +123,12 @@ class History extends React.Component {
   }
 
   render() {
+    const topPinIdx = this.props.history.findIndex((el) => el.type === "pin")
+
     return (
       <div className="History">
         <h2>History</h2>
-        <button className={classnames("History-openDefine", {"active": this.props.defining})} onClick={() => { this.props.dispatch(Actions.openDefine()) }}>Define</button>
+        <button className={classnames("History-openDefine", {"active": topPinIdx !== -1})} onClick={() => this.clickDefine()}>Define</button>
         {(() => {
           if (this.props.defining) {
             return (

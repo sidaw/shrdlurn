@@ -221,6 +221,14 @@ const Actions = {
     }
   },
 
+  markTopAsPin: () => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.MARK_PIN
+      })
+    }
+  },
+
   removePin: (idx) => {
     return (dispatch) => {
       dispatch({
