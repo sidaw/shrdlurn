@@ -51,7 +51,7 @@ class History extends React.Component {
     const topPinIdx = history.findIndex((el) => el.type === "pin")
 
     if (topPinIdx === -1) {
-      this.props.dispatch(Actions.markTopAsPin())
+      this.props.dispatch(Actions.markPin())
     } else {
       // we have to mutate the state here directly to avoid a race condition
       // we are guaranteed this mutation is harmless because the next function
@@ -84,7 +84,7 @@ class History extends React.Component {
     return historyItems.map((h, idx) => {
       const stepN = this.props.history.length - idx
       return (
-        <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1, "squashing": this.props.defining && stepN >= this.state.defineN, "lastsquasher": this.props.defining && stepN === this.state.defineN, "pin": h.type === "pin"})}>
+        <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1, "squashing": this.props.defining && stepN >= this.state.defineN, "lastsquasher": this.props.defining && stepN === this.state.defineN, "pin": h.type === "pin", "first": idx === topPinIdx })}>
           <div className="History-item" onClick={() => this.props.dispatch(Actions.revert(stepN - 1))} onDoubleClick={() => { this.props.dispatch(Actions.setQuery(h.text)); console.log(h) }}>
             <div
               className="History-item-num"
@@ -123,12 +123,12 @@ class History extends React.Component {
   }
 
   render() {
-    const topPinIdx = this.props.history.findIndex((el) => el.type === "pin")
+    // const topPinIdx = this.props.history.findIndex((el) => el.type === "pin")
 
     return (
       <div className="History">
         <h2>History</h2>
-        <button className={classnames("History-openDefine", {"active": topPinIdx !== -1})} onClick={() => this.clickDefine()}>Define</button>
+        {/* <button className={classnames("History-openDefine", {"active": topPinIdx !== -1})} onClick={() => this.clickDefine()}>Define</button> */}
         {(() => {
           if (this.props.defining) {
             return (

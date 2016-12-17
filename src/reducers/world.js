@@ -22,7 +22,9 @@ export default function reducer(state = initialState, action = {}) {
       const newHistory = [...state.history, action.el]
       return { ...state, history: newHistory, responses: [], status: "try", query: "" }
     case Constants.DEFINE:
-      const collapsedHistory = [...state.history.slice(0, action.idx - 1), {text: action.text, value: state.history[state.history.length - 1].value, formula: action.formula}]
+      let collapsedHistory = [...state.history.slice(0, action.idx - 1), {text: action.text, value: state.history[state.history.length - 1].value, formula: action.formula}]
+      if (collapsedHistory.length === 0) collapsedHistory = initialState.history
+      else if (collapsedHistory.length === 1) collapsedHistory = [...initialState.history, ...collapsedHistory]
       return { ...state, history: collapsedHistory, defining: false }
     case Constants.REVERT:
       return { ...state, current_history_idx: action.idx, responses: [], status: "try", query: "" }
@@ -47,7 +49,8 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, history: newHistoryWithoutPin, current_history_idx: initialState.current_history_idx }
     case Constants.MARK_PIN:
       const markedHistory = state.history.slice()
-      markedHistory[markedHistory.length - 1] = { ...markedHistory[markedHistory.length - 1], type: "pin" }
+      const index = action.idx ? action.idx : markedHistory.length - 1
+      markedHistory[index] = { ...markedHistory[index], type: "pin" }
       return { ...state, history: markedHistory }
     default:
       return state

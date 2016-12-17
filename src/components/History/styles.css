@@ -255,6 +255,11 @@
   overflow: hidden;
 }
 
-.History-row.pin ~ .History-row .History-item {
-  opacity: 0.55;
+.History-row.pin.first {
+  box-shadow: 0 0px 2px 2px rgba(0, 160, 176, 0.8);
+  /*border: 2px solid rgba(0, 160, 176, 0.8);*/
+}
+
+.History-row.pin.first.squashing {
+  box-shadow: none;
 }
