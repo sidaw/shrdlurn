@@ -221,10 +221,11 @@ const Actions = {
     }
   },
 
-  markTopAsPin: () => {
+  markPin: (idx) => {
     return (dispatch) => {
       dispatch({
-        type: Constants.MARK_PIN
+        type: Constants.MARK_PIN,
+        idx
       })
     }
   },
