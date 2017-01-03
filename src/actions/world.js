@@ -88,7 +88,9 @@ const Actions = {
 
       const defineHist = history.slice(defineIdx - 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
 
-      const query = `(:def "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
+      // scope multiline definitions by default
+      const mode = defineHist.length > 1? ':def' : ':def_ret'
+      const query = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
 
       /* Submit the define command */
       SEMPREquery({ q: query, sessionId: sessionId })
