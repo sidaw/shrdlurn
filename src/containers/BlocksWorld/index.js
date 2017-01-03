@@ -79,6 +79,8 @@ class BlocksWorld extends React.Component {
       if (r) {
         this.setState({ selectedResp: 0 })
       }
+    } else if (this.props.world.status === "define") {
+      this.props.dispatch(Actions.define(this.props.world.query, this.props.world.defineN))
     } else {
       console.log("uh oh...")
     }
@@ -152,14 +154,19 @@ class BlocksWorld extends React.Component {
     // }
   }
 
-  render() {
-    const { responses, history, current_history_idx } = this.props.world
+  closeDefine() {
+    this.props.dispatch(Actions.closeDefine())
+  }
 
+  render() {
+    const { responses, history, current_history_idx, status, defining, exampleQuery } = this.props.world
+
+    /* Compute the currentState of blocks by finding which history item is
+     * currently selected (by default, the latest one), and then computing
+     * the diff between the selected candidate's response if in 'try' mode */
     let currentState = this.defaultState
     const idx = current_history_idx >= 0 ? current_history_idx : history.length - 1
-
     if (this.props.world.status === "accept" && responses.length > 0) {
-
       currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
     } else {
       if (history.length > 0) {
@@ -171,13 +178,54 @@ class BlocksWorld extends React.Component {
       }
     }
 
+    /* Figure out the proper status message from the world's status */
+    let statusMsg = <span>Enter a command for the computer.<br /></span>
+    if (status === "accept") {
+      statusMsg = <span>Click accept if the computer correctly intepreted what you meant, scroll to see other intepretations, or revise your command.</span>
+    } else if (defining) {
+      statusMsg = <span><strong>Define</strong> the highlighted set of actions as this phrase (e.g. build a chair):</span>
+    }
+
     return (
       <div className="BlocksWorld">
-        <div className="BlocksWorld-left">
-          <History />
-        </div>
         <div className="BlocksWorld-mainblocks">
           <Blocks blocks={currentState} width={1650} height={1200} />
+          <div className="BlocksWorld-example">
+            <strong>Example query:</strong> {exampleQuery}
+          </div>
+        </div>
+        <div className="BlocksWorld-command">
+          <div className="BlocksWorld-status">
+            {statusMsg}
+            <div className={classnames("BlocksWorld-statusmsg", {"active": this.props.world.status === "accept" && responses.length > 0})}>
+              <span>{this.state.selectedResp + 1} / {responses.length} possible interpretations</span>
+              <div className="BlocksWorld-buttons">
+                <button onClick={() => this.upSelected()}>&uarr;</button>
+                <button onClick={() => this.downSelected()}>&darr;</button>
+              </div>
+            </div>
+            {this.props.world.defining &&
+              <button onClick={() => this.closeDefine()} className="BlocksWorld-definecancel">Cancel Define</button>
+            }
+          </div>
+          <CommandBar
+            query={this.props.world.query}
+            changeQuery={(q) => this.props.dispatch(Actions.setQuery(q))}
+            handleQuery={(query) => this.handleQuery(query) }
+            changeStatus={(newStatus) => this.handleStatusChange(newStatus)}
+            onUp={() => this.upSelected()}
+            onDown={() => this.downSelected()}
+            status={this.props.world.status}
+            defining={this.props.world.defining}
+            exampleQuery={this.props.world.exampleQuery}
+          />
+          <History />
+        </div>
+        {/* <div className="BlocksWorld-left">
+          <History />
+        </div> */}
+        {/* <div className="BlocksWorld-mainblocks">
+
           <div className="BlocksWorld-status">
             <div className={classnames("BlocksWorld-statusmsg", {"active": this.props.world.status === "accept" && responses.length > 0})}>
               <span>{this.state.selectedResp + 1} / {responses.length} possible interpretations</span>
@@ -198,7 +246,7 @@ class BlocksWorld extends React.Component {
             defining={this.props.world.defining}
             exampleQuery={this.props.world.exampleQuery}
           />
-        </div>
+        </div> */}
         <Target target={this.state.target} possibleSteps={this.state.possSteps} />
         {this.state.win &&
           <Win targetIdx={this.state.targetIdx} nSteps={history.length} nBlocks={currentState.length} />

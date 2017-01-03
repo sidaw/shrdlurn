@@ -1,6 +1,7 @@
 import Constants from "constants/actions"
 import { SEMPREquery, parseSEMPRE } from "helpers/sempre"
 import Logger from "actions/logger"
+import { blocksEqual } from "helpers/blocks"
 
 function sendContext(history, current_history_idx, sessionId) {
   let contextCommand = "(:context)"
@@ -36,10 +37,17 @@ const Actions = {
                 dispatch(Logger.log({ type: "tryFail", msg: { query: q }}))
                 return false
               } else {
+                /* Remove no-ops */
+                const idx = current_history_idx >= 0 && current_history_idx < history.length ? current_history_idx : history.length - 1
+                const currentValue = history[idx].value
+                const responses = formval.filter((a) => {
+                  return !blocksEqual(a.value, currentValue)
+                })
+
                 dispatch(Logger.log({ type: "try", msg: { query: q, responses: formval.length } }))
                 dispatch({
                   type: Constants.TRY_QUERY,
-                  responses: formval
+                  responses: responses
                 })
                 return true
               }
@@ -86,11 +94,13 @@ const Actions = {
       const { sessionId } = getState().user
       const { history } = getState().world
 
-      const defineHist = history.slice(defineIdx - 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
+      const defineHist = history.slice(defineIdx + 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
 
       // scope multiline definitions by default
       const mode = defineHist.length > 1? ':def' : ':def_ret'
       const query = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
+
+      console.log(query)
 
       /* Submit the define command */
       SEMPREquery({ q: query, sessionId: sessionId })
@@ -104,6 +114,7 @@ const Actions = {
               SEMPREquery({ q: query, sessionId: sessionId})
                 .then((response) => {
                   const formval = parseSEMPRE(response.candidates)
+                  /* TODO: single line definition (:def_ret) returns 0 candidates!! */
                   const topFormula = formval[0].formula
 
                   dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: defineIdx, length: defineHist.length, formula: topFormula } }))
@@ -191,10 +202,20 @@ const Actions = {
     }
   },
 
-  openDefine: () => {
+  openDefine: (idx) => {
     return (dispatch) => {
       dispatch({
-        type: Constants.OPEN_DEFINE
+        type: Constants.OPEN_DEFINE,
+        defineN: idx
+      })
+    }
+  },
+
+  setDefineN: (idx) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_DEFINE_N,
+        defineN: idx
       })
     }
   },
@@ -227,6 +248,15 @@ const Actions = {
     return (dispatch) => {
       dispatch({
         type: Constants.MARK_PIN,
+        idx
+      })
+    }
+  },
+
+  injectPin: (idx) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.INJECT_PIN,
         idx
       })
     }

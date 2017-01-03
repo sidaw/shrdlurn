@@ -1,4 +1,5 @@
 .Target {
+  /*top: 50px;*/
   right: 0;
   width: 350px;
   background-color: #FFF;
@@ -7,15 +8,15 @@
   box-shadow: 0 4px 8px rgba(51,51,51,0.15);
   display: flex;
   flex-direction: column;
+  transition: width 0.2s ease;
+  overflow: hidden;
 }
 
-/* TODO: FIX target alignment */
-/*
 @media (max-height: 600px) {
   .Target {
-    margin-top: 0;
+    top: 50px;
   }
-}*/
+}
 
 .Target-header {
   font-size: 1.8rem;
@@ -72,4 +73,14 @@
 
 .Target-header-arrow {
   cursor: pointer;
+}
+
+.Target.collapsed {
+  width: 50px;
+}
+
+.Target.collapsed .Target-header-name,
+.Target.collapsed .Target-struct,
+.Target.collapsed .Target-metadata {
+  display: none;
 }
