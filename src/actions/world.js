@@ -1,6 +1,7 @@
 import Constants from "constants/actions"
 import { SEMPREquery, parseSEMPRE } from "helpers/sempre"
 import Logger from "actions/logger"
+import { blocksEqual } from "helpers/blocks"
 
 function sendContext(history, current_history_idx, sessionId) {
   let contextCommand = "(:context)"
@@ -36,10 +37,17 @@ const Actions = {
                 dispatch(Logger.log({ type: "tryFail", msg: { query: q }}))
                 return false
               } else {
+                /* Remove no-ops */
+                const idx = current_history_idx >= 0 && current_history_idx < history.length ? current_history_idx : history.length - 1
+                const currentValue = history[idx].value
+                const responses = formval.filter((a) => {
+                  return !blocksEqual(a.value, currentValue)
+                })
+
                 dispatch(Logger.log({ type: "try", msg: { query: q, responses: formval.length } }))
                 dispatch({
                   type: Constants.TRY_QUERY,
-                  responses: formval
+                  responses: responses
                 })
                 return true
               }

@@ -67,7 +67,6 @@ class History extends React.Component {
     if (h.type !== "pin") {
       this.setState({ defineN: stepN })
     } else {
-      console.log("DEFINE", stepN)
       this.setState({ newdefiner: h.text, defineN: stepN })
     }
 
@@ -85,16 +84,22 @@ class History extends React.Component {
       const stepN = this.props.history.length - idx
       return (
         <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1, "squashing": this.props.defining && stepN >= this.state.defineN, "lastsquasher": this.props.defining && stepN === this.state.defineN, "pin": h.type === "pin", "first": idx === topPinIdx })}>
-          <div className="History-item" onClick={() => this.props.dispatch(Actions.revert(stepN - 1))} onDoubleClick={() => { this.props.dispatch(Actions.setQuery(h.text)); console.log(h) }}>
+          <div className="History-item"
+            onMouseEnter={() => { if (h.type === "pin" && !this.props.defining && (topPinIdx === -1  || idx <= topPinIdx)) this.setState({ defineN: stepN })}}
+            onMouseLeave={() => { if (h.type === "pin" && !this.props.defining && (topPinIdx === -1 || idx <= topPinIdx)) this.setState({ defineN: Infinity }) }}
+            onClick={(e) => { if (h.type === "pin" && (topPinIdx === -1 || idx <= topPinIdx)) { this.openDefine(e, stepN, h, idx) } else { this.props.dispatch(Actions.revert(stepN - 1)) } }}
+            onDoubleClick={() => { this.props.dispatch(Actions.setQuery(h.text)); console.log(h) }}>
             <div
               className="History-item-num"
               onMouseEnter={() => { if (!this.props.defining && (topPinIdx === -1  || idx <= topPinIdx)) this.setState({ defineN: stepN })}}
               onMouseLeave={() => { if (!this.props.defining && (topPinIdx === -1 || idx <= topPinIdx)) this.setState({ defineN: Infinity }) }}
-              onClick={(e) => { if (topPinIdx === -1 || idx <= topPinIdx) { console.log(stepN, idx); this.openDefine(e, stepN, h, idx) } }}
+              onClick={(e) => { if (topPinIdx === -1 || idx <= topPinIdx) { this.openDefine(e, stepN, h, idx) } }}
             >
               {(() => {
                 if (stepN >= this.state.defineN) {
                   return <div className={classnames("History-item-num-squashing", {"last": stepN === this.state.defineN})}>{stepN}</div>
+                } else if (h.type === "pin") {
+                  return (<span className="History-item-num-pin"></span>)
                 } else {
                   return <span>{stepN}</span>
                 }
