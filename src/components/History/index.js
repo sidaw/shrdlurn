@@ -22,14 +22,15 @@ const HistoryItem = ({ text, stepN, selected, defining, lastDefining, revert, se
   </div>
 )
 
-const HistoryPin = ({ text, head, openDefine, defining }) => {
+const HistoryPin = ({ text, head, openDefine, defining, remove }) => {
   if (defining) return false
 
   return (
     <div className={classnames("HistoryPin", {"head": head})}>
       {text}
+      <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       {head &&
-        <button onClick={() => openDefine()}>Define This</button>
+        <button onClick={(e) => { e.stopPropagation(); openDefine()}}>Define This</button>
       }
     </div>
   )
@@ -57,8 +58,13 @@ class History extends Component {
   }
 
   setDefineN(idx) {
-    if (!this.props.defining)
+    const firstPinIdx = this.props.history.findIndex(h => h.type === "pin")
+    if (!this.props.defining && (firstPinIdx < 0 || idx > firstPinIdx))
       this.props.dispatch(Actions.setDefineN(idx))
+  }
+
+  deletePin(idx) {
+    this.props.dispatch(Actions.removePin(idx))
   }
 
   openDefine(realIdx) {
@@ -102,6 +108,7 @@ class History extends Component {
               head={idx === firstPinIdx}
               openDefine={() => this.openDefine(realIdx)}
               defining={defineN && realIdx === defineN}
+              remove={() => this.deletePin(realIdx)}
             />
           )
           return (
