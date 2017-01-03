@@ -94,11 +94,13 @@ const Actions = {
       const { sessionId } = getState().user
       const { history } = getState().world
 
-      const defineHist = history.slice(defineIdx - 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
+      const defineHist = history.slice(defineIdx + 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
 
       // scope multiline definitions by default
       const mode = defineHist.length > 1? ':def' : ':def_ret'
       const query = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
+
+      console.log(query)
 
       /* Submit the define command */
       SEMPREquery({ q: query, sessionId: sessionId })
@@ -112,6 +114,7 @@ const Actions = {
               SEMPREquery({ q: query, sessionId: sessionId})
                 .then((response) => {
                   const formval = parseSEMPRE(response.candidates)
+                  /* TODO: single line definition (:def_ret) returns 0 candidates!! */
                   const topFormula = formval[0].formula
 
                   dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: defineIdx, length: defineHist.length, formula: topFormula } }))
@@ -199,10 +202,20 @@ const Actions = {
     }
   },
 
-  openDefine: () => {
+  openDefine: (idx) => {
     return (dispatch) => {
       dispatch({
-        type: Constants.OPEN_DEFINE
+        type: Constants.OPEN_DEFINE,
+        defineN: idx
+      })
+    }
+  },
+
+  setDefineN: (idx) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_DEFINE_N,
+        defineN: idx
       })
     }
   },
@@ -235,6 +248,15 @@ const Actions = {
     return (dispatch) => {
       dispatch({
         type: Constants.MARK_PIN,
+        idx
+      })
+    }
+  },
+
+  injectPin: (idx) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.INJECT_PIN,
         idx
       })
     }

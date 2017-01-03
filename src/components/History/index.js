@@ -1,171 +1,125 @@
-import React from "react"
-import classnames from "classnames"
+import React, { Component, PropTypes } from "react"
 import { connect } from "react-redux"
 import Actions from "actions/world"
+import classnames from "classnames"
 
 import "./styles.css"
 
-class History extends React.Component {
+const HistoryItem = ({ text, stepN, selected, defining, lastDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick }) => (
+  <div
+    onClick={() => revert()}
+    className={classnames("HistoryItem", {"selected": selected, "defining": defining, "lastDefining": lastDefining})}>
+    <div
+      className="HistoryItem-num"
+      onMouseEnter={() => setDefineN()}
+      onMouseLeave={() => resetDefineN()}
+      onClick={(e) => { e.stopPropagation(); openDefine() }}
+      onDoubleClick={() => doubleClick()}
+    >
+      {stepN}
+    </div>
+    <div className="HistoryItem-text">{text}</div>
+  </div>
+)
+
+const HistoryPin = ({ text, head, openDefine, defining }) => {
+  if (defining) return false
+
+  return (
+    <div className={classnames("HistoryPin", {"head": head})}>
+      {text}
+      {head &&
+        <button onClick={() => openDefine()}>Define This</button>
+      }
+    </div>
+  )
+}
+
+HistoryPin.propTypes = {
+  text: PropTypes.string,
+  head: PropTypes.bool,
+  openDefine: PropTypes.func,
+  defining: PropTypes.bool
+}
+
+class History extends Component {
   static propTypes = {
-    history: React.PropTypes.array,
-    defining: React.PropTypes.bool,
+    history: PropTypes.array,
+    current_history_idx: PropTypes.number,
+    defineN: PropTypes.number,
+    defining: PropTypes.bool,
 
-    dispatch: React.PropTypes.func
+    dispatch: PropTypes.func
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = { defineN: Infinity, newdefiner: "" }
+  revert(realIdx) {
+    this.props.dispatch(Actions.revert(realIdx))
   }
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.defining && !this.props.defining && this.state.defineN === Infinity) {
-      this.setState({ defineN: this.props.history.length + 1, newdefiner: this.props.query })
-    } else if (!newProps.defining && this.props.defining) {
-      this.setState({ defineN: Infinity })
-    }
+  setDefineN(idx) {
+    if (!this.props.defining)
+      this.props.dispatch(Actions.setDefineN(idx))
   }
 
-  handleDefine() {
-    if (this.state.newdefiner.length === 0) {
-      alert("You cannot define something as nothing!")
-      return
-    }
+  openDefine(realIdx) {
+    if (this.props.defining) return false
 
-    this.props.dispatch(Actions.define(this.state.newdefiner, this.state.defineN))
-    this.setState({ defineN: Infinity, newdefiner: "" })
-    this.props.dispatch(Actions.closeDefine)
-    /* TODO: how to reject definitions? */
-  }
+    const { dispatch, history } = this.props
 
-  setPin() {
-    this.props.dispatch(Actions.setPin())
-  }
+      /* Put the application into define mode */
+    const item = history[realIdx]
+    if (item.type === "pin") {
+      if (realIdx === history.length - 1) {
+        alert("You cannot define the first history item because you must have something to define it as!")
+        return
+      }
 
-  clickDefine() {
-    const { history } = this.props
-
-    if (history.length <= 1) return
-
-    const topPinIdx = history.findIndex((el) => el.type === "pin")
-
-    if (topPinIdx === -1) {
-      this.props.dispatch(Actions.markPin())
+      dispatch(Actions.setQuery(item.text))
     } else {
-      // we have to mutate the state here directly to avoid a race condition
-      // we are guaranteed this mutation is harmless because the next function
-      // uses setState to update appropriately -- think of this as an optimistic
-      // update to the state.
-      this.state.defineN = topPinIdx + 1 // eslint-disable-line
-      this.openDefine(new Event("opendefine"), topPinIdx + 1, history[topPinIdx], history.length - 1 - topPinIdx)
+      /* If the item is not a pin, we need to inject a pin before the thing we are defining */
+      dispatch(Actions.injectPin(realIdx))
     }
-  }
-
-  openDefine(e, stepN, h, idx) {
-    e.stopPropagation()
-    if (h.type !== "pin") {
-      this.setState({ defineN: stepN })
-    } else {
-      this.setState({ newdefiner: h.text, defineN: stepN })
-    }
-
-    this.props.dispatch(Actions.openDefine())
-  }
-
-  renderHistory() {
-    const { history, current_history_idx } = this.props
-
-    const historyItems = history.slice().reverse()
-
-    const topPinIdx = historyItems.findIndex((el) => el.type === "pin")
-
-    return historyItems.map((h, idx) => {
-      const stepN = this.props.history.length - idx
-      return (
-        <div key={idx} className={classnames("History-row", {"active": current_history_idx === stepN - 1, "squashing": this.props.defining && stepN >= this.state.defineN, "lastsquasher": this.props.defining && stepN === this.state.defineN, "pin": h.type === "pin", "first": idx === topPinIdx })}>
-          <div className="History-item"
-            onMouseEnter={() => { if (h.type === "pin" && !this.props.defining && (topPinIdx === -1  || idx <= topPinIdx)) this.setState({ defineN: stepN })}}
-            onMouseLeave={() => { if (h.type === "pin" && !this.props.defining && (topPinIdx === -1 || idx <= topPinIdx)) this.setState({ defineN: Infinity }) }}
-            onClick={(e) => { if (h.type === "pin" && (topPinIdx === -1 || idx <= topPinIdx)) { this.openDefine(e, stepN, h, idx) } else { this.props.dispatch(Actions.revert(stepN - 1)) } }}
-            onDoubleClick={() => { this.props.dispatch(Actions.setQuery(h.text)); console.log(h) }}>
-            <div
-              className="History-item-num"
-              onMouseEnter={() => { if (!this.props.defining && (topPinIdx === -1  || idx <= topPinIdx)) this.setState({ defineN: stepN })}}
-              onMouseLeave={() => { if (!this.props.defining && (topPinIdx === -1 || idx <= topPinIdx)) this.setState({ defineN: Infinity }) }}
-              onClick={(e) => { if (topPinIdx === -1 || idx <= topPinIdx) { this.openDefine(e, stepN, h, idx) } }}
-            >
-              {(() => {
-                if (stepN >= this.state.defineN) {
-                  return <div className={classnames("History-item-num-squashing", {"last": stepN === this.state.defineN})}>{stepN}</div>
-                } else if (h.type === "pin") {
-                  return (<span className="History-item-num-pin"></span>)
-                } else {
-                  return <span>{stepN}</span>
-                }
-              })()}
-            </div>
-            <div className="History-item-text">
-              {h.text}
-              {h.type === "pin" &&
-                <div className="History-item-deletepin" onClick={() => this.props.dispatch(Actions.removePin(stepN - 1))}>&times;</div>
-              }
-            </div>
-          </div>
-          {(() => {
-            if (this.props.defining && stepN === this.state.defineN) {
-              return (
-                <div className="History-defbuttons">
-                  <button className="active" onClick={() => this.handleDefine()}>Finish Definition</button>
-                  <button onClick={() => { this.setState({ defineN: Infinity, newdefiner: "" }); this.props.dispatch(Actions.closeDefine()) }}>Cancel</button>
-                </div>
-              )
-            }
-          })()}
-        </div>
-      )
-    })
+    dispatch(Actions.setStatus("define"))
+    dispatch(Actions.openDefine(realIdx))
   }
 
   render() {
-    // const topPinIdx = this.props.history.findIndex((el) => el.type === "pin")
+    const { history, current_history_idx, defineN, defining } = this.props
+
+    const historyItems = history.slice().reverse()
+    const firstPinIdx = historyItems.findIndex(h => h.type === "pin")
 
     return (
-      <div className="History">
-        <h2>History</h2>
-        {/* <button className={classnames("History-openDefine", {"active": topPinIdx !== -1})} onClick={() => this.clickDefine()}>Define</button> */}
-        {(() => {
-          if (this.props.defining) {
-            return (
-              <div className="History-rows-squash-container">
-                <div key="squash" className={classnames("History-row", "squashing", "History-row-squasher", {"lastsquasher": this.state.defineN > this.props.history.length && !(this.props.query !== "" && this.props.status === "accept")})}>
-                  <div className="History-row-squasher-close" onClick={() => { this.setState({ defineN: Infinity, newdefiner: "" }); this.props.dispatch(Actions.closeDefine()) }}>&times;</div>
-                  <div className="History-row-squasher-label">define this:</div>
-                  <input type="text" className="History-row-squasher-input" ref="squasher" placeholder="(e.g. build a chair, add red on all sides)" value={this.state.newdefiner} onChange={(e) => this.setState({newdefiner:e.target.value})} />
-                  <div className="History-row-squasher-sublabel">as this set of actions:</div>
-                  {this.state.defineN - 1 === this.props.history.length && !(this.props.query !== "" && this.props.status === "accept") &&
-                    <span className="History-row-squasher-subsublabel">(no actions yet)</span>
-                  }
-                </div>
-              </div>
-            )
-          }
-        })()}
-        <div className="History-rows">
-          {(() => {
-            if (this.props.query !== "" && this.props.status === "accept") {
-              return (
-                <div key="temp" className={classnames("History-row", "next", {"squashing": this.props.defining, "lastsquasher": this.props.defining && this.state.defineN > this.props.history.length})} onClick={() => this.setPin()}>
-                  <div className="History-item">
-                    <div className="History-item-num">{this.props.history.length + 1}</div>
-                    <div className="History-item-text">{this.props.query}</div>
-                  </div>
-                </div>
-              )
-            }
-          })()}
-          {this.renderHistory()}
-        </div>
+      <div className={classnames("History", {"defineMode": defining})}>
+        {historyItems.map((h, idx) => {
+          const realIdx = historyItems.length - idx - 1
+          const stepN = historyItems.length - idx
+
+          if (h.type === "pin") return (
+            <HistoryPin
+              key={idx}
+              text={h.text}
+              head={idx === firstPinIdx}
+              openDefine={() => this.openDefine(realIdx)}
+              defining={defineN && realIdx === defineN}
+            />
+          )
+          return (
+            <HistoryItem
+              key={idx}
+              text={h.text}
+              stepN={stepN}
+              selected={current_history_idx === realIdx}
+              defining={defineN && realIdx >= defineN}
+              lastDefining={defineN && realIdx - 1 === defineN}
+              revert={() => this.revert(realIdx)}
+              setDefineN={() => this.setDefineN(realIdx)}
+              resetDefineN={() => this.setDefineN(null)}
+              openDefine={() => this.openDefine(realIdx)}
+              doubleClick={() => console.log(h)}
+            />
+          )
+        })}
       </div>
     )
   }
@@ -174,8 +128,7 @@ class History extends React.Component {
 const mapStateToProps = (state) => ({
   history: state.world.history,
   current_history_idx: state.world.current_history_idx,
-  query: state.world.query,
-  status: state.world.status,
+  defineN: state.world.defineN,
   defining: state.world.defining
 })
 

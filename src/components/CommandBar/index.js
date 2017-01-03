@@ -45,15 +45,9 @@ class CommandBar extends React.Component {
   }
 
   render() {
-    const active = this.props.status === "try" && this.props.query.length > 0
-    const accepting = this.props.status === "accept"
-
-    let statusMsg = <span>Enter a command for the computer.<br /><strong>Example query:</strong> {this.props.exampleQuery}</span>
-    if (this.props.status === "accept") {
-      statusMsg = <span>Click accept if the computer correctly intepreted what you meant, scroll to see other intepretations, or revise your command.</span>
-    } else if (this.props.defining) {
-      statusMsg = <span>Enter a command to add to the <strong>current definition</strong>. You can only accept things that the computer understands.</span>
-    }
+    const { status, query } = this.props
+    const active = status === "try" && query.length > 0
+    const accepting = status === "accept" || status === "define"
 
     return (
       <div className="CommandBar">
@@ -61,7 +55,7 @@ class CommandBar extends React.Component {
           type="text"
           ref="commandbar"
           placeholder="Tell the computer what to do..."
-          value={this.props.query}
+          value={query}
           onChange={(e) => this.handleChange(e)}
           onKeyDown={(e) => this.handleKeyDown(e) }
         />
@@ -69,11 +63,8 @@ class CommandBar extends React.Component {
           className={classnames({"active": active || accepting, "accepting": accepting})}
           onClick={() => this.handleClick() }
         >
-          {this.props.status}
+          {status}
         </button>
-        <div className="CommandBar-status">
-          {statusMsg}
-        </div>
       </div>
     )
   }
