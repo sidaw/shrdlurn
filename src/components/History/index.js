@@ -24,13 +24,13 @@ const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, s
         <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       }
       {tentative &&
-        <button onClick={(e) => { e.stopPropagation(); openDefine()}}>Define Here</button>
+        <button onClick={(e) => { e.stopPropagation(); openDefine()}}>Define This</button>
       }
     </div>
   </div>
 )
 
-const HistoryPin = ({ text, head, openDefine, defining, remove }) => {
+const HistoryPin = ({ text, head, define, defining, remove }) => {
   if (defining) return false
 
   return (
@@ -38,7 +38,7 @@ const HistoryPin = ({ text, head, openDefine, defining, remove }) => {
       {text}
       <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       {head &&
-        <button onClick={(e) => { e.stopPropagation(); openDefine()}}>Define This</button>
+        <button onClick={(e) => { e.stopPropagation(); define()}}>Finish Definition</button>
       }
     </div>
   )
@@ -86,23 +86,21 @@ class History extends Component {
   openDefine(realIdx) {
     if (this.props.defining || realIdx === 0) return false
 
-    const { dispatch, history } = this.props
+    const { dispatch } = this.props
 
-    /* Put the application into define mode */
-    const item = history[realIdx]
-    if (item.type === "pin") {
-      if (realIdx === history.length - 1) {
-        alert("You cannot define the first history item because you must have something to define it as!")
-        return
-      }
-
-      dispatch(Actions.setQuery(item.text))
-    } else {
-      /* If the item is not a pin, we need to inject a pin before the thing we are defining */
-      dispatch(Actions.injectPin(realIdx))
-    }
+    /* If the item is not a pin, we need to inject a pin before the thing we are defining */
+    dispatch(Actions.injectPin(realIdx))
     dispatch(Actions.setStatus("define"))
     dispatch(Actions.openDefine(realIdx))
+  }
+
+  define(idx) {
+    const { history, dispatch } = this.props
+    if (idx === history.length - 1) {
+      alert("You cannot define the first history item because you must have something to define it as!")
+      return
+    }
+    dispatch(Actions.define(history[idx].text, idx))
   }
 
   render() {
@@ -120,7 +118,7 @@ class History extends Component {
               key={idx}
               text={h.text}
               head={idx === lastPinIdx}
-              openDefine={() => this.openDefine(idx)}
+              define={() => this.define(idx)}
               defining={defineN && idx === defineN}
               remove={() => this.deletePin(idx)}
             />
@@ -131,7 +129,7 @@ class History extends Component {
               text={h.text}
               stepN={stepN}
               selected={current_history_idx === idx}
-              defining={defineN && idx >= defineN}
+              defining={idx >= lastPinIdx || (defineN && idx >= defineN)}
               firstDefining={defineN && idx - 1 === defineN}
               revert={() => this.revert(idx)}
               setDefineN={() => this.setDefineN(idx)}

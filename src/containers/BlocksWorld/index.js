@@ -174,7 +174,11 @@ class BlocksWorld extends React.Component {
     let currentState = this.defaultState
     const idx = current_history_idx >= 0 ? current_history_idx : history.length - 1
     if (this.props.world.status === "accept" && responses.length > 0) {
-      currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
+      try {
+        currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
+      } catch (e) {
+        currentState = this.computeDiff(history[idx].value || [], responses[0].value)
+      }
     } else {
       if (history.length > 0) {
         try {

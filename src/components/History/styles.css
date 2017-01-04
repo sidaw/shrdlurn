@@ -59,18 +59,27 @@
 .HistoryItem button,
 .HistoryPin button {
   position: absolute;
-  right: -100px;
-  width: 100px;
+  right: -130px;
+  width: 130px;
   top: 0;
   height: 100%;
   font-size: 1.2rem;
   cursor: pointer;
 }
 
+.HistoryItem button {
+  right: -100px;
+  width: 100px;
+}
+
 .HistoryItem button:hover,
 .HistoryPin button:hover {
   background-color: rgba(0, 160, 176, 0.8);
   color: #FFF;
+}
+
+.HistoryPin:last-child button {
+  display: none;
 }
 
 .HistoryItem.defining .HistoryItem-num:before {
@@ -86,7 +95,7 @@
   display: block;
 }
 
-.defineMode .HistoryItem.defining {
+.HistoryItem.defining {
   box-shadow: 0 0px 2px 2px rgba(0, 160, 176, 0.8);
 }
 
