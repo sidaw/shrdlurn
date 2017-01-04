@@ -35,6 +35,12 @@ class BlocksWorld extends React.Component {
     this.props.dispatch(Logger.log({ type: "start", msg: { targetIdx: randomTarget[0], target: randomTarget[2] }}))
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.world.status === "accept" && nextProps.world.status === "define") {
+      this.handleQuery(this.props.world.query)
+    }
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.world.history.length > 0 && this.equalityCheck(this.props.world.history[this.props.world.history.length - 1].value, this.state.target)) {
       /* WIN! */

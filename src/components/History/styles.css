@@ -1,6 +1,6 @@
 .History {
   width: 330px;
-  margin-left: -40px;
+  margin-left: -40px;art
   max-height: 500px;
   overflow-y: auto;
 }
@@ -70,10 +70,17 @@
   display: none;
 }
 
-.HistoryItem.defining .HistoryItem-num {
+.HistoryItem.defining .HistoryItem-num:before {
+  content: " ";
   background-color: rgba(0, 160, 176, 1);
-  color: rgba(0, 160, 176, 1);
+  color: #FFF;
+  height: 20px;
+  width: 20px;
+  top: 10px;
+  left: 5px;
+  position: absolute;
   cursor: pointer;
+  display: block;
 }
 
 .defineMode .HistoryItem.defining {

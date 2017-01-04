@@ -23,7 +23,7 @@ export default function reducer(state = initialState, action = {}) {
       const newHistory = [...state.history, action.el]
       return { ...state, history: newHistory, responses: [], status: "try", query: "" }
     case Constants.DEFINE:
-      let collapsedHistory = [...state.history.slice(0, action.idx - 1), {text: action.text, value: state.history[state.history.length - 1].value, formula: action.formula}]
+      let collapsedHistory = [...state.history.slice(0, action.idx), {text: action.text, value: state.history[state.history.length - 1].value, formula: action.formula}]
       if (collapsedHistory.length === 0) collapsedHistory = initialState.history
       else if (collapsedHistory.length === 1) collapsedHistory = [...initialState.history, ...collapsedHistory]
       return { ...state, history: collapsedHistory, defining: false, defineN: null, query: "", status: "try" }
@@ -50,9 +50,7 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, history: newHistoryWithPin, query: initialState.query, responses: initialState.responses, status: initialState.status }
     case Constants.REMOVE_PIN:
       let newHistoryWithoutPin = state.history.slice()
-      console.log(newHistoryWithoutPin)
       newHistoryWithoutPin.splice(action.idx, 1)
-      console.log(newHistoryWithoutPin)
       return { ...state, history: newHistoryWithoutPin, current_history_idx: initialState.current_history_idx }
     case Constants.MARK_PIN:
       const markedHistory = state.history.slice()
@@ -63,6 +61,9 @@ export default function reducer(state = initialState, action = {}) {
       let injectedHistory = state.history.slice(0)
       injectedHistory.splice(action.idx, 0, {text: "", type: "pin", value: [], formula: "false"})
       return { ...state, history: injectedHistory }
+    case Constants.REMOVE_LAST:
+      let trimmedHistory = state.history.slice(0, state.history.length - 1)
+      return { ...state, history: trimmedHistory }
     default:
       return state
   }

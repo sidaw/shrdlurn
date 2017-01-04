@@ -5,7 +5,7 @@ import classnames from "classnames"
 
 import "./styles.css"
 
-const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick, tentative }) => (
+const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick, tentative, last, remove }) => (
   <div
     onClick={() => revert()}
     className={classnames("HistoryItem", {"selected": selected, "defining": defining, "firstDefining": firstDefining, "tentative": tentative})}>
@@ -18,7 +18,12 @@ const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, s
     >
       {stepN}
     </div>
-    <div className="HistoryItem-text">{text}</div>
+    <div className="HistoryItem-text">
+      {text}
+      {last &&
+        <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
+      }
+    </div>
   </div>
 )
 
@@ -71,12 +76,16 @@ class History extends Component {
     this.props.dispatch(Actions.setPin())
   }
 
+  removeLast() {
+    this.props.dispatch(Actions.removeLast())
+  }
+
   openDefine(realIdx) {
-    if (this.props.defining) return false
+    if (this.props.defining || realIdx === 0) return false
 
     const { dispatch, history } = this.props
 
-      /* Put the application into define mode */
+    /* Put the application into define mode */
     const item = history[realIdx]
     if (item.type === "pin") {
       if (realIdx === history.length - 1) {
@@ -96,7 +105,7 @@ class History extends Component {
   render() {
     const { history, current_history_idx, defineN, defining, status, query } = this.props
 
-    const firstPinIdx = history.findIndex(h => h.type === "pin")
+    const lastPinIdx = history.length - 1 - history.slice().reverse().findIndex(h => h.type === "pin")
 
     return (
       <div className={classnames("History", {"defineMode": defining})}>
@@ -107,7 +116,7 @@ class History extends Component {
             <HistoryPin
               key={idx}
               text={h.text}
-              head={idx === firstPinIdx}
+              head={idx === lastPinIdx}
               openDefine={() => this.openDefine(idx)}
               defining={defineN && idx === defineN}
               remove={() => this.deletePin(idx)}
@@ -126,6 +135,8 @@ class History extends Component {
               resetDefineN={() => this.setDefineN(null)}
               openDefine={() => this.openDefine(idx)}
               doubleClick={() => console.log(h)}
+              last={idx !== 0 && idx === history.length - 1}
+              remove={() => this.removeLast()}
             />
           )
         })}
@@ -137,6 +148,8 @@ class History extends Component {
             revert={() => this.setPin()}
             openDefine={() => this.setPin()}
             tentative
+            setDefineN={() => {}}
+            resetDefineN={() => {}}
           />
         }
       </div>
