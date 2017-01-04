@@ -88,6 +88,8 @@ class BlocksWorld extends React.Component {
 
   handleStatusChange(newStatus) {
     this.props.dispatch(Actions.setStatus(newStatus))
+    this.props.dispatch(Actions.resetResponses())
+    this.setState({ selectedResp: 0 })
   }
 
   stateIncludes(state, obj) {
