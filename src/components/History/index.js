@@ -5,10 +5,10 @@ import classnames from "classnames"
 
 import "./styles.css"
 
-const HistoryItem = ({ text, stepN, selected, defining, lastDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick }) => (
+const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick, tentative }) => (
   <div
     onClick={() => revert()}
-    className={classnames("HistoryItem", {"selected": selected, "defining": defining, "lastDefining": lastDefining})}>
+    className={classnames("HistoryItem", {"selected": selected, "defining": defining, "firstDefining": firstDefining, "tentative": tentative})}>
     <div
       className="HistoryItem-num"
       onMouseEnter={() => setDefineN()}
@@ -67,6 +67,10 @@ class History extends Component {
     this.props.dispatch(Actions.removePin(idx))
   }
 
+  setPin() {
+    this.props.dispatch(Actions.setPin())
+  }
+
   openDefine(realIdx) {
     if (this.props.defining) return false
 
@@ -90,25 +94,23 @@ class History extends Component {
   }
 
   render() {
-    const { history, current_history_idx, defineN, defining } = this.props
+    const { history, current_history_idx, defineN, defining, status, query } = this.props
 
-    const historyItems = history.slice().reverse()
-    const firstPinIdx = historyItems.findIndex(h => h.type === "pin")
+    const firstPinIdx = history.findIndex(h => h.type === "pin")
 
     return (
       <div className={classnames("History", {"defineMode": defining})}>
-        {historyItems.map((h, idx) => {
-          const realIdx = historyItems.length - idx - 1
-          const stepN = historyItems.length - idx
+        {history.map((h, idx) => {
+          const stepN = idx + 1
 
           if (h.type === "pin") return (
             <HistoryPin
               key={idx}
               text={h.text}
               head={idx === firstPinIdx}
-              openDefine={() => this.openDefine(realIdx)}
-              defining={defineN && realIdx === defineN}
-              remove={() => this.deletePin(realIdx)}
+              openDefine={() => this.openDefine(idx)}
+              defining={defineN && idx === defineN}
+              remove={() => this.deletePin(idx)}
             />
           )
           return (
@@ -116,17 +118,27 @@ class History extends Component {
               key={idx}
               text={h.text}
               stepN={stepN}
-              selected={current_history_idx === realIdx}
-              defining={defineN && realIdx >= defineN}
-              lastDefining={defineN && realIdx - 1 === defineN}
-              revert={() => this.revert(realIdx)}
-              setDefineN={() => this.setDefineN(realIdx)}
+              selected={current_history_idx === idx}
+              defining={defineN && idx >= defineN}
+              firstDefining={defineN && idx - 1 === defineN}
+              revert={() => this.revert(idx)}
+              setDefineN={() => this.setDefineN(idx)}
               resetDefineN={() => this.setDefineN(null)}
-              openDefine={() => this.openDefine(realIdx)}
+              openDefine={() => this.openDefine(idx)}
               doubleClick={() => console.log(h)}
             />
           )
         })}
+        {status === "accept" &&
+          <HistoryItem
+            key="new"
+            text={query}
+            stepN={history.length + 1}
+            revert={() => this.setPin()}
+            openDefine={() => this.setPin()}
+            tentative
+          />
+        }
       </div>
     )
   }
@@ -136,7 +148,9 @@ const mapStateToProps = (state) => ({
   history: state.world.history,
   current_history_idx: state.world.current_history_idx,
   defineN: state.world.defineN,
-  defining: state.world.defining
+  defining: state.world.defining,
+  status: state.world.status,
+  query: state.world.query
 })
 
 export default connect(mapStateToProps)(History)
