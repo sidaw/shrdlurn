@@ -23,7 +23,7 @@ export default function reducer(state = initialState, action = {}) {
       const newHistory = [...state.history, action.el]
       return { ...state, history: newHistory, responses: [], status: "try", query: "" }
     case Constants.DEFINE:
-      let collapsedHistory = [...state.history.slice(0, action.idx), {text: action.text, value: state.history[state.history.length - 1].value, formula: action.formula}]
+      let collapsedHistory = [...state.history.slice(0, action.idx), {text: action.text, value: action.value, formula: action.formula}]
       if (collapsedHistory.length === 0) collapsedHistory = initialState.history
       else if (collapsedHistory.length === 1) collapsedHistory = [...initialState.history, ...collapsedHistory]
       return { ...state, history: collapsedHistory, defining: false, defineN: null, query: "", status: "try" }

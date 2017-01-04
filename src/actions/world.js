@@ -113,6 +113,7 @@ const Actions = {
                 .then((response) => {
                   const formval = parseSEMPRE(response.candidates)
                   const topFormula = formval[0].formula
+                  const topValue = formval[0].value
 
                   dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: defineIdx, length: defineHist.length, formula: topFormula } }))
 
@@ -120,7 +121,8 @@ const Actions = {
                     type: Constants.DEFINE,
                     text: defineAs,
                     idx: defineIdx,
-                    formula: topFormula
+                    formula: topFormula,
+                    value: topValue
                   })
                 })
             })
