@@ -1,9 +1,8 @@
 import Constants from "constants/actions"
-import Strings from "constants/strings"
 import { getTurkId } from "helpers/turk"
 
 const initialState = {
-  sessionId: getTurkId()? getTurkId() : Strings.DEFAULT_SESSIONID
+  sessionId: getTurkId()
 }
 
 export default function reducer(state = initialState, action = {}) {

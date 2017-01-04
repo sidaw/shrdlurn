@@ -1,5 +1,6 @@
 import React from "react"
 import targets from "constants/targets"
+import {getTurkHit} from "helpers/turk"
 
 export function emojione(num) {
   const emojioneList = {
@@ -72,6 +73,10 @@ export function genRandomTarget() {
   do {
     targetIdx = Math.floor(Math.random() * targets.length);
   } while (usedTargets.includes(targetIdx));
+
+  // turk override
+  const mhitid = getTurkHit();
+  if (mhitid != null) targetIdx = mhitid;
 
   return [targetIdx, ...targets[targetIdx]];
 }
