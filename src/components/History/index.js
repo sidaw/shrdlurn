@@ -23,6 +23,9 @@ const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, s
       {last &&
         <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       }
+      {tentative &&
+        <button onClick={(e) => { e.stopPropagation(); openDefine()}}>Define Here</button>
+      }
     </div>
   </div>
 )
