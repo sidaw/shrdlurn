@@ -88,7 +88,6 @@ class BlocksWorld extends React.Component {
 
   handleStatusChange(newStatus) {
     this.props.dispatch(Actions.setStatus(newStatus))
-    this.props.dispatch(Actions.resetResponses())
     this.setState({ selectedResp: 0 })
   }
 
@@ -192,11 +191,20 @@ class BlocksWorld extends React.Component {
       <div className="BlocksWorld">
         <div className="BlocksWorld-mainblocks">
           <Blocks blocks={currentState} width={1650} height={1200} />
-          <div className="BlocksWorld-example">
-            <strong>Example query:</strong> {exampleQuery}
-          </div>
         </div>
         <div className="BlocksWorld-command">
+          <History />
+          <CommandBar
+            query={this.props.world.query}
+            changeQuery={(q) => this.props.dispatch(Actions.setQuery(q))}
+            handleQuery={(query) => this.handleQuery(query) }
+            changeStatus={(newStatus) => this.handleStatusChange(newStatus)}
+            onUp={() => this.upSelected()}
+            onDown={() => this.downSelected()}
+            status={this.props.world.status}
+            defining={this.props.world.defining}
+            exampleQuery={this.props.world.exampleQuery}
+          />
           <div className="BlocksWorld-status">
             {statusMsg}
             <div className={classnames("BlocksWorld-statusmsg", {"active": this.props.world.status === "accept" && responses.length > 0})}>
@@ -209,21 +217,12 @@ class BlocksWorld extends React.Component {
             {this.props.world.defining &&
               <button onClick={() => this.closeDefine()} className="BlocksWorld-definecancel">Cancel Define</button>
             }
+            <div className="BlocksWorld-example">
+              <strong>Example query:</strong> {exampleQuery}
+            </div>
           </div>
-          <CommandBar
-            query={this.props.world.query}
-            changeQuery={(q) => this.props.dispatch(Actions.setQuery(q))}
-            handleQuery={(query) => this.handleQuery(query) }
-            changeStatus={(newStatus) => this.handleStatusChange(newStatus)}
-            onUp={() => this.upSelected()}
-            onDown={() => this.downSelected()}
-            status={this.props.world.status}
-            defining={this.props.world.defining}
-            exampleQuery={this.props.world.exampleQuery}
-          />
-          <History />
         </div>
-        {/* <div className="BlocksWorld-left">
+        {/* <div className="B>locksWorld-left">
           <History />
         </div> */}
         {/* <div className="BlocksWorld-mainblocks">
