@@ -1,6 +1,6 @@
 .History {
-  width: 330px;
-  margin-left: -40px;
+  width: 350px;
+  margin-left: -40px;art
   max-height: 500px;
   overflow-y: auto;
 }
@@ -56,6 +56,7 @@
   box-shadow: 0 0px 2px 2px rgba(0, 160, 176, 0.8);
 }
 
+.HistoryItem button,
 .HistoryPin button {
   position: absolute;
   right: -100px;
@@ -66,14 +67,23 @@
   cursor: pointer;
 }
 
-.HistoryPin:first-child button {
-  display: none;
+.HistoryItem button:hover,
+.HistoryPin button:hover {
+  background-color: rgba(0, 160, 176, 0.8);
+  color: #FFF;
 }
 
-.HistoryItem.defining .HistoryItem-num {
+.HistoryItem.defining .HistoryItem-num:before {
+  content: " ";
   background-color: rgba(0, 160, 176, 1);
-  color: rgba(0, 160, 176, 1);
+  color: #FFF;
+  height: 20px;
+  width: 20px;
+  top: 10px;
+  left: 5px;
+  position: absolute;
   cursor: pointer;
+  display: block;
 }
 
 .defineMode .HistoryItem.defining {

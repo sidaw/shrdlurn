@@ -49,12 +49,14 @@ class CommandBar extends React.Component {
     const active = status === "try" && query.length > 0
     const accepting = status === "accept" || status === "define"
 
+    const placeholder = status !== "define" ? "Tell the computer what to do..." : "Define this set of actions as..."
+
     return (
       <div className="CommandBar">
         <input
           type="text"
           ref="commandbar"
-          placeholder="Tell the computer what to do..."
+          placeholder={placeholder}
           value={query}
           onChange={(e) => this.handleChange(e)}
           onKeyDown={(e) => this.handleKeyDown(e) }

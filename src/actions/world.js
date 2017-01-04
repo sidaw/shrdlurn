@@ -100,21 +100,18 @@ const Actions = {
       const mode = defineHist.length > 1? ':def' : ':def_ret'
       const query = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
 
-      console.log(query)
-
       /* Submit the define command */
       SEMPREquery({ q: query, sessionId: sessionId })
         .then((r) => {
           /* Then, we need to get the associated formula for this definition to
            * properly populate the history in order to in the future define
            * things with definitions in them. */
-          sendContext(history, -1, sessionId)
+          sendContext(history.slice(0, defineIdx), -1, sessionId)
             .then((eh) => {
               const query = defineAs
               SEMPREquery({ q: query, sessionId: sessionId})
                 .then((response) => {
                   const formval = parseSEMPRE(response.candidates)
-                  /* TODO: single line definition (:def_ret) returns 0 candidates!! */
                   const topFormula = formval[0].formula
 
                   dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: defineIdx, length: defineHist.length, formula: topFormula } }))
@@ -267,6 +264,14 @@ const Actions = {
       dispatch({
         type: Constants.REMOVE_PIN,
         idx
+      })
+    }
+  },
+
+  removeLast: () => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.REMOVE_LAST
       })
     }
   }
