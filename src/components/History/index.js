@@ -5,7 +5,7 @@ import classnames from "classnames"
 
 import "./styles.css"
 
-const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick, tentative, last, remove }) => (
+const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick, tentative, last, remove, setPin }) => (
   <div
     onClick={() => revert()}
     className={classnames("HistoryItem", {"selected": selected, "defining": defining, "firstDefining": firstDefining, "tentative": tentative})}>
@@ -23,19 +23,21 @@ const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, s
       {last &&
         <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       }
-      {tentative &&
-        <button onClick={(e) => { e.stopPropagation(); openDefine()}}>Define This</button>
+      {(last || tentative) && !defining &&
+        <button onClick={(e) => { e.stopPropagation(); setPin()}}>Define This</button>
       }
     </div>
   </div>
 )
 
-const HistoryPin = ({ text, head, define, defining, remove }) => {
-  if (defining) return false
-
+const HistoryPin = ({ text, head, define, defining, remove, query }) => {
   return (
     <div className={classnames("HistoryPin", {"head": head})}>
-      {text}
+      {!defining ?
+        text
+      :
+        query !== "" ? query : <span>&nbsp;</span>
+      }
       <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       {head &&
         <button onClick={(e) => { e.stopPropagation(); define()}}>Finish Definition</button>
@@ -73,10 +75,15 @@ class History extends Component {
 
   deletePin(idx) {
     this.props.dispatch(Actions.removePin(idx))
+    this.props.dispatch(Actions.closeDefine())
   }
 
   setPin() {
     this.props.dispatch(Actions.setPin())
+  }
+
+  markPin(idx) {
+    this.props.dispatch(Actions.markPin(idx))
   }
 
   removeLast() {
@@ -100,7 +107,9 @@ class History extends Component {
       alert("You cannot define the first history item because you must have something to define it as!")
       return
     }
-    dispatch(Actions.define(history[idx].text, idx))
+    const text = history[idx].text
+    const query = text !== "" ? text : this.props.query
+    dispatch(Actions.define(query, idx))
   }
 
   render() {
@@ -121,6 +130,7 @@ class History extends Component {
               define={() => this.define(idx)}
               defining={defineN && idx === defineN}
               remove={() => this.deletePin(idx)}
+              query={defining ? query : null}
             />
           )
           return (
@@ -138,6 +148,7 @@ class History extends Component {
               doubleClick={() => console.log(h)}
               last={idx !== 0 && idx === history.length - 1}
               remove={() => this.removeLast()}
+              setPin={() => this.markPin(idx)}
             />
           )
         })}
@@ -148,6 +159,7 @@ class History extends Component {
             stepN={history.length + 1}
             revert={() => this.setPin()}
             openDefine={() => this.setPin()}
+            setPin={() => this.setPin()}
             tentative
             setDefineN={() => {}}
             resetDefineN={() => {}}

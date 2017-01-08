@@ -26,7 +26,7 @@ const Actions = {
 
       return sendContext(history, current_history_idx, sessionId)
         .then((eh) => {
-          const query = q
+          const query = q//`(:q ${JSON.stringify(q)})`
           const cmds = { q: query, sessionId: sessionId }
 
           return SEMPREquery(cmds)
@@ -76,7 +76,8 @@ const Actions = {
 
       const selected = responses[selectedResp]
 
-      SEMPREquery({ q: text, accept: selected.rank, sessionId: sessionId }, () => {})
+      const query = `(:accept ${JSON.stringify(text)} ${JSON.stringify(selected.formula)})`
+      SEMPREquery({ q: query, sessionId: sessionId }, () => {})
 
       dispatch(Logger.log({ type: "accept", msg: { query: text, rank: selected.rank, formula: selected.formula } }))
 
@@ -103,29 +104,16 @@ const Actions = {
       /* Submit the define command */
       SEMPREquery({ q: query, sessionId: sessionId })
         .then((r) => {
-          /* Then, we need to get the associated formula for this definition to
-           * properly populate the history in order to in the future define
-           * things with definitions in them. */
-          sendContext(history.slice(0, defineIdx), -1, sessionId)
-            .then((eh) => {
-              const query = defineAs
-              SEMPREquery({ q: query, sessionId: sessionId})
-                .then((response) => {
-                  const formval = parseSEMPRE(response.candidates)
-                  const topFormula = formval[0].formula
-                  const topValue = formval[0].value
+          const { formula: topFormula } = r.candidates[0]
 
-                  dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: defineIdx, length: defineHist.length, formula: topFormula } }))
+          dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: defineIdx, length: defineHist.length, formula: topFormula } }))
 
-                  dispatch({
-                    type: Constants.DEFINE,
-                    text: defineAs,
-                    idx: defineIdx,
-                    formula: topFormula,
-                    value: topValue
-                  })
-                })
-            })
+          dispatch({
+            type: Constants.DEFINE,
+            text: defineAs,
+            idx: defineIdx,
+            formula: topFormula
+          })
         })
     }
   },
