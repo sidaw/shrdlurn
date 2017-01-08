@@ -26,7 +26,7 @@ const Actions = {
 
       return sendContext(history, current_history_idx, sessionId)
         .then((eh) => {
-          const query = q//`(:q ${JSON.stringify(q)})`
+          const query = `(:q ${JSON.stringify(q)})`
           const cmds = { q: query, sessionId: sessionId }
 
           return SEMPREquery(cmds)
