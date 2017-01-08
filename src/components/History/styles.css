@@ -99,10 +99,6 @@
   box-shadow: 0 0px 2px 2px rgba(0, 160, 176, 0.8);
 }
 
-.defineMode .HistoryItem.firstDefining {
-  margin-top: 20px;
-}
-
 .defineMode .HistoryItem.defining:last-child {
   margin-bottom: 20px;
 }
