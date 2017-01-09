@@ -78,10 +78,6 @@
   color: #FFF;
 }
 
-.HistoryPin:last-child button {
-  display: none;
-}
-
 .HistoryItem.defining .HistoryItem-num:before {
   content: " ";
   background-color: rgba(0, 160, 176, 1);
@@ -125,6 +121,7 @@
 
 .HistoryItem.tentative {
   opacity: 0.5;
+  margin-top: 20px;
 }
 
 ::-webkit-scrollbar {
