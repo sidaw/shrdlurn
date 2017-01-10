@@ -9,7 +9,7 @@
   "license": "MIT",
   "homepage": "http://nlp.stanford.com/~samginn/shrdlurn",
   "devDependencies": {
-    "react-scripts": "0.6.1"
+    "react-scripts": "0.8.5"
   },
   "dependencies": {
     "classnames": "^2.2.5",
