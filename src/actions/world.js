@@ -90,6 +90,17 @@ const Actions = {
     }
   },
 
+  acceptNone: (text) => {
+    return (dispatch, getState) => {
+      const { sessionId } = getState().user
+
+      const query = `(:accept ${JSON.stringify(text)} "(not *)")`
+      SEMPREquery({ q: query, sessionId: sessionId }, () => {})
+
+      dispatch(Logger.log({ type: "acceptNone", msg: { query: text } }))
+    }
+  },
+
   define: (defineAs, defineIdx) => {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
@@ -183,6 +194,8 @@ const Actions = {
 
   closeDefine: () => {
     return (dispatch) => {
+      dispatch(Logger.log({ type: "closeDefine" }))
+
       dispatch({
         type: Constants.CLOSE_DEFINE
       })
@@ -190,7 +203,9 @@ const Actions = {
   },
 
   openDefine: (idx) => {
-    return (dispatch) => {
+    return (dispatch, getState) => {
+      dispatch(Logger.log({ type: "openDefine", msg: { idx } }))
+
       dispatch({
         type: Constants.OPEN_DEFINE,
         defineN: idx

@@ -59,6 +59,7 @@ class History extends Component {
     current_history_idx: PropTypes.number,
     defineN: PropTypes.number,
     defining: PropTypes.bool,
+    query: PropTypes.string,
 
     dispatch: PropTypes.func
   }
@@ -79,10 +80,12 @@ class History extends Component {
   }
 
   setPin() {
+    this.props.dispatch(Actions.acceptNone(this.props.query))
     this.props.dispatch(Actions.setPin())
   }
 
   markPin(idx) {
+    this.props.dispatch(Actions.acceptNone(this.props.history[idx].text))
     this.props.dispatch(Actions.markPin(idx))
   }
 
