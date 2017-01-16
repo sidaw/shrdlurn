@@ -29,7 +29,7 @@
   height: 100%;
 }
 
-.Header-nav > div {
+.Header-nav div {
   display: inline-flex;
   height: 100%;
   width: auto;
@@ -38,11 +38,34 @@
   justify-content: center;
   align-items: center;
   text-transform: uppercase;
+  position: relative;
 }
 
-.Header-nav > div:hover {
+.Header-nav div:hover {
   background-color: rgba(244, 244, 244, 0.5);
   cursor: pointer;
+}
+
+.Header-nav a {
+  text-decoration: none;
+  display: inline-flex;
+  color: inherit;
+  height: 100%;
+}
+
+.Header-nav a.active div {
+  background-color: transparent;
+  cursor: default;
+}
+
+.Header-nav a.active div:after {
+  content: " ";
+  width: 100%;
+  position: absolute;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.9);
+  bottom: 0;
+  left: 0;
 }
 
 .modal-container {
