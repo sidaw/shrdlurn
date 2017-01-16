@@ -1,0 +1,27 @@
+.LiveUtterances {
+  display: flex;
+  padding: 50px;
+  flex-wrap: wrap;
+}
+
+.LiveUtterances-group {
+  margin-bottom: 15px;
+  background-color: #FFF;
+  box-shadow: 0 4px 8px rgba(51, 51, 51, 0.15);
+  padding: 15px;
+}
+
+.LiveUtterances-groupid {
+  padding: 0 20px 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.LiveUtterances-utterance {
+  padding: 5px;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(51, 51, 51, 0.15);
+  border: 1px solid rgba(51, 51, 51, 0.05);
+  margin: 4px;
+  z-index: 5;
+}

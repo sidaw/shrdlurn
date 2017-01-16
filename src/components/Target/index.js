@@ -20,9 +20,9 @@ class Target extends React.Component {
     const { target, possibleSteps } = this.props
 
     return (
-      <div className={classnames("Target", {"collapsed": this.state.collapsed})}>
-        <div className="Target-header">
-          <span className="Target-header-name">Target</span>
+      <div className={classnames("SidePanel Target", {"collapsed": this.state.collapsed})}>
+        <div className="SidePanel-header">
+          <span className="SidePanel-header-name">Target</span>
           <div onClick={() => this.setState({ collapsed: !this.state.collapsed })} className="Target-header-arrow">
             {(() => {
               if (this.state.collapsed) return (<span>&larr;</span>)

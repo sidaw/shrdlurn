@@ -7,6 +7,7 @@ import History from "components/History"
 import Blocks from "components/Blocks"
 import CommandBar from "components/CommandBar"
 import Target from "components/Target"
+import SharePanel from "components/SharePanel"
 import Win from "components/Win"
 import { genRandomTarget } from "helpers/util"
 import { sortBlocks } from "helpers/blocks"
@@ -166,7 +167,7 @@ class BlocksWorld extends React.Component {
   }
 
   render() {
-    const { responses, history, current_history_idx, status, defining, exampleQuery } = this.props.world
+    const { responses, history, current_history_idx, status, defining, exampleQuery, task } = this.props.world
 
     /* Compute the currentState of blocks by finding which history item is
      * currently selected (by default, the latest one), and then computing
@@ -232,33 +233,11 @@ class BlocksWorld extends React.Component {
             </div>
           </div>
         </div>
-        {/* <div className="B>locksWorld-left">
-          <History />
-        </div> */}
-        {/* <div className="BlocksWorld-mainblocks">
-
-          <div className="BlocksWorld-status">
-            <div className={classnames("BlocksWorld-statusmsg", {"active": this.props.world.status === "accept" && responses.length > 0})}>
-              <span>{this.state.selectedResp + 1} / {responses.length} possible interpretations</span>
-              <div className="BlocksWorld-buttons">
-                <button onClick={() => this.upSelected()}>&uarr;</button>
-                <button onClick={() => this.downSelected()}>&darr;</button>
-              </div>
-            </div>
-          </div>
-          <CommandBar
-            query={this.props.world.query}
-            changeQuery={(q) => this.props.dispatch(Actions.setQuery(q))}
-            handleQuery={(query) => this.handleQuery(query) }
-            changeStatus={(newStatus) => this.handleStatusChange(newStatus)}
-            onUp={() => this.upSelected()}
-            onDown={() => this.downSelected()}
-            status={this.props.world.status}
-            defining={this.props.world.defining}
-            exampleQuery={this.props.world.exampleQuery}
-          />
-        </div> */}
-        <Target target={this.state.target} possibleSteps={this.state.possSteps} />
+        {task === "target" ?
+          <Target target={this.state.target} possibleSteps={this.state.possSteps} />
+        :
+          <SharePanel />
+        }
         {this.state.win &&
           <Win targetIdx={this.state.targetIdx} nSteps={history.length} nBlocks={currentState.length} />
         }

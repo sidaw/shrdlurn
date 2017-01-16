@@ -1,7 +1,6 @@
 .BlocksWorld {
   height: 100%;
   width: 100%;
-  padding: 50px 10px 0; /* .Header height = 50px */
   display: flex;
   justify-content: center;
   align-items: center;

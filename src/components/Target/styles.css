@@ -1,4 +1,4 @@
-.Target {
+.SidePanel {
   /*top: 50px;*/
   right: 0;
   width: 350px;
@@ -13,12 +13,12 @@
 }
 
 @media (max-height: 600px) {
-  .Target {
+  .SidePanel {
     top: 50px;
   }
 }
 
-.Target-header {
+.SidePanel-header {
   font-size: 1.8rem;
   font-weight: 900;
   padding: 10px 15px;
@@ -71,16 +71,28 @@
   display: none;
 }
 
-.Target-header-arrow {
+.SidePanel-header-arrow {
   cursor: pointer;
 }
 
-.Target.collapsed {
+.Target.collapsed,
+.SidePanel.collapsed {
   width: 50px;
 }
 
-.Target.collapsed .Target-header-name,
+.Target.collapsed .SidePanel-header-name,
 .Target.collapsed .Target-struct,
-.Target.collapsed .Target-metadata {
+.Target.collapsed .Target-metadata,
+.SidePanel.collapsed .SidePanel-content,
+.SidePanel.collapsed .SidePanel-header-name {
   display: none;
+}
+
+.SidePanel-content {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  align-content: space-between;
+  align-items: space-between;
 }

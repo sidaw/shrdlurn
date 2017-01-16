@@ -1,0 +1,76 @@
+.SharedStructures {
+  display: flex;
+  padding: 50px;
+  flex-wrap: wrap;
+}
+
+.SharedStructures .Blocks {
+  width: 100%;
+  height: 100%;
+}
+
+.SharedStructures-row {
+  width: 100%;
+  margin-bottom: 20px;
+  max-height: 120px;
+  display: flex;
+}
+
+.SharedStructures-votes {
+  width: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.SharedStructures-votes-tally {
+  font-size: 2.6rem;
+}
+
+.SharedStructures-votes-upvote {
+  transition: color 0.2s ease;
+}
+
+.SharedStructures-votes-desc {
+  font-size: 1.4rem;
+}
+
+.SharedStructures-votes-upvote:hover {
+  cursor: pointer;
+  color: rgb(0, 160, 176);
+}
+
+.SharedStructures-struct {
+  background-color: #FFF;
+  flex-grow: 1;
+  box-shadow: 0 4px 8px rgba(51,51,51,0.15);
+  display: flex;
+}
+
+.SharedStructures-struct-blocks {
+  width: 165px;
+  height: 120px;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.SharedStructures-struct-recipe {
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 1.2rem;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.SharedStructures-struct-recipe span {
+  display: inline-block;
+  padding: 5px;
+  border: 1px solid rgba(51, 51, 51, 0.1);
+  box-shadow: 0 2px 4px rgba(51,51,51,0.15);
+}
+
+.SharedStructures-struct-recipe span:not(:last-child):after {
+  content: ", ";
+}

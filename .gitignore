@@ -5,3 +5,7 @@ npm-debug.log
 coverage
 build
 .DS_Store
+
+server/data
+server/log
+server/venv

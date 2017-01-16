@@ -1,6 +1,7 @@
 import React from "react"
 import Strings from "constants/strings"
 import Mousetrap from "mousetrap"
+import { Link } from "react-router"
 
 import "./styles.css"
 
@@ -126,6 +127,8 @@ class Header extends React.Component {
           <span className="Header-sublogo">A Stanford NLP Project</span>
         </div>
         <div className="Header-nav">
+          <Link to="/" activeClassName="active"><div>SHRDLURN</div></Link>
+          <Link to="/community" activeClassName="active" target="_blank"><div>Community</div></Link>
           <div onClick={() => this.setState({ modal: "helpme" })}>Help Me</div>
           <div id="restart_tutorial" onClick={() => openTutorial()}>View Tutorial Again</div>
         </div>
