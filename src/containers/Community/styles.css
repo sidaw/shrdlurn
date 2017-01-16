@@ -1,4 +1,27 @@
 .Community {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.Community > div {
+  flex-basis: 47%;
+  min-width: 300px;
+  flex-shrink: 0;
+}
+
+.Community-header {
+  width: 100%;
+}
+
+.Community-header h3 {
+  font-size: 2.4rem;
+}
+
+.Community-header h3,
+.Community-header p {
+  margin: 0;
+  padding: 0;
 }

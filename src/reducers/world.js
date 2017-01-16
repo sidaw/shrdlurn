@@ -8,7 +8,8 @@ const initialState = {
   query: "",
   defining: false,
   exampleQuery: "add red 3 times",
-  defineN: null
+  defineN: null,
+  task: "world"
 }
 
 export default function reducer(state = initialState, action = {}) {
