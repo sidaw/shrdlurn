@@ -8,3 +8,4 @@ build
 
 server/data
 server/log
+server/venv
