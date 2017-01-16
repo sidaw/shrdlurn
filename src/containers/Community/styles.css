@@ -7,13 +7,16 @@
 }
 
 .Community > div {
-  flex-basis: 47%;
+  flex-basis: 48%;
   min-width: 300px;
   flex-shrink: 0;
 }
 
 .Community-header {
   width: 100%;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
 
 .Community-header h3 {
@@ -24,4 +27,8 @@
 .Community-header p {
   margin: 0;
   padding: 0;
+}
+
+.Community-content {
+  width: 100%;
 }

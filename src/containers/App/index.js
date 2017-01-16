@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import BlocksWorld from "containers/BlocksWorld";
 import Actions from "actions/world"
-import Logger from "actions/logger"
 import { connect } from "react-redux"
 import Mousetrap from "mousetrap"
 
@@ -12,8 +11,6 @@ class App extends Component {
     Mousetrap.prototype.stopCallback = () => false;
     Mousetrap.bind("command+z", (e) => { e.preventDefault(); this.props.dispatch(Actions.undo()) })
     Mousetrap.bind("command+shift+z", (e) => { e.preventDefault(); this.props.dispatch(Actions.redo()) })
-
-    this.props.dispatch(Logger.open())
   }
 
   componentWillUnmount() {

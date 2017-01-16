@@ -1,18 +1,24 @@
-import React from 'react'
+import React, { Component } from 'react'
+import { connect } from "react-redux"
+import Actions from "actions/logger"
 import Header from "components/Header"
 
 import "normalize.css"
 import "./styles.css"
 
-const Layout = ({children}) => (
-  <div className="container">
-    <Header />
-    {children}
-  </div>
-)
+class Layout extends Component {
+  componentDidMount() {
+    this.props.dispatch(Actions.open())
+  }
 
-Layout.propTypes = {
-  children: React.PropTypes.object
+  render() {
+    return (
+      <div className="container">
+        <Header />
+        {this.props.children}
+      </div>  
+    )
+  }
 }
 
-export default Layout
+export default connect()(Layout)

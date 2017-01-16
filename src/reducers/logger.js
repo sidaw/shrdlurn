@@ -1,19 +1,31 @@
-import io from "socket.io-client"
 import Constants from "constants/actions"
-import Strings from "constants/strings"
 
 const initialState = {
-  socket: null
+  socket: null,
+  structs: [],
+  lastRecipe: []
 }
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case Constants.OPEN_LOGGING_SOCKET:
-      const socket = io(Strings.LOGGER_URL)
-      socket.on("connect", () => {
-        console.log("logging socket connected")
+      return { ...state, socket: action.socket }
+    case Constants.LOAD_COMMUNITY_STRUCTS:
+      const structs = action.structs.map(s => {
+        try {
+          return { ...s, blocks: JSON.parse(s.blocks) }
+        } catch (e) {
+          return false
+        }
       })
-      return { ...state, socket: socket }
+      return { ...state, structs: structs }
+    case Constants.SHARED_STRUCT:
+      return { ...state, lastRecipe: action.recipe }
+    case Constants.NEW_UPVOTE:
+      const modifiedStructs = state.structs.slice()
+      const idx = modifiedStructs.findIndex(m => m.id === action.id)
+      modifiedStructs[idx].up = action.up
+      return { ...state, structs: modifiedStructs }
     default:
       return state
   }

@@ -1,4 +1,6 @@
+import io from "socket.io-client"
 import Constants from "constants/actions"
+import Strings from "constants/strings"
 
 function sendSocket(getState, event, payload) {
   const { sessionId } = getState().user
@@ -6,25 +8,53 @@ function sendSocket(getState, event, payload) {
 
   const message = { ...payload, sessionId: sessionId.replace(/&/g, "amp;"), timestamp: Date.now() }
 
-  if (socket) {
-    socket.emit("log", payload)
-  } else {
-    setTimeout(() => {
-      socket = getState().logger.socket
-      if (socket) {
-        socket.emit(event, message)
-      } else {
-        console.log("send socket failed retry, error?")
-      }
-    }, 2000)
-  }
+  return new Promise((resolve, reject) => {
+    if (socket) {
+      socket.emit(event, message)
+      resolve(socket)
+    } else {
+      // Retry
+      setTimeout(() => {
+        socket = getState().logger.socket
+        if (socket) {
+          socket.emit(event, message)
+          resolve(socket)
+        } else {
+          setTimeout(() => {
+            socket = getState().logger.socket
+            if (socket) {
+              socket.emit(event, message)
+              resolve(socket)
+            } else {
+              setTimeout(() => {
+                socket = getState().logger.socket
+                if (socket) {
+                  socket.emit(event, message)
+                  resolve(socket)
+                } else {
+                  console.log("send socket failed retry, error?")
+                  reject("retry failed")
+                }
+              }, 3000)
+            }
+          }, 1000)
+        }
+      }, 500)
+    }
+  })
 }
 
 const Actions = {
   open: () => {
     return (dispatch) => {
-      dispatch({
-        type: Constants.OPEN_LOGGING_SOCKET
+      const socket = io(Strings.LOGGER_URL)
+      socket.on("connect", () => {
+        console.log("logging socket connected")
+
+        dispatch({
+          type: Constants.OPEN_LOGGING_SOCKET,
+          socket: socket
+        })
       })
     }
   },
@@ -37,17 +67,62 @@ const Actions = {
     }
   },
 
+  joinCommunity: (e) => {
+    return (dispatch, getState) => {
+      sendSocket(getState, "join", {"room": "community"})
+        .then((socket) => {
+          console.log("joined the community room")
+
+          socket.on("structs", (e) => {
+            console.log(e.structs.length)
+            dispatch({
+              type: Constants.LOAD_COMMUNITY_STRUCTS,
+              structs: e.structs
+            })
+          })
+
+          socket.on("newupvote", (m) => {
+            dispatch({
+              type: Constants.NEW_UPVOTE,
+              id: m.id,
+              up: m.up
+            })
+          })
+        })
+    }
+  },
+
   share: () => {
     return (dispatch, getState) => {
-      const { history } = getState().history
+      const { history } = getState().world
+      const { lastRecipe } = getState().logger
 
       const structure = history[history.length - 1]
       const value = JSON.stringify(structure.value)
       const recipe = history.map(h => h.text)
 
-      const payload = { structure: value, recipe: recipe }
+      if (recipe.length === lastRecipe.length && recipe.every((v,i)=> v === lastRecipe[i])) {
+        alert("You've already shared this structure.")
+        return
+      }
+
+      const payload = { blocks: value, recipe: recipe }
 
       sendSocket(getState, "share", payload)
+
+      alert("Shared your structure! View it on the Community page.")
+
+      dispatch({
+        type: Constants.SHARED_STRUCT,
+        recipe: recipe
+      })
+    }
+  },
+
+  upvote: (idx) => {
+    return (dispatch, getState) => {
+      const payload = { id: idx }
+      sendSocket(getState, "upvote", payload)
     }
   }
 }
