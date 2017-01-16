@@ -3,7 +3,8 @@ import Constants from "constants/actions"
 const initialState = {
   socket: null,
   structs: [],
-  lastRecipe: []
+  lastRecipe: [],
+  utterances: []
 }
 
 export default function reducer(state = initialState, action = {}) {
@@ -26,6 +27,8 @@ export default function reducer(state = initialState, action = {}) {
       const idx = modifiedStructs.findIndex(m => m.id === action.id)
       modifiedStructs[idx].up = action.up
       return { ...state, structs: modifiedStructs }
+    case Constants.LOAD_COMMUNITY_UTTERANCES:
+      return { ...state, utterances: action.utterances }
     default:
       return state
   }

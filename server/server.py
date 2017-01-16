@@ -4,6 +4,7 @@ import sys
 import time
 import os
 import time
+import random
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 from flask_socketio import SocketIO, emit, join_room, leave_room
@@ -53,6 +54,53 @@ def load_structs():
     return sorted_structs
 
 
+def load_utterances():
+    latest_5 = []
+    all_files = []
+
+    for dirname, subdirs, files in os.walk(LOG_FOLDER):
+        for fname in files:
+            full_path = os.path.join(LOG_FOLDER, fname)
+            mtime = os.stat(full_path).st_mtime
+
+            struct = (mtime, fname)
+            all_files.append(struct)
+
+            if len(latest_5) < 5:
+                latest_5.append(struct)
+            else:
+                earliest_time = latest_5[0][0]
+                earliest_idx = 0
+                for idx, l in enumerate(latest_5):
+                    if l[0] < earliest_time:
+                        earliest_time = l[0]
+                        earliest_idx = idx
+
+                if mtime > earliest_time:
+                    latest_5[earliest_idx] = struct
+
+    # Add a random one
+    diff_set = list(set(all_files) - set(latest_5))
+    if (len(diff_set) > 1):
+        latest_5.append(random.choice(diff_set))
+
+    utterances = {}
+    for (time, fname) in latest_5:
+        uid = fname[:-5]
+        utterances[uid] = []
+        count = 0
+        for line in reverse_readline(os.path.join(LOG_FOLDER, fname)):
+            data = json.loads(line)
+            if (data["type"] == "accept"):
+                utterances[uid].append(line)
+                count += 1
+
+            if count > 10:
+                break
+
+    return utterances
+
+
 @socketio.on('join')
 def on_join(data):
     username = data['sessionId']
@@ -61,6 +109,9 @@ def on_join(data):
 
     structs = load_structs()
     emit("structs", {"structs": structs})
+
+    utterances = load_utterances()
+    emit("utterances", {"utterances": utterances})
 
 
 @socketio.on('leave')
@@ -115,10 +166,48 @@ def handle_log(message):
         json.dump(message, f)
         f.write('\n')
 
+    if message["type"] == "accept":
+        utterances = load_utterances()
+        emit("utterances", {"utterances": utterances}, broadcast=True, room="community")
+
 
 @socketio.on('connect')
 def connect():
     emit('ok', {'data': 'Connected'})
+
+
+# http://stackoverflow.com/questions/2301789/read-a-file-in-reverse-order-using-python
+def reverse_readline(filename, buf_size=8192):
+    """a generator that returns the lines of a file in reverse order"""
+    with open(filename) as fh:
+        segment = None
+        offset = 0
+        fh.seek(0, os.SEEK_END)
+        file_size = remaining_size = fh.tell()
+        while remaining_size > 0:
+            offset = min(file_size, offset + buf_size)
+            fh.seek(file_size - offset)
+            buffer = fh.read(min(remaining_size, buf_size))
+            remaining_size -= buf_size
+            lines = buffer.split('\n')
+            # the first line of the buffer is probably not a complete line so
+            # we'll save it and append it to the last line of the next buffer
+            # we read
+            if segment is not None:
+                # if the previous chunk starts right from the beginning of line
+                # do not concact the segment to the last line of new chunk
+                # instead, yield the segment first
+                if buffer[-1] is not '\n':
+                    lines[-1] += segment
+                else:
+                    yield segment
+            segment = lines[0]
+            for index in range(len(lines) - 1, 0, -1):
+                if len(lines[index]):
+                    yield lines[index]
+        # Don't yield None if the file was empty
+        if segment is not None:
+            yield segment
 
 
 def make_dir_if_necessary(dir_name):

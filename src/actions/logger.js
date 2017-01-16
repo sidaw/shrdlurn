@@ -74,7 +74,6 @@ const Actions = {
           console.log("joined the community room")
 
           socket.on("structs", (e) => {
-            console.log(e.structs.length)
             dispatch({
               type: Constants.LOAD_COMMUNITY_STRUCTS,
               structs: e.structs
@@ -86,6 +85,13 @@ const Actions = {
               type: Constants.NEW_UPVOTE,
               id: m.id,
               up: m.up
+            })
+          })
+
+          socket.on("utterances", (e) => {
+            dispatch({
+              type: Constants.LOAD_COMMUNITY_UTTERANCES,
+              utterances: e.utterances
             })
           })
         })

@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import Actions from "actions/logger"
 import SharedStructures from "components/SharedStructures"
+import LiveUtterances from "components/LiveUtterances"
 
 import "./styles.css"
 
@@ -17,7 +18,7 @@ class Community extends Component {
           <SharedStructures structs={this.props.structs} />
         </div>
         <div>
-          live utterances
+          <LiveUtterances utterances={this.props.utterances} />
         </div>
       </div>
     )
@@ -25,7 +26,8 @@ class Community extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  structs: state.logger.structs
+  structs: state.logger.structs,
+  utterances: state.logger.utterances
 })
 
 export default connect(mapStateToProps)(Community)
