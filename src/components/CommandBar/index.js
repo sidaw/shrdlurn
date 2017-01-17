@@ -14,7 +14,7 @@ class CommandBar extends React.Component {
     onDown: React.PropTypes.func,
     changeStatus: React.PropTypes.func,
     defining: React.PropTypes.bool,
-    exampleQuery: React.PropTypes.string
+    handleShiftClick: React.PropTypes.func
   }
 
   handleChange(e) {
@@ -26,7 +26,11 @@ class CommandBar extends React.Component {
 
   handleKeyDown(e) {
     if (e.keyCode === 13) {
-      this.handleClick()
+      if (e.shiftKey) {
+        this.props.handleShiftClick()
+      } else {
+        this.handleClick()
+      }
     } else if (e.keyCode === 40) {
       e.preventDefault()
       this.props.onUp()

@@ -18,7 +18,7 @@ class SharePanel extends Component {
     return (
       <div className={classnames("SidePanel", {"collapsed": this.state.collapsed})}>
         <div className="SidePanel-header">
-          <span className="SidePanel-header-name">Submit</span>
+          <span className="SidePanel-header-name">Share this Structure</span>
           <div onClick={() => this.setState({ collapsed: !this.state.collapsed })} className="SidePanel-header-arrow">
             {(() => {
               if (this.state.collapsed) return (<span>&larr;</span>)
@@ -34,7 +34,7 @@ class SharePanel extends Component {
           <button
             onClick={() => this.share()}
             className="active full">
-            Share Structure
+            Share Now
           </button>
         </div>
       </div>

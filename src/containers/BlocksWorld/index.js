@@ -82,12 +82,11 @@ class BlocksWorld extends React.Component {
       /* Otherwise, just accept normally */
       const r = this.props.dispatch(Actions.accept(query, this.state.selectedResp))
 
-      this.props.dispatch(Actions.refreshExample())
       if (r) {
         this.setState({ selectedResp: 0 })
       }
     } else if (this.props.world.status === "define") {
-      this.props.dispatch(Actions.define(this.props.world.query, this.props.world.defineN))
+      this.props.dispatch(Actions.define(this.props.world.defineN))
     } else {
       console.log("uh oh...")
     }
@@ -166,8 +165,20 @@ class BlocksWorld extends React.Component {
     this.props.dispatch(Actions.closeDefine())
   }
 
+  handleShiftClick() {
+    const { history, defining } = this.props.world
+    if (defining) return
+    /* Find last pin to define */
+    const idx = history.slice().reverse().findIndex(h => h.type === "pin")
+    if (idx !== -1) {
+      this.props.dispatch(Actions.define(history.length - 1 - idx))
+    } else {
+      alert("not")
+    }
+  }
+
   render() {
-    const { responses, history, current_history_idx, status, defining, exampleQuery, task } = this.props.world
+    const { responses, history, current_history_idx, status, defining, task } = this.props.world
 
     /* Compute the currentState of blocks by finding which history item is
      * currently selected (by default, the latest one), and then computing
@@ -214,7 +225,7 @@ class BlocksWorld extends React.Component {
             onDown={() => this.downSelected()}
             status={this.props.world.status}
             defining={this.props.world.defining}
-            exampleQuery={this.props.world.exampleQuery}
+            handleShiftClick={() => this.handleShiftClick()}
           />
           <div className="BlocksWorld-status">
             {statusMsg}
@@ -228,9 +239,6 @@ class BlocksWorld extends React.Component {
             {this.props.world.defining &&
               <button onClick={() => this.closeDefine()} className="BlocksWorld-definecancel">Cancel Define</button>
             }
-            <div className="BlocksWorld-example">
-              <strong>Example query:</strong> {exampleQuery}
-            </div>
           </div>
         </div>
         {task === "target" ?

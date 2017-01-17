@@ -83,6 +83,7 @@ const Actions = {
           socket.on("newupvote", (m) => {
             dispatch({
               type: Constants.NEW_UPVOTE,
+              idx: m.idx,
               id: m.id,
               up: m.up
             })
@@ -104,6 +105,12 @@ const Actions = {
       const { lastRecipe } = getState().logger
 
       const structure = history[history.length - 1]
+
+      if (structure.value.length < 10) {
+        alert("You are sharing a really simple structure (less than 10 blocks total). Try creating something a bit more complex and interesting and then sharing that.")
+        return
+      }
+
       const value = JSON.stringify(structure.value)
       const recipe = history.map(h => h.text)
 
@@ -125,9 +132,9 @@ const Actions = {
     }
   },
 
-  upvote: (idx) => {
+  upvote: (id, idx) => {
     return (dispatch, getState) => {
-      const payload = { id: idx }
+      const payload = { id: id, idx: idx }
       sendSocket(getState, "upvote", payload)
     }
   }

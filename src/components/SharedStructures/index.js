@@ -5,11 +5,11 @@ import { connect } from "react-redux"
 
 import "./styles.css"
 
-const Structure = ({ blocks, recipe, upvotes, upVote, sessionId, structId }) => {
+const Structure = ({ blocks, recipe, upvotes, upVote, sessionId }) => {
   return (
     <div className="SharedStructures-row">
       <div className="SharedStructures-votes">
-        {upvotes.indexOf(sessionId) === -1 && structId !== sessionId  &&
+        {upvotes.indexOf(sessionId) === -1 &&
           <div className="SharedStructures-votes-upvote" onClick={() => upVote()}>&#9650;</div>
         }
         <div className="SharedStructures-votes-tally">{upvotes.length}</div>
@@ -30,8 +30,8 @@ const Structure = ({ blocks, recipe, upvotes, upVote, sessionId, structId }) => 
 }
 
 class SharedStructures extends Component {
-  handleUpvote(id) {
-    this.props.dispatch(Actions.upvote(id))
+  handleUpvote(id, idx) {
+    this.props.dispatch(Actions.upvote(id, idx))
   }
 
   cmpScore(a, b) {
@@ -48,7 +48,7 @@ class SharedStructures extends Component {
     return (
       <div className="SharedStructures">
         <div className="Community-header">
-          <h3>Shared Structures</h3>
+          <h3>Top Structures</h3>
           <p>Upvote the best and most interesting structures (and submit your own)!</p>
         </div>
         <div className="Community-content">
@@ -56,12 +56,11 @@ class SharedStructures extends Component {
             this.props.structs.sort(this.cmpScore).map((s, idx) => {
               return (
                 <Structure
-                  key={s.id}
+                  key={s.id + "-" + s.idx}
                   blocks={s.blocks}
                   recipe={s.recipe}
-                  structId={s.sessionId}
                   upvotes={s.up}
-                  upVote={() => this.handleUpvote(s.id)}
+                  upVote={() => this.handleUpvote(s.id, s.idx)}
                   sessionId={this.props.sessionId}
                 />
               )

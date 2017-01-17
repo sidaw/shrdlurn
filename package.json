@@ -15,6 +15,7 @@
     "classnames": "^2.2.5",
     "deep-equal": "^1.0.1",
     "isomer": "^0.2.6",
+    "moment": "^2.17.1",
     "mousetrap": "^1.6.0",
     "normalize.css": "^5.0.0",
     "react": "^15.3.2",

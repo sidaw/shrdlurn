@@ -19,10 +19,10 @@ const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, s
       {stepN}
     </div>
     <div className="HistoryItem-text">
-      {text}
       {last &&
         <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       }
+      <div className="HistoryItem-text-text">{text}</div>
       {(last || tentative) && !defining &&
         <button onClick={(e) => { e.stopPropagation(); setPin()}}>Define This</button>
       }
@@ -105,14 +105,7 @@ class History extends Component {
   }
 
   define(idx) {
-    const { history, dispatch } = this.props
-    if (idx === history.length - 1) {
-      alert("You cannot define the first history item because you must have something to define it as!")
-      return
-    }
-    const text = history[idx].text
-    const query = text !== "" ? text : this.props.query
-    dispatch(Actions.define(query, idx))
+    this.props.dispatch(Actions.define(idx))
   }
 
   render() {

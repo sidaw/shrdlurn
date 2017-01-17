@@ -11,6 +11,10 @@ class App extends Component {
     Mousetrap.prototype.stopCallback = () => false;
     Mousetrap.bind("command+z", (e) => { e.preventDefault(); this.props.dispatch(Actions.undo()) })
     Mousetrap.bind("command+shift+z", (e) => { e.preventDefault(); this.props.dispatch(Actions.redo()) })
+
+    if (Object.keys(this.props.location.query).indexOf("mtaskid") !== -1) {
+      this.props.dispatch(Actions.setTask("target"))
+    }
   }
 
   componentWillUnmount() {

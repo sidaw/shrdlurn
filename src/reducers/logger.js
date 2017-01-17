@@ -24,11 +24,21 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, lastRecipe: action.recipe }
     case Constants.NEW_UPVOTE:
       const modifiedStructs = state.structs.slice()
-      const idx = modifiedStructs.findIndex(m => m.id === action.id)
+      const idx = modifiedStructs.findIndex(m => m.id === action.id && m.idx === action.idx)
       modifiedStructs[idx].up = action.up
       return { ...state, structs: modifiedStructs }
     case Constants.LOAD_COMMUNITY_UTTERANCES:
-      return { ...state, utterances: action.utterances }
+      const utterances = action.utterances.map(g => {
+        g[1] = g[1].map(u => {
+          try {
+            return JSON.parse(u)
+          } catch (e) {
+            return false
+          }
+        })
+        return g
+      })
+      return { ...state, utterances: utterances }
     default:
       return state
   }

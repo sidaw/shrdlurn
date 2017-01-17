@@ -14,9 +14,9 @@ class Layout extends Component {
   render() {
     return (
       <div className="container">
-        <Header />
+        <Header query={this.props.location.query} />
         {this.props.children}
-      </div>  
+      </div>
     )
   }
 }

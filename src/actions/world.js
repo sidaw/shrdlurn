@@ -101,28 +101,35 @@ const Actions = {
     }
   },
 
-  define: (defineAs, defineIdx) => {
+  define: (idx) => {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
-      const { history } = getState().world
+      const { history, query } = getState().world
 
-      const defineHist = history.slice(defineIdx + 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
+      if (idx === history.length - 1) {
+        alert("You cannot define the first history item because you must have something to define it as!")
+        return
+      }
+      const text = history[idx] !== undefined ? history[idx].text : ""
+      const defineAs = text !== "" ? text : query
+
+      const defineHist = history.slice(idx + 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
 
       // scope multiline definitions by default
       const mode = defineHist.length > 1? ':def' : ':def_ret'
-      const query = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
+      const sempreQuery = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
 
       /* Submit the define command */
-      SEMPREquery({ q: query, sessionId: sessionId })
+      SEMPREquery({ q: sempreQuery, sessionId: sessionId })
         .then((r) => {
           const { formula: topFormula } = r.candidates[0]
 
-          dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: defineIdx, length: defineHist.length, formula: topFormula } }))
+          dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: idx, length: defineHist.length, formula: topFormula } }))
 
           dispatch({
             type: Constants.DEFINE,
             text: defineAs,
-            idx: defineIdx,
+            idx: idx,
             formula: topFormula
           })
         })
@@ -222,22 +229,6 @@ const Actions = {
     }
   },
 
-  refreshExample: () => {
-    return (dispatch, getState) => {
-      const { sessionId } = getState().user
-
-      const query = `(:autocomplete "")`
-
-      SEMPREquery({ q: query, sessionId: sessionId })
-        .then((r) => {
-          dispatch({
-            type: Constants.REFRESH_EXAMPLE,
-            query: r.autocompletes[0]
-          })
-        })
-    }
-  },
-
   setPin: () => {
     return (dispatch) => {
       dispatch({
@@ -277,6 +268,15 @@ const Actions = {
     return (dispatch) => {
       dispatch({
         type: Constants.REMOVE_LAST
+      })
+    }
+  },
+
+  setTask: (task) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_TASK,
+        task
       })
     }
   }
