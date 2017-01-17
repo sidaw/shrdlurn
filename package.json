@@ -5,9 +5,9 @@
     "type": "git",
     "url": "https://github.com/sidaw/shrdlurn.git"
   },
-  "author": "Sida Wang <sidaw@cs.stanford.edu>",
+  "author": "Sida Wang <sidaw@cs.stanford.edu> and Sam Ginn <samginn@cs.stanford.edu>",
   "license": "MIT",
-  "homepage": "http://nlp.stanford.edu/~samginn/shrdlurn/",
+  "homepage": "https://samginn.github.io/shrdlurn",
   "devDependencies": {
     "react-scripts": "0.8.5"
   },
@@ -31,7 +31,8 @@
     "local": "REACT_APP_SERVER=local react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
