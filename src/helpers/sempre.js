@@ -186,7 +186,7 @@ export function parseSEMPRE(valid) {
 //   return sanity;
 // }
 
-const SEMPRE_URL = process.env.REACT_APP_SERVER === 'local' ? `http://localhost:${process.env.REACT_APP_SERVER_PORT}` : `http://jonsson.stanford.edu:${process.env.REACT_APP_SERVER_PORT}`
+const SEMPRE_URL = process.env.REACT_APP_SEMPRE === 'local' ? `http://localhost:${process.env.REACT_APP_SEMPRE_PORT}` : `http://jonsson.stanford.edu:${process.env.REACT_APP_SEMPRE_PORT}`
 
 export function SEMPREquery(cmds, callback) {
   const cmdstr = []
