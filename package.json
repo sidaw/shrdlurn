@@ -28,7 +28,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "local": "REACT_APP_SERVER=local react-scripts start",
+    "start:local": "REACT_APP_SERVER=local REACT_APP_SEMPRE=local react-scripts start",
+    "start:local-server": "REACT_APP_SERVER=local react-scripts start",
+    "start:local-sempre": "REACT_APP_SEMPRE=local react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
