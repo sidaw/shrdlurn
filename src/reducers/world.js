@@ -44,8 +44,6 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, defining: false, defineN: null, query: "", status: "try", history: cleanHistory }
     case Constants.SET_DEFINE_N:
       return { ...state, defineN: action.defineN }
-    case Constants.REFRESH_EXAMPLE:
-      return { ...state, exampleQuery: action.query }
     case Constants.SET_PIN:
       let newHistoryWithPin = [...state.history, {text: state.query, type: "pin", value: state.history[state.history.length - 1].value, formula: "()"}]
       return { ...state, history: newHistoryWithPin, query: initialState.query, responses: initialState.responses, status: initialState.status, defining: initialState.defining, defineN: initialState.defineN }
@@ -65,6 +63,8 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.REMOVE_LAST:
       let trimmedHistory = state.history.slice(0, state.history.length - 1)
       return { ...state, history: trimmedHistory }
+    case Constants.SET_TASK:
+      return { ...state, task: action.task }
     default:
       return state
   }

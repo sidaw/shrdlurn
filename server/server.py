@@ -17,7 +17,6 @@ socketio = SocketIO(app)
 
 LOG_FOLDER = "log/"
 DATA_FOLDER = "data/"
-STRUCTS_FILE = DATA_FOLDER + "structs.json"
 
 GRAVITY = 1.4  # higher the gravity, the faster old structs lose score
 TIME_INTERVAL = 1800.0  # break off by every 30 minutes
@@ -40,15 +39,17 @@ def current_unix_time():
 def load_structs():
     # Load the structs
     structs = []
-    if os.path.isfile(STRUCTS_FILE):
-        lineNo = 0
-        with open(STRUCTS_FILE, 'r') as f:
-            for line in f:
-                data = json.loads(line)
-                data["id"] = lineNo
-                data["score"] = score_struct(data)
-                structs.append(data)
-                lineNo += 1
+    for file in os.listdir(DATA_FOLDER):
+        if file.endswith(".json"):
+            with open(os.path.join(DATA_FOLDER, file), 'r') as f:
+                lineNo = 0
+                for line in f:
+                    data = json.loads(line)
+                    data["id"] = file[:-5]
+                    data["idx"] = lineNo
+                    data["score"] = score_struct(data)
+                    structs.append(data)
+                    lineNo += 1
 
     sorted_structs = sorted(structs, key=lambda s: s['score'], reverse=True)[:10]
     return sorted_structs
@@ -84,19 +85,21 @@ def load_utterances():
     if (len(diff_set) > 1):
         latest_5.append(random.choice(diff_set))
 
-    utterances = {}
-    for (time, fname) in latest_5:
+    utterances = []
+    for (time, fname) in sorted(latest_5, key=lambda s: int(s[0]), reverse=True):
         uid = fname[:-5]
-        utterances[uid] = []
+        utts = []
         count = 0
         for line in reverse_readline(os.path.join(LOG_FOLDER, fname)):
             data = json.loads(line)
-            if (data["type"] == "accept"):
-                utterances[uid].append(line)
+            if (data["type"] == "accept" or data["type"] == "define"):
+                utts.append(line)
                 count += 1
 
             if count > 10:
                 break
+
+        utterances.append((uid, utts))
 
     return utterances
 
@@ -126,7 +129,7 @@ def handle_share(message):
     message["up"] = []
     message["timestamp"] = current_unix_time()
     # Update the structs file
-    with open(STRUCTS_FILE, 'a') as f:
+    with open(os.path.join(DATA_FOLDER, message["sessionId"] + ".json"), 'a') as f:
         json.dump(message, f)
         f.write('\n')
 
@@ -138,23 +141,21 @@ def handle_share(message):
 @socketio.on('upvote')
 def upvote(data):
     lines = []
-    with open(STRUCTS_FILE, 'r') as f:
+    file_path = os.path.join(DATA_FOLDER, data["id"] + ".json")
+    with open(file_path, 'r') as f:
         lines = f.readlines()
 
-    line = json.loads(lines[data["id"]])
-
-    if line["sessionId"] == data["sessionId"]:
-        return
+    line = json.loads(lines[data["idx"]])
 
     uppers = set(line["up"])
     uppers.add(data["sessionId"])
     line["up"] = list(uppers)
-    lines[data["id"]] = json.dumps(line) + '\n'
+    lines[data["idx"]] = json.dumps(line) + '\n'
 
-    with open(STRUCTS_FILE, 'w') as f:
+    with open(file_path, 'w') as f:
         f.writelines(lines)
 
-    message = {"id": data["id"], "up": line["up"]}
+    message = {"idx": data["idx"], "id": data["id"], "up": line["up"]}
     emit("newupvote", message, broadcast=True, room="community")
 
 

@@ -15,6 +15,19 @@
   padding: 0 20px 10px;
   margin-bottom: 10px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+}
+
+.LiveUtterances-groupid .time {
+  color: rgba(60, 60, 60, 0.6);
+  font-size: 1.4rem;
+}
+
+.LiveUtterances-groupid .title {
+  color: rgba(60, 60, 60, 0.6);
+  text-transform: uppercase;
+  font-size: 1.4rem;
 }
 
 .LiveUtterances-utterance {
@@ -24,4 +37,8 @@
   border: 1px solid rgba(51, 51, 51, 0.05);
   margin: 4px;
   z-index: 5;
+}
+
+.LiveUtterances-utterance .define {
+  font-weight: 700;
 }

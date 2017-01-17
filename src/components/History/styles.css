@@ -17,6 +17,7 @@
 }
 
 .HistoryItem-num {
+  flex-shrink: 0;
   height: 100%;
   background-color: rgba(51, 51, 51, 0.05);
   font-weight: 300;
@@ -51,7 +52,7 @@
 
 .HistoryPin,
 .HistoryItem {
-  padding-right: 40px;
+  padding-right: 0;
   word-break: break-word;
 }
 
@@ -135,3 +136,7 @@
 /*::-webkit-scrollbar-thumb {
   background-color: rgba(230, 230, 230, 0.5);
 }*/
+
+.HistoryPin-remove ~ .HistoryItem-text-text {
+  margin-right: 25px;
+}
