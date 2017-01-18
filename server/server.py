@@ -5,7 +5,7 @@ import time
 import os
 import time
 import random
-from flask import Flask, request
+from flask import Flask, request, session
 from flask_cors import CORS, cross_origin
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
@@ -43,15 +43,17 @@ def load_structs():
         if file.endswith(".json"):
             with open(os.path.join(DATA_FOLDER, file), 'r') as f:
                 lineNo = 0
+                data = {}
                 for line in f:
                     data = json.loads(line)
                     data["id"] = file[:-5]
                     data["idx"] = lineNo
                     data["score"] = score_struct(data)
-                    structs.append(data)
                     lineNo += 1
+                # only load the last one for the this user.
+                structs.append(data)
 
-    sorted_structs = sorted(structs, key=lambda s: s['score'], reverse=True)[:10]
+    sorted_structs = sorted(structs, key=lambda s: len(s['up']), reverse=True)[:100]
     return sorted_structs
 
 
@@ -102,6 +104,14 @@ def load_utterances():
         utterances.append((uid, utts))
 
     return utterances
+
+
+def log(message):
+    path = LOG_FOLDER + message["sessionId"] + ".json"
+    message["timestamp"] = current_unix_time()
+    with open(path, 'a') as f:
+        json.dump(message, f)
+        f.write('\n')
 
 
 @socketio.on('join')
@@ -161,20 +171,27 @@ def upvote(data):
 
 @socketio.on('log')
 def handle_log(message):
-    path = LOG_FOLDER + message["sessionId"] + ".json"
-    message["timestamp"] = current_unix_time()
-    with open(path, 'a') as f:
-        json.dump(message, f)
-        f.write('\n')
+    log(message)
 
     if message["type"] == "accept":
         utterances = load_utterances()
         emit("utterances", {"utterances": utterances}, broadcast=True, room="community")
 
 
+@socketio.on('session')
+def session(data):
+    session.uid = data['sessionId']
+    log({"sessionId": session.uid, "type": "connect"})
+
+
 @socketio.on('connect')
 def connect():
     emit('ok', {'data': 'Connected'})
+
+
+@socketio.on('disconnect')
+def disconnect():
+    log({"sessionId": session.uid, "type": "disconnect"})
 
 
 # http://stackoverflow.com/questions/2301789/read-a-file-in-reverse-order-using-python

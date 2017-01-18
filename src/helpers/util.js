@@ -1,5 +1,6 @@
 import React from "react"
 import targets from "constants/targets"
+import Hashids from "hashids"
 import {getTurkHit} from "helpers/turk"
 
 export function emojione(num) {
@@ -89,4 +90,13 @@ export function getParameterByName(name, url) {
   if (!results) return null;
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function rand10000() {
+  return Math.ceil(Math.random() * 10000)
+}
+
+export function genUid() {
+  const hashids = new Hashids("our cool SHRDLURN salt")
+  return hashids.encode(rand10000(), rand10000(), rand10000())
 }
