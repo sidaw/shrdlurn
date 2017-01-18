@@ -7,7 +7,7 @@
   },
   "author": "Sida Wang <sidaw@cs.stanford.edu> and Sam Ginn <samginn@cs.stanford.edu>",
   "license": "MIT",
-  "homepage": "https://samginn.github.io/shrdlurn",
+  "homepage": "http://shrdlurnt.sidaw.xyz",
   "devDependencies": {
     "gh-pages": "^0.12.0",
     "react-scripts": "0.8.5"
@@ -38,7 +38,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages --dist build --repo http://www.github.com/sidaw/shrdlurnt --remove static"
   },
   "eslintConfig": {
     "extends": "react-app"

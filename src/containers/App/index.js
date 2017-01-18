@@ -12,7 +12,7 @@ class App extends Component {
     Mousetrap.bind("command+z", (e) => { e.preventDefault(); this.props.dispatch(Actions.undo()) })
     Mousetrap.bind("command+shift+z", (e) => { e.preventDefault(); this.props.dispatch(Actions.redo()) })
 
-    if (Object.keys(this.props.location.query).indexOf("mtaskid") !== -1) {
+    if (Object.keys(this.props.location.query).indexOf("taskid") !== -1) {
       this.props.dispatch(Actions.setTask("target"))
     }
   }

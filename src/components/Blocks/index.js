@@ -34,10 +34,10 @@ class Blocks extends React.Component {
       baseHeight: 0.0,
       centerPoint: Point(0, 0, 0),
       rotation: (Math.PI / 12),
-      scale: 0.9,
+      scale: 0.8,
       translate: 0,
       offset: 2,
-      groundRadius: 2,
+      groundRadius: 3,
       gridColor: new Color(50, 50, 50)
     }
 
@@ -175,7 +175,7 @@ class Blocks extends React.Component {
     const { scale, groundRadius, offset, rotation, centerPoint, borderWidth, baseHeight, basicUnit } = this.config
 
     const gridWidth = unitWidth * scale
-    const shifter = highlighted ? unitWidth * 0.6 : 0;
+    const shifter = highlighted ? unitWidth * scale * 0.6 : 0;
 
     return Shape.Prism(
       Point((x + (x * borderWidth)) * scale + (shifter / 2),

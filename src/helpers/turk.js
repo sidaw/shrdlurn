@@ -15,7 +15,7 @@ export function getTurkCode(targetIdx, nSteps, nBlocks) {
 }
 
 export function getTurkHit() {
-  const hitnum = getParameterByName("mhitid");
+  const hitnum = getParameterByName("taskid");
   if (hitnum && hitnum < Targets.length) return hitnum;
   return 0;
 }
