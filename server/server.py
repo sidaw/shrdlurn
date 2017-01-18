@@ -239,4 +239,4 @@ if __name__ == "__main__":
     make_dir_if_necessary(DATA_FOLDER)
 
     # Run the server
-    socketio.run(app, host='0.0.0.0', port=8408)
+    socketio.run(app, host='0.0.0.0', port=8406)
