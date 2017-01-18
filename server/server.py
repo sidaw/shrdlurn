@@ -64,6 +64,9 @@ def load_utterances():
     for dirname, subdirs, files in os.walk(LOG_FOLDER):
         for fname in files:
             full_path = os.path.join(LOG_FOLDER, fname)
+            if not os.path.exists(full_path):
+                continue
+
             mtime = os.stat(full_path).st_mtime
 
             struct = (mtime, fname)
