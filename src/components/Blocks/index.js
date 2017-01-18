@@ -34,7 +34,7 @@ class Blocks extends React.Component {
       baseHeight: 0.0,
       centerPoint: Point(0, 0, 0),
       rotation: (Math.PI / 12),
-      scale: 1,
+      scale: 0.9,
       translate: 0,
       offset: 2,
       groundRadius: 2,
@@ -42,6 +42,8 @@ class Blocks extends React.Component {
     }
 
     this.config = {...defaultIsoConfig, ...props.isoConfig}
+
+    if (props.blocks.length > 100) this.config.scale = this.config.scale * .8
 
     this.colorMap = {
       Red: [209, 0, 0],

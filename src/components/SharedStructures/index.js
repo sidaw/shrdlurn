@@ -2,10 +2,11 @@ import React, { Component } from "react"
 import Blocks from "components/Blocks"
 import Actions from "actions/logger"
 import { connect } from "react-redux"
+import classnames from "classnames"
 
 import "./styles.css"
 
-const Structure = ({ blocks, recipe, upvotes, upVote, sessionId }) => {
+const Structure = ({ blocks, recipe, upvotes, upVote, sessionId, id }) => {
   return (
     <div className="SharedStructures-row">
       <div className="SharedStructures-votes">
@@ -15,9 +16,10 @@ const Structure = ({ blocks, recipe, upvotes, upVote, sessionId }) => {
         <div className="SharedStructures-votes-tally">{upvotes.length}</div>
         <div className="SharedStructures-votes-desc">upvotes</div>
       </div>
-      <div className="SharedStructures-struct">
+      <div className={classnames("SharedStructures-struct", {"highlight": sessionId === id})}>
+        <div className="SharedStructures-struct-id">{id}</div>
         <div className="SharedStructures-struct-blocks">
-          <Blocks blocks={blocks} width={330} height={240} isoConfig={{offset:-1, scale: 0.4}} />
+          <Blocks blocks={blocks} width={330} height={240} isoConfig={{offset:-1, scale: 0.2}} />
         </div>
         <div className="SharedStructures-struct-recipe">
           {recipe.map((r, idx) => (
@@ -53,9 +55,10 @@ class SharedStructures extends Component {
         </div>
         <div className="Community-content">
           {this.props.structs.length > 0 ?
-            this.props.structs.sort(this.cmpScore).map((s, idx) => {
+            this.props.structs.map((s, idx) => {
               return (
                 <Structure
+                  id={s.id}
                   key={s.id + "-" + s.idx}
                   blocks={s.blocks}
                   recipe={s.recipe}

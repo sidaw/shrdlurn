@@ -46,10 +46,12 @@ function sendSocket(getState, event, payload) {
 
 const Actions = {
   open: () => {
-    return (dispatch) => {
+    return (dispatch, getState) => {
       const socket = io(Strings.LOGGER_URL)
       socket.on("connect", () => {
         console.log("logging socket connected")
+
+        sendSocket(getState, "session", {})
 
         dispatch({
           type: Constants.OPEN_LOGGING_SOCKET,

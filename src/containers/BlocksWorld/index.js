@@ -190,6 +190,7 @@ class BlocksWorld extends React.Component {
         currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
       } catch (e) {
         currentState = this.computeDiff(history[idx].value || [], responses[0].value)
+        alert(`{An error occurred on this response: ${e.message}`)
       }
     } else {
       if (history.length > 0) {
