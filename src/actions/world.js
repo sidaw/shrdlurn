@@ -76,6 +76,15 @@ const Actions = {
 
       const selected = responses[selectedResp]
 
+      if (selected.error) {
+        alert("You can't accept a response with an error in it. Please accept another response or try a different query.")
+        dispatch({
+          type: Constants.SET_STATUS,
+          status: "try"
+        })
+        return
+      }
+
       const query = `(:accept ${JSON.stringify(text)} ${JSON.stringify(selected.formula)})`
       SEMPREquery({ q: query, sessionId: sessionId }, () => {})
 

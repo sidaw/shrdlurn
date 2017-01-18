@@ -113,6 +113,7 @@ function combine(vsTmp, v) {
     vs.count = 1;
     vs.maxprob = parseFloat(v.prob);
     vs.maxpprob = parseFloat(v.pprob);
+    vs.error = v.error;
   } else {
     vs.value = v.value;
     vs.prob += parseFloat(v.prob);
@@ -125,6 +126,7 @@ function combine(vsTmp, v) {
     vs.probs.push(v.prob);
     vs.formulas.push(v.formula);
     vs.count += 1;
+    vs.error = v.error;
   }
   return vs;
 }
@@ -144,6 +146,7 @@ export function parseSEMPRE(valid) {
       qapair.pprob = valid[i].pprob;
       lstqapairs.push(qapair);
     } catch (e) {
+      lstqapairs.push({ value: [], formula: "", rank: i, error: true, score: 0, prob: 0, pprob: 0 })
       console.log("ERROR!", e, valid[i].value);
     }
   }
