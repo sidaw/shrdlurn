@@ -204,6 +204,6 @@ export function SEMPREquery(cmds, callback) {
       return response.json()
     })
     .catch((ex) => {
-      // console.log("fetch issue?", ex)
+      console.log("fetch issue?", ex)
     })
 }
