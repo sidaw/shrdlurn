@@ -180,17 +180,23 @@ class BlocksWorld extends React.Component {
   render() {
     const { responses, history, current_history_idx, status, defining, task } = this.props.world
 
+
     /* Compute the currentState of blocks by finding which history item is
      * currently selected (by default, the latest one), and then computing
      * the diff between the selected candidate's response if in 'try' mode */
     let currentState = this.defaultState
     const idx = current_history_idx >= 0 ? current_history_idx : history.length - 1
+
     if (this.props.world.status === "accept" && responses.length > 0) {
       try {
+        /* If there is an error on this selection, pop up with an alert and print
+         * the error to the console */
+        if (responses[this.state.selectedResp].error)
+          alert("This response resulted in an error with our server. Please scroll to another intepretation or try another query. (This usually means your exceeded the number of blocks that the server can handle - try a query that doesn't have so many blocks in it.)")
+
         currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
       } catch (e) {
         currentState = this.computeDiff(history[idx].value || [], responses[0].value)
-        alert(`{An error occurred on this response: ${e.message}`)
       }
     } else {
       if (history.length > 0) {
