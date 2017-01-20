@@ -2,11 +2,8 @@ import io from "socket.io-client"
 import Constants from "constants/actions"
 import Strings from "constants/strings"
 
-function sendSocket(getState, event, payload) {
-  const { sessionId } = getState().user
+function sendSocket(getState, event, message) {
   let socket = getState().logger.socket
-
-  const message = { ...payload, sessionId: sessionId.replace(/&/g, "amp;"), timestamp: Date.now() }
 
   return new Promise((resolve, reject) => {
     if (socket) {
@@ -47,11 +44,13 @@ function sendSocket(getState, event, payload) {
 const Actions = {
   open: () => {
     return (dispatch, getState) => {
+      const { sessionId } = getState().user
+
       const socket = io(Strings.LOGGER_URL)
       socket.on("connect", () => {
         console.log("logging socket connected")
 
-        sendSocket(getState, "session", {})
+        sendSocket(getState, "session", {"sessionId": sessionId})
 
         dispatch({
           type: Constants.OPEN_LOGGING_SOCKET,
@@ -63,7 +62,7 @@ const Actions = {
 
   log: (e) => {
     return (dispatch, getState) => {
-      const payload = { type: e.type, message: e.msg }
+      const payload = { type: e.type, msg: e.msg }
 
       sendSocket(getState, "log", payload)
     }
@@ -75,25 +74,49 @@ const Actions = {
         .then((socket) => {
           console.log("joined the community room")
 
-          socket.on("structs", (e) => {
+          socket.on("new_accept", (e) => {
             dispatch({
-              type: Constants.LOAD_COMMUNITY_STRUCTS,
-              structs: e.structs
+              type: Constants.NEW_ACCEPT,
+              uid: e.uid,
+              query: e.query,
+              timestamp: e.timestamp
             })
           })
 
-          socket.on("newupvote", (m) => {
+          socket.on("new_define", (e) => {
+            dispatch({
+              type: Constants.NEW_DEFINE,
+              uid: e.uid,
+              defined: e.defined,
+              timestamp: e.timestamp
+            })
+          })
+
+          socket.on("upvote", (e) => {
             dispatch({
               type: Constants.NEW_UPVOTE,
-              idx: m.idx,
-              id: m.id,
-              up: m.up
+              uid: e.uid,
+              id: e.id,
+              up: e.up,
+              score: e.score
+            })
+          })
+
+          socket.on("struct", (e) => {
+            dispatch({
+              type: Constants.NEW_STRUCT,
+              uid: e.uid,
+              id: e.id,
+              score: e.score,
+              upvotes: e.upvotes,
+              struct: e.struct
             })
           })
 
           socket.on("utterances", (e) => {
             dispatch({
-              type: Constants.LOAD_COMMUNITY_UTTERANCES,
+              type: Constants.NEW_UTTERANCES,
+              uid: e.uid,
               utterances: e.utterances
             })
           })
@@ -121,8 +144,9 @@ const Actions = {
         return
       }
 
-      const payload = { blocks: value, recipe: recipe }
+      const payload = { struct: { value, recipe } }
 
+      console.log("SHARING!", payload)
       sendSocket(getState, "share", payload)
 
       alert("Shared your structure! View it on the Community page.")
@@ -134,9 +158,9 @@ const Actions = {
     }
   },
 
-  upvote: (id, idx) => {
+  upvote: (uid, id) => {
     return (dispatch, getState) => {
-      const payload = { id: id, idx: idx }
+      const payload = { uid: uid, id: id }
       sendSocket(getState, "upvote", payload)
     }
   }

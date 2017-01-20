@@ -6,7 +6,7 @@ import classnames from "classnames"
 
 import "./styles.css"
 
-const Structure = ({ blocks, recipe, upvotes, upVote, sessionId, id }) => {
+const Structure = ({ blocks, recipe, upvotes, upVote, sessionId, uid, id }) => {
   return (
     <div className="SharedStructures-row">
       <div className="SharedStructures-votes">
@@ -17,7 +17,7 @@ const Structure = ({ blocks, recipe, upvotes, upVote, sessionId, id }) => {
         <div className="SharedStructures-votes-desc">upvotes</div>
       </div>
       <div className={classnames("SharedStructures-struct", {"highlight": sessionId === id})}>
-        <div className="SharedStructures-struct-id">{id}</div>
+        <div className="SharedStructures-struct-id">{uid}</div>
         <div className="SharedStructures-struct-blocks">
           <Blocks blocks={blocks} width={330} height={240} isoConfig={{offset:-1, scale: 0.2}} />
         </div>
@@ -55,15 +55,24 @@ class SharedStructures extends Component {
         </div>
         <div className="Community-content">
           {this.props.structs.length > 0 ?
-            this.props.structs.map((s, idx) => {
+            this.props.structs.sort((a, b) => {
+              if (a.score < b.score) {
+                return 1
+              } else if (a.score > b.score) {
+                return -1
+              } else {
+                return 0
+              }
+            }).map((s, idx) => {
               return (
                 <Structure
+                  key={s.uid + "-" + s.id}
+                  uid={s.uid}
                   id={s.id}
-                  key={s.id + "-" + s.idx}
-                  blocks={s.blocks}
+                  blocks={s.value}
                   recipe={s.recipe}
-                  upvotes={s.up}
-                  upVote={() => this.handleUpvote(s.id, s.idx)}
+                  upvotes={s.upvotes}
+                  upVote={() => this.handleUpvote(s.uid, s.id)}
                   sessionId={this.props.sessionId}
                 />
               )
