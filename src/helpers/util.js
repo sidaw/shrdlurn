@@ -98,5 +98,5 @@ function rand10000() {
 
 export function genUid() {
   const hashids = new Hashids("our cool SHRDLURN salt")
-  return hashids.encode(rand10000(), rand10000(), rand10000())
+  return hashids.encode(rand10000(), rand10000(), rand10000(), rand10000(), rand10000())
 }

@@ -11,8 +11,10 @@ const Actions = {
        * generated UID stored in localStorage. */
       let sessionId = ""
 
+      /* We get the UID param from the routing reducer */
       const location = routing.location || routing.locationBeforeTransitions
       const uidParam = location.query.uid
+
       if (uidParam) {
         sessionId = uidParam
       } else {
@@ -23,7 +25,6 @@ const Actions = {
         }
         sessionId = uid
       }
-      console.log(sessionId)
 
       dispatch({
         type: Constants.SET_SESSION_ID,

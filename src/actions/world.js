@@ -24,6 +24,11 @@ const Actions = {
       const { sessionId } = getState().user
       const { history, current_history_idx } = getState().world
 
+      dispatch({
+        type: Constants.SET_STATUS,
+        status: "loading"
+      })
+
       return sendContext(history, current_history_idx, sessionId)
         .then((eh) => {
           const query = `(:q ${JSON.stringify(q)})`
@@ -31,6 +36,11 @@ const Actions = {
 
           return SEMPREquery(cmds)
             .then((response) => {
+              if (response.lines && response.lines.length > 0) {
+                /* Alert any errors in the query */
+                alert(response.lines.join("; "))
+              }
+
               const formval = parseSEMPRE(response.candidates)
 
               if (formval === null || formval === undefined) {
