@@ -27,7 +27,9 @@ const Actions = {
   NEW_STRUCT: "NEW_STRUCT",
   NEW_UTTERANCES: "NEW_UTTERANCES",
 
-  SET_TASK: "SET_TASK"
+  SET_TASK: "SET_TASK",
+
+  CLEAR: "CLEAR"
 }
 
 export default Actions

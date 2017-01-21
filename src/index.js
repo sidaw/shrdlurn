@@ -10,6 +10,10 @@ import Community from "containers/Community"
 
 const store = createStore()
 
+export function getStore() {
+  return store
+}
+
 const history = syncHistoryWithStore(hashHistory, store)
 
 ReactDOM.render(

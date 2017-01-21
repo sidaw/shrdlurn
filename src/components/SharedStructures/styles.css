@@ -61,6 +61,11 @@
   flex-shrink: 0;
 }
 
+.SharedStructures-struct-blocks:hover {
+  cursor: pointer;
+  background-color: rgb(240, 240, 240);
+}
+
 .SharedStructures-struct-recipe {
   flex-grow: 1;
   padding: 10px;
@@ -87,4 +92,21 @@
   background-color: #FFF;
   padding: 2px;
   font-size: 1.4rem;
+}
+
+.SharedStructures-bigstruct .modal {
+  width: 90%;
+  height: 85%;
+}
+
+.SharedStructures-bigstruct .Blocks {
+  width: 825px;
+  height: 600px;
+}
+
+
+.SharedStructures-bigstruct .modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
