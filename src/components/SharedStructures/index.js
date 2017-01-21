@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, PropTypes } from "react"
 import Blocks from "components/Blocks"
 import Actions from "actions/logger"
 import { connect } from "react-redux"
@@ -6,29 +6,72 @@ import classnames from "classnames"
 
 import "./styles.css"
 
-const Structure = ({ blocks, recipe, upvotes, upVote, sessionId, uid, id }) => {
-  return (
-    <div className="SharedStructures-row">
-      <div className="SharedStructures-votes">
-        {upvotes.indexOf(sessionId) === -1 &&
-          <div className="SharedStructures-votes-upvote" onClick={() => upVote()}>&#9650;</div>
+class Structure extends Component {
+  static propTypes = {
+    blocks: PropTypes.array,
+    recipe: PropTypes.array,
+    upvotes: PropTypes.array,
+    sessionId: PropTypes.string,
+    uid: PropTypes.string,
+    id: PropTypes.string,
+    upVote: PropTypes.func
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.state = { big: false }
+  }
+
+  toggleBig() {
+    this.setState({ big: !this.state.big })
+  }
+
+  render() {
+    const { upvotes, sessionId, blocks, upVote, uid, id, recipe } = this.props
+
+    return (
+      <div className="SharedStructures-row">
+        <div className="SharedStructures-votes">
+          {upvotes.indexOf(sessionId.slice(0, 8)) === -1 &&
+            <div className="SharedStructures-votes-upvote" onClick={() => upVote()}>&#9650;</div>
+          }
+          <div className="SharedStructures-votes-tally">{upvotes.length}</div>
+          <div className="SharedStructures-votes-desc">upvotes</div>
+        </div>
+        <div
+          className={classnames("SharedStructures-struct", {"highlight": sessionId.slice(0, 8) === uid})}
+          onClick={() => this.toggleBig()}
+        >
+          <div className="SharedStructures-struct-id">{uid} #{id}</div>
+          <div className="SharedStructures-struct-blocks">
+            <Blocks blocks={blocks} width={330} height={240} isoConfig={{offset:-1, scale: 0.2}} />
+          </div>
+          <div className="SharedStructures-struct-recipe">
+            {recipe.map((r, idx) => (
+              <span key={idx}>{r}</span>
+            ))}
+          </div>
+        </div>
+
+        {this.state.big &&
+          <div className="modal-container SharedStructures-bigstruct">
+            <div className="modal">
+              <div className="modal-header">
+                {uid} #{id}
+                <div className="modal-escape" onClick={() => this.toggleBig()}>
+                  &times;
+                </div>
+              </div>
+              <div className="modal-body">
+                <Blocks blocks={blocks} width={1650} height={1200} />
+              </div>
+            </div>
+          </div>
         }
-        <div className="SharedStructures-votes-tally">{upvotes.length}</div>
-        <div className="SharedStructures-votes-desc">upvotes</div>
       </div>
-      <div className={classnames("SharedStructures-struct", {"highlight": sessionId === id})}>
-        <div className="SharedStructures-struct-id">{uid}</div>
-        <div className="SharedStructures-struct-blocks">
-          <Blocks blocks={blocks} width={330} height={240} isoConfig={{offset:-1, scale: 0.2}} />
-        </div>
-        <div className="SharedStructures-struct-recipe">
-          {recipe.map((r, idx) => (
-            <span key={idx}>{r}</span>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
+    )
+  }
 }
 
 class SharedStructures extends Component {
@@ -66,7 +109,7 @@ class SharedStructures extends Component {
             }).map((s, idx) => {
               return (
                 <Structure
-                  key={s.uid + "-" + s.id}
+                  key={idx}
                   uid={s.uid}
                   id={s.id}
                   blocks={s.value}

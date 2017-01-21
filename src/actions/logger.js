@@ -6,26 +6,26 @@ function sendSocket(getState, event, message) {
   let socket = getState().logger.socket
 
   return new Promise((resolve, reject) => {
-    if (socket) {
+    if (socket && socket.connected && typeof socket.emit === "function") {
       socket.emit(event, message)
       resolve(socket)
     } else {
       // Retry
       setTimeout(() => {
         socket = getState().logger.socket
-        if (socket) {
+        if (socket && socket.connected && typeof socket.emit === "function") {
           socket.emit(event, message)
           resolve(socket)
         } else {
           setTimeout(() => {
             socket = getState().logger.socket
-            if (socket) {
+            if (socket && socket.connected && typeof socket.emit === "function") {
               socket.emit(event, message)
               resolve(socket)
             } else {
               setTimeout(() => {
                 socket = getState().logger.socket
-                if (socket) {
+                if (socket && socket.connected && typeof socket.emit === "function") {
                   socket.emit(event, message)
                   resolve(socket)
                 } else {

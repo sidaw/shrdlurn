@@ -178,7 +178,7 @@ class BlocksWorld extends React.Component {
   }
 
   render() {
-    const { responses, history, current_history_idx, status, defining, task } = this.props.world
+    const { world: { responses, history, current_history_idx, status, defining }, task } = this.props
 
 
     /* Compute the currentState of blocks by finding which history item is
@@ -262,7 +262,8 @@ class BlocksWorld extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  world: state.world
+  world: state.world,
+  task: state.user.task
 })
 
 export default connect(mapStateToProps)(BlocksWorld)

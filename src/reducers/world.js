@@ -8,8 +8,7 @@ const initialState = {
   query: "",
   defining: false,
   exampleQuery: "add red 3 times",
-  defineN: null,
-  task: "world"
+  defineN: null
 }
 
 export default function reducer(state = initialState, action = {}) {
@@ -63,8 +62,8 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.REMOVE_LAST:
       let trimmedHistory = state.history.slice(0, state.history.length - 1)
       return { ...state, history: trimmedHistory }
-    case Constants.SET_TASK:
-      return { ...state, task: action.task }
+    case Constants.CLEAR:
+      return initialState
     default:
       return state
   }

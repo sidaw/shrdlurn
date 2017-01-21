@@ -51,6 +51,9 @@ export default function reducer(state = initialState, action = {}) {
       modifiedStructs[idx].score = action.score
       return { ...state, structs: modifiedStructs }
     case Constants.NEW_STRUCT:
+      if (state.structs.findIndex(s => s.uid === action.uid && s.id === action.id) !== -1)
+        return state
+
       const value = JSON.parse(action.struct.value)
       const recipe = action.struct.recipe
       const newStruct = { uid: action.uid, id: action.id, score: action.score, upvotes: action.upvotes, value: value, recipe: recipe }

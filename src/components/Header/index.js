@@ -2,6 +2,8 @@ import React from "react"
 import Strings from "constants/strings"
 import Mousetrap from "mousetrap"
 import { Link } from "react-router"
+import Actions from "actions/world"
+import { connect } from "react-redux"
 
 import "./styles.css"
 
@@ -22,6 +24,10 @@ class Header extends React.Component {
 
   componentWillUnmount() {
     Mousetrap.unbind("escape")
+  }
+
+  clear() {
+    this.props.dispatch(Actions.clear())
   }
 
   renderModal() {
@@ -127,8 +133,10 @@ class Header extends React.Component {
           <span className="Header-sublogo">A Stanford NLP Project</span>
         </div>
         <div className="Header-nav">
+          <div onClick={() => this.clear()}>Clear</div>
           <Link to={{ pathname: "/", query: this.props.query }} activeClassName="active"><div>SHRDLURN</div></Link>
           <Link to={{ pathname: "/community", query: this.props.query }} activeClassName="active" target="_blank"><div>Community</div></Link>
+          <a target="_blank" href="https://shrdlurn.slack.com/shared_invite/MTI5NTA2Nzg1OTcxLTE0ODQ4MTIzNjQtNTc5NjE0OGFhNA"><div>Chat</div></a>
           <div onClick={() => this.setState({ modal: "helpme" })}>Help Me</div>
           <div id="restart_tutorial" onClick={() => openTutorial()}>View Tutorial Again</div>
         </div>
@@ -138,4 +146,4 @@ class Header extends React.Component {
   }
 }
 
-export default Header
+export default connect()(Header)

@@ -2,6 +2,8 @@ import Constants from "constants/actions"
 import { SEMPREquery, parseSEMPRE } from "helpers/sempre"
 import Logger from "actions/logger"
 import { blocksEqual } from "helpers/blocks"
+import { persistStore } from "redux-persist"
+import { getStore } from "../"
 
 function sendContext(history, current_history_idx, sessionId) {
   let contextCommand = "(:context)"
@@ -291,12 +293,12 @@ const Actions = {
     }
   },
 
-  setTask: (task) => {
-    return (dispatch) => {
+  clear: () => {
+    return (dispatch, getState) => {
       dispatch({
-        type: Constants.SET_TASK,
-        task
+        type: Constants.CLEAR
       })
+      persistStore(getStore(), {blacklist: ['user', 'logger', 'routing']}, () => {}).purge()
     }
   }
 }

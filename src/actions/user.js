@@ -31,6 +31,15 @@ const Actions = {
         sessionId: sessionId
       })
     }
+  },
+
+  setTask: (task) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_TASK,
+        task
+      })
+    }
   }
 }
 
