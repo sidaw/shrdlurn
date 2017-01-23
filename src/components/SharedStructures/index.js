@@ -33,17 +33,17 @@ class Structure extends Component {
     return (
       <div className="SharedStructures-row">
         <div className="SharedStructures-votes">
-          {upvotes.indexOf(sessionId.slice(0, 8)) === -1 &&
+          {upvotes.indexOf(sessionId) === -1 &&
             <div className="SharedStructures-votes-upvote" onClick={() => upVote()}>&#9650;</div>
           }
           <div className="SharedStructures-votes-tally">{upvotes.length}</div>
           <div className="SharedStructures-votes-desc">upvotes</div>
         </div>
         <div
-          className={classnames("SharedStructures-struct", {"highlight": sessionId.slice(0, 8) === uid})}
+          className={classnames("SharedStructures-struct", {"highlight": sessionId === uid})}
           onClick={() => this.toggleBig()}
         >
-          <div className="SharedStructures-struct-id">{uid} #{id}</div>
+          <div className="SharedStructures-struct-id">{uid.slice(0, 8)} #{id}</div>
           <div className="SharedStructures-struct-blocks">
             <Blocks blocks={blocks} width={330} height={240} isoConfig={{offset:-1, scale: 0.2}} />
           </div>

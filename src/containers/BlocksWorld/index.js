@@ -251,7 +251,7 @@ class BlocksWorld extends React.Component {
         {task === "target" ?
           <Target target={this.state.target} possibleSteps={this.state.possSteps} />
         :
-          <SharePanel />
+          <SharePanel score={this.props.score} />
         }
         {this.state.win &&
           <Win targetIdx={this.state.targetIdx} nSteps={history.length} nBlocks={currentState.length} />
@@ -263,7 +263,8 @@ class BlocksWorld extends React.Component {
 
 const mapStateToProps = (state) => ({
   world: state.world,
-  task: state.user.task
+  task: state.user.task,
+  score: state.logger.score
 })
 
 export default connect(mapStateToProps)(BlocksWorld)

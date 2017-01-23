@@ -30,6 +30,8 @@ class SharePanel extends Component {
           <div>
             <p>Once you have built an interesting structure, please share it with the community!</p>
             <p>You can share as many structures as you want!</p>
+            <br />
+            <p><strong>Your score:</strong> {this.props.score}</p>
           </div>
           <button
             onClick={() => this.share()}

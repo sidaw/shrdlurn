@@ -4,7 +4,9 @@ const initialState = {
   socket: null,
   structs: [],
   lastRecipe: [],
-  utterances: {}
+  utterances: {},
+  topBuilders: [],
+  score: 0
 }
 
 /* Prune the number of utts displayed to under 10, ordered by latest timestamp */
@@ -60,6 +62,10 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, structs: [...state.structs, newStruct] }
     case Constants.NEW_UTTERANCES:
       return { ...state, utterances: { ...state.utterances, [action.uid]: action.utterances.map(u => JSON.parse(u)) } }
+    case Constants.LOAD_TOP_BUILDERS:
+      return { ...state, topBuilders: action.topBuilders }
+    case Constants.USER_SCORE:
+      return { ...state, score: action.score }
     default:
       return state
   }
