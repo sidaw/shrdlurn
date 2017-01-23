@@ -45,7 +45,7 @@ class Structure extends Component {
         >
           <div className="SharedStructures-struct-id">{uid} #{id}</div>
           <div className="SharedStructures-struct-blocks">
-            <Blocks blocks={blocks} width={330} height={240} isoConfig={{canvasHeight: 330, canvasWidth: 240, numUnits:20}} />
+            <Blocks blocks={blocks} width={330} height={240} isoConfig={{canvasWidth: 330, canvasHeight: 240, numUnits:30}} />
           </div>
           <div className="SharedStructures-struct-recipe">
             {recipe.map((r, idx) => (

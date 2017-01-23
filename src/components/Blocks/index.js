@@ -38,7 +38,7 @@ class Blocks extends React.Component {
 			canvasWidth: 2*825.0,
 			canvasHeight: 2*600.0,
 			originXratio: 0.5,
-			originYratio: 0.6,
+			originYratio: 0.7,
 			numUnits: 30, // default number of cubes from left to right of the canvas
 			maxUnits: 200,
 			marginCubes: 3, // how far from the border do we keep the cubes, until we reach max zoom

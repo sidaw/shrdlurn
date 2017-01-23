@@ -31,7 +31,7 @@ class Target extends React.Component {
           </div>
         </div>
         <div className="Target-struct">
-          <Blocks blocks={target} isoConfig={{canvasHeight: 480, canvasWidth: 660, numUnits:20}} width={660} height={480} />
+          <Blocks blocks={target} width={660}  height={480} isoConfig={{canvasWidth: 660, canvasHeight: 480, numUnits:20}}/>
         </div>
         <div className="Target-metadata">
           <div key="poss"><strong>{possibleSteps}</strong>&nbsp;possible steps</div>
