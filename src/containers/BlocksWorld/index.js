@@ -219,7 +219,7 @@ class BlocksWorld extends React.Component {
     return (
       <div className="BlocksWorld">
         <div className="BlocksWorld-mainblocks">
-          <Blocks blocks={currentState} width={1650} height={1200} />
+          <Blocks blocks={currentState} width={1650} height={1200} isoConfig={{canvasWidth: 1650, canvasHeight: 1200, numUnits:30}}/>
         </div>
         <div className="BlocksWorld-command">
           <History />

@@ -5,7 +5,7 @@ import Isomer,
          Color,
          Path
        } from "isomer";
-import { sortBlocks } from "helpers/blocks"
+import { sortBlocks, rotateBlock } from "helpers/blocks"
 import deepEqual from "deep-equal"
 
 /* TODO: make blocks in the center responsive -- squish to 60% of the screen size */
@@ -25,25 +25,36 @@ class Blocks extends React.Component {
 
   constructor(props) {
     super(props)
-
     /* Default Isomer config */
     const defaultIsoConfig = {
-      basicUnit: 0.75,
-      width: 1,
-      borderWidth: -0.2,
-      baseHeight: 0.0,
       centerPoint: Point(0, 0, 0),
       rotation: (Math.PI / 12),
-      scale: 0.8,
-      translate: 0,
-      offset: 2,
-      groundRadius: 3,
-      gridColor: new Color(50, 50, 50)
+      scale: 1,
+
+			blockWidthScale: 0.9,
+			selectWidthScale: 0.4,
+      groundRadius: 5,
+      gridColor: new Color(50, 50, 50),
+			canvasWidth: 2*825.0,
+			canvasHeight: 2*600.0,
+			originXratio: 0.5,
+			originYratio: 0.6,
+			numUnits: 30, // default number of cubes from left to right of the canvas
+			maxUnits: 200,
+			marginCubes: 3, // how far from the border do we keep the cubes, until we reach max zoom
+			nil:null
     }
 
     this.config = {...defaultIsoConfig, ...props.isoConfig}
 
-    if (props.blocks.length > 100) this.config.scale = this.config.scale * .8
+		// infer easier to use arguments
+		this.config = (p => {
+			p.originX = p.canvasWidth * p.originXratio;
+			p.originY = p.canvasHeight * p.originYratio;
+			p.unitWidth = p.canvasWidth / p.numUnits;
+			p.margin = (p.canvasWidth / p.numUnits) * p.marginCubes;
+			return p;
+	  })(this.config);
 
     this.colorMap = {
       Red: [209, 0, 0],
@@ -64,7 +75,13 @@ class Blocks extends React.Component {
   }
 
   componentDidMount() {
-    const iso =  new Isomer(this.refs.blocksCanvas);
+    const iso =  new Isomer(this.refs.blocksCanvas,
+			{
+				scale: this.config.unitWidth,
+				originX: this.config.originX,
+				originY: this.config.originY
+			}
+		);
     this.setState({ iso: iso })
   }
 
@@ -73,71 +90,69 @@ class Blocks extends React.Component {
   }
 
   componentDidUpdate() {
-    this.state.iso.canvas.clear()
-    this.renderGrid()
-    this.renderBlocks()
+    const blocks = sortBlocks(this.props.blocks.map((b) => rotateBlock(b, this.state.rotational)));
+		const scalars = blocks.map((b) => this.getBlockScale(b));
+		const minScalar = Math.max(Math.min(...scalars), this.config.numUnits/this.config.maxUnits);
+
+		this.state.iso.canvas.clear()
+		// this.state.iso._calculateTransformation();
+    this.renderBlocks(blocks.filter((b) => b.z < 0), minScalar)
+		this.renderGrid(minScalar)
+		this.renderBlocks(blocks.filter((b) => b.z >= 0), minScalar)
   }
 
-  renderGrid() {
-    const { basicUnit, scale, offset, groundColor, groundRadius, rotation, centerPoint } = this.config;
+	getBlockScale(b) {
+		const p = this.state.iso._translatePoint(new Point(b.x, b.y, b.z));
+		// scale is the scaling down required so the point appears in canvas
+		// it satisfies: scale * (x - originX) + originX \in [0, canvasWidth]
+		// I assume origin is in the box
+		const Y0 = this.config.originY;
+		const X0 = this.config.originX;
+		const margin = this.config.margin;
+		let xscale = 1;
+		if (p.x < margin)
+			xscale = (X0 - margin) / (X0 - p.x);
+		if (p.x > this.config.canvasWidth - margin)
+			xscale = (this.config.canvasWidth - margin - X0) / (p.x - X0);
 
-    const unit = basicUnit * scale;
-    const gridwidth = basicUnit * scale
+		let yscale = 1;
+		if (p.y < margin)
+			yscale = (Y0 - margin) / (Y0 - p.y);
+		if (p.y > this.config.canvasHeight - margin)
+			yscale = (this.config.canvasHeight - margin - Y0) / (p.y - Y0);
+		return Math.min(xscale, yscale);
+	}
+
+  renderGrid(scale) {
+		const { groundRadius, rotation, groundColor, centerPoint } = this.config;
     const groundwidth = 2 * groundRadius + 1;
     for (let x = 0; x < groundwidth + 1; x++) {
       this.state.iso.add(new Path([
-      	new Point(x*unit, 0, 0),
-      	new Point(x*unit, groundwidth *unit, 0),
-      	new Point(x*unit, 0, 0)
+      	new Point((x-groundRadius), -groundRadius, 0),
+      	new Point((x-groundRadius), (groundRadius+1), 0),
+      	new Point((x-groundRadius), -groundRadius, 0)
       ])
-      .translate(gridwidth*offset, gridwidth*offset, 0)
-      .rotateZ(centerPoint, rotation),
-      groundColor
+			.rotateZ(centerPoint, rotation)
+			.scale(centerPoint, scale)
+      //.translate(gridwidth*offset, gridwidth*offset, 0)
+      ,groundColor
       );
 
       const y = x;
       this.state.iso.add(new Path([
-      	new Point(0, y*unit, 0),
-      	new Point(groundwidth*unit, y*unit, 0),
-      	new Point(0, y*unit, 0)
+      	new Point(-groundRadius, (y-groundRadius), 0),
+      	new Point((groundRadius+1), (y-groundRadius), 0),
+      	new Point(-groundRadius, (y-groundRadius), 0)
       ])
-      .translate(gridwidth*offset, gridwidth*offset, 0)
-      .rotateZ(centerPoint, rotation),
-      groundColor
+			.rotateZ(centerPoint, rotation)
+			.scale(centerPoint, scale)
+      //.translate(gridwidth*offset, gridwidth*offset, 0)
+      ,groundColor
       );
     }
   }
 
-  renderBlocks() {
-    const { width, basicUnit } = this.config
-
-    const blocks = sortBlocks(this.props.blocks.map((b) => {
-      let x = b.x;
-      let y = b.y;
-
-      switch (this.state.rotational) {
-        case -1:
-          x = b.x;
-          y = b.y;
-          break;
-        case -2:
-          x = b.y;
-          y = width - 1 - b.x;
-          break;
-        case 1:
-          x = width - 1 - b.y;
-          y = b.x;
-          break;
-        case 2:
-          x = width - 1 - b.x;
-          y = width - 1 - b.y;
-          break;
-        default:
-      }
-
-      return { ...b, x: x, y: y };
-    }));
-
+  renderBlocks(blocks, scale = this.config.scale) {
     for (const block of blocks) {
       // let selectedBlockYes = false;
       const color = this.colorMap[block.color];
@@ -152,12 +167,12 @@ class Blocks extends React.Component {
         //blockColor = new Color(244,244,244, 0.2);
         //this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
       } else {
-        this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
+        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, false, scale), blockColor);
       }
 
       if (block.names && block.names.includes("S")) {
         //this.state.iso.add(this.makeBlock(block.x, block.y, block.z, basicUnit, true), new Color(0, 160, 176, 0.125));
-        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, basicUnit, true), new Color(0, 0, 0, 0.5));
+        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, true, scale), new Color(0, 0, 0, 0.5));
       }
     }
   }
@@ -171,26 +186,25 @@ class Blocks extends React.Component {
     return factor*graystandard + (1-factor)*value;
   }
 
-  makeBlock(x, y, z, unitWidth = this.config.basicUnit, highlighted = false) {
-    const { scale, groundRadius, offset, rotation, centerPoint, borderWidth, baseHeight, basicUnit } = this.config
-
-    const gridWidth = unitWidth * scale
-    const shifter = highlighted ? unitWidth * scale * 0.6 : 0;
-
+  makeBlock(x, y, z, highlighted = false, scale = this.config.scale) {
+    const { rotation, centerPoint} = this.config
+    const cubesize = highlighted ? this.config.selectWidthScale : this.config.blockWidthScale;
+		const shift = (1-cubesize) / 2;
     return Shape.Prism(
-      Point((x + (x * borderWidth)) * scale + (shifter / 2),
-            (y + (y * borderWidth)) * scale + (shifter / 2),
-            (z + baseHeight + (borderWidth * z)) * scale + (shifter / 2)
+      Point(x + shift,
+            y + shift,
+            z + shift
            ),
-      basicUnit * scale - shifter, basicUnit * scale - shifter, basicUnit * scale - shifter
+      cubesize, cubesize, cubesize
     )
-      .translate((offset+groundRadius)*gridWidth, (offset+groundRadius)*gridWidth, 0)
-      .rotateZ(centerPoint, rotation);
+    .rotateZ(centerPoint, rotation)
+		.scale(centerPoint, scale)
+			//.translate(gridWidth*offset, gridWidth*offset, 0);
   }
 
   render() {
     return (
-      <canvas className="Blocks" ref="blocksCanvas" width={this.props.width} height={this.props.height} />
+      <canvas className="Blocks" ref="blocksCanvas" width={this.props.width} height={this.props.height}/>
     )
   }
 }

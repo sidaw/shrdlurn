@@ -45,7 +45,7 @@ class Structure extends Component {
         >
           <div className="SharedStructures-struct-id">{uid} #{id}</div>
           <div className="SharedStructures-struct-blocks">
-            <Blocks blocks={blocks} width={330} height={240} isoConfig={{offset:-1, scale: 0.2}} />
+            <Blocks blocks={blocks} width={330} height={240} isoConfig={{canvasHeight: 330, canvasWidth: 240, numUnits:20}} />
           </div>
           <div className="SharedStructures-struct-recipe">
             {recipe.map((r, idx) => (
@@ -64,7 +64,7 @@ class Structure extends Component {
                 </div>
               </div>
               <div className="modal-body">
-                <Blocks blocks={blocks} width={1650} height={1200} />
+                <Blocks blocks={blocks} width={1650} height={1200} isoConfig={{canvasWidth: 1650, canvasHeight: 1200, numUnits:30}}/>
               </div>
             </div>
           </div>

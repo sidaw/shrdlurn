@@ -42,3 +42,28 @@ export function blocksEqual(struct1, struct2) {
 
   return true;
 }
+
+export function rotateBlock (b, rotational, width = 1) {
+	let x = b.x;
+	let y = b.y;
+	switch (rotational) {
+		case -1:
+			x = b.x;
+			y = b.y;
+			break;
+		case -2:
+			x = b.y;
+			y = width - 1 - b.x;
+			break;
+		case 1:
+			x = width - 1 - b.y;
+			y = b.x;
+			break;
+		case 2:
+			x = width - 1 - b.x;
+			y = width - 1 - b.y;
+			break;
+		default:
+	}
+	return { ...b, x: x, y: y };
+}
