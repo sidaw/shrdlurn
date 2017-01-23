@@ -18,7 +18,7 @@ class Community extends Component {
           <SharedStructures structs={this.props.structs} />
         </div>
         <div>
-          <LiveUtterances utterances={this.props.utterances} />
+          <LiveUtterances utterances={this.props.utterances} topBuilders={this.props.topBuilders} />
         </div>
       </div>
     )
@@ -27,7 +27,8 @@ class Community extends Component {
 
 const mapStateToProps = (state) => ({
   structs: state.logger.structs,
-  utterances: state.logger.utterances
+  utterances: state.logger.utterances,
+  topBuilders: state.logger.topBuilders
 })
 
 export default connect(mapStateToProps)(Community)

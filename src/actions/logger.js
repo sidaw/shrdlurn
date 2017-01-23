@@ -52,9 +52,21 @@ const Actions = {
 
         sendSocket(getState, "session", {"sessionId": sessionId})
 
+        sendSocket(getState, "getscore", {})
+
+        /* Query for a new score every 3 minutes */
+        setInterval(() => sendSocket(getState, "getscore", {}), 180000)
+
         dispatch({
           type: Constants.OPEN_LOGGING_SOCKET,
           socket: socket
+        })
+      })
+
+      socket.on("score", (e) => {
+        dispatch({
+          type: Constants.USER_SCORE,
+          score: e.score
         })
       })
     }
@@ -118,6 +130,13 @@ const Actions = {
               type: Constants.NEW_UTTERANCES,
               uid: e.uid,
               utterances: e.utterances
+            })
+          })
+
+          socket.on('top_builders', (e) => {
+            dispatch({
+              type: Constants.LOAD_TOP_BUILDERS,
+              topBuilders: e.top_builders
             })
           })
         })
