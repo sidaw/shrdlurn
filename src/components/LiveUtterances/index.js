@@ -4,7 +4,6 @@ import moment from "moment"
 import "./styles.css"
 
 const LiveUtterances = ({ utterances, topBuilders }) => {
-  console.log(topBuilders[0])
   return (
     <div className="LiveUtterances">
       <div className="Community-header">
