@@ -40,12 +40,14 @@ class SharePanel extends Component {
           </div>
           <button
             onClick={() => this.share()}
-            className="active full">
+            className="active full"
+            style={{borderRadius:"3px"}}>
             Share Now
           </button>
           <button
             onClick={() => this.clear()}
             className="active full red"
+            style={{borderRadius:"3px"}}
           >
             Clear
           </button>
