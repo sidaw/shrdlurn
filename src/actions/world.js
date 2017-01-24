@@ -137,7 +137,14 @@ const Actions = {
       const defineHist = history.slice(idx + 1, history.length).map(h => [h.text, h.formula]).filter(h => h.type !== "pin")
 
       // scope multiline definitions by default
-      const mode = defineHist.length > 1? ':def' : ':def_ret'
+      let mode = ":def"
+      if (defineHist.length <= 1) {
+        mode = ":def_ret"
+      } else if (defineHist.length === history.length - 2) {
+        // mode = ":def_iso"
+        // TODO: uncomment when SEMPRE handles :def_iso
+      }
+
       const sempreQuery = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
 
       /* Submit the define command */

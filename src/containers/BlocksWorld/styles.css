@@ -94,3 +94,8 @@
   background-color: rgba(0, 160, 176, 0.7);
   color: #FFF;
 }
+
+button.red {
+  margin-left: 120px;
+  background-color: #C5283D;
+}

@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import classnames from "classnames"
 import { connect } from "react-redux"
 import Actions from "actions/logger"
+import WorldActions from "actions/world"
 
 class SharePanel extends Component {
   constructor(props) {
@@ -12,6 +13,10 @@ class SharePanel extends Component {
 
   share() {
     this.props.dispatch(Actions.share())
+  }
+
+  clear() {
+    this.props.dispatch(WorldActions.clear())
   }
 
   render() {
@@ -37,6 +42,12 @@ class SharePanel extends Component {
             onClick={() => this.share()}
             className="active full">
             Share Now
+          </button>
+          <button
+            onClick={() => this.clear()}
+            className="active full red"
+          >
+            Clear
           </button>
         </div>
       </div>
