@@ -146,7 +146,7 @@ const Actions = {
   share: () => {
     return (dispatch, getState) => {
       const { history } = getState().world
-      const { lastRecipe } = getState().logger
+      const { lastValue } = getState().logger
 
       const structure = history[history.length - 1]
 
@@ -158,21 +158,20 @@ const Actions = {
       const value = JSON.stringify(structure.value)
       const recipe = history.map(h => h.text)
 
-      if (recipe.length === lastRecipe.length && recipe.every((v,i)=> v === lastRecipe[i])) {
-        alert("You've already shared this structure.")
+      if (value === lastValue) {
+        alert("You've already shared this structure. Make a new structure, and share that!")
         return
       }
 
       const payload = { struct: { value, recipe } }
 
-      console.log("SHARING!", payload)
       sendSocket(getState, "share", payload)
 
       alert("Shared your structure! View it on the Community page.")
 
       dispatch({
         type: Constants.SHARED_STRUCT,
-        recipe: recipe
+        value: value
       })
     }
   },

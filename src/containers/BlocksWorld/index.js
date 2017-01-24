@@ -87,6 +87,8 @@ class BlocksWorld extends React.Component {
       }
     } else if (this.props.world.status === "define") {
       this.props.dispatch(Actions.define(this.props.world.defineN))
+    } else if (this.props.world.status === "loading") {
+      this.props.dispatch(Actions.setStatus("try"))
     } else {
       console.log("uh oh...")
     }

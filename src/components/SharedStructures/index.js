@@ -97,31 +97,34 @@ class SharedStructures extends Component {
           <p>Upvote the best and most interesting structures (and submit your own)!</p>
         </div>
         <div className="Community-content">
-          {this.props.structs.length > 0 ?
-            this.props.structs.sort((a, b) => {
-              if (a.score < b.score) {
-                return 1
-              } else if (a.score > b.score) {
-                return -1
-              } else {
-                return 0
-              }
-            }).map((s, idx) => {
-              return (
-                <Structure
-                  key={idx}
-                  uid={s.uid}
-                  id={s.id}
-                  blocks={s.value}
-                  recipe={s.recipe}
-                  upvotes={s.upvotes}
-                  upVote={() => this.handleUpvote(s.uid, s.id)}
-                  sessionId={this.props.sessionId}
-                />
-              )
-            })
+          {this.props.structs === "loading" ?
+            <span>Loading structs from the server...</span>
           :
-            <span>No structs shared yet. Be the first!</span>
+            this.props.structs.length > 0 ?
+              this.props.structs.sort((a, b) => {
+                if (a.score < b.score) {
+                  return 1
+                } else if (a.score > b.score) {
+                  return -1
+                } else {
+                  return 0
+                }
+              }).map((s, idx) => {
+                return (
+                  <Structure
+                    key={idx}
+                    uid={s.uid}
+                    id={s.id}
+                    blocks={s.value}
+                    recipe={s.recipe}
+                    upvotes={s.upvotes}
+                    upVote={() => this.handleUpvote(s.uid, s.id)}
+                    sessionId={this.props.sessionId}
+                  />
+                )
+              })
+            :
+              <span>No structs shared yet. Be the first!</span>
           }
         </div>
       </div>

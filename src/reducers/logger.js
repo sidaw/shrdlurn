@@ -2,8 +2,8 @@ import Constants from "constants/actions"
 
 const initialState = {
   socket: null,
-  structs: [],
-  lastRecipe: [],
+  structs: "loading",
+  lastValue: "",
   utterances: {},
   topBuilders: [],
   score: 0
@@ -37,7 +37,7 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.OPEN_LOGGING_SOCKET:
       return { ...state, socket: action.socket }
     case Constants.SHARED_STRUCT:
-      return { ...state, lastRecipe: action.recipe }
+      return { ...state, lastValue: action.value }
     case Constants.NEW_ACCEPT:
       const prevUtterancesNA = state.utterances.hasOwnProperty(action.uid) ? state.utterances[action.uid] : []
       const newUttsNA = { ...state.utterances, [action.uid]: [ { type: "accept", msg: {query: action.query}, timestamp: action.timestamp}, ...prevUtterancesNA ]}
@@ -53,12 +53,16 @@ export default function reducer(state = initialState, action = {}) {
       modifiedStructs[idx].score = action.score
       return { ...state, structs: modifiedStructs }
     case Constants.NEW_STRUCT:
-      if (state.structs.findIndex(s => s.uid === action.uid && s.id === action.id) !== -1)
+      if (state.structs !== "loading" && state.structs.findIndex(s => s.uid === action.uid && s.id === action.id) !== -1)
         return state
 
       const value = JSON.parse(action.struct.value)
       const recipe = action.struct.recipe
       const newStruct = { uid: action.uid, id: action.id, score: action.score, upvotes: action.upvotes, value: value, recipe: recipe }
+
+      if (state.structs === "loading") {
+        return { ...state, structs: [newStruct] }
+      }
       return { ...state, structs: [...state.structs, newStruct] }
     case Constants.NEW_UTTERANCES:
       return { ...state, utterances: { ...state.utterances, [action.uid]: action.utterances.map(u => JSON.parse(u)) } }

@@ -22,11 +22,14 @@ const LiveUtterances = ({ utterances, topBuilders }) => {
         }).map(b => (
           <div key={b[0]} className="LiveUtterances-group">
             <div className="LiveUtterances-groupid">
-              <div><span className="title">user:</span> {b[0].slice(0, 8)} (score: {b[1]})</div>
+              <div>
+                <span className="title">user:</span> {b[0].slice(0, 8)}&nbsp;&nbsp;|&nbsp;&nbsp;
+                <span className="title">impact:</span> {b[1]}&nbsp;&nbsp;|&nbsp;&nbsp;
+                <span className="title">score:</span> {b[2].reduce((acc, c) => acc + c["cite"] + c["self"], 0)}</div>
             </div>
             {b[2].map((u, idx) => (
               <span key={idx} className="LiveUtterances-utterance">
-                <span className="define">defined "{u.head}" as {u.body}</span>
+                <span title={u.body}>{u.head}<br /><span style={{fontSize:"0.7em"}}>(score: {u.cite + u.self})</span></span>
               </span>
             ))}
           </div>
