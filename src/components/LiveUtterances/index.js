@@ -13,9 +13,9 @@ const LiveUtterances = ({ utterances, topBuilders }) => {
       <div className="Community-content">
         {topBuilders.sort((a, b) => {
           if (a[1] < b[1]) {
-            return -1
-          } else if (a[1] > b[1]) {
             return 1
+          } else if (a[1] > b[1]) {
+            return -1
           } else {
             return 0
           }
