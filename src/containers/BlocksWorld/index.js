@@ -175,7 +175,7 @@ class BlocksWorld extends React.Component {
     if (idx !== -1) {
       this.props.dispatch(Actions.define(history.length - 1 - idx))
     } else {
-      alert("not")
+      alert("shift-enter is for defining, you are not in defining mode")
     }
   }
 
@@ -199,6 +199,8 @@ class BlocksWorld extends React.Component {
         } else {
           currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
         }
+				console.log( (({score, formula, formulas}) => ({score, formula, formulas}))(responses[this.state.selectedResp]));
+        currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
       } catch (e) {
         currentState = this.computeDiff(history[idx].value || [], responses[0].value)
       }
