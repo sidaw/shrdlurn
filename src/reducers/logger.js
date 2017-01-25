@@ -6,7 +6,8 @@ const initialState = {
   lastValue: "",
   utterances: {},
   topBuilders: [],
-  score: 0
+  score: 0,
+  user_structs: []
 }
 
 /* Prune the number of utts displayed to under 10, ordered by latest timestamp */
@@ -70,6 +71,8 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, topBuilders: action.topBuilders }
     case Constants.USER_SCORE:
       return { ...state, score: action.score }
+    case Constants.USER_STRUCTS_COUNT:
+      return { ...state, user_structs: action.structs }
     default:
       return state
   }
