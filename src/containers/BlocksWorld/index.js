@@ -196,6 +196,7 @@ class BlocksWorld extends React.Component {
         if (responses[this.state.selectedResp].error)
           alert("This response resulted in an error with our server. Please scroll to another intepretation or try another query. (This usually means your exceeded the number of blocks that the server can handle - try a query that doesn't have so many blocks in it.)")
 
+				console.log(responses[this.state.selectedResp]);
         currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
       } catch (e) {
         currentState = this.computeDiff(history[idx].value || [], responses[0].value)

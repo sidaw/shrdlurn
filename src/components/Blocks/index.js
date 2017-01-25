@@ -109,7 +109,6 @@ class Blocks extends React.Component {
 		// it satisfies: scale * (x - originX) + originX \in [0, canvasWidth]
 		// I assume origin is in the box
 		// margin is a bit tricky, the exactly way requires multiple calls to translate
-		// unit width is a hack
 
 		const Y0 = originY;
 		const X0 = originX;
@@ -126,7 +125,7 @@ class Blocks extends React.Component {
 		if (p.y > this.config.canvasHeight - margin)
 			yscale = (this.config.canvasHeight - margin - Y0) / (p.y - Y0);
 
-		console.log(`p:${p.x},${p.y} margin: ${margin}, height:${this.config.canvasHeight}`);
+		// console.log(`p:${p.x},${p.y} margin: ${margin}, height:${this.config.canvasHeight}`);
 		return Math.min(xscale, yscale);
 	}
 
