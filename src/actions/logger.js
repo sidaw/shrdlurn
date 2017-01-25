@@ -54,8 +54,10 @@ const Actions = {
 
         sendSocket(getState, "getscore", {})
 
-        /* Query for a new score every 3 minutes */
-        setInterval(() => sendSocket(getState, "getscore", {}), 180000)
+        sendSocket(getState, "getstructcount", {})
+
+        /* Query for a new score every 45 seconds */
+        setInterval(() => sendSocket(getState, "getscore", {}), 45000)
 
         dispatch({
           type: Constants.OPEN_LOGGING_SOCKET,
@@ -67,6 +69,13 @@ const Actions = {
         dispatch({
           type: Constants.USER_SCORE,
           score: e.score
+        })
+      })
+
+      socket.on("user_structs", (e) => {
+        dispatch({
+          type: Constants.USER_STRUCTS_COUNT,
+          structs: e.structs.map(f => f.substring(0, f.length - 5))
         })
       })
     }
@@ -146,7 +155,12 @@ const Actions = {
   share: () => {
     return (dispatch, getState) => {
       const { history } = getState().world
-      const { lastValue } = getState().logger
+      const { lastValue, user_structs } = getState().logger
+
+      if (user_structs.length > 100) {
+        alert("You have already shared 100 structures. If you want to share more, please delete some of them first.")
+        return
+      }
 
       const structure = history[history.length - 1]
 
@@ -180,6 +194,20 @@ const Actions = {
     return (dispatch, getState) => {
       const payload = { uid: uid, id: id }
       sendSocket(getState, "upvote", payload)
+    }
+  },
+
+  deleteStruct: (id) => {
+    return (dispatch, getState) => {
+      const payload = { id: id }
+      sendSocket(getState, "delete_struct", payload)
+
+      /* Reduce structs count by 1 */
+      const { user_structs } = getState().logger
+      dispatch({
+        type: Constants.USER_STRUCTS_COUNT,
+        structs: user_structs.filter(a => a !== id)
+      })
     }
   }
 }

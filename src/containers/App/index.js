@@ -5,6 +5,9 @@ import UserActions from "actions/user"
 import { connect } from "react-redux"
 import Mousetrap from "mousetrap"
 
+// import Perf from 'react-addons-perf'
+// window.Perf = Perf
+
 import "./styles.css"
 
 class App extends Component {

@@ -1,0 +1,21 @@
+.SharePanel-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-content: space-between;
+  width: 100%;
+}
+
+.SharePanel-buttons .yourstructs {
+  width: 100px;
+  font-size: 0.7em;
+}
+
+.SharePanel-buttons .yourstructs button {
+  font-size: 0.7em;
+  height: auto;
+}
+
+.SharePanel-buttons button {
+  cursor: pointer;
+}

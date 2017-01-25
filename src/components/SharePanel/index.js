@@ -4,6 +4,8 @@ import { connect } from "react-redux"
 import Actions from "actions/logger"
 import WorldActions from "actions/world"
 
+import "./styles.css"
+
 class SharePanel extends Component {
   constructor(props) {
     super(props)
@@ -17,6 +19,10 @@ class SharePanel extends Component {
 
   clear() {
     this.props.dispatch(WorldActions.clear())
+  }
+
+  deleteStruct() {
+    this.props.dispatch(Actions.deleteStruct(this.refs.deleteSelect.value))
   }
 
   render() {
@@ -36,25 +42,41 @@ class SharePanel extends Component {
             <p>Once you have built an interesting structure, please share it with the community!</p>
             <p>You can share as many structures as you want!</p>
             <br />
-            <p><strong>Your score:</strong> {this.props.score}</p>
+            <p><strong>Your impact:</strong> {this.props.score}</p>
           </div>
-          <button
-            onClick={() => this.share()}
-            className="active full"
-            style={{borderRadius:"3px"}}>
-            Share Now
-          </button>
-          <button
-            onClick={() => this.clear()}
-            className="active full red"
-            style={{borderRadius:"3px"}}
-          >
-            Clear
-          </button>
+          <div className="SharePanel-buttons">
+            <button
+              onClick={() => this.share()}
+              className="active full"
+              style={{borderRadius:"3px"}}>
+              Share Now
+            </button>
+            <div className="yourstructs">
+              <select ref="deleteSelect" defaultValue="disabled">
+                <option disabled value="disabled">Select</option>
+                {this.props.user_structs.map((id) =>
+                  <option key={id} value={id}>{id}</option>
+                )}
+              </select>
+              <button onClick={() => this.deleteStruct()}>Delete Struct</button>
+            </div>
+            <button
+              onClick={() => this.clear()}
+              className="active full red"
+              style={{borderRadius:"3px"}}
+            >
+              Clear
+            </button>
+          </div>
         </div>
       </div>
     )
   }
 }
 
-export default connect()(SharePanel)
+const mapStateToProps = (state) => ({
+  user_structs: state.logger.user_structs,
+  sessionId: state.user.sessionId
+})
+
+export default connect(mapStateToProps)(SharePanel)
