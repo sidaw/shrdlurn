@@ -150,6 +150,12 @@ const Actions = {
       /* Submit the define command */
       SEMPREquery({ q: sempreQuery, sessionId: sessionId })
         .then((r) => {
+          if (r.lines && r.lines.length > 0) {
+            /* Display errors and quit if there errors */
+            alert(`There were error(s) in this definition: ${r.lines.join(", ")}`)
+            return
+          }
+
           const { formula: topFormula } = r.candidates[0]
 
           dispatch(Logger.log({ type: "define", msg: { defineAs: defineAs, idx: idx, length: defineHist.length, formula: topFormula } }))

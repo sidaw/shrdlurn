@@ -195,10 +195,10 @@ class BlocksWorld extends React.Component {
          * the error to the console */
         if (responses[this.state.selectedResp].error) {
           alert("This response resulted in an error with our server. Please scroll to another intepretation or try another query. The error message was: " + responses[this.state.selectedResp].error)
-          console.log(responses[this.state.selectedResp]);
+          currentState = history[idx].value
+        } else {
+          currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
         }
-
-        currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
       } catch (e) {
         currentState = this.computeDiff(history[idx].value || [], responses[0].value)
       }

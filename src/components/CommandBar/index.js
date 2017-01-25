@@ -41,7 +41,11 @@ class CommandBar extends React.Component {
   }
 
   handleClick() {
-    if (this.props.query.length === 0) return
+    if (this.props.query.length === 0) {
+      if (this.props.status === "define")
+        alert("You cannot define something as an empty string.")
+      return
+    }
 
     this.props.handleQuery(this.props.query)
     if (this.props.status === "accept")
