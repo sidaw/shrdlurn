@@ -19,7 +19,7 @@ const LiveUtterances = ({ utterances, topBuilders }) => {
           } else {
             return 0
           }
-        }).filter(b => b[2].reduce((acc, u) => acc + u["cite"], 0) > 0).map(b => (
+        }).map(b => (
           <div key={b[0]} className="LiveUtterances-group">
             <div className="LiveUtterances-groupid">
               <div>
@@ -28,7 +28,6 @@ const LiveUtterances = ({ utterances, topBuilders }) => {
                 <span className="title">score:</span> {b[2].reduce((acc, c) => acc + c["cite"] + c["self"], 0)}</div>
             </div>
             {b[2].map((u, idx) => {
-              if (u.cite === 0) return false
               return (
                 <span key={idx} className="LiveUtterances-utterance"
                     title={`score:${u.cite + u.self}, self:${u.self}, defined as "${u.body}"`}>
