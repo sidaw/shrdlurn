@@ -41,7 +41,7 @@ class Blocks extends React.Component {
 			originYratio: 0.7,
 			numUnits: 30, // default number of cubes from left to right of the canvas
 			maxUnits: 200,
-			marginCubes: 3, // how far from the border do we keep the cubes, until we reach max zoom
+			marginCubes: 1, // how far from the border do we keep the cubes, until we reach max zoom
 			nil:null
     }
 
@@ -52,7 +52,7 @@ class Blocks extends React.Component {
 			p.originX = p.canvasWidth * p.originXratio;
 			p.originY = p.canvasHeight * p.originYratio;
 			p.unitWidth = p.canvasWidth / p.numUnits;
-			p.margin = (p.canvasWidth / p.numUnits) * p.marginCubes;
+			p.margin = p.unitWidth * p.marginCubes;
 			return p;
 	  })(this.config);
 
@@ -82,6 +82,7 @@ class Blocks extends React.Component {
 				originY: this.config.originY
 			}
 		);
+
     this.setState({ iso: iso })
   }
 
@@ -102,13 +103,16 @@ class Blocks extends React.Component {
   }
 
 	getBlockScale(b) {
-		const p = this.state.iso._translatePoint(new Point(b.x, b.y, b.z));
+		const {originX, originY, margin, centerPoint, rotation} = this.config;
+		const p = this.state.iso._translatePoint(new Point(b.x, b.y, b.z).rotateZ(centerPoint, rotation));
 		// scale is the scaling down required so the point appears in canvas
 		// it satisfies: scale * (x - originX) + originX \in [0, canvasWidth]
 		// I assume origin is in the box
-		const Y0 = this.config.originY;
-		const X0 = this.config.originX;
-		const margin = this.config.margin;
+		// margin is a bit tricky, the exactly way requires multiple calls to translate
+
+		const Y0 = originY;
+		const X0 = originX;
+
 		let xscale = 1;
 		if (p.x < margin)
 			xscale = (X0 - margin) / (X0 - p.x);
@@ -120,6 +124,8 @@ class Blocks extends React.Component {
 			yscale = (Y0 - margin) / (Y0 - p.y);
 		if (p.y > this.config.canvasHeight - margin)
 			yscale = (this.config.canvasHeight - margin - Y0) / (p.y - Y0);
+
+		// console.log(`p:${p.x},${p.y} margin: ${margin}, height:${this.config.canvasHeight}`);
 		return Math.min(xscale, yscale);
 	}
 
