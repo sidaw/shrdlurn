@@ -2,8 +2,11 @@ import io from "socket.io-client"
 import Constants from "constants/actions"
 import Strings from "constants/strings"
 
-function sendSocket(getState, event, message) {
+function sendSocket(getState, event, payload) {
   let socket = getState().logger.socket
+  let uid = getState().user.sessionId
+
+  const message = { ...payload, uid: uid }
 
   return new Promise((resolve, reject) => {
     if (socket && socket.connected && typeof socket.emit === "function") {
@@ -192,7 +195,7 @@ const Actions = {
 
   upvote: (uid, id) => {
     return (dispatch, getState) => {
-      const payload = { uid: uid, id: id }
+      const payload = { struct_uid: uid, id: id }
       sendSocket(getState, "upvote", payload)
     }
   },
