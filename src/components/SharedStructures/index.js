@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component, PureComponent, PropTypes } from "react"
 import Blocks from "components/Blocks"
 import Actions from "actions/logger"
 import { connect } from "react-redux"
@@ -6,7 +6,7 @@ import classnames from "classnames"
 
 import "./styles.css"
 
-class Structure extends Component {
+class Structure extends PureComponent {
   static propTypes = {
     blocks: PropTypes.array,
     recipe: PropTypes.array,
@@ -22,6 +22,17 @@ class Structure extends Component {
 
     this.state = { big: false }
   }
+
+  // shouldComponentUpdate(nextProps) {
+  //   /* Only upvote if upvotes changes, because we know the rest is static */
+  //   console.log(this.props.uid, this.props.id, nextProps.upvotes.length, this.props.upvotes.length)
+  //   if (nextProps.upvotes.length !== this.props.upvotes.length) {
+  //     console.log("Woot")
+  //     return true
+  //   }
+  //
+  //   return false
+  // }
 
   toggleBig() {
     this.setState({ big: !this.state.big })
@@ -41,10 +52,9 @@ class Structure extends Component {
         </div>
         <div
           className={classnames("SharedStructures-struct", {"highlight": sessionId === uid})}
-          onClick={() => this.toggleBig()}
         >
           <div className="SharedStructures-struct-id">{uid.slice(0, 8)} #{id}</div>
-          <div className="SharedStructures-struct-blocks">
+          <div className="SharedStructures-struct-blocks" onClick={() => this.toggleBig()}>
             <Blocks blocks={blocks} width={330} height={240} isoConfig={{canvasWidth: 330, canvasHeight: 240, numUnits:30}} />
           </div>
           <div className="SharedStructures-struct-recipe">

@@ -97,7 +97,7 @@ const Actions = {
         return
       }
 
-      const query = `(:accept ${JSON.stringify(text)} ${JSON.stringify(selected.formula)})`
+      const query = `(:accept ${JSON.stringify(text)} ${selected.formulas.map(f => JSON.stringify(f)).join(" ")})`
       SEMPREquery({ q: query, sessionId: sessionId }, () => {})
 
       dispatch(Logger.log({ type: "accept", msg: { query: text, rank: selected.rank, formula: selected.formula } }))

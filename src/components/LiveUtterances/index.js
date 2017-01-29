@@ -29,9 +29,11 @@ const LiveUtterances = ({ utterances, topBuilders }) => {
             </div>
             {b[2].map((u, idx) => {
               return (
-                <span key={idx} className="LiveUtterances-utterance"
-                    title={`score:${u.cite + u.self}, self:${u.self}, defined as "${u.body}"`}>
+                <span key={idx} className="LiveUtterances-utterance">
                   <span>{u.head}<br /><span style={{fontSize:"0.7em"}}>{u.cite + u.self} pts</span></span>
+                  <div className="LiveUtterances-utterance-body">
+                    {`score:${u.cite + u.self}, self:${u.self}, defined as "${u.body}"`}
+                  </div>
                 </span>
               )
             })}
