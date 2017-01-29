@@ -129,7 +129,7 @@ class Header extends React.Component {
         <div className="Header-nav">
           <Link to={{ pathname: "/", query: this.props.query }} activeClassName="active"><div>SHRDLURN</div></Link>
           <Link to={{ pathname: "/community", query: this.props.query }} activeClassName="active" target="_blank"><div>Leaderboard</div></Link>
-          <a target="_blank" href="https://shrdlurn.slack.com/shared_invite/MTI5NTA2Nzg1OTcxLTE0ODQ4MTIzNjQtNTc5NjE0OGFhNA"><div>Community</div></a>
+          <a target="_blank" href="https://shrdlurn.slack.com/"><div>Community</div></a>
           <div onClick={() => this.setState({ modal: "helpme" })}>Help Me</div>
           <div id="restart_tutorial" onClick={() => openTutorial()}>View Tutorial Again</div>
         </div>

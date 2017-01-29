@@ -7,6 +7,7 @@ import Mousetrap from "mousetrap"
 
 // import Perf from 'react-addons-perf'
 // window.Perf = Perf
+// window.Perf.start()
 
 import "./styles.css"
 

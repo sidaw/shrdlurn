@@ -149,6 +149,7 @@ export function parseSEMPRE(valid) {
       lstqapairs.push(qapair);
     } catch (e) {
       lstqapairs.push({ value: [], formula: "", rank: i, error: valid[i].value, score: 0, prob: 0, pprob: 0 })
+      alert("This response resulted in an error with our server. Please scroll to another intepretation or try another query. The error message was: " + valid[i].value)
       console.log("ERROR!", e, valid[i].value);
     }
   }
