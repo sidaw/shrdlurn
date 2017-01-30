@@ -2,8 +2,6 @@ import Constants from "constants/actions"
 import { SEMPREquery, parseSEMPRE } from "helpers/sempre"
 import Logger from "actions/logger"
 import { blocksEqual } from "helpers/blocks"
-import { persistStore } from "redux-persist"
-import { getStore } from "../"
 
 function sendContext(history, current_history_idx, sessionId) {
   let contextCommand = "(:context)"
@@ -311,7 +309,6 @@ const Actions = {
       dispatch({
         type: Constants.CLEAR
       })
-      persistStore(getStore(), {blacklist: ['user', 'logger', 'routing']}, () => {}).purge()
     }
   }
 }

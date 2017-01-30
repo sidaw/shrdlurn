@@ -25,6 +25,10 @@ class SharePanel extends Component {
     this.props.dispatch(Actions.deleteStruct(this.refs.deleteSelect.value))
   }
 
+  loadStruct(id) {
+    this.props.dispatch(Actions.loadStruct(id))
+  }
+
   render() {
     return (
       <div className={classnames("SidePanel", {"collapsed": this.state.collapsed})}>
@@ -45,20 +49,18 @@ class SharePanel extends Component {
             <p><strong>Your impact:</strong> {this.props.score}</p>
           </div>
           <div className="SharePanel-buttons">
-            <button
-              onClick={() => this.share()}
-              className="active full"
-              style={{borderRadius:"3px"}}>
-              Share Now
-            </button>
             <div className="yourstructs">
-              <select ref="deleteSelect" defaultValue="disabled">
-                <option disabled value="disabled">Select</option>
+              <select ref="deleteSelect" value={this.props.slot} onChange={(e) => this.loadStruct(e.target.value)}>
                 {this.props.user_structs.map((id) =>
                   <option key={id} value={id}>{id}</option>
                 )}
+                {(() => {
+                  const { user_structs } = this.props
+                  const nextId = user_structs.length === 0 ? "1" : parseInt(user_structs[user_structs.length - 1], 10) + 1
+                  return (<option key={nextId} value={nextId}>{nextId}</option>)
+                })()}
               </select>
-              <button onClick={() => this.deleteStruct()}>Delete Struct</button>
+              <button onClick={() => this.share()}>Save Struct</button>
             </div>
             <button
               onClick={() => this.clear()}
@@ -76,7 +78,8 @@ class SharePanel extends Component {
 
 const mapStateToProps = (state) => ({
   user_structs: state.logger.user_structs,
-  sessionId: state.user.sessionId
+  sessionId: state.user.sessionId,
+  slot: state.logger.slot
 })
 
 export default connect(mapStateToProps)(SharePanel)
