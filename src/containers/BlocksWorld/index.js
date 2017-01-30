@@ -25,15 +25,17 @@ class BlocksWorld extends React.Component {
 
     this.defaultState = [{ x: 0, y: 0, z: 0, color: "Fake", names: ["S"] }]
 
-    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: Infinity, win: false }
+    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: 1, win: false }
     this.maxSteps = () => this.state.possSteps * 3
   }
 
   componentDidMount() {
-    const randomTarget = genRandomTarget()
-    this.setState({ target: randomTarget[2], possSteps: randomTarget[1], targetIdx: randomTarget[0] })
+    if (this.props.task !== "world") {
+      const randomTarget = genRandomTarget()
+      this.setState({ target: randomTarget[2], possSteps: randomTarget[1], targetIdx: randomTarget[0] })
 
-    this.props.dispatch(Logger.log({ type: "start", msg: { targetIdx: randomTarget[0], target: randomTarget[2] }}))
+      this.props.dispatch(Logger.log({ type: "start", msg: { targetIdx: randomTarget[0], target: randomTarget[2] }}))
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -73,8 +75,8 @@ class BlocksWorld extends React.Component {
         })
     } else if (this.props.world.status === "accept") {
       /* Max steps check */
-      if (this.props.world.history.length >= this.maxSteps) {
-        alert("You've reached the maximum number of steps, undo some steps in order to add more.")
+      if (this.props.world.history.length >= this.maxSteps()) {
+        alert("You've reached the maximum number of steps of " + this.maxSteps() + " , undo some steps in order to add more.")
         this.setState({ selectedResp: 0 })
         return
       }
