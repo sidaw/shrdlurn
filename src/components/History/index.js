@@ -64,6 +64,18 @@ class History extends Component {
     dispatch: PropTypes.func
   }
 
+  componentDidMount() {
+    this.scrollToBottom()
+  }
+
+  componentDidUpdate() {
+    this.scrollToBottom()
+  }
+
+  scrollToBottom() {
+    this.refs.list.scrollTop = this.refs.list.scrollHeight;
+  }
+
   revert(realIdx) {
     this.props.dispatch(Actions.revert(realIdx))
   }
@@ -114,7 +126,7 @@ class History extends Component {
     const lastPinIdx = history.length - 1 - history.slice().reverse().findIndex(h => h.type === "pin")
 
     return (
-      <div className={classnames("History", {"defineMode": defining})}>
+      <div className={classnames("History", {"defineMode": defining})} ref="list">
         {history.map((h, idx) => {
           const stepN = idx + 1
 
