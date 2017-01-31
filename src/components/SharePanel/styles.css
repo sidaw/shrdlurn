@@ -7,16 +7,12 @@
 }
 
 .SharePanel-buttons .yourstructs {
-  width: 150px;
-  font-size: 1em;
-}
-
-.SharePanel-buttons select {
-  min-width: 75px;
+  width: 100px;
+  font-size: 0.7em;
 }
 
 .SharePanel-buttons .yourstructs button {
-  font-size: 0.9em;
+  font-size: 0.7em;
   height: auto;
 }
 

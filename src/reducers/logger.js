@@ -7,8 +7,7 @@ const initialState = {
   utterances: {},
   topBuilders: [],
   score: 0,
-  user_structs: [],
-  slot: "1"
+  user_structs: []
 }
 
 /* Prune the number of utts displayed to under 10, ordered by latest timestamp */
@@ -39,13 +38,7 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.OPEN_LOGGING_SOCKET:
       return { ...state, socket: action.socket }
     case Constants.SHARED_STRUCT:
-      let user_structs = state.user_structs.slice()
-      if (user_structs.length > 0 && state.slot === (parseInt(user_structs[user_structs.length - 1], 10) + 1).toString()) {
-        user_structs.push(Math.min(parseInt(user_structs[user_structs.length - 1], 10) + 1, 10).toString())
-      } else if (user_structs.length === 0) {
-        user_structs = ["1"]
-      }
-      return { ...state, lastValue: action.value, user_structs: user_structs }
+      return { ...state, lastValue: action.value }
     case Constants.NEW_ACCEPT:
       const prevUtterancesNA = state.utterances.hasOwnProperty(action.uid) ? state.utterances[action.uid] : []
       const newUttsNA = { ...state.utterances, [action.uid]: [ { type: "accept", msg: {query: action.query}, timestamp: action.timestamp}, ...prevUtterancesNA ]}
@@ -64,7 +57,7 @@ export default function reducer(state = initialState, action = {}) {
       if (state.structs !== "loading" && state.structs.findIndex(s => s.uid === action.uid && s.id === action.id) !== -1)
         return state
 
-      const value = action.struct.value
+      const value = JSON.parse(action.struct.value)
       const recipe = action.struct.recipe
       const newStruct = { uid: action.uid, id: action.id, score: action.score, upvotes: action.upvotes, value: value, recipe: recipe }
 
@@ -79,11 +72,7 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.USER_SCORE:
       return { ...state, score: action.score }
     case Constants.USER_STRUCTS_COUNT:
-      const slot = action.structs.length === 0 ? initialState.slot : Math.min(parseInt(action.structs[action.structs.length - 1], 10) + 1, 100).toString()
-
-      return { ...state, user_structs: action.structs, slot: slot }
-    case Constants.LOAD_STRUCT:
-      return { ...state, slot: action.id }
+      return { ...state, user_structs: action.structs }
     default:
       return state
   }
