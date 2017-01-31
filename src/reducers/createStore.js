@@ -1,11 +1,12 @@
 import { applyMiddleware, compose, createStore } from 'redux'
 import thunk from 'redux-thunk'
+import {persistStore, autoRehydrate} from 'redux-persist'
 import makeRootReducer from '.'
 
 export default (initialState = {}) => {
   const middleware = [thunk]
 
-  const enhancers = []
+  const enhancers = [autoRehydrate()]
 
   if (process.env.NODE_ENV === 'development') {
     const devToolsExtension = window.devToolsExtension
@@ -22,6 +23,8 @@ export default (initialState = {}) => {
       ...enhancers
     )
   )
+
+  persistStore(store, {blacklist: ['user', 'logger', 'routing']})
 
   return store
 }

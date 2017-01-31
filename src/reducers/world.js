@@ -62,9 +62,6 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.REMOVE_LAST:
       let trimmedHistory = state.history.slice(0, state.history.length - 1)
       return { ...state, history: trimmedHistory }
-    case Constants.LOAD_STRUCT:
-      const loadedHistory = action.history === null || action.history === "" || !(Array.isArray(action.history)) ? initialState.history : action.history
-      return { ...initialState, history: loadedHistory }
     case Constants.CLEAR:
       return initialState
     default:

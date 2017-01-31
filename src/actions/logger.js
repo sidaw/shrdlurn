@@ -1,7 +1,7 @@
 import io from "socket.io-client"
 import Constants from "constants/actions"
 import Strings from "constants/strings"
-import LZString from "lz-string"
+import { setStore, getStore, genSid } from "helpers/util"
 
 function sendSocket(getState, event, payload) {
   let socket = getState().logger.socket
@@ -79,22 +79,35 @@ const Actions = {
       socket.on("user_structs", (e) => {
         dispatch({
           type: Constants.USER_STRUCTS_COUNT,
-          structs: e.structs.map(f => f)
+          structs: e.structs.map(f => f.substring(0, f.length))
         })
-
-        // if (e.structs.length > 0) {
-        //   /* Load the struct in the last slot */
-        //   const lastStruct = e.structs[e.structs.length - 1]
-        //   sendSocket(getState, "load_struct", {id: lastStruct.substring(0, lastStruct)})
-        // }
       })
+    }
+  },
 
-      socket.on("load_struct", (e) => {
-        dispatch({
-          type: Constants.LOAD_STRUCT,
-          id: e.id,
-          history: JSON.parse(LZString.decompressFromEncodedURIComponent(e.history))
-        })
+  setStructureId: (e) => {
+    return (dispatch, getState) => {
+      /* Set structure Id */
+      const routing = getState().routing
+
+      let structureId = ""
+      const location = routing.location || routing.locationBeforeTransitions
+      const sidParam = location.query.sid
+
+      if (sidParam) {
+        structureId = sidParam
+      } else {
+        let sid = getStore("sid")
+        if (!sid) {
+          sid = genSid()
+          setStore("sid", sid)
+        }
+        structureId = sid
+      }
+
+      dispatch({
+        type: Constants.SET_STRUCTURE_ID,
+        sid: structureId
       })
     }
   },
@@ -148,7 +161,7 @@ const Actions = {
               id: e.id,
               score: e.score,
               upvotes: e.upvotes,
-              struct: JSON.parse(LZString.decompressFromEncodedURIComponent(e.struct))
+              struct: e.struct
             })
           })
 
@@ -173,7 +186,7 @@ const Actions = {
   share: () => {
     return (dispatch, getState) => {
       const { history } = getState().world
-      const { lastValue, user_structs, slot } = getState().logger
+      const { lastValue, user_structs, sid } = getState().logger
 
       if (user_structs.length > 100) {
         alert("You have already shared 100 structures. If you want to share more, please delete some of them first.")
@@ -195,7 +208,7 @@ const Actions = {
         return
       }
 
-      const payload = { id: slot, struct: LZString.compressToEncodedURIComponent(JSON.stringify({ value: structure.value, recipe })), history: LZString.compressToEncodedURIComponent(JSON.stringify(history)) }
+      const payload = { struct: { value, recipe }, id: sid }
 
       sendSocket(getState, "share", payload)
 
@@ -226,13 +239,6 @@ const Actions = {
         type: Constants.USER_STRUCTS_COUNT,
         structs: user_structs.filter(a => a !== id)
       })
-    }
-  },
-
-  loadStruct: (id) => {
-    return (dispatch, getState) => {
-      const payload = { id: id }
-      sendSocket(getState, "load_struct", payload)
     }
   }
 }
