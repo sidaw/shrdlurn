@@ -100,3 +100,8 @@ export function genUid() {
   const hashids = new Hashids("our cool SHRDLURN salt")
   return hashids.encode(rand10000(), rand10000(), rand10000(), rand10000(), rand10000())
 }
+
+export function genSid() {
+  const hashids = new Hashids("our cool SHRDLURN salt for sids")
+  return hashids.encode(rand10000(), rand10000())
+}

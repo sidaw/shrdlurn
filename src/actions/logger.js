@@ -1,6 +1,7 @@
 import io from "socket.io-client"
 import Constants from "constants/actions"
 import Strings from "constants/strings"
+import { setStore, getStore, genSid } from "helpers/util"
 
 function sendSocket(getState, event, payload) {
   let socket = getState().logger.socket
@@ -78,8 +79,35 @@ const Actions = {
       socket.on("user_structs", (e) => {
         dispatch({
           type: Constants.USER_STRUCTS_COUNT,
-          structs: e.structs.map(f => f.substring(0, f.length - 5))
+          structs: e.structs.map(f => f.substring(0, f.length))
         })
+      })
+    }
+  },
+
+  setStructureId: (e) => {
+    return (dispatch, getState) => {
+      /* Set structure Id */
+      const routing = getState().routing
+
+      let structureId = ""
+      const location = routing.location || routing.locationBeforeTransitions
+      const sidParam = location.query.sid
+
+      if (sidParam) {
+        structureId = sidParam
+      } else {
+        let sid = getStore("sid")
+        if (!sid) {
+          sid = genSid()
+          setStore("sid", sid)
+        }
+        structureId = sid
+      }
+
+      dispatch({
+        type: Constants.SET_STRUCTURE_ID,
+        sid: structureId
       })
     }
   },
@@ -158,7 +186,7 @@ const Actions = {
   share: () => {
     return (dispatch, getState) => {
       const { history } = getState().world
-      const { lastValue, user_structs } = getState().logger
+      const { lastValue, user_structs, sid } = getState().logger
 
       if (user_structs.length > 100) {
         alert("You have already shared 100 structures. If you want to share more, please delete some of them first.")
@@ -180,7 +208,7 @@ const Actions = {
         return
       }
 
-      const payload = { struct: { value, recipe } }
+      const payload = { struct: { value, recipe }, id: sid }
 
       sendSocket(getState, "share", payload)
 

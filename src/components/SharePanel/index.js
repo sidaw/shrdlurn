@@ -40,7 +40,7 @@ class SharePanel extends Component {
         <div className="SidePanel-content">
           <div>
             <p>Once you have built an interesting structure, please share it with the community!</p>
-            <p>You can share as many structures as you want!</p>
+            <p>When sharing, you override whatever structure exists in the "<strong>{this.props.sid}</strong>" slot. You&nbsp;can see all the shared structures on the leaderboard.</p>
             <br />
             <p><strong>Your impact:</strong> {this.props.score}</p>
           </div>
@@ -49,9 +49,9 @@ class SharePanel extends Component {
               onClick={() => this.share()}
               className="active full"
               style={{borderRadius:"3px"}}>
-              Share Now
+              Share Now to {this.props.sid}
             </button>
-            <div className="yourstructs">
+            {/* <div className="yourstructs">
               <select ref="deleteSelect" defaultValue="disabled">
                 <option disabled value="disabled">Select</option>
                 {this.props.user_structs.map((id) =>
@@ -59,7 +59,7 @@ class SharePanel extends Component {
                 )}
               </select>
               <button onClick={() => this.deleteStruct()}>Delete Struct</button>
-            </div>
+            </div> */}
             <button
               onClick={() => this.clear()}
               className="active full red"
@@ -76,7 +76,8 @@ class SharePanel extends Component {
 
 const mapStateToProps = (state) => ({
   user_structs: state.logger.user_structs,
-  sessionId: state.user.sessionId
+  sessionId: state.user.sessionId,
+  sid: state.logger.sid
 })
 
 export default connect(mapStateToProps)(SharePanel)
