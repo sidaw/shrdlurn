@@ -25,7 +25,7 @@ class BlocksWorld extends React.Component {
 
     this.defaultState = [{ x: 0, y: 0, z: 0, color: "Fake", names: ["S"] }]
 
-    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: 1, win: false }
+    this.state = { selectedResp: 0, targetIdx: -1, target: [], possSteps: 20, win: false }
     this.maxSteps = () => this.state.possSteps * 3
   }
 

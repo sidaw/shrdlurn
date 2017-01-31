@@ -53,7 +53,7 @@ class Structure extends PureComponent {
         <div
           className={classnames("SharedStructures-struct", {"highlight": sessionId === uid})}
         >
-          <div className="SharedStructures-struct-id">{uid.slice(0, 8)} #{id}</div>
+          <div className="SharedStructures-struct-id">{uid.slice(0, 8)} #{id.substring(0, 4)}</div>
           <div className="SharedStructures-struct-blocks" onClick={() => this.toggleBig()}>
             <Blocks blocks={blocks} width={330} height={240} isoConfig={{canvasWidth: 330, canvasHeight: 240, numUnits:30}} />
           </div>

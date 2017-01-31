@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import BlocksWorld from "containers/BlocksWorld";
 import Actions from "actions/world"
+import LoggerActions from "actions/logger"
 import UserActions from "actions/user"
 import { connect } from "react-redux"
 import Mousetrap from "mousetrap"
@@ -19,6 +20,8 @@ class App extends Component {
 
     if (Object.keys(this.props.location.query).indexOf("taskid") !== -1) {
       this.props.dispatch(UserActions.setTask("target"))
+    } else {
+      this.props.dispatch(LoggerActions.setStructureId())
     }
   }
 
