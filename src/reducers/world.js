@@ -63,7 +63,7 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, history: injectedHistory }
     case Constants.REMOVE_LAST:
       let trimmedHistory = state.history.slice(0, state.history.length - 1)
-      return { ...state, history: trimmedHistory }
+      return { ...state, history: trimmedHistory, query: initialState.query, status: initialState.status, responses: initialState.responses }
     case Constants.CLEAR:
       return initialState
     default:
