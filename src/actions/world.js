@@ -114,8 +114,11 @@ const Actions = {
   acceptNone: (text) => {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
+      const { responses } = getState().world
 
-      const query = `(:accept ${JSON.stringify(text)} "(not *)")`
+      const formulas = responses.reduce((acc, r) => acc.concat(r.formulas), [])
+
+      const query = `(:reject ${JSON.stringify(text)} ${formulas.map(f => JSON.stringify(f)).join(" ")})`
       SEMPREquery({ q: query, sessionId: sessionId }, () => {})
 
       dispatch(Logger.log({ type: "acceptNone", msg: { query: text } }))
@@ -141,8 +144,7 @@ const Actions = {
       if (defineHist.length <= 1) {
         mode = ":def_ret"
       } else if (defineHist.length === history.length - 2) {
-        // mode = ":def_iso"
-        // TODO: uncomment when SEMPRE handles :def_iso
+        mode = ":def_iso"
       }
 
       const sempreQuery = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`

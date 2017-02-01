@@ -30,12 +30,8 @@ class BlocksWorld extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.task !== "world") {
-      const randomTarget = genRandomTarget()
-      this.setState({ target: randomTarget[2], possSteps: randomTarget[1], targetIdx: randomTarget[0] })
-
-      this.props.dispatch(Logger.log({ type: "start", msg: { targetIdx: randomTarget[0], target: randomTarget[2] }}))
-    }
+    if (this.props.task !== "world")
+      this.setTarget()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -49,6 +45,16 @@ class BlocksWorld extends React.Component {
       /* WIN! */
       this.win()
     }
+
+    if (prevProps.task === "world" && this.props.task !== "world")
+      this.setTarget()
+  }
+
+  setTarget() {
+    const randomTarget = genRandomTarget()
+    this.setState({ target: randomTarget[2], possSteps: randomTarget[1], targetIdx: randomTarget[0] })
+
+    this.props.dispatch(Logger.log({ type: "start", msg: { targetIdx: randomTarget[0], target: randomTarget[2] }}))
   }
 
   win() {
