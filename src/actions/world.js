@@ -141,8 +141,7 @@ const Actions = {
       if (defineHist.length <= 1) {
         mode = ":def_ret"
       } else if (defineHist.length === history.length - 2) {
-        // mode = ":def_iso"
-        // TODO: uncomment when SEMPRE handles :def_iso
+        mode = ":def_iso"
       }
 
       const sempreQuery = `(${mode} "${defineAs}" ${JSON.stringify(JSON.stringify(defineHist))})`
