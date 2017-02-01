@@ -56,7 +56,7 @@ class Header extends React.Component {
                     <strong>Operators:</strong>
                     <ul>
                       <li>has, of, not, and, or</li>
-                      <li>&gt;, &gt;=, =, &lt;, &lt;=, +, -</li>
+                      <li>+, -</li>
                     </ul>
                   </li>
                   <li>
@@ -71,7 +71,7 @@ class Header extends React.Component {
                   </li>
 
                   <li>
-                    <strong>Control:</strong> repeat, ;, [ ], &#123; &#125;, if
+                    <strong>Control:</strong> repeat, ;, [ ], &#123; &#125;, if, while, foreach, isolate
                   </li>
 
                   <li>
@@ -97,17 +97,30 @@ class Header extends React.Component {
                     </ul>
                   </li>
 
-                  <li>
-                    <strong>Imprecise</strong>
+									<li>
+                    <strong>Advanced:</strong>
                     <ul>
-                      <li>move left 3 times</li>
-                      <li>do 3 times add red top</li>
-                      <li>select the red</li>
-                      <li>red stick of height 3</li>
-                      <li>pick left or right</li>
-                      <li>build giant red elephant</li>
+                      <li> &#123; select left or right; add red &#125; </li>
+                      <li> isolate [repeat 3 [add red left]] </li>
+                      <li> if has color red [remove all]</li>
+                      <li> while has height 0 [select left; add yellow]</li>
+                      <li> select has row [row of left] </li>
+											<li> foreach [remove has row row of this]  </li>
+											<li> add red;  &#123; select right; update color color of left &#125;  </li>
                     </ul>
                   </li>
+
+									<li>
+										<strong>Possible extensions</strong>
+										<ul>
+											<li>move left 3 times</li>
+											<li>do 3 times add red top</li>
+											<li>move left until red</li>
+											<li>red cube size 3</li>
+											<li>surround this cube</li>
+											<li>build big shrdlurn</li>
+										</ul>
+									</li>
 
                 </ul>
               </div>
@@ -129,9 +142,9 @@ class Header extends React.Component {
         <div className="Header-nav">
           <Link to={{ pathname: "/", query: this.props.query }} activeClassName="active"><div>Build</div></Link>
           <Link to={{ pathname: "/community", query: this.props.query }} activeClassName="active" target="_blank"><div>Leaderboard</div></Link>
-          <a target="_blank" href="https://shrdlurn.signup.team/"><div>Community</div></a>
-          <div onClick={() => this.setState({ modal: "helpme" })}>Help Me</div>
-          <div id="restart_tutorial" onClick={() => openTutorial()}>View Tutorial Again</div>
+          <a target="_blank" href="https://shrdlurn.signup.team/"><div>Slack</div></a>
+          <div onClick={() => this.setState({ modal: "helpme" })}>Help</div>
+          <div id="restart_tutorial" onClick={() => openTutorial()}>Tutorial</div>
         </div>
         {this.renderModal()}
       </div>
