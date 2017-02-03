@@ -39,35 +39,37 @@ class SharePanel extends Component {
         </div>
         <div className="SidePanel-content">
           <div>
-            <p>Once you have built an interesting structure, please share it with the community!</p>
-            <p>When sharing, you override whatever structure exists in the "<strong>{(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(this.props.sid)}</strong>" slot. You&nbsp;can see all the shared structures on the leaderboard.</p>
-            <br />
+            <p>Please share your structure after you finish </p>
+						<div className="SharePanel-buttons">
+							<button
+								onClick={() => this.share()}
+								className="active full"
+								style={{borderRadius:"3px"}}>
+								Share to {(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(this.props.sid)}
+							</button>
+							{/* <div className="yourstructs">
+								<select ref="deleteSelect" defaultValue="disabled">
+									<option disabled value="disabled">Select</option>
+									{this.props.user_structs.map((id) =>
+										<option key={id} value={id}>{id}</option>
+									)}
+								</select>
+								<button onClick={() => this.deleteStruct()}>Delete Struct</button>
+							</div> */}
+							<button
+								onClick={() => this.clear()}
+								className="active full red"
+								style={{borderRadius:"3px"}}
+							>
+								Clear
+							</button>
+						</div>
             <p><strong>Your impact:</strong> {this.props.score}</p>
-          </div>
-          <div className="SharePanel-buttons">
-            <button
-              onClick={() => this.share()}
-              className="active full"
-              style={{borderRadius:"3px"}}>
-              Share now to {(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(this.props.sid)}
-            </button>
-            {/* <div className="yourstructs">
-              <select ref="deleteSelect" defaultValue="disabled">
-                <option disabled value="disabled">Select</option>
-                {this.props.user_structs.map((id) =>
-                  <option key={id} value={id}>{id}</option>
-                )}
-              </select>
-              <button onClick={() => this.deleteStruct()}>Delete Struct</button>
-            </div> */}
-            <button
-              onClick={() => this.clear()}
-              className="active full red"
-              style={{borderRadius:"3px"}}
-            >
-              Clear
-            </button>
-          </div>
+						Currently, you are working on the slot
+						"<strong>{(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(this.props.sid)}</strong>",
+						which you will overrride when sharing.
+						You&nbsp;can see existing shared structures on the leaderboard.
+            </div>
         </div>
       </div>
     )

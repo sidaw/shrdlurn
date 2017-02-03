@@ -195,8 +195,8 @@ const Actions = {
 
       const structure = history[history.length - 1]
 
-      if (structure.value.length < 10) {
-        alert("You are sharing a really simple structure (less than 10 blocks total). Try creating something a bit more complex and interesting and then sharing that.")
+      if (structure.value.length < 100) {
+        alert("You are sharing a really simple structure (less than 100 blocks total). Try creating something a bit more complex and interesting and then sharing that.")
         return
       }
 
