@@ -40,7 +40,7 @@ class SharePanel extends Component {
         <div className="SidePanel-content">
           <div>
             <p>Once you have built an interesting structure, please share it with the community!</p>
-            <p>When sharing, you override whatever structure exists in the "<strong>{this.props.sid}</strong>" slot. You&nbsp;can see all the shared structures on the leaderboard.</p>
+            <p>When sharing, you override whatever structure exists in the "<strong>{(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(this.props.sid)}</strong>" slot. You&nbsp;can see all the shared structures on the leaderboard.</p>
             <br />
             <p><strong>Your impact:</strong> {this.props.score}</p>
           </div>
@@ -49,7 +49,7 @@ class SharePanel extends Component {
               onClick={() => this.share()}
               className="active full"
               style={{borderRadius:"3px"}}>
-              Share Now to {this.props.sid}
+              Share now to {(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(this.props.sid)}
             </button>
             {/* <div className="yourstructs">
               <select ref="deleteSelect" defaultValue="disabled">

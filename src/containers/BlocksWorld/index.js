@@ -41,13 +41,13 @@ class BlocksWorld extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.world.history.length > 0 && this.equalityCheck(this.props.world.history[this.props.world.history.length - 1].value, this.state.target)) {
-      /* WIN! */
-      this.win()
-    }
-
-    if (prevProps.task === "world" && this.props.task !== "world")
-      this.setTarget()
+    // if (this.props.world.history.length > 0 && this.equalityCheck(this.props.world.history[this.props.world.history.length - 1].value, this.state.target)) {
+    //   /* WIN! */
+    //   // this.win()
+    // }
+		//
+    // if (prevProps.task === "world" && this.props.task !== "world")
+    //   this.setTarget()
   }
 
   setTarget() {

@@ -68,7 +68,7 @@ class Structure extends PureComponent {
           <div className="modal-container SharedStructures-bigstruct">
             <div className="modal">
               <div className="modal-header">
-                {uid} #{id}
+                {(s => s.length > 10 ? s.substr(0,10-1)+'...' : s)(uid)} # {(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(id)}
                 <div className="modal-escape" onClick={() => this.toggleBig()}>
                   &times;
                 </div>
