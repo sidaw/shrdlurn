@@ -5,30 +5,46 @@ import classnames from "classnames"
 
 import "./styles.css"
 
-const HistoryItem = ({ text, stepN, selected, defining, firstDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick, tentative, last, remove, setPin }) => (
-  <div
-    onClick={() => revert()}
-    className={classnames("HistoryItem", {"selected": selected, "defining": defining, "firstDefining": firstDefining, "tentative": tentative})}>
-    <div
-      className="HistoryItem-num"
-      onMouseEnter={() => setDefineN()}
-      onMouseLeave={() => resetDefineN()}
-      onClick={(e) => { e.stopPropagation(); openDefine() }}
-      onDoubleClick={() => doubleClick()}
-    >
-      {stepN}
-    </div>
-    <div className="HistoryItem-text">
-      {last &&
-        <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
-      }
-      <div className="HistoryItem-text-text">{text}</div>
-      {(last || tentative) && !defining &&
-        <button onClick={(e) => { e.stopPropagation(); setPin()}}>Define This</button>
-      }
-    </div>
-  </div>
-)
+class HistoryItem extends Component {
+  shouldComponentUpdate(nextProps) {
+    if (this.props.text !== nextProps.text || this.props.stepN  !== nextProps.stepN ||
+        this.props.selected !== nextProps.selected || this.props.defining !== nextProps.defining ||
+        this.props.firstDefining !== nextProps.firstDefining || this.props.tentative !== nextProps.tentative ||
+        this.props.last !== nextProps.last) {
+      return true
+    }
+    return false
+  }
+
+  render() {
+    const { text, stepN, selected, defining, firstDefining, revert, setDefineN, resetDefineN, openDefine, doubleClick, tentative, last, remove, setPin } = this.props
+
+    return (
+      <div
+        onClick={() => revert()}
+        className={classnames("HistoryItem", {"selected": selected, "defining": defining, "firstDefining": firstDefining, "tentative": tentative})}>
+        <div
+          className="HistoryItem-num"
+          onMouseEnter={() => setDefineN()}
+          onMouseLeave={() => resetDefineN()}
+          onClick={(e) => { e.stopPropagation(); openDefine() }}
+          onDoubleClick={() => doubleClick()}
+        >
+          {stepN}
+        </div>
+        <div className="HistoryItem-text">
+          {last &&
+            <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
+          }
+          <div className="HistoryItem-text-text">{text}</div>
+          {(last || tentative) && !defining &&
+            <button onClick={(e) => { e.stopPropagation(); setPin()}}>Define This</button>
+          }
+        </div>
+      </div>
+    )
+  }
+}
 
 const HistoryPin = ({ text, head, define, defining, remove, query }) => {
   return (
@@ -60,6 +76,7 @@ class History extends Component {
     defineN: PropTypes.number,
     defining: PropTypes.bool,
     query: PropTypes.string,
+    status: PropTypes.string,
 
     dispatch: PropTypes.func
   }
@@ -70,6 +87,20 @@ class History extends Component {
 
   componentDidUpdate() {
     this.scrollToBottom()
+  }
+
+  shouldComponentUpdate(nextProps) {
+    /* Update if history or idx or defineN or defining change always */
+    if (this.props.history.length !== nextProps.history.length ||
+        this.props.current_history_idx !== nextProps.current_history_idx ||
+        this.props.defineN !== nextProps.defineN ||
+        this.props.defining !== nextProps.defining ||
+        this.props.status !== nextProps.status) {
+      return true
+    } else if ((this.props.defining || nextProps.defining) && this.props.query !== nextProps.query) {
+      return true
+    }
+    return false
   }
 
   scrollToBottom() {
