@@ -23,9 +23,9 @@ class Structure extends PureComponent {
     this.state = { big: false }
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     /* Only upvote if upvotes changes, because we know the rest is static */
-    if (nextProps.upvotes.length !== this.props.upvotes.length) {
+    if (nextProps.upvotes.length !== this.props.upvotes.length || this.state.big !== nextState.big) {
       return true
     }
     return false
