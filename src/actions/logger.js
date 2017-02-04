@@ -165,6 +165,13 @@ const Actions = {
             })
           })
 
+          socket.on("structs", (e) => [
+            dispatch({
+              type: Constants.STRUCTS,
+              structs: e
+            })
+          ])
+
           socket.on("utterances", (e) => {
             dispatch({
               type: Constants.NEW_UTTERANCES,

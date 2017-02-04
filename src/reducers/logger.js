@@ -72,6 +72,8 @@ export default function reducer(state = initialState, action = {}) {
       }
 
       return { ...state, structs: [...state.structs, newStruct] }
+    case Constants.STRUCTS:
+      return { ...state, structs: action.structs.map(s => ({ ...s, value: JSON.parse(s.struct.value), recipe: s.struct.recipe })) }
     case Constants.NEW_UTTERANCES:
       return { ...state, utterances: { ...state.utterances, [action.uid]: action.utterances.map(u => JSON.parse(u)) } }
     case Constants.LOAD_TOP_BUILDERS:

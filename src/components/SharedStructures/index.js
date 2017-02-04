@@ -23,16 +23,13 @@ class Structure extends PureComponent {
     this.state = { big: false }
   }
 
-  // shouldComponentUpdate(nextProps) {
-  //   /* Only upvote if upvotes changes, because we know the rest is static */
-  //   console.log(this.props.uid, this.props.id, nextProps.upvotes.length, this.props.upvotes.length)
-  //   if (nextProps.upvotes.length !== this.props.upvotes.length) {
-  //     console.log("Woot")
-  //     return true
-  //   }
-  //
-  //   return false
-  // }
+  shouldComponentUpdate(nextProps) {
+    /* Only upvote if upvotes changes, because we know the rest is static */
+    if (nextProps.upvotes.length !== this.props.upvotes.length) {
+      return true
+    }
+    return false
+  }
 
   toggleBig() {
     this.setState({ big: !this.state.big })
