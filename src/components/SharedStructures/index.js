@@ -119,7 +119,7 @@ class SharedStructures extends Component {
               }).map((s, idx) => {
                 return (
                   <Structure
-                    key={idx}
+                    key={s.id + "-" + s.uid}
                     uid={s.uid}
                     id={s.id}
                     blocks={s.value}
