@@ -98,8 +98,14 @@ class History extends Component {
         this.props.status !== nextProps.status) {
       return true
     } else if ((this.props.defining || nextProps.defining) && this.props.query !== nextProps.query) {
+      /* update if query changed when defining */
+      return true
+    } else if (this.props.history[this.props.history.length -  1].type !== nextProps.history[nextProps.history.length - 1].type) {
+      /* update if define this button has been clicked */
       return true
     }
+
+    /* otherwise, don't update */
     return false
   }
 
