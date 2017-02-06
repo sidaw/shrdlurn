@@ -33,12 +33,12 @@ class Blocks extends React.Component {
 
 			blockWidthScale: 0.9,
 			selectWidthScale: 0.4,
-      groundRadius: 7,
+      groundRadius: 11,
       gridColor: new Color(50, 50, 50),
 			canvasWidth: 2*825.0,
 			canvasHeight: 2*600.0,
 			originXratio: 0.5,
-			originYratio: 0.7,
+			originYratio: 0.6,
 			numUnits: 30, // default number of cubes from left to right of the canvas
 			maxUnits: 200,
 			marginCubes: 1, // how far from the border do we keep the cubes, until we reach max zoom
