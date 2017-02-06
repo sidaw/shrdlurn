@@ -50,7 +50,7 @@ class Structure extends PureComponent {
         <div
           className={classnames("SharedStructures-struct", {"highlight": sessionId === uid})}
         >
-          <div className="SharedStructures-struct-id">{uid.slice(0, 8)} #{id.substring(0, 4)}</div>
+          <div className="SharedStructures-struct-id">{uid.slice(0, 8)} #{id.substring(0, 4)} {blocks.length} blks</div>
           <div className="SharedStructures-struct-blocks" onClick={() => this.toggleBig()}>
             <Blocks blocks={blocks} width={330} height={240} isoConfig={{canvasWidth: 330, canvasHeight: 240, numUnits:30}} />
           </div>
@@ -66,6 +66,7 @@ class Structure extends PureComponent {
             <div className="modal">
               <div className="modal-header">
                 {(s => s.length > 10 ? s.substr(0,10-1)+'...' : s)(uid)} # {(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(id)}
+								-- {blocks.length} blks
                 <div className="modal-escape" onClick={() => this.toggleBig()}>
                   &times;
                 </div>

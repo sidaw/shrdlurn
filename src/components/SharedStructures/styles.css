@@ -83,7 +83,7 @@
 
 .SharedStructures-struct-id {
   position: absolute;
-  top: 3px;
+  bottom: 3px;
   left: 3px;
   background-color: #FFF;
   padding: 2px;
