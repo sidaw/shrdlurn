@@ -33,7 +33,7 @@ class Blocks extends React.Component {
 
 			blockWidthScale: 0.9,
 			selectWidthScale: 0.4,
-      groundRadius: 11,
+      groundRadius: 5,
       gridColor: new Color(50, 50, 50),
 			canvasWidth: 2*825.0,
 			canvasHeight: 2*600.0,

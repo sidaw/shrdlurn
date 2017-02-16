@@ -136,7 +136,7 @@ class Header extends React.Component {
     return (
       <div className="Header">
         <div className="Header-logo">
-          <span>SHRDLURNING </span>
+          <span>Voxelurn </span>
           <span className="Header-sublogo">A Stanford NLP Project</span>
         </div>
         <div className="Header-nav">
