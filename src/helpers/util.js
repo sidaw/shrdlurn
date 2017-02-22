@@ -1,7 +1,7 @@
 import React from "react"
 import targets from "constants/targets"
 import Hashids from "hashids"
-import {getTurkHit} from "helpers/turk"
+import { getTurkHit } from "helpers/turk"
 
 export function emojione(num) {
   const emojioneList = {
@@ -63,7 +63,7 @@ export function resetStore() {
   localStorage.clear();
 }
 
-export function genRandomTarget() {
+export function genTarget() {
   const usedTargets = getStore("usedTargetsv1", []);
   if (usedTargets.length === targets.length) {
     alert("You've completed all targets! Resetting...");
@@ -86,7 +86,7 @@ export function getParameterByName(name, url) {
   if (!url) url = window.location.href;
   name = name.replace(/[\[\]]/g, "\\$&");
   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-      results = regex.exec(url);
+    results = regex.exec(url);
   if (!results) return null;
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, " "));

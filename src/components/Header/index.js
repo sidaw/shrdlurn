@@ -7,13 +7,14 @@ import "./styles.css"
 const Header = ({ query }) => (
   <div className="Header">
     <div className="Header-logo">
-      <span>Voxelurn</span>&nbsp;
+      <span>Voxelurn</span>
       <span className="Header-sublogo">a Stanford NLP project</span>
     </div>
     <div className="Header-nav">
-      <Link to={{ pathname: "/", query: query }} activeClassName="active"><div>Build</div></Link>
+      <Link to={{ pathname: "/build", query: query }} activeClassName="active"><div>Build</div></Link>
       <Link to={{ pathname: "/community", query: query }} activeClassName="active" target="_blank"><div>Leaderboard</div></Link>
       <a target="_blank" href={SLACK_SIGNUP_URL}><div>Slack</div></a>
+      <Link to={{ pathname: "/about", query: query }} activeClassName="active"><div>About</div></Link>
       <Link to={{ pathname: "/help", query: query }} activeClassName="active"><div>Help</div></Link>
       <a target="_blank" href={TUTORIAL_URL}><div>Tutorial</div></a>
     </div>

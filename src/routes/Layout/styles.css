@@ -23,9 +23,9 @@ body {
 }
 
 .container {
-  padding-top: 50px; /* .Header height = 50px */
   position: absolute;
   top: 0;
+  padding-bottom: 50px; /* Mirrored by .Header height */
 }
 
 input {
@@ -34,9 +34,15 @@ input {
   font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
   font-size: 2.2rem;
   line-height: 1.4;
-  padding: 10px;
+  padding: 0.5em 1em;
   border: 0;
   outline: none;
+  border: 1px solid rgba(60, 60, 60, 0.1);
+  font-weight: 700;
+}
+
+::placeholder {
+  font-weight: 400;
 }
 
 button {
@@ -51,10 +57,14 @@ button {
   text-transform: uppercase;
   color: #000;
   background-color: rgb(220, 220, 220);
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
+  border-radius: 3px;
   transition: 0.2s ease background-color;
   outline: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: rgb(200, 200, 200);
 }
 
 button.active {

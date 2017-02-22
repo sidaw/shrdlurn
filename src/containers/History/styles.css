@@ -133,10 +133,6 @@
   background-color: transparent;
 }
 
-/*::-webkit-scrollbar-thumb {
-  background-color: rgba(230, 230, 230, 0.5);
-}*/
-
 .HistoryPin-remove ~ .HistoryItem-text-text {
   margin-right: 25px;
 }

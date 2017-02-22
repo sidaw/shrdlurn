@@ -11,5 +11,17 @@ export const SLACK_SIGNUP_URL = "https://shrdlurn.signup.team/"
 /* Meta information */
 export const DEFAULT_SESSIONID = "deadbeef"
 
+/* Control strings */
+export const STATUS = {
+  TRY: "TRY",
+  ACCEPT: "ACCEPT",
+  DEFINE: "DEFINE",
+  LOADING: "LOADING"
+}
+
 /* Display Strings */
-// ...
+export const COMMAND_BAR_PLACEHOLDER = "Tell the computer to build something..."
+export const COMMAND_BAR_DEFINE_PLACEHOLDER = "Define this set of actions as..."
+export const TRY_MSG = "Enter a command for the computer."
+export const ACCEPT_MSG = "Click accept if the computer correctly intepreted what you meant, scroll to see other intepretations, or revise your command."
+export const DEFINE_MSG = "Define the highlighted set of actions as this phrase (e.g. build a chair)."

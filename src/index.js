@@ -9,6 +9,10 @@ import Routes from 'routes'
 /* Create the Redux Store */
 const store = createStore()
 
+export const getStore = () => {
+  return store
+}
+
 /* Create the history using hash (#routeName) method since we host this on
  * Github pages and it doesn't support browserHistory */
 const history = syncHistoryWithStore(hashHistory, store)

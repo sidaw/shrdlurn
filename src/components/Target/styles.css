@@ -1,7 +1,7 @@
 .SidePanel {
   /*top: 50px;*/
   right: 0;
-  width: 350px;
+  width: 350px !important;
   background-color: #FFF;
   height: 350px;
   position: absolute;

@@ -36,3 +36,14 @@ Run `yarn build` to build a production version of the app. The build will be sav
 #### Deployment
 
 It is simple to deploy to Github Pages. Just set the "homepage" variable in "package.json", and then run `yarn deploy`.
+
+## Organization
+
+All javascript and CSS source code is the "src" folder. Generally, anything that is a route is in "src/routes". Anything that is not a route, but that handles interacts directly with data in the store (i.e. is wrapped with Redux's connect function) is in "src/containers". Anything that does not get data directly from the store will reside in "src/components".
+
+The setting (BlocksWorld) lives in the "src/setting". Here is the only logic that is blocks world dependent.
+
+### Build Your Own Setting!
+
+Interested in expanding this client to handle a different setting? Everything should be setting agnostic except for the code in "src/setting". All you have to do is implement all the same props as "src/setting/BlocksWorld" does and then export the new setting as the App's setting by changing what gets imported in "src/setting/index.js". Then, everything should work as intended!
+

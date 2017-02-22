@@ -2,15 +2,16 @@ import React, { Component, PropTypes } from "react"
 import { connect } from "react-redux"
 import Actions from "actions/world"
 import classnames from "classnames"
+import { STATUS } from "constants/strings"
 
 import "./styles.css"
 
 class HistoryItem extends Component {
   shouldComponentUpdate(nextProps) {
-    if (this.props.text !== nextProps.text || this.props.stepN  !== nextProps.stepN ||
-        this.props.selected !== nextProps.selected || this.props.defining !== nextProps.defining ||
-        this.props.firstDefining !== nextProps.firstDefining || this.props.tentative !== nextProps.tentative ||
-        this.props.last !== nextProps.last) {
+    if (this.props.text !== nextProps.text || this.props.stepN !== nextProps.stepN ||
+      this.props.selected !== nextProps.selected || this.props.defining !== nextProps.defining ||
+      this.props.firstDefining !== nextProps.firstDefining || this.props.tentative !== nextProps.tentative ||
+      this.props.last !== nextProps.last) {
       return true
     }
     return false
@@ -22,7 +23,7 @@ class HistoryItem extends Component {
     return (
       <div
         onClick={() => revert()}
-        className={classnames("HistoryItem", {"selected": selected, "defining": defining, "firstDefining": firstDefining, "tentative": tentative})}>
+        className={classnames("HistoryItem", { "selected": selected, "defining": defining, "firstDefining": firstDefining, "tentative": tentative })}>
         <div
           className="HistoryItem-num"
           onMouseEnter={() => setDefineN()}
@@ -38,7 +39,7 @@ class HistoryItem extends Component {
           }
           <div className="HistoryItem-text-text">{text}</div>
           {(last || tentative) && !defining &&
-            <button onClick={(e) => { e.stopPropagation(); setPin()}}>Define This</button>
+            <button onClick={(e) => { e.stopPropagation(); setPin() }}>Define This</button>
           }
         </div>
       </div>
@@ -48,15 +49,15 @@ class HistoryItem extends Component {
 
 const HistoryPin = ({ text, head, define, defining, remove, query }) => {
   return (
-    <div className={classnames("HistoryPin", {"head": head})}>
+    <div className={classnames("HistoryPin", { "head": head })}>
       {!defining ?
         text
-      :
+        :
         query !== "" ? query : <span>&nbsp;</span>
       }
       <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       {head &&
-        <button onClick={(e) => { e.stopPropagation(); define()}}>Finish Definition</button>
+        <button onClick={(e) => { e.stopPropagation(); define() }}>Finish Definition</button>
       }
     </div>
   )
@@ -92,15 +93,15 @@ class History extends Component {
   shouldComponentUpdate(nextProps) {
     /* Update if history or idx or defineN or defining change always */
     if (this.props.history.length !== nextProps.history.length ||
-        this.props.current_history_idx !== nextProps.current_history_idx ||
-        this.props.defineN !== nextProps.defineN ||
-        this.props.defining !== nextProps.defining ||
-        this.props.status !== nextProps.status) {
+      this.props.current_history_idx !== nextProps.current_history_idx ||
+      this.props.defineN !== nextProps.defineN ||
+      this.props.defining !== nextProps.defining ||
+      this.props.status !== nextProps.status) {
       return true
     } else if ((this.props.defining || nextProps.defining) && this.props.query !== nextProps.query) {
       /* update if query changed when defining */
       return true
-    } else if (this.props.history[this.props.history.length -  1].type !== nextProps.history[nextProps.history.length - 1].type) {
+    } else if (this.props.history[this.props.history.length - 1].type !== nextProps.history[nextProps.history.length - 1].type) {
       /* update if define this button has been clicked */
       return true
     }
@@ -149,7 +150,7 @@ class History extends Component {
 
     /* If the item is not a pin, we need to inject a pin before the thing we are defining */
     dispatch(Actions.injectPin(realIdx))
-    dispatch(Actions.setStatus("define"))
+    dispatch(Actions.setStatus(STATUS.DEFINE))
     dispatch(Actions.openDefine(realIdx))
   }
 
@@ -163,7 +164,7 @@ class History extends Component {
     const lastPinIdx = history.length - 1 - history.slice().reverse().findIndex(h => h.type === "pin")
 
     return (
-      <div className={classnames("History", {"defineMode": defining})} ref="list">
+      <div className={classnames("History", { "defineMode": defining })} ref="list">
         {history.map((h, idx) => {
           const stepN = idx + 1
 
@@ -197,7 +198,7 @@ class History extends Component {
             />
           )
         })}
-        {status === "accept" &&
+        {status === STATUS.ACCEPT &&
           <HistoryItem
             key="new"
             text={query}
@@ -206,8 +207,8 @@ class History extends Component {
             openDefine={() => this.setPin()}
             setPin={() => this.setPin()}
             tentative
-            setDefineN={() => {}}
-            resetDefineN={() => {}}
+            setDefineN={() => { }}
+            resetDefineN={() => { }}
           />
         }
       </div>

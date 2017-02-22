@@ -4,6 +4,7 @@ import Logger from "actions/logger"
 import { blocksEqual } from "helpers/blocks"
 import { persistStore } from "redux-persist"
 import { getStore } from "../"
+import { STATUS } from "constants/strings"
 
 function sendContext(history, current_history_idx, sessionId) {
   let contextCommand = "(:context)"
@@ -21,6 +22,54 @@ function sendContext(history, current_history_idx, sessionId) {
 }
 
 const Actions = {
+  setQuery: (query) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_QUERY,
+        query
+      })
+    }
+  },
+
+  undo: () => {
+    return (dispatch, getState) => {
+      const { current_history_idx, history } = getState().world
+
+      const idx = current_history_idx !== 0 ? (current_history_idx >= 0 ? current_history_idx - 1 : history.length - 2) : current_history_idx
+
+      dispatch({
+        type: Constants.REVERT,
+        idx: idx
+      })
+    }
+  },
+
+  redo: () => {
+    return (dispatch, getState) => {
+      const { current_history_idx, history } = getState().world
+
+      const idx = current_history_idx !== history.length - 1 ? (current_history_idx >= 0 ? current_history_idx + 1 : -1) : current_history_idx
+
+      dispatch({
+        type: Constants.REVERT,
+        idx: idx
+      })
+    }
+  },
+
+  setStatus: (status) => {
+    return (dispatch) => {
+      dispatch({
+        type: Constants.SET_STATUS,
+        status
+      })
+    }
+  },
+
+
+
+
+
   tryQuery: (q) => {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
@@ -28,7 +77,7 @@ const Actions = {
 
       dispatch({
         type: Constants.SET_STATUS,
-        status: "loading"
+        status: STATUS.LOADING
       })
 
       return sendContext(history, current_history_idx, sessionId)
@@ -46,7 +95,7 @@ const Actions = {
               const formval = parseSEMPRE(response.candidates)
 
               if (formval === null || formval === undefined) {
-                dispatch(Logger.log({ type: "tryFail", msg: { query: q }}))
+                dispatch(Logger.log({ type: "tryFail", msg: { query: q } }))
                 return false
               } else {
                 /* Remove no-ops */
@@ -92,19 +141,19 @@ const Actions = {
         alert("You can't accept a response with an error in it. Please accept another response or try a different query.")
         dispatch({
           type: Constants.SET_STATUS,
-          status: "try"
+          status: STATUS.TRY
         })
         return
       }
 
       const query = `(:accept ${JSON.stringify(text)} ${selected.formulas.map(f => JSON.stringify(f)).join(" ")})`
-      SEMPREquery({ q: query, sessionId: sessionId }, () => {})
+      SEMPREquery({ q: query, sessionId: sessionId }, () => { })
 
       dispatch(Logger.log({ type: "accept", msg: { query: text, rank: selected.rank, formula: selected.formula } }))
 
       dispatch({
         type: Constants.ACCEPT,
-        el: {...selected, text}
+        el: { ...selected, text }
       })
 
       return true
@@ -119,7 +168,7 @@ const Actions = {
       const formulas = responses.reduce((acc, r) => acc.concat(r.formulas), [])
 
       const query = `(:reject ${JSON.stringify(text)} ${formulas.map(f => JSON.stringify(f)).join(" ")})`
-      SEMPREquery({ q: query, sessionId: sessionId }, () => {})
+      SEMPREquery({ q: query, sessionId: sessionId }, () => { })
 
       dispatch(Logger.log({ type: "acceptNone", msg: { query: text } }))
     }
@@ -174,55 +223,11 @@ const Actions = {
 
   revert: (idx) => {
     return (dispatch) => {
-      dispatch(Logger.log({ type: "revert", msg: { idx: idx }}))
+      dispatch(Logger.log({ type: "revert", msg: { idx: idx } }))
 
       dispatch({
         type: Constants.REVERT,
         idx: idx
-      })
-    }
-  },
-
-  undo: () => {
-    return (dispatch, getState) => {
-      const { current_history_idx, history } = getState().world
-
-      const idx = current_history_idx !== 0 ? (current_history_idx >= 0 ? current_history_idx - 1 : history.length - 2) : current_history_idx
-
-      dispatch({
-        type: Constants.REVERT,
-        idx: idx
-      })
-    }
-  },
-
-  redo: () => {
-    return (dispatch, getState) => {
-      const { current_history_idx, history } = getState().world
-
-      const idx = current_history_idx !== history.length - 1 ? (current_history_idx >= 0 ? current_history_idx + 1 : -1) : current_history_idx
-
-      dispatch({
-        type: Constants.REVERT,
-        idx: idx
-      })
-    }
-  },
-
-  setStatus: (status) => {
-    return (dispatch) => {
-      dispatch({
-        type: Constants.SET_STATUS,
-        status
-      })
-    }
-  },
-
-  setQuery: (query) => {
-    return (dispatch) => {
-      dispatch({
-        type: Constants.SET_QUERY,
-        query
       })
     }
   },
@@ -313,7 +318,7 @@ const Actions = {
       dispatch({
         type: Constants.CLEAR
       })
-      persistStore(getStore(), {blacklist: ['user', 'logger', 'routing']}, () => {}).purge()
+      persistStore(getStore(), { whitelist: ['world'] }, () => { }).purge()
     }
   }
 }

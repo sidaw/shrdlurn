@@ -1,5 +1,5 @@
 import React, { Component, PureComponent, PropTypes } from "react"
-import Blocks from "components/Blocks"
+import Blocks from "setting"
 import Actions from "actions/logger"
 import { connect } from "react-redux"
 import classnames from "classnames"
@@ -48,11 +48,11 @@ class Structure extends PureComponent {
           <div className="SharedStructures-votes-desc">upvotes</div>
         </div>
         <div
-          className={classnames("SharedStructures-struct", {"highlight": sessionId === uid})}
+          className={classnames("SharedStructures-struct", { "highlight": sessionId === uid })}
         >
           <div className="SharedStructures-struct-id">{uid.slice(0, 8)} #{id.substring(0, 4)} {blocks.length} blks</div>
           <div className="SharedStructures-struct-blocks" onClick={() => this.toggleBig()}>
-            <Blocks blocks={blocks} width={330} height={240} isoConfig={{canvasWidth: 330, canvasHeight: 240, numUnits:30}} />
+            <Blocks blocks={blocks} width={330} height={240} isoConfig={{ canvasWidth: 330, canvasHeight: 240, numUnits: 30 }} />
           </div>
           <div className="SharedStructures-struct-recipe">
             {recipe.map((r, idx) => (
@@ -65,14 +65,14 @@ class Structure extends PureComponent {
           <div className="modal-container SharedStructures-bigstruct">
             <div className="modal">
               <div className="modal-header">
-                {(s => s.length > 10 ? s.substr(0,10-1)+'...' : s)(uid)} # {(s => s.length > 8 ? s.substr(0,8-1)+'...' : s)(id)}
-								-- {blocks.length} blks
+                {(s => s.length > 10 ? s.substr(0, 10 - 1) + '...' : s)(uid)} # {(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(id)}
+                -- {blocks.length} blks
                 <div className="modal-escape" onClick={() => this.toggleBig()}>
                   &times;
                 </div>
               </div>
               <div className="modal-body">
-                <Blocks blocks={blocks} width={1650} height={1200} isoConfig={{canvasWidth: 1650, canvasHeight: 1200, numUnits:30}}/>
+                <Blocks blocks={blocks} width={1650} height={1200} isoConfig={{ canvasWidth: 1650, canvasHeight: 1200, numUnits: 30 }} />
               </div>
             </div>
           </div>
@@ -107,7 +107,7 @@ class SharedStructures extends Component {
         <div className="Community-content">
           {this.props.structs === "loading" ?
             <span>Loading structs from the server...</span>
-          :
+            :
             this.props.structs.length > 0 ?
               this.props.structs.sort((a, b) => {
                 if (a.score < b.score) {
@@ -131,7 +131,7 @@ class SharedStructures extends Component {
                   />
                 )
               })
-            :
+              :
               <span>No structs shared yet. Be the first!</span>
           }
         </div>
