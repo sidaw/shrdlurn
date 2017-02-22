@@ -45,7 +45,7 @@ class BlocksWorld extends React.Component {
     //   /* WIN! */
     //   // this.win()
     // }
-		//
+    //
     // if (prevProps.task === "world" && this.props.task !== "world")
     //   this.setTarget()
   }
@@ -54,7 +54,7 @@ class BlocksWorld extends React.Component {
     const randomTarget = genRandomTarget()
     this.setState({ target: randomTarget[2], possSteps: randomTarget[1], targetIdx: randomTarget[0] })
 
-    this.props.dispatch(Logger.log({ type: "start", msg: { targetIdx: randomTarget[0], target: randomTarget[2] }}))
+    this.props.dispatch(Logger.log({ type: "start", msg: { targetIdx: randomTarget[0], target: randomTarget[2] } }))
   }
 
   win() {
@@ -110,9 +110,9 @@ class BlocksWorld extends React.Component {
   stateIncludes(state, obj) {
     for (const c of state) {
       if (c.x === obj.x &&
-          c.y === obj.y &&
-          c.z === obj.z &&
-          c.color === obj.color) {
+        c.y === obj.y &&
+        c.z === obj.z &&
+        c.color === obj.color) {
         return true;
       }
     }
@@ -137,9 +137,9 @@ class BlocksWorld extends React.Component {
 
     for (let i = 0; i < a.length; ++i) {
       if (a[i].x !== b[i].x ||
-          a[i].y !== b[i].y ||
-          a[i].z !== b[i].z ||
-          a[i].color !== b[i].color) {
+        a[i].y !== b[i].y ||
+        a[i].z !== b[i].z ||
+        a[i].color !== b[i].color) {
         return false;
       }
     }
@@ -151,7 +151,7 @@ class BlocksWorld extends React.Component {
     const selectedResp = this.state.selectedResp
     if (selectedResp < this.props.world.responses.length - 1) {
       this.setState({ selectedResp: selectedResp + 1 })
-      this.props.dispatch(Logger.log({ type: "scroll", msg: { dir: "up" }}))
+      this.props.dispatch(Logger.log({ type: "scroll", msg: { dir: "up" } }))
     } else {
       // this.setState({ selectedResp: 0 })
       // this.props.dispatch(Actions.openDefine())
@@ -163,7 +163,7 @@ class BlocksWorld extends React.Component {
     const selectedResp = this.state.selectedResp
     if (selectedResp > 0) {
       this.setState({ selectedResp: selectedResp - 1 })
-      this.props.dispatch(Logger.log({ type: "scroll", msg: { dir: "down" }}))
+      this.props.dispatch(Logger.log({ type: "scroll", msg: { dir: "down" } }))
     }
 
     // if (this.props.world.defining && selectedResp === this.props.world.responses.length - 1) {
@@ -206,7 +206,7 @@ class BlocksWorld extends React.Component {
         } else {
           currentState = this.computeDiff(history[idx].value || [], responses[this.state.selectedResp].value)
         }
-				console.log( (({score, formula, formulas}) => ({score, formula, formulas}))(responses[this.state.selectedResp]));
+        console.log((({score, formula, formulas}) => ({ score, formula, formulas }))(responses[this.state.selectedResp]));
       } catch (e) {
         currentState = this.computeDiff(history[idx].value || [], responses[0].value)
       }
@@ -231,14 +231,14 @@ class BlocksWorld extends React.Component {
     return (
       <div className="BlocksWorld">
         <div className="BlocksWorld-mainblocks">
-          <Blocks blocks={currentState} width={1650} height={1200} isoConfig={{canvasWidth: 1650, canvasHeight: 1200, numUnits:40}}/>
+          <Blocks blocks={currentState} width={1650} height={1200} isoConfig={{ canvasWidth: 1650, canvasHeight: 1200, numUnits: 40 }} />
         </div>
         <div className="BlocksWorld-command">
           <History />
           <CommandBar
             query={this.props.world.query}
             changeQuery={(q) => this.props.dispatch(Actions.setQuery(q))}
-            handleQuery={(query) => this.handleQuery(query) }
+            handleQuery={(query) => this.handleQuery(query)}
             changeStatus={(newStatus) => this.handleStatusChange(newStatus)}
             onUp={() => this.upSelected()}
             onDown={() => this.downSelected()}
@@ -248,7 +248,7 @@ class BlocksWorld extends React.Component {
           />
           <div className="BlocksWorld-status">
             {statusMsg}
-            <div className={classnames("BlocksWorld-statusmsg", {"active": this.props.world.status === "accept" && responses.length > 0})}>
+            <div className={classnames("BlocksWorld-statusmsg", { "active": this.props.world.status === "accept" && responses.length > 0 })}>
               <span>{this.state.selectedResp + 1} / {responses.length} possible interpretations</span>
               <div className="BlocksWorld-buttons">
                 <button onClick={() => this.upSelected()}>&uarr;</button>
@@ -262,7 +262,7 @@ class BlocksWorld extends React.Component {
         </div>
         {task === "target" ?
           <Target target={this.state.target} possibleSteps={this.state.possSteps} />
-        :
+          :
           <SharePanel score={this.props.score} />
         }
         {this.state.win &&

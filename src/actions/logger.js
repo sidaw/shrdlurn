@@ -1,6 +1,6 @@
 import io from "socket.io-client"
 import Constants from "constants/actions"
-import Strings from "constants/strings"
+import { COMMUNITY_SERVER_URL } from "constants/strings"
 import { setStore, getStore, genSid } from "helpers/util"
 
 function sendSocket(getState, event, payload) {
@@ -50,11 +50,11 @@ const Actions = {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
 
-      const socket = io(Strings.LOGGER_URL)
+      const socket = io(COMMUNITY_SERVER_URL)
       socket.on("connect", () => {
         console.log("logging socket connected")
 
-        sendSocket(getState, "session", {"sessionId": sessionId})
+        sendSocket(getState, "session", { "sessionId": sessionId })
 
         sendSocket(getState, "getscore", {})
 
@@ -122,7 +122,7 @@ const Actions = {
 
   joinCommunity: (e) => {
     return (dispatch, getState) => {
-      sendSocket(getState, "join", {"room": "community"})
+      sendSocket(getState, "join", { "room": "community" })
         .then((socket) => {
           console.log("joined the community room")
 

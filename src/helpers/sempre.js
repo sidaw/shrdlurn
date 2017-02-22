@@ -1,3 +1,5 @@
+import { SEMPRE_SERVER_URL } from "constants/strings"
+
 // function cleanValue(valueString) {
 //   if (!valueString) return "";
 //
@@ -114,7 +116,7 @@ function combine(vsTmp, v) {
     vs.maxprob = parseFloat(v.prob);
     vs.maxpprob = parseFloat(v.pprob);
     vs.error = v.error;
-    vs.lines =v.lines;
+    vs.lines = v.lines;
   } else {
     vs.value = v.value;
     vs.prob += parseFloat(v.prob);
@@ -192,8 +194,6 @@ export function parseSEMPRE(valid) {
 //   return sanity;
 // }
 
-const SEMPRE_URL = process.env.REACT_APP_SEMPRE === 'local' ? `http://localhost:${process.env.REACT_APP_SEMPRE_PORT}` : `http://jonsson.stanford.edu:${process.env.REACT_APP_SEMPRE_PORT}`
-
 export function SEMPREquery(cmds, callback) {
   const cmdstr = []
   for (const k in cmds) {
@@ -202,7 +202,7 @@ export function SEMPREquery(cmds, callback) {
     }
   }
 
-  return fetch(`${SEMPRE_URL}/sempre?format=lisp2json&${cmdstr.join("&")}`)
+  return fetch(`${SEMPRE_SERVER_URL}/sempre?format=lisp2json&${cmdstr.join("&")}`)
     .then((response) => {
       return response.json()
     })

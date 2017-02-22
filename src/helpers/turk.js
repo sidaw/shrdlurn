@@ -1,11 +1,11 @@
 import { getParameterByName } from "./util"
-import Strings from "constants/strings"
+import { DEFAULT_SESSIONID } from "constants/strings"
 import Targets from "constants/targets"
 
 export function getTurkId() {
   const uid = getParameterByName("uid");
   if (uid) return uid;
-  return Strings.DEFAULT_SESSIONID;
+  return DEFAULT_SESSIONID;
 }
 
 export function getTurkCode(targetIdx, nSteps, nBlocks) {
