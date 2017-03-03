@@ -9,92 +9,63 @@ and other details about the project.
 
 ## Core language
 The system always understands a core language, which is just a programming language designed to interpolate well with natural language.
-<li>
-	<strong>Directions:</strong>
-	<ul>
-		<li>[dir]: top, bot, left, right, front, back</li>
-		<li>very [dir] of ...</li>
-	</ul>
-</li>
-<li>
-	<strong>Colors:</strong>
-	<ul>
-		<li>red, orange, yellow, green, blue</li>
-		<li>white, black, pink, brown</li>
-	</ul>
-</li>
 
-<li>
-	<strong>Operators:</strong>
-	<ul>
-		<li>has, of, not, and, or</li>
-		<li>+, -</li>
-	</ul>
-</li>
+Directions:
+`top, bot, left, right, front, back`
 
-<li>
-	<strong>Blocks:</strong> all, none, this, previous, origin
-</li>
+Extreme directions: `very top, very bot, very left ...`
 
-<li>
-	<strong>Simple actions:</strong>
-		<ul>
-			<li>select, add, remove, move</li>
-		</ul>
-</li>
+Colors:
+`red, orange, yellow, green, blue`
+`white, black, pink, brown`
 
-<li>
-	<strong>Control:</strong> repeat, ;, [ ], &#123; &#125;, if, while, foreach, isolate
-</li>
+Operators:
+`has, of, not, and, or`
+`+, -`
 
-<li>
-	<strong>Simple examples:</strong>
-	<ul>
-		<li>add red top</li>
-		<li>add yellow</li>
-		<li>repeat 3 [add yellow top]</li>
-		<li>select top</li>
-		<li>select has color red</li>
-		<li>move top, move bot</li>
-	</ul>
-</li>
+Sets: `all, none, this, previous, origin`
 
-<li>
-	<strong>More examples:</strong>
-	<ul>
-		<li>repeat 3 add red top</li>
-		<li>select top of left of this </li>
-		<li>select this or top of left of this</li>
-		<li>select all and not this</li>
-		<li>repeat 3 [add red; select top]</li>
-	</ul>
-</li>
+Primitive actions:
+`select, add, remove, move`
 
-<li>
-	<strong>Advanced:</strong>
-	<ul>
-		<li> &#123; select left or right; add red &#125; </li>
-		<li> isolate [repeat 3 [add red left]] </li>
-		<li> if has color red [remove all]</li>
-		<li> while has height 0 [select left; add yellow]</li>
-		<li> select has row [row of left] </li>
-		<li> foreach [remove has row row of this]  </li>
-		<li> add red;  &#123; select right; update color color of left &#125;  </li>
-	</ul>
-</li>
+Control flow: `repeat, ;, [], {}, if, while, foreach, isolate`
 
-<li>
-	<strong>Possible extensions:</strong>
-	<ul>
-		<li>move left 3 times</li>
-		<li>do 3 times add red top</li>
-		<li>move left until red</li>
-		<li>red cube size 3</li>
-		<li>surround this cube</li>
-		<li>copy this to the left</li>
-	</ul>
-</li>
+### Examples
+```
+add red top
+add yellow
+repeat 3 [add yellow top]
+select top
+select has color red<
+move top, move bot
+```
 
+```
+repeat 3 add red top
+select top of left of this
+select this or top of left of this
+select all and not this
+repeat 3 [add red; select top]
+```
+
+```
+{select left or right; add red};
+isolate [repeat 3 [add red left]]
+if has color red [remove all]
+while has height 0 [select left; add yellow]
+select has row [row of left]
+foreach [remove has row row of this]  
+add red;  {select right; update color color of left}
+```
+
+```
+move left 3 times
+do 3 times add red top
+move left until red
+red cube size 3
+surround this cube
+copy this to the left
+```
 
 ## Competition details
 
@@ -102,4 +73,4 @@ We award prizes for users contributing the most useful language, and users build
 
 ## Definition
 
-## Technical information and goals
+## About the project
