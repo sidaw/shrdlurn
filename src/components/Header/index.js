@@ -140,9 +140,10 @@ class Header extends React.Component {
           <span className="Header-sublogo">A Stanford NLP Project</span>
         </div>
         <div className="Header-nav">
+				  <Link to={{ pathname: "/information", query: this.props.query }} activeClassName="active"><div>Info</div></Link>
           <Link to={{ pathname: "/", query: this.props.query }} activeClassName="active"><div>Build</div></Link>
           <Link to={{ pathname: "/community", query: this.props.query }} activeClassName="active" target="_blank"><div>Leaderboard</div></Link>
-          <a target="_blank" href="https://shrdlurn.signup.team/"><div>Slack</div></a>
+          <a target="_blank" href="https://shrdlurn.slack.com/"><div>Slack</div></a> 
           <div onClick={() => this.setState({ modal: "helpme" })}>Help</div>
           <div id="restart_tutorial" onClick={() => openTutorial()}>Tutorial</div>
         </div>
