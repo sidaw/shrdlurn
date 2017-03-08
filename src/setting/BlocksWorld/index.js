@@ -253,7 +253,7 @@ class Blocks extends React.Component {
 
   render() {
     return (
-      <canvas className="Blocks" ref="blocksCanvas" width={this.props.width} height={this.props.height} />
+      <canvas id="blocksCanvas" className="Blocks" ref="blocksCanvas" width={this.props.width} height={this.props.height} />
     )
   }
 }

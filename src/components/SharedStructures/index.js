@@ -36,7 +36,9 @@ class Structure extends PureComponent {
   }
 
   render() {
-    const { upvotes, sessionId, blocks, upVote, uid, id, recipe } = this.props
+    const { upvotes, sessionId, blocks, upVote, uid, id, recipe, image } = this.props
+
+    // console.log(image)
 
     return (
       <div className="SharedStructures-row">
@@ -126,6 +128,7 @@ class SharedStructures extends Component {
                     blocks={s.value}
                     recipe={s.recipe}
                     upvotes={s.upvotes}
+                    image={s.image}
                     upVote={() => this.handleUpvote(s.uid, s.id)}
                     sessionId={this.props.sessionId}
                   />

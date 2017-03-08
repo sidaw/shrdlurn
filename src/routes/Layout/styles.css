@@ -25,7 +25,7 @@ body {
 .container {
   position: absolute;
   top: 0;
-  padding-bottom: 50px; /* Mirrored by .Header height */
+  padding-top: 50px; /* Mirrored by .Header height */
 }
 
 input {

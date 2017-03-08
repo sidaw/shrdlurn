@@ -6,7 +6,7 @@ export const COMMUNITY_SERVER_URL = process.env.REACT_APP_COMMUNITY_SERVER ? pro
 
 /* Header URLs */
 export const TUTORIAL_URL = "https://youtu.be/0MH2aILyOxA"
-export const SLACK_SIGNUP_URL = "https://shrdlurn.signup.team/"
+export const SLACK_SIGNUP_URL = "https://shrdlurn.slack.com/"
 
 /* Meta information */
 export const DEFAULT_SESSIONID = "deadbeef"

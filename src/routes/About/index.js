@@ -6,7 +6,7 @@ import "./styles.css"
 const About = () => (
   <div className="About">
     <div>
-      <h1>Welcome to VOXELURN!</h1>
+      <h1>Welcome to Voxelurn!</h1>
       <Link to="/build"><button className="active">Start Building!</button></Link>
     </div>
   </div>

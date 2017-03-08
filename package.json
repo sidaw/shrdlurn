@@ -19,6 +19,7 @@
     "deep-equal": "^1.0.1",
     "hashids": "^1.1.1",
     "isomer": "^0.2.6",
+    "lz-string": "^1.4.4",
     "moment": "^2.17.1",
     "mousetrap": "^1.6.0",
     "normalize.css": "^5.0.0",

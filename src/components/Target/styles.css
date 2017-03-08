@@ -61,7 +61,7 @@
 
 
 .BlocksWorld-right.collapsed .Target {
-  width: 50px;
+  width: 50px !important;
   overflow: hidden;
 }
 
@@ -77,7 +77,7 @@
 
 .Target.collapsed,
 .SidePanel.collapsed {
-  width: 50px;
+  width: 50px !important;
 }
 
 .Target.collapsed .SidePanel-header-name,
