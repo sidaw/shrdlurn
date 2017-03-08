@@ -61,6 +61,11 @@
   flex-shrink: 0;
 }
 
+.SharedStructures-struct-blocks img {
+  width: 160px;
+  height: 120px;
+}
+
 .SharedStructures-struct-blocks:hover {
   cursor: pointer;
   background-color: rgb(240, 240, 240);

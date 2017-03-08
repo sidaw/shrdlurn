@@ -1,8 +1,7 @@
 import io from "socket.io-client"
 import Constants from "constants/actions"
 import { COMMUNITY_SERVER_URL } from "constants/strings"
-import { setStore, getStore, genSid } from "helpers/util"
-import LZString from "lz-string"
+import { setStore, getStore, genSid, resizePNG } from "helpers/util"
 
 function sendSocket(getState, event, payload) {
   let socket = getState().logger.socket
@@ -216,7 +215,10 @@ const Actions = {
         return
       }
 
-      const png = LZString.compressToBase64(document.getElementById("blocksCanvas").toDataURL("image/png"))
+      const canvas = document.getElementById("blocksCanvas")
+      const png = resizePNG(canvas.toDataURL("image/png"), 160, 120)
+
+
 
       const payload = { struct: { value, recipe }, image: png, id: sid }
 

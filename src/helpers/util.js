@@ -105,3 +105,22 @@ export function genSid() {
   const hashids = new Hashids("our cool SHRDLURN salt for sids")
   return hashids.encode(rand10000(), rand10000())
 }
+
+
+export function resizePNG(dataImg, width, height) {
+  // create an off-screen canvas
+  var canvas = document.createElement('canvas'),
+    ctx = canvas.getContext('2d');
+
+  // set its dimension to target size
+  canvas.width = width;
+  canvas.height = height;
+
+  // draw source image into the off-screen canvas:
+  const img = new Image()
+  img.src = dataImg
+  ctx.drawImage(img, 0, 0, width, height);
+
+  // encode image to data-uri with base64 version of compressed image
+  return canvas.toDataURL("image/png");
+}
