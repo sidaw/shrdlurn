@@ -318,7 +318,7 @@ const Actions = {
       dispatch({
         type: Constants.CLEAR
       })
-      persistStore(getStore(), { whitelist: ['world'] }, () => { }).purge()
+      persistStore(getStore(), { whitelist: ['world', 'user'] }, () => { }).purge()
     }
   }
 }

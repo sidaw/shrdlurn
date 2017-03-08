@@ -34,7 +34,9 @@ const Actions = {
 
   SET_TASK: "SET_TASK",
 
-  CLEAR: "CLEAR"
+  CLEAR: "CLEAR",
+
+  SIGN_IN: "SIGN_IN"
 }
 
 export default Actions

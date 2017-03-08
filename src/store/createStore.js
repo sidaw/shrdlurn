@@ -30,7 +30,7 @@ export default (initialState = {}) => {
 
   /* Persist the world reducer so that a user's progress can be saved despite
    * reloads (stores this information to localStorage on each update) */
-  persistStore(store, { whitelist: ['world'] })
+  persistStore(store, { whitelist: ['world', 'user'] })
 
   /* return our created store for future use */
   return store

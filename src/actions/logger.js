@@ -82,6 +82,16 @@ const Actions = {
           structs: e.structs.map(f => f.substring(0, f.length))
         })
       })
+
+      socket.on("sign_in", (e) => {
+        dispatch({
+          type: Constants.SIGN_IN,
+          id: e.id,
+          name: e.name,
+          email: e.email,
+          token: e.token
+        })
+      })
     }
   },
 
@@ -251,6 +261,29 @@ const Actions = {
         type: Constants.USER_STRUCTS_COUNT,
         structs: user_structs.filter(a => a !== id)
       })
+    }
+  },
+
+  signIn: (code) => {
+    return (dispatch, getState) => {
+      sendSocket(getState, "sign_in", { code })
+    }
+  },
+
+  getUser: () => {
+    return (dispatch, getState) => {
+      let { token } = getState().user
+
+      if (!token) {
+        /* Check localStorage because reduxPersist's rehydration is not
+         * guaranteed to have finished when this function is called */
+        const userStorage = getStore("reduxPersist:user")
+        if (userStorage.token)
+          token = userStorage.token
+      }
+
+      if (token)
+        sendSocket(getState, "get_user", { token })
     }
   }
 }

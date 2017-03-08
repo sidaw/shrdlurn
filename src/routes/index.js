@@ -5,6 +5,7 @@ import Build from './Build';
 import Community from "./Community"
 import Help from "./Help"
 import About from "./About"
+import Login from "./Login"
 
 const Routes = ({ history }) => (
   <Router history={history}>
@@ -15,6 +16,7 @@ const Routes = ({ history }) => (
       <Route path="community" component={Community} />
       <Route path="help" component={Help} />
       <Route path="about" component={About} />
+      <Route path="login" component={Login} />
     </Route>
   </Router>
 )
