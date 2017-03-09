@@ -38,16 +38,17 @@ class SharePanel extends Component {
           </div>
         </div>
         <div className="SidePanel-content">
-          <div>
-            <p>Please share your structure after you finish </p>
-            <div className="SharePanel-buttons">
-              <button
-                onClick={() => this.share()}
-                className="active full"
-                style={{ borderRadius: "3px" }}>
-                Share to {(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(this.props.sid)}
-              </button>
-              {/* <div className="yourstructs">
+          {this.props.signedIn ?
+            <div>
+              <p>Please share your structure after you finish </p>
+              <div className="SharePanel-buttons">
+                <button
+                  onClick={() => this.share()}
+                  className="active full"
+                  style={{ borderRadius: "3px" }}>
+                  Share to {(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(this.props.sid)}
+                </button>
+                {/* <div className="yourstructs">
 								<select ref="deleteSelect" defaultValue="disabled">
 									<option disabled value="disabled">Select</option>
 									{this.props.user_structs.map((id) =>
@@ -56,13 +57,18 @@ class SharePanel extends Component {
 								</select>
 								<button onClick={() => this.deleteStruct()}>Delete Struct</button>
 							</div> */}
-            </div>
-            <p><strong>Your impact:</strong> {this.props.score}</p>
-            Currently, you are working on the slot
-						"<strong>{(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(this.props.sid)}</strong>",
-						which you will overrride when sharing.
-						You&nbsp;can see existing shared structures on the leaderboard.
-            </div>
+              </div>
+              <p><strong>Your impact:</strong> {this.props.score}</p>
+              Currently, you are working on the slot
+              "<strong>{(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(this.props.sid)}</strong>",
+              which you will overrride when sharing.
+              You&nbsp;can see existing shared structures on the leaderboard.
+              </div>
+            :
+            <div>
+              Please sign in with Slack in order to share your structure.
+              </div>
+          }
         </div>
       </div>
     )
@@ -72,7 +78,8 @@ class SharePanel extends Component {
 const mapStateToProps = (state) => ({
   user_structs: state.logger.user_structs,
   sessionId: state.user.sessionId,
-  sid: state.logger.sid
+  sid: state.logger.sid,
+  signedIn: state.user.signedIn
 })
 
 export default connect(mapStateToProps)(SharePanel)

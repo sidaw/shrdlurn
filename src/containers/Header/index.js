@@ -29,7 +29,7 @@ const Header = ({ query, signedIn, sessionId, email, dispatch }) => (
         :
         <a className="Header-login" href="https://slack.com/oauth/authorize?scope=identity.basic,identity.email&client_id=130265636855.151294060356">
           <div>
-            <img src="https://api.slack.com/img/sign_in_with_slack.png" />
+            <img alt="Click to sign in with Slack" src="https://api.slack.com/img/sign_in_with_slack.png" />
           </div>
         </a>
       }

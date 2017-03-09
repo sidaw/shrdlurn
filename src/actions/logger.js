@@ -7,7 +7,9 @@ function sendSocket(getState, event, payload) {
   let socket = getState().logger.socket
   let uid = getState().user.sessionId
 
-  const message = { ...payload, uid: uid }
+  const token = getStore("auth_token", "")
+
+  const message = { ...payload, uid: uid, token: token }
 
   return new Promise((resolve, reject) => {
     if (socket && socket.connected && typeof socket.emit === "function") {
@@ -84,12 +86,22 @@ const Actions = {
       })
 
       socket.on("sign_in", (e) => {
+        setStore("auth_token", e.token)
+
         dispatch({
           type: Constants.SIGN_IN,
           id: e.id,
           name: e.name,
           email: e.email,
           token: e.token
+        })
+      })
+
+      socket.on("sign_in_failed", (e) => {
+        setStore("auth_token", "")
+
+        dispatch({
+          type: Constants.CLEAR
         })
       })
     }

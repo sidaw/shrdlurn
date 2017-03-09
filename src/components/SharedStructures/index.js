@@ -36,14 +36,12 @@ class Structure extends PureComponent {
   }
 
   render() {
-    const { upvotes, sessionId, blocks, upVote, uid, id, recipe, image } = this.props
-
-    // console.log(image)
+    const { upvotes, sessionId, blocks, upVote, uid, id, recipe, image, signedIn } = this.props
 
     return (
       <div className="SharedStructures-row">
         <div className="SharedStructures-votes">
-          {upvotes.indexOf(sessionId) === -1 &&
+          {signedIn && upvotes.indexOf(sessionId) === -1 &&
             <div className="SharedStructures-votes-upvote" onClick={() => upVote()}>&#9650;</div>
           }
           <div className="SharedStructures-votes-tally">{upvotes.length}</div>
@@ -131,6 +129,7 @@ class SharedStructures extends Component {
                     image={s.image}
                     upVote={() => this.handleUpvote(s.uid, s.id)}
                     sessionId={this.props.sessionId}
+                    signedIn={this.props.signedIn}
                   />
                 )
               })
@@ -144,7 +143,8 @@ class SharedStructures extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  sessionId: state.user.sessionId
+  sessionId: state.user.sessionId,
+  signedIn: state.user.signedIn
 })
 
 export default connect(mapStateToProps)(SharedStructures)

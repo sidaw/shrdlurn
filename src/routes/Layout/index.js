@@ -8,6 +8,11 @@ import Header from "containers/Header"
 import "normalize.css"
 import "./styles.css"
 
+// /* For Debugging: react perf tools to measure performance */
+// import Perf from 'react-addons-perf'
+// window.Perf = Perf
+// window.Perf.start()
+
 class Layout extends Component {
   componentDidMount() {
     /* Set the appropriate sessionId (either turker id or generated) */
