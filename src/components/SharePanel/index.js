@@ -48,22 +48,29 @@ class SharePanel extends Component {
                   style={{ borderRadius: "3px" }}>
                   Share to {(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(this.props.sid)}
                 </button>
-                {/* <div className="yourstructs">
-								<select ref="deleteSelect" defaultValue="disabled">
-									<option disabled value="disabled">Select</option>
-									{this.props.user_structs.map((id) =>
-										<option key={id} value={id}>{id}</option>
-									)}
-								</select>
-								<button onClick={() => this.deleteStruct()}>Delete Struct</button>
-							</div> */}
+                <div className="yourstructs">
+                  <select ref="deleteSelect" defaultValue="disabled">
+                    <option disabled value="disabled">Select</option>
+                    {this.props.user_structs.map((id) =>
+                      <option key={id} value={id}>{id}</option>
+                    )}
+                  </select>
+                  <button onClick={() => this.deleteStruct()}>Delete Struct</button>
+                </div>
               </div>
               <p><strong>Your impact:</strong> {this.props.score}</p>
-              Currently, you are working on the slot
-              "<strong>{(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(this.props.sid)}</strong>",
-              which you will overrride when sharing.
-              You&nbsp;can see existing shared structures on the leaderboard.
+              <p>You will override the struct with this name when sharing. You&nbsp;can see existing shared structures on the leaderboard.</p>
+              <div className="name">
+                <strong>Name your struct:</strong>
+                <input
+                  className="SharePanel-structname"
+                  type="text"
+                  value={this.props.sid}
+                  maxLength={32}
+                  onChange={(e) => this.props.dispatch(Actions.changeStructureId(e.target.value))}
+                />
               </div>
+            </div>
             :
             <div>
               Please sign in with Slack in order to share your structure.

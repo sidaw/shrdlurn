@@ -134,6 +134,16 @@ const Actions = {
     }
   },
 
+  changeStructureId: (sid) => {
+    return (dispatch) => {
+      setStore("sid", sid)
+      dispatch({
+        type: Constants.SET_STRUCTURE_ID,
+        sid: sid
+      })
+    }
+  },
+
   log: (e) => {
     return (dispatch, getState) => {
       const payload = { type: e.type, msg: e.msg }
