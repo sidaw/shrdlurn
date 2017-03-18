@@ -3,7 +3,7 @@ import { getTurkCode } from "helpers/turk"
 
 import "./styles.css"
 
-const Win = ({ targetIdx, nSteps, nBlocks }) => (
+const Win = ({ targetIdx, nSteps, nBlocks, restart }) => (
   <div className="Win modal-container">
     <div className="modal">
       <div className="modal-header">Congratulations! You have won!</div>
@@ -14,6 +14,11 @@ const Win = ({ targetIdx, nSteps, nBlocks }) => (
         <code>
           {getTurkCode(targetIdx, nSteps, nBlocks)}
         </code>
+        <br />
+        <br />
+        <br />
+        <br />
+        <button className="active" onClick={() => restart()}>Restart the Game</button>
       </div>
     </div>
   </div>

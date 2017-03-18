@@ -1,0 +1,79 @@
+.Header {
+  position: fixed;
+  width: 100%;
+  height: 50px; /* Mirrored by .container padding-bottom */
+  background-color: rgb(0, 160, 176);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 5%;
+  color: #FFF;
+  font-size: 1.8rem;
+  top: 0;
+  z-index: 100;
+}
+
+.Header-logo {
+  font-weight: 900;
+}
+
+.Header-sublogo {
+  font-weight: 100;
+  margin-left: 0.5em;
+}
+
+.Header-nav {
+  align-self: flex-end;
+  height: 100%;
+  display: flex;
+}
+
+.Header-nav div {
+  display: inline-flex;
+  height: 100%;
+  width: auto;
+  padding: 0 15px;
+  font-size: 1.3rem;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.Header-nav div:hover {
+  background-color: rgba(244, 244, 244, 0.5);
+  cursor: pointer;
+}
+
+.Header-nav a {
+  text-decoration: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: inherit;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.Header-nav a.active div {
+  background-color: transparent;
+  cursor: default;
+  font-weight: 700;
+  color: #FFF;
+}
+
+.Header-nav a.active div:after {
+  content: " ";
+  width: 100%;
+  position: absolute;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.9);
+  bottom: 0;
+  left: 0;
+}
+
+.Header-login img {
+  height: 30px;
+}

@@ -1,6 +1,6 @@
 import React from "react"
 import classnames from "classnames"
-import Blocks from "components/Blocks"
+import Blocks from "setting"
 
 import "./styles.css"
 
@@ -20,7 +20,7 @@ class Target extends React.Component {
     const { target, possibleSteps } = this.props
 
     return (
-      <div className={classnames("SidePanel Target", {"collapsed": this.state.collapsed})}>
+      <div className={classnames("SidePanel Target", { "collapsed": this.state.collapsed })}>
         <div className="SidePanel-header">
           <span className="SidePanel-header-name">Target</span>
           <div onClick={() => this.setState({ collapsed: !this.state.collapsed })} className="Target-header-arrow">
@@ -31,7 +31,7 @@ class Target extends React.Component {
           </div>
         </div>
         <div className="Target-struct">
-          <Blocks blocks={target} width={660}  height={480} isoConfig={{canvasWidth: 660, canvasHeight: 480, numUnits:20}}/>
+          <Blocks blocks={target} width={660} height={480} isoConfig={{ canvasWidth: 660, canvasHeight: 480, numUnits: 20 }} />
         </div>
         <div className="Target-metadata">
           <div key="poss"><strong>{possibleSteps}</strong>&nbsp;possible steps</div>

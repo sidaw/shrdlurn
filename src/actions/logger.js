@@ -1,13 +1,15 @@
 import io from "socket.io-client"
 import Constants from "constants/actions"
-import Strings from "constants/strings"
-import { setStore, getStore, genSid } from "helpers/util"
+import { COMMUNITY_SERVER_URL } from "constants/strings"
+import { setStore, getStore, genSid, resizePNG } from "helpers/util"
 
 function sendSocket(getState, event, payload) {
   let socket = getState().logger.socket
   let uid = getState().user.sessionId
 
-  const message = { ...payload, uid: uid }
+  const token = getStore("auth_token", "")
+
+  const message = { ...payload, uid: uid, token: token }
 
   return new Promise((resolve, reject) => {
     if (socket && socket.connected && typeof socket.emit === "function") {
@@ -50,11 +52,11 @@ const Actions = {
     return (dispatch, getState) => {
       const { sessionId } = getState().user
 
-      const socket = io(Strings.LOGGER_URL)
+      const socket = io(COMMUNITY_SERVER_URL)
       socket.on("connect", () => {
         console.log("logging socket connected")
 
-        sendSocket(getState, "session", {"sessionId": sessionId})
+        sendSocket(getState, "session", { "sessionId": sessionId })
 
         sendSocket(getState, "getscore", {})
 
@@ -80,6 +82,26 @@ const Actions = {
         dispatch({
           type: Constants.USER_STRUCTS_COUNT,
           structs: e.structs.map(f => f.substring(0, f.length))
+        })
+      })
+
+      socket.on("sign_in", (e) => {
+        setStore("auth_token", e.token)
+
+        dispatch({
+          type: Constants.SIGN_IN,
+          id: e.id,
+          name: e.name,
+          email: e.email,
+          token: e.token
+        })
+      })
+
+      socket.on("sign_in_failed", (e) => {
+        setStore("auth_token", "")
+
+        dispatch({
+          type: Constants.CLEAR
         })
       })
     }
@@ -112,6 +134,16 @@ const Actions = {
     }
   },
 
+  changeStructureId: (sid) => {
+    return (dispatch) => {
+      setStore("sid", sid)
+      dispatch({
+        type: Constants.SET_STRUCTURE_ID,
+        sid: sid
+      })
+    }
+  },
+
   log: (e) => {
     return (dispatch, getState) => {
       const payload = { type: e.type, msg: e.msg }
@@ -122,7 +154,7 @@ const Actions = {
 
   joinCommunity: (e) => {
     return (dispatch, getState) => {
-      sendSocket(getState, "join", {"room": "community"})
+      sendSocket(getState, "join", { "room": "community" })
         .then((socket) => {
           console.log("joined the community room")
 
@@ -215,7 +247,12 @@ const Actions = {
         return
       }
 
-      const payload = { struct: { value, recipe }, id: sid }
+      const canvas = document.getElementById("blocksCanvas")
+      const png = resizePNG(canvas.toDataURL("image/png"), 160, 120)
+
+
+
+      const payload = { struct: { value, recipe }, image: png, id: sid }
 
       sendSocket(getState, "share", payload)
 
@@ -246,6 +283,29 @@ const Actions = {
         type: Constants.USER_STRUCTS_COUNT,
         structs: user_structs.filter(a => a !== id)
       })
+    }
+  },
+
+  signIn: (code) => {
+    return (dispatch, getState) => {
+      sendSocket(getState, "sign_in", { code })
+    }
+  },
+
+  getUser: () => {
+    return (dispatch, getState) => {
+      let { token } = getState().user
+
+      if (!token) {
+        /* Check localStorage because reduxPersist's rehydration is not
+         * guaranteed to have finished when this function is called */
+        const userStorage = getStore("reduxPersist:user")
+        if (userStorage.token)
+          token = userStorage.token
+      }
+
+      if (token)
+        sendSocket(getState, "get_user", { token })
     }
   }
 }

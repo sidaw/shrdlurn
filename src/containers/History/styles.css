@@ -1,0 +1,138 @@
+.History {
+  width: 350px;
+  margin-left: -40px;
+  max-height: 550px;
+  overflow-y: auto;
+}
+
+.HistoryItem,
+.HistoryPin {
+  border-top: 1px solid rgba(51, 51, 51, 0.1);
+  display: flex;
+  width: 200px;
+  margin-left: 40px;
+  background-color: #FFF;
+  transform: translate(0, 0);
+  box-shadow: 0 6px 16px rgba(51,51,51,0.15);
+}
+
+.HistoryItem-num {
+  flex-shrink: 0;
+  height: 100%;
+  background-color: rgba(51, 51, 51, 0.05);
+  font-weight: 300;
+  border-right: 1px solid rgba(51, 51, 51, 0.1);
+}
+
+.HistoryItem.selected .HistoryItem-text {
+  background-color: rgba(0, 160, 176, 0.1);
+}
+
+.HistoryItem-num,
+.HistoryItem-text,
+.HistoryPin {
+  padding: 10px;
+}
+
+.HistoryItem-text {
+  flex-grow: 1;
+}
+
+.HistoryItem-text:hover {
+  background-color: rgba(0, 160, 176, 0.03);
+  cursor: pointer;
+}
+
+.HistoryPin {
+  transform: translateX(-40px);
+  background-color: rgba(255, 173, 0, 0.5);
+  border: 1px solid rgba(51, 51, 51, 0.1);
+  margin: 5px 0 5px 45px;
+}
+
+.HistoryPin,
+.HistoryItem {
+  padding-right: 0;
+  word-break: break-word;
+}
+
+.HistoryPin.head,
+.HistoryPin.head button {
+  box-shadow: 0 0px 2px 2px rgba(0, 160, 176, 0.8);
+}
+
+.HistoryItem button,
+.HistoryPin button {
+  position: absolute;
+  right: -130px;
+  width: 130px;
+  top: 0;
+  height: 100%;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.HistoryItem button {
+  right: -100px;
+  width: 100px;
+}
+
+.HistoryItem button:hover,
+.HistoryPin button:hover {
+  background-color: rgba(0, 160, 176, 0.8);
+  color: #FFF;
+}
+
+.HistoryItem.defining .HistoryItem-num:before {
+  content: " ";
+  background-color: rgba(0, 160, 176, 1);
+  color: #FFF;
+  height: 20px;
+  width: 20px;
+  top: 10px;
+  left: 5px;
+  position: absolute;
+  cursor: pointer;
+  display: block;
+}
+
+.HistoryItem.defining {
+  box-shadow: 0 0px 2px 2px rgba(0, 160, 176, 0.8);
+}
+
+.defineMode .HistoryItem.defining:last-child {
+  margin-bottom: 20px;
+}
+
+.HistoryPin-remove {
+  border-radius: 50%;
+  float: right;
+  border: 1px solid rgba(51, 51, 51, 0.2);
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.HistoryPin-remove:hover {
+  background-color: rgba(51, 51, 51, 0.3);
+  color: #FFF;
+}
+
+.HistoryItem.tentative {
+  opacity: 0.5;
+  margin-top: 20px;
+}
+
+::-webkit-scrollbar {
+  background-color: transparent;
+}
+
+.HistoryPin-remove ~ .HistoryItem-text-text {
+  margin-right: 25px;
+}

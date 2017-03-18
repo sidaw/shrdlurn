@@ -19,3 +19,7 @@
 .SharePanel-buttons button {
   cursor: pointer;
 }
+
+input.SharePanel-structname {
+  font-size: 1.2rem;
+}

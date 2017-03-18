@@ -1,0 +1,86 @@
+html,
+body,
+#root,
+.container {
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  background-color: rgb(244, 244, 244);
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 1.6rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.container {
+  position: absolute;
+  top: 0;
+  padding-top: 50px; /* Mirrored by .Header height */
+}
+
+input {
+  width: 100%;
+  background-color: #FFF;
+  font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+  font-size: 2.2rem;
+  line-height: 1.4;
+  padding: 0.5em 1em;
+  border: 0;
+  outline: none;
+  border: 1px solid rgba(60, 60, 60, 0.1);
+  font-weight: 700;
+}
+
+::placeholder {
+  font-weight: 400;
+}
+
+button {
+  font-size: 1.4rem;
+  line-height: 1.6;
+  height: 50px;
+  width: auto;
+  padding: 5px 10px;
+  font-family: "Lato", "Helvetica Neue", "Helvetica", sans-serif;
+  font-weight: 900;
+  border: 0;
+  text-transform: uppercase;
+  color: #000;
+  background-color: rgb(220, 220, 220);
+  border-radius: 3px;
+  transition: 0.2s ease background-color;
+  outline: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: rgb(200, 200, 200);
+}
+
+button.active {
+  background-color: rgb(0, 160, 176);
+  color: #FFF;
+  cursor: pointer;
+}
+
+button.active:hover {
+  background-color: rgb(30, 190, 206);
+}
+
+button.accepting {
+  background-color: rgb(60, 220, 236);
+}
+
+button.full {
+  border-radius: 2px;
+}
