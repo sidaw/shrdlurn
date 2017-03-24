@@ -3,6 +3,6 @@ data/*.json
 data/*.lisp
 npm-debug.log
 coverage
-build
+/build
 .DS_Store
 .env
