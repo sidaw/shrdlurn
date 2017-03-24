@@ -1,0 +1,45 @@
+.Build {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.Build > div {
+  width: 100%;
+}
+
+div.Build-command {
+  width: 80%;
+  position: absolute;
+  bottom: 50px;
+  left: 10%;
+}
+
+div.Build-world {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Build-status {
+  display: flex;
+  margin-top: 20px;
+  justify-content: space-between;
+  height: 30px;
+}
+
+.Build-actions {
+  font-size: 1.4rem;
+}
+
+.Build-actions button {
+  height: 32px;
+  width: 32px;
+  font-size: 1.2rem;
+  margin-left: 10px;
+  float: right;
+  margin-top: 10px;
+}
