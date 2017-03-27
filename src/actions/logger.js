@@ -247,10 +247,8 @@ const Actions = {
         return
       }
 
-      const canvas = document.getElementById("blocksCanvas")
+      const canvas = document.querySelector("#blocks > canvas")
       const png = resizePNG(canvas.toDataURL("image/png"), 160, 120)
-
-
 
       const payload = { struct: { value, recipe }, image: png, id: sid }
 

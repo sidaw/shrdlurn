@@ -33,7 +33,8 @@
     "redux": "^3.6.0",
     "redux-persist": "^4.1.0",
     "redux-thunk": "^2.1.0",
-    "socket.io-client": "^1.7.2"
+    "socket.io-client": "^1.7.2",
+    "three.js": "^0.77.1"
   },
   "scripts": {
     "start": "NODE_PATH=./src react-scripts start",

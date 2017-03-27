@@ -5402,6 +5402,16 @@ text-table@~0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
 
+three.js@^0.77.1:
+  version "0.77.1"
+  resolved "https://registry.yarnpkg.com/three.js/-/three.js-0.77.1.tgz#07858a8749e4b627a31083252a2d987776cca32a"
+  dependencies:
+    three "0.77.0"
+
+three@0.77.0:
+  version "0.77.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.77.0.tgz#8b0b1b00047689ceaa020d480a562ca60d87ff37"
+
 throat@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/throat/-/throat-3.0.0.tgz#e7c64c867cbb3845f10877642f7b60055b8ec0d6"
