@@ -7,8 +7,7 @@
   },
   "author": "Sida Wang <sidaw@cs.stanford.edu> and Sam Ginn <samginn@cs.stanford.edu>",
   "license": "MIT",
-  "homepage-sam": "http://samginn.github.io/shrdlurn/",
-  "homepage": "http://shrdlurning.sidaw.xyz",
+  "homepage": "http://voxelurn.sidaw.xyz",
   "devDependencies": {
     "gh-pages": "^0.12.0",
     "react-addons-perf": "^15.4.2",
@@ -37,12 +36,11 @@
   },
   "scripts": {
     "start": "NODE_PATH=./src react-scripts start",
-    "start:local": "REACT_APP_SEMPRE_SERVER=localhost:8410 REACT_APP_COMMUNITY_SERVER=localhost:8403 NODE_PATH=./src react-scripts start",
+    "start:local": "REACT_APP_SEMPRE_SERVER=http://localhost:8410 REACT_APP_COMMUNITY_SERVER=http://localhost:8403 NODE_PATH=./src react-scripts start",
     "build": "NODE_PATH=./src react-scripts build",
     "test": "NODE_PATH=./src react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "gh-pages --dist build",
-    "deploy-sidaw": "gh-pages --dist build --repo http://www.github.com/sidaw/shrdlurnt --remove static"
+    "deploy": "gh-pages --dist build --repo http://www.github.com/sidaw/voxelurn --remove static"
   },
   "eslintConfig": {
     "extends": "react-app"
