@@ -1,6 +1,13 @@
 import React from "react"
-import { sortBlocks } from "helpers/blocks"
-import THREE from "three"
+import Isomer,
+{
+  Point,
+  Shape,
+  Color,
+  Path
+} from "isomer";
+import { sortBlocks, rotateBlock } from "helpers/blocks"
+import deepEqual from "deep-equal"
 
 function stateIncludes(state, obj) {
   for (const c of state) {
@@ -49,184 +56,204 @@ export const computeEquality = (struct1, struct2) => {
 class Blocks extends React.Component {
   static propTypes = {
     blocks: React.PropTypes.array,
+    isoConfig: React.PropTypes.object,
     width: React.PropTypes.number,
     height: React.PropTypes.number
   }
 
+  static defaultProps = {
+    isoConfig: {},
+    blocks: []
+  }
+
   constructor(props) {
     super(props)
+    /* Default Isomer config */
+    const defaultIsoConfig = {
+      centerPoint: Point(0, 0, 0),
+      rotation: (Math.PI / 12),
+      scale: 1,
 
-    this.camera = null
-    this.scene = null
-    this.renderer = null
-    this.mesh = null
+      blockWidthScale: 0.9,
+      selectWidthScale: 0.4,
+      groundRadius: 5,
+      gridColor: new Color(50, 50, 50),
+      canvasWidth: 2 * 825.0,
+      canvasHeight: 2 * 600.0,
+      originXratio: 0.5,
+      originYratio: 0.6,
+      numUnits: 30, // default number of cubes from left to right of the canvas
+      maxUnits: 200,
+      marginCubes: 1, // how far from the border do we keep the cubes, until we reach max zoom
+      nil: null
+    }
 
-    this.VIEW_ANGLE = 45
-    this.FAR = 10000
-    this.NEAR = 1
+    this.config = { ...defaultIsoConfig, ...props.isoConfig }
 
-    this.STEP = 50
-    this.GRID_SIZE = 500
-    this.BORDER = 5
-    this.SELECTOR = 25
-
-    this.objects = []
-
-    this._onWindowResize = () => this.onWindowResize()
+    // infer easier to use arguments
+    this.config = (p => {
+      p.originX = p.canvasWidth * p.originXratio;
+      p.originY = p.canvasHeight * p.originYratio;
+      p.unitWidth = p.canvasWidth / p.numUnits;
+      p.margin = p.unitWidth * p.marginCubes;
+      return p;
+    })(this.config);
 
     this.colorMap = {
-      Red: 0xd10000,
-      Orange: 0xff6622,
-      Yellow: 0xffda21,
-      Green: 0x33dd00,
-      Blue: 0x1133cc,
-      Black: 0x0a0a0a,
-      White: 0xfffff0,
-      Pink: 0xff1493,
-      Brown: 0x8b4513,
-      Anchor: 0x000000,
-      Fake: 0xffffff,
-      Gray: 0x909090
+      Red: [209, 0, 0],
+      Orange: [255, 102, 34],
+      Yellow: [255, 218, 33],
+      Green: [51, 221, 0],
+      Blue: [17, 51, 204],
+      Black: [10, 10, 10],
+      White: [255, 255, 240],
+      Pink: [255, 20, 147],
+      Brown: [139, 69, 19],
+      Anchor: [0, 160, 176],
+      Fake: [255, 255, 255],
+      Gray: [144, 144, 144]
     }
+
+    this.state = { iso: null, rotational: -1 }
   }
 
   componentDidMount() {
-    /* Create renderer */
-    this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    const iso = new Isomer(this.refs.blocksCanvas,
+      {
+        scale: this.config.unitWidth,
+        originX: this.config.originX,
+        originY: this.config.originY
+      }
+    );
 
-    /* Assign DOM Element */
-    const container = this.refs.blocks
-
-    /* Set the camera position */
-    this.camera = new THREE.PerspectiveCamera(this.VIEW_ANGLE, this.props.width / this.props.height, this.NEAR, this.FAR);
-		this.camera.position.set( 500, 800, 1300 );
-		this.camera.lookAt( new THREE.Vector3() );
-
-    /* Create the scene */
-    this.scene = new THREE.Scene();
-
-    /* Draw Grid */
-    var geometry = new THREE.Geometry();
-    for ( var i = - this.GRID_SIZE; i <= this.GRID_SIZE; i += this.STEP ) {
-      geometry.vertices.push( new THREE.Vector3( - this.GRID_SIZE, 0, i ) );
-      geometry.vertices.push( new THREE.Vector3(   this.GRID_SIZE, 0, i ) );
-      geometry.vertices.push( new THREE.Vector3( i, 0, - this.GRID_SIZE ) );
-      geometry.vertices.push( new THREE.Vector3( i, 0,   this.GRID_SIZE ) );
-    }
-    var material = new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2, transparent: true } );
-    var line = new THREE.LineSegments( geometry, material );
-    this.scene.add( line );
-
-    // Define the raycaster
-    // const raycaster = new THREE.Raycaster();
-    // const mouse = new THREE.Vector2();
-    // var geometry = new THREE.PlaneBufferGeometry( 1000, 1000 );
-    // geometry.rotateX( - Math.PI / 2 );
-    // const plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
-    // this.scene.add( plane );
-
-    /* Render the element */
-    container.appendChild(this.renderer.domElement);
-
-    /* Lights */
-    var ambientLight = new THREE.AmbientLight( 0x606060 );
-    this.scene.add( ambientLight );
-    var directionalLight = new THREE.DirectionalLight( 0xffffff );
-    directionalLight.position.set( 1, 0.75, 0.5 ).normalize();
-    this.scene.add( directionalLight );
-
-    /* Define the renderer */
-    this.renderer.setClearColor( 0xf0f0f0 )
-    this.renderer.setPixelRatio( window.devicePixelRatio )
-    this.renderer.setSize(this.props.width, this.props.height)
-
-    /* Render :) */
-    this.renderScene()
-
-    this.renderBlocks()
-
-    window.addEventListener("resize", this._onWindowResize)
+    this.setState({ iso: iso })
   }
 
-  componentWillUnmount() {
-    window.removeEventListener("resize", this._onWindowResize)
+  shouldComponentUpdate(prevProps, prevState) {
+    return !deepEqual(this.props, prevProps) || !deepEqual(prevState, this.state)
   }
 
   componentDidUpdate() {
-    this.renderBlocks()
-  }
-  
-  addBlock(x, y, z, color, transparent, selector) {
-    let hexColor = this.colorMap[color]
-    if (!hexColor)
-      hexColor = parseInt(color, 16)
-    
-    /* Define the cube material */
-    const cubeGeo = !selector ? new THREE.BoxGeometry(this.STEP - this.BORDER, this.STEP - this.BORDER, this.STEP - this.BORDER) : new THREE.BoxGeometry(this.SELECTOR, this.SELECTOR, this.SELECTOR)
-    const cubeMaterial = new THREE.MeshBasicMaterial( { color: hexColor, opacity: (transparent && !selector) ? 0.5 : 0.9, transparent: true } )
+    const blocks = sortBlocks(this.props.blocks.map((b) => rotateBlock(b, this.state.rotational)));
+    const scalars = blocks.map((b) => this.getBlockScale(b));
+    const minScalar = Math.max(Math.min(...scalars), this.config.numUnits / this.config.maxUnits);
 
-    /* Create the Voxel */
-    const voxel = new THREE.Mesh(cubeGeo, cubeMaterial)
-    if (selector) {
-      voxel.renderOrder = 0
-    } else {
-      voxel.renderOrder = 1
-    }
-
-    /* Set the position */
-    const position = new THREE.Vector3(-y * this.STEP, z * this.STEP, -x * this.STEP)
-
-    /* Place the voxel */
-    voxel.position.copy(position)
-    voxel.position.divideScalar(this.STEP).floor().multiplyScalar(this.STEP).addScalar((this.STEP / 2) + (this.BORDER / 2))
-
-    /* Add the voxel to the scene */
-    this.scene.add(voxel)
-
-    /* Keep track of the voxel for future use */
-    this.objects.push(voxel)
+    this.state.iso.canvas.clear()
+    // this.state.iso._calculateTransformation();
+    this.renderBlocks(blocks.filter((b) => b.z < 0), minScalar)
+    this.renderGrid(minScalar)
+    this.renderBlocks(blocks.filter((b) => b.z >= 0), minScalar)
   }
 
-  renderBlocks() {
-    /* Remove all preexisting blocks from the scene to clear it */
-    for (const object of this.objects) {
-      this.scene.remove(object)
-    }
-    this.objects = []
+  getBlockScale(b) {
+    const {originX, originY, margin, centerPoint, rotation} = this.config;
+    const p = this.state.iso._translatePoint(new Point(b.x, b.y, b.z).rotateZ(centerPoint, rotation));
+    // scale is the scaling down required so the point appears in canvas
+    // it satisfies: scale * (x - originX) + originX \in [0, canvasWidth]
+    // I assume origin is in the box
+    // margin is a bit tricky, the exactly way requires multiple calls to translate
 
-    /* Add the blocks to the scene */
-    for (const block of this.props.blocks) {
-      if (block.color === "Fake") {
-        /* add selector floating */
-        this.addBlock(block.x, block.y, block.z, "Anchor", true, true)
+    const Y0 = originY;
+    const X0 = originX;
+
+    let xscale = 1;
+    if (p.x < margin)
+      xscale = (X0 - margin) / (X0 - p.x);
+    if (p.x > this.config.canvasWidth - margin)
+      xscale = (this.config.canvasWidth - margin - X0) / (p.x - X0);
+
+    let yscale = 1;
+    if (p.y < margin)
+      yscale = (Y0 - margin) / (Y0 - p.y);
+    if (p.y > this.config.canvasHeight - margin)
+      yscale = (this.config.canvasHeight - margin - Y0) / (p.y - Y0);
+
+    // console.log(`p:${p.x},${p.y} margin: ${margin}, height:${this.config.canvasHeight}`);
+    return Math.min(xscale, yscale);
+  }
+
+  renderGrid(scale) {
+    const { groundRadius, rotation, groundColor, centerPoint } = this.config;
+    const groundwidth = 2 * groundRadius + 1;
+    for (let x = 0; x < groundwidth + 1; x++) {
+      this.state.iso.add(new Path([
+        new Point((x - groundRadius), -groundRadius, 0),
+        new Point((x - groundRadius), (groundRadius + 1), 0),
+        new Point((x - groundRadius), -groundRadius, 0)
+      ])
+        .rotateZ(centerPoint, rotation)
+        .scale(centerPoint, scale)
+        //.translate(gridwidth*offset, gridwidth*offset, 0)
+        , groundColor
+      );
+
+      const y = x;
+      this.state.iso.add(new Path([
+        new Point(-groundRadius, (y - groundRadius), 0),
+        new Point((groundRadius + 1), (y - groundRadius), 0),
+        new Point(-groundRadius, (y - groundRadius), 0)
+      ])
+        .rotateZ(centerPoint, rotation)
+        .scale(centerPoint, scale)
+        //.translate(gridwidth*offset, gridwidth*offset, 0)
+        , groundColor
+      );
+    }
+  }
+
+  renderBlocks(blocks, scale = this.config.scale) {
+    for (const block of blocks) {
+      // let selectedBlockYes = false;
+      const color = this.colorMap[block.color];
+      let blockColor = new Color();
+      if (block.names && block.names.includes("_new")) {
+        blockColor = new Color(color[0], color[1], color[2], 0.2);
       } else {
-        /* add regular block */
-        this.addBlock(block.x, block.y, block.z, block.color, (block.names && block.names.includes("_new")), false)
-        if (block.names && block.names.includes("S")) {
-          /* add selector inside of block */
-          this.addBlock(block.x, block.y, block.z, "Anchor", true, true)
-        }
+        blockColor = new Color(color[0], color[1], color[2], 0.88);
+      }
+
+      if (block.color === "Fake") {
+        //blockColor = new Color(244,244,244, 0.2);
+        //this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
+      } else {
+        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, false, scale), blockColor);
+      }
+
+      if (block.names && block.names.includes("S")) {
+        //this.state.iso.add(this.makeBlock(block.x, block.y, block.z, basicUnit, true), new Color(0, 160, 176, 0.125));
+        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, true, scale), new Color(0, 0, 0, 0.5));
       }
     }
-
-    /* And render :) */
-    this.renderScene()
   }
 
-  renderScene() {
-    this.renderer.render(this.scene, this.camera)
+  darken(color) {
+    return new Color(this.darkenValue(color.r), this.darkenValue(color.g), this.darkenValue(color.b), color.a);
   }
 
-  onWindowResize() {
-    this.camera.aspect = this.props.width / this.props.height;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize( this.props.width, this.props.height );
+  darkenValue(value, factor = 0.5) {
+    const graystandard = 128;
+    return factor * graystandard + (1 - factor) * value;
+  }
+
+  makeBlock(x, y, z, highlighted = false, scale = this.config.scale) {
+    const { rotation, centerPoint} = this.config
+    const cubesize = highlighted ? this.config.selectWidthScale : this.config.blockWidthScale;
+    const shift = (1 - cubesize) / 2;
+    return Shape.Prism(
+      Point(x + shift,
+        y + shift,
+        z + shift
+      ),
+      cubesize, cubesize, cubesize
+    )
+      .rotateZ(centerPoint, rotation)
+      .scale(centerPoint, scale)
+    //.translate(gridWidth*offset, gridWidth*offset, 0);
   }
 
   render() {
-
     return (
-      <div id="blocks" ref="blocks"></div>
+      <canvas id="blocksCanvas" className="Blocks" ref="blocksCanvas" width={this.props.width} height={this.props.height} />
     )
   }
 }

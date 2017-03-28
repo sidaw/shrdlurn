@@ -195,7 +195,7 @@ class Build extends Component {
     return (
       <div className="Build">
         <div className="Build-world">
-          <Setting blocks={currentState} width={window.innerWidth - 50} height={window.innerHeight - 100} />
+          <Setting blocks={currentState} width={1650} height={1200} isoConfig={{ canvasWidth: 1650, canvasHeight: 1200, numUnits: 40 }} />
         </div>
         <div className="Build-command">
           <History />
