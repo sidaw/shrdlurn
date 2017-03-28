@@ -46,4 +46,3 @@ The setting (BlocksWorld) lives in the "src/setting". Here is the only logic tha
 ### Build Your Own Setting!
 
 Interested in expanding this client to handle a different setting? Everything should be setting agnostic except for the code in "src/setting". All you have to do is implement all the same props as "src/setting/BlocksWorld" does and then export the new setting as the App's setting by changing what gets imported in "src/setting/index.js". Then, everything should work as intended!
-
