@@ -8,6 +8,7 @@ import Isomer,
 } from "isomer";
 import { sortBlocks, rotateBlock } from "helpers/blocks"
 import deepEqual from "deep-equal"
+import cssColors from "color-name"
 
 function stateIncludes(state, obj) {
   for (const c of state) {
@@ -99,20 +100,23 @@ class Blocks extends React.Component {
       return p;
     })(this.config);
 
-    this.colorMap = {
-      Red: [209, 0, 0],
-      Orange: [255, 102, 34],
-      Yellow: [255, 218, 33],
-      Green: [51, 221, 0],
-      Blue: [17, 51, 204],
-      Black: [10, 10, 10],
-      White: [255, 255, 240],
-      Pink: [255, 20, 147],
-      Brown: [139, 69, 19],
-      Anchor: [0, 160, 176],
-      Fake: [255, 255, 255],
-      Gray: [144, 144, 144]
-    }
+    // this.colorMap = {
+    //   Red: [209, 0, 0],
+    //   Orange: [255, 102, 34],
+    //   Yellow: [255, 218, 33],
+    //   Green: [51, 221, 0],
+    //   Blue: [17, 51, 204],
+    //   Black: [10, 10, 10],
+    //   White: [255, 255, 240],
+    //   Pink: [255, 20, 147],
+    //   Brown: [139, 69, 19],
+    //   Anchor: [0, 160, 176],
+    //   Fake: [255, 255, 255],
+    //   Gray: [144, 144, 144]
+    // }
+    this.colorMap = cssColors;
+    this.colorMap['fake'] = [255, 255, 255];
+    this.colorMap['Fake'] = [255, 255, 255];
 
     this.state = { iso: null, rotational: -1 }
   }
@@ -212,7 +216,7 @@ class Blocks extends React.Component {
         blockColor = new Color(color[0], color[1], color[2], 0.88);
       }
 
-      if (block.color === "Fake") {
+      if (block.color === "fake") {
         //blockColor = new Color(244,244,244, 0.2);
         //this.state.iso.add(this.makeBlock(block.x, block.y, block.z), blockColor);
       } else {
@@ -221,7 +225,7 @@ class Blocks extends React.Component {
 
       if (block.names && block.names.includes("S")) {
         //this.state.iso.add(this.makeBlock(block.x, block.y, block.z, basicUnit, true), new Color(0, 160, 176, 0.125));
-        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, true, scale), new Color(0, 0, 0, 0.5));
+        this.state.iso.add(this.makeBlock(block.x, block.y, block.z, true, scale), new Color(0, 0, 0, 1));
       }
     }
   }
