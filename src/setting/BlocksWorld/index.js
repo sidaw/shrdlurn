@@ -116,7 +116,6 @@ class Blocks extends React.Component {
     // }
     this.colorMap = cssColors;
     this.colorMap['fake'] = [255, 255, 255];
-    this.colorMap['Fake'] = [255, 255, 255];
 
     this.state = { iso: null, rotational: -1 }
   }
