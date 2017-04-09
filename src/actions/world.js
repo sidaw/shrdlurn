@@ -66,10 +66,6 @@ const Actions = {
     }
   },
 
-
-
-
-
   tryQuery: (q) => {
     return (dispatch, getState) => {
       const { sessionId } = getState().user

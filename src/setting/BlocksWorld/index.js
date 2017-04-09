@@ -207,7 +207,7 @@ class Blocks extends React.Component {
   renderBlocks(blocks, scale = this.config.scale) {
     for (const block of blocks) {
       // let selectedBlockYes = false;
-      const color = this.colorMap[block.color];
+      const color = this.colorMap[block.color.toLowerCase()];
       let blockColor = new Color();
       if (block.names && block.names.includes("_new")) {
         blockColor = new Color(color[0], color[1], color[2], 0.2);
