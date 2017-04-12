@@ -248,20 +248,19 @@ const Actions = {
       }
 
       const canvas = document.getElementById("blocksCanvas")
-      const png = resizePNG(canvas.toDataURL("image/png"), 160, 120)
+      resizePNG(canvas.toDataURL("image/png"), 160, 120)
+        .then(png => {
+          const payload = { struct: { value, recipe }, image: png, id: sid }
 
+          sendSocket(getState, "share", payload)
 
+          alert("Shared your structure! View it on the Community page.")
 
-      const payload = { struct: { value, recipe }, image: png, id: sid }
-
-      sendSocket(getState, "share", payload)
-
-      alert("Shared your structure! View it on the Community page.")
-
-      dispatch({
-        type: Constants.SHARED_STRUCT,
-        value: value
-      })
+          dispatch({
+            type: Constants.SHARED_STRUCT,
+            value: value
+          })
+        })
     }
   },
 
