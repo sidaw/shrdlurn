@@ -19,7 +19,6 @@ class Information extends Component {
 				<div>
 
 					<img src={CubesImage} alt="example voxel structure" height={height} />
-          <h3><Link to="/build"> start building </Link> </h3>
 					<p>Voxelurn is a command interface for building {' '}
 						<Link to={{ pathname: "/community", query: this.props.query }} activeClassName="active" target="_blank">voxel structures</Link>.{' '}
 						It is an experimental platform for developing technologies
@@ -28,7 +27,13 @@ class Information extends Component {
 				without conforming to their uncompromising syntax.{' '}
 						Voxlurn does this by learning from its user community interactively starting from just a normal programming language.
 				</p>
-
+        <h2>Get started</h2>
+        Go to the <Link to="/build">build page</Link> and type "repeat 3 [add red top]".
+      Voxelurn always understands the core language which has a fixed syntax like other programming languages.
+      However, you might want more flexibility and many alternative ways of saying the same thing.
+      In Voxelurn, you can define
+      "add red top 3 times" as "repeat 3 [add red top]" and in the future you can try
+      "add green left 5 times".
 					{/*
 					<div className="Examples">
 					<img src={require('./examples.png')} height={height}/>
@@ -45,12 +50,7 @@ class Information extends Component {
 				More details on the competition can be found there.
 				</p>
 
-					<h2>Get started</h2>
-					Head over to the <Link to="/build">build page</Link> and type "repeat 3 [add red top]".
-				Voxelurn always understand a core language.
-				However, you might find the core language annoying to remember and to learn,
-				and you can describe an action in a way you want: "add red top 3 times" and teach voxlurn.
-				A short tutorial video contains more details on how this works.
+
 
 				<h2>Learn more</h2>
         <div><a target="_blank" href={DOCUMENTATION_URL}>Documentation</a>: core language, the setup, etc </div>
