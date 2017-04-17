@@ -3,6 +3,7 @@ import { connect } from "react-redux"
 import Actions from "actions/logger"
 import { Link } from "react-router"
 import "./styles.css"
+import { TUTORIAL_URL, SLACK_SIGNUP_URL, DOCUMENTATION_URL } from "constants/strings"
 
 import CubesImage from "images/struct_frames_cubes.png"
 
@@ -16,15 +17,16 @@ class Information extends Component {
 		return (
 			<div className="About">
 				<div>
-					<h1>Welcome to Voxelurn!</h1>
+
 					<img src={CubesImage} alt="example voxel structure" height={height} />
+          <h3><Link to="/build"> start building </Link> </h3>
 					<p>Voxelurn is a command interface for building {' '}
 						<Link to={{ pathname: "/community", query: this.props.query }} activeClassName="active" target="_blank">voxel structures</Link>.{' '}
 						It is an experimental platform for developing technologies
 				allowing computers to understand a naturalized programming language, which allows people to access
 				to the power of programming languages
 				without conforming to their uncompromising syntax.{' '}
-						Voxlurn does this by learning from its user community interactively.
+						Voxlurn does this by learning from its user community interactively starting from just a normal programming language.
 				</p>
 
 					{/*
@@ -35,8 +37,6 @@ class Information extends Component {
 				<img src={require('./struct_venison.png')} height={height}/>
 				</div>
 				*/}
-
-
 					<h2>Prizes</h2>
 					<p>
 						We award prizes for users contributing the most useful language, and users building the best structures.
@@ -51,8 +51,14 @@ class Information extends Component {
 				However, you might find the core language annoying to remember and to learn,
 				and you can describe an action in a way you want: "add red top 3 times" and teach voxlurn.
 				A short tutorial video contains more details on how this works.
+
 				<h2>Learn more</h2>
-					More information can be found on <a href="https://github.com/sidaw/shrdlurn">github</a>.
+        <div><a target="_blank" href={DOCUMENTATION_URL}>Documentation</a>: core language, the setup, etc </div>
+        <div><a target="_blank" href={TUTORIAL_URL}>Video tutorial</a>: see the system at work</div>
+        <a target="_blank" href={SLACK_SIGNUP_URL}> Slack</a> (<a target="_blank" href="https://shrdlurn.signup.team/">signup</a>): signup and join to submit more structures and win prizes
+        <p>
+        Even more information can be found on <a href="https://github.com/sidaw/shrdlurn">github</a>.
+        </p>
       </div>
 			</div>
 		)
