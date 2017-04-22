@@ -8,6 +8,7 @@ export const COMMUNITY_SERVER_URL = process.env.REACT_APP_COMMUNITY_SERVER ? pro
 export const TUTORIAL_URL = "https://youtu.be/7clXX0g3Znw"
 export const SLACK_SIGNUP_URL = "https://shrdlurn.slack.com/"
 export const SLACK_OAUTH_URL = "https://slack.com/oauth/authorize?scope=identity.basic,identity.email&client_id=130265636855.151294060356&redirect_uri=" + (process.env.NODE_ENV === "development" ? "http%3A%2F%2Flocalhost%3A3000%2F%23%2Flogin" : "http%3A%2F%2Fwww.voxelurn.com%2F%23%2Flogin")
+export const DOCUMENTATION_URL = "https://github.com/sidaw/shrdlurn/blob/master/Voxelurn.md"
 
 /* Meta information */
 export const DEFAULT_SESSIONID = "deadbeef"

@@ -1,5 +1,5 @@
 import React, { PropTypes } from "react"
-import { TUTORIAL_URL, SLACK_SIGNUP_URL, SLACK_OAUTH_URL } from "constants/strings"
+import {SLACK_OAUTH_URL } from "constants/strings"
 import { Link } from "react-router"
 import { connect } from "react-redux"
 import Actions from "actions/world"
@@ -15,10 +15,7 @@ const Header = ({ query, signedIn, sessionId, email, dispatch }) => (
     <div className="Header-nav">
       <Link to={{ pathname: "/build", query: query }} activeClassName="active"><div>Build</div></Link>
       <Link to={{ pathname: "/community", query: query }} activeClassName="active" target="_blank"><div>Leaderboard</div></Link>
-      <a target="_blank" href={SLACK_SIGNUP_URL}><div>Slack</div></a>
       <Link to={{ pathname: "/about", query: query }} activeClassName="active"><div>About</div></Link>
-      <Link to={{ pathname: "/help", query: query }} activeClassName="active"><div>Help</div></Link>
-      <a target="_blank" href={TUTORIAL_URL}><div>Tutorial</div></a>
       {signedIn &&
         <a onClick={() => dispatch(Actions.clear())}><div>Sign Out</div></a>
       }

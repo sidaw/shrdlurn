@@ -7,8 +7,8 @@
 }
 
 .About > div {
-  width: 80%;
-  min-height: 200px;
+  width: 95%;
+  height: 100%;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
   background-color: #FFF;
   padding: 25px 30px;
