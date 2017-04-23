@@ -26,6 +26,8 @@ class SharePanel extends Component {
   }
 
   render() {
+    const { signedIn } = this.props
+
     return (
       <div className={classnames("SidePanel", { "collapsed": this.state.collapsed })}>
         <div className="SidePanel-header">
@@ -38,16 +40,20 @@ class SharePanel extends Component {
           </div>
         </div>
         <div className="SidePanel-content">
-          {this.props.signedIn ?
-            <div>
-              <p>Please share your structure after you finish </p>
-              <div className="SharePanel-buttons">
-                <button
-                  onClick={() => this.share()}
-                  className="active full"
-                  style={{ borderRadius: "3px" }}>
-                  Share to {(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(this.props.sid)}
-                </button>
+          <div>
+            <p>Please share your structure after you finish </p>
+            <div className="SharePanel-buttons">
+              <button
+                onClick={() => this.share()}
+                className="active full"
+                style={{ borderRadius: "3px" }}>
+                Share {signedIn ?
+                  <span>to {(s => s.length > 8 ? s.substr(0, 8 - 1) + '...' : s)(this.props.sid)}</span>
+                  :
+                  <span>Structure</span>
+                }
+              </button>
+              {signedIn ?
                 <div className="yourstructs">
                   <select ref="deleteSelect" defaultValue="disabled">
                     <option disabled value="disabled">Select</option>
@@ -55,11 +61,21 @@ class SharePanel extends Component {
                       <option key={id} value={id}>{id}</option>
                     )}
                   </select>
-                  <button onClick={() => this.deleteStruct()}>Delete Struct</button>
+                  <button className="button-red" onClick={() => this.deleteStruct()}>Delete Struct</button>
                 </div>
-              </div>
-              <p><strong>Your impact:</strong> {this.props.score}</p>
+                :
+                <div className="yourstructs">
+                  <button onClick={() => this.clear()}>Clear</button>
+                </div>
+              }
+            </div>
+            <p><strong>Your impact:</strong> {this.props.score}</p>
+            {signedIn ?
               <p>You will override the struct with this name when sharing. You&nbsp;can see existing shared structures on the leaderboard.</p>
+              :
+              <p>You will override your previously shared structure with this new structure when you share it. You can <strong>sign in via Slack to share an unlimited number of structures.</strong> You can see all of them on the Leaderboard.</p>
+            }
+            {signedIn &&
               <div className="name">
                 <strong>Name your struct:</strong>
                 <input
@@ -70,12 +86,8 @@ class SharePanel extends Component {
                   onChange={(e) => this.props.dispatch(Actions.changeStructureId(e.target.value))}
                 />
               </div>
-            </div>
-            :
-            <div>
-              Please sign in with Slack in order to share your structure.
-              </div>
-          }
+            }
+          </div>
         </div>
       </div>
     )
