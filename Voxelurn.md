@@ -54,7 +54,7 @@ foreach [remove has row row of this]
 add red;  {select right; update color color of left}
 ```
 
-### User defined
+### Defined by users
 
 ```
 add red place 3 x 5
