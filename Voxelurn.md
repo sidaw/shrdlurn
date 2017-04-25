@@ -1,12 +1,5 @@
 # Voxelurn
 
-Voxelurn is a command interface for building voxel structures. It is an experimental platform for developing technologies allowing computers to understand a naturalized programming language, which allows people to access to the power of programming languages without conforming to their uncompromising syntax. Voxlurn does this by learning from its user community interactively.
-
-This document contains information about the core language,
-rules of the competition,
-how definition works,
-and other details about the project.
-
 ## Core language
 The system always understands a core language, which is just a programming language designed to interpolate well with natural language.
 
@@ -37,8 +30,8 @@ add red top
 add yellow
 repeat 3 [add yellow top]
 select top
-select has color red<
-move top, move bot
+select has color red
+move left; move bot
 ```
 
 ```
@@ -50,6 +43,7 @@ repeat 3 [add red; select top]
 ```
 
 ### Advanced
+
 ```
 {select left or right; add red};
 isolate [repeat 3 [add red left]]
@@ -70,4 +64,19 @@ dancer
 add girl
 music box
 ```
+
+## About
+
+Voxelurn is a command interface for building voxel structures. It is an experimental platform for developing a language technology allowing computers to understand a naturalized programming language, which allows people to access to the power of programming languages without conforming to their uncompromising syntax. Voxlurn does this by learning from its user community interactively.
+
+For technical details see [our paper](https://arxiv.org/abs/1704.06956).
+
+The [grammar](https://github.com/sidaw/sempre-interactive/blob/master/interactive/dal.grammar) of the core language and the [domain specific language](https://github.com/sidaw/sempre-interactive/blob/master/interactive/voxelurn.grammar).
+
+
+
+
+
+
+
 
