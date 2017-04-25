@@ -18,6 +18,7 @@ Extreme directions: `very top, very bot, very left ...`
 Colors:
 `red, orange, yellow, green, blue`
 `white, black, pink, brown`
+[any css colors](https://www.w3schools.com/cssref/css_colors.asp)
 
 Operators:
 `has, of, not, and, or`
@@ -48,6 +49,7 @@ select all and not this
 repeat 3 [add red; select top]
 ```
 
+### Advanced
 ```
 {select left or right; add red};
 isolate [repeat 3 [add red left]]
@@ -58,19 +60,14 @@ foreach [remove has row row of this]
 add red;  {select right; update color color of left}
 ```
 
+### User defined
+
 ```
-move left 3 times
-do 3 times add red top
-move left until red
+add red place 3 x 5
 red cube size 3
-surround this cube
-copy this to the left
+add green monster
+dancer
+add girl
+music box
 ```
 
-## Competition details
-
-We award prizes for users contributing the most useful language, and users building the best structures. Six $50 prizes are handed out every two weeks for the top 3 language teachers and the top 3 best structures. To participate, you have to join our slack channel and login. More details on the competition can be found there.
-
-## Definition
-
-## About the project
