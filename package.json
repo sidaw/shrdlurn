@@ -42,7 +42,7 @@
     "build:local": "REACT_APP_SEMPRE_SERVER=http://localhost:8410 REACT_APP_COMMUNITY_SERVER=http://localhost:8403 NODE_PATH=./src react-scripts build",
     "test": "NODE_PATH=./src react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "gh-pages --dist build --repo git@github.com:sidaw/voxelurn.git --remove static",
+    "deploy": "gh-pages --dist build --repo http://www.github.com/sidaw/voxelurn --remove static",
     "deploy:local": "gh-pages --dist build --repo http://www.github.com/sidaw/voxelurn-local --remove static",
     "deploy:clean": "rm -rf node_modules/gh-pages/.cache"
   },
