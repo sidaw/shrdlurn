@@ -63,20 +63,25 @@ add green monster
 dancer
 add girl
 music box
+draw bottom green
+black 10x10x10 frame
+select left 9
+{cover};ship;smoke
+3 tall 3 wide red tower centered here
+green sphere
 ```
 
 ## About
 
-Voxelurn is a command interface for building voxel structures. It is an experimental platform for developing a language technology allowing computers to understand a naturalized programming language, which allows people to access to the power of programming languages without conforming to their uncompromising syntax. Voxlurn does this by learning from its user community interactively.
+Voxelurn is a command interface for building voxel structures.
+It is an experimental platform for developing techniques
+allowing computers to parse a naturalized programming language.
+Our goal is to allow people access
+to the power of programming languages
+without conforming to their uncompromising syntax.
+Voxlurn does this by learning from its user community interactively starting from a precise programming language.
 
-For technical details see [our paper](https://arxiv.org/abs/1704.06956).
-
-The [grammar](https://github.com/sidaw/sempre-interactive/blob/master/interactive/dal.grammar) of the core language and the [domain specific language](https://github.com/sidaw/sempre-interactive/blob/master/interactive/voxelurn.grammar).
-
-
-
-
-
-
-
-
+For technical details:
+* [our paper](https://arxiv.org/abs/1704.06956)
+* the grammars of the [core language](https://github.com/sidaw/sempre-interactive/blob/master/interactive/dal.grammar) and the [voxelurn specific language](https://github.com/sidaw/sempre-interactive/blob/master/interactive/voxelurn.grammar)
+* the [server side code](https://github.com/sidaw/sempre-interactive/tree/2.3-codalab)
