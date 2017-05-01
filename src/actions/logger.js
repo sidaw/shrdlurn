@@ -104,6 +104,17 @@ const Actions = {
           type: Constants.CLEAR
         })
       })
+
+      socket.on("definitions", (e) => {
+        const definitions = {}
+        for (const definition of e.definitions)
+          definitions[definition.symbol] = definition
+
+        dispatch({
+          type: Constants.LOAD_DEFINITIONS,
+          definitions
+        })
+      })
     }
   },
 
@@ -305,6 +316,12 @@ const Actions = {
 
       if (token)
         sendSocket(getState, "get_user", { token })
+    }
+  },
+
+  getDefinitions: () => {
+    return (dispatch, getState) => {
+      sendSocket(getState, "get_definitions")
     }
   }
 }
