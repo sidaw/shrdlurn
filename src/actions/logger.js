@@ -1,6 +1,6 @@
 import io from "socket.io-client"
 import Constants from "constants/actions"
-import { COMMUNITY_SERVER_URL } from "constants/strings"
+import { COMMUNITY_SERVER_URL, CUBE_MINIMUM } from "constants/strings"
 import { setStore, getStore, genSid, resizePNG } from "helpers/util"
 
 function sendSocket(getState, event, payload) {
@@ -245,8 +245,8 @@ const Actions = {
 
       const structure = history[history.length - 1]
 
-      if (structure.value.length < 400) {
-        alert("You are sharing a really simple structure (less than 400 blocks total). Try creating something a bit more complex and interesting and then sharing that.")
+      if (structure.value.length < CUBE_MINIMUM) {
+        alert(`You are sharing a really simple structure (less than ${CUBE_MINIMUM} blocks total). Try creating something a bit more complex and interesting and then sharing that.`)
         return
       }
 

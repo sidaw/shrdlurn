@@ -21,6 +21,9 @@ export const STATUS = {
   LOADING: "LOADING"
 }
 
+/* Important Variables */
+export const CUBE_MINIMUM = 50
+
 /* Display Strings */
 export const COMMAND_BAR_PLACEHOLDER = "Tell the computer to build something..."
 export const COMMAND_BAR_DEFINE_PLACEHOLDER = "Define this set of actions as..."
