@@ -202,6 +202,7 @@ const Actions = {
               type: Constants.NEW_STRUCT,
               uid: e.uid,
               id: e.id,
+              image: e.image,
               score: e.score,
               upvotes: e.upvotes,
               struct: e.struct

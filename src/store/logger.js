@@ -58,7 +58,7 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.NEW_STRUCT:
       const value = JSON.parse(action.struct.value)
       const recipe = action.struct.recipe
-      const newStruct = { uid: action.uid, id: action.id, score: action.score, upvotes: action.upvotes, value: value, recipe: recipe }
+      const newStruct = { uid: action.uid, id: action.id, score: action.score, upvotes: action.upvotes, image: action.image, value: value, recipe: recipe }
 
       if (state.structs === "loading") {
         return { ...state, structs: [newStruct] }
