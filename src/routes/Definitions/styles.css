@@ -4,7 +4,15 @@
   padding: 30px 50px;
 }
 
-.Definitions-graph {
-  width: 100%;
-  height: 100%;
+.Definition {
+  margin-bottom: 10px;
+}
+
+.Step a {
+  color: blue;
+  cursor: pointer;
+}
+
+.Step a:hover {
+  border-bottom: 1px solid blue;
 }
