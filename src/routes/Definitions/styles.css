@@ -1,0 +1,51 @@
+.Definitions {
+  width: 100%;
+  height: 100%;
+  padding: 30px 50px;
+}
+
+.Definition {
+  margin-bottom: 10px;
+}
+
+.Step {
+  font-size: 0.8em;
+}
+
+.Step a {
+  color: rgb(0, 160, 176);
+  cursor: pointer;
+  border-bottom: 1px dotted rgba(0, 160, 176, 0.5);
+}
+
+.Step a:hover {
+  border-bottom: 1px solid rgb(0, 160, 176);
+}
+
+.Step a.nomatch {
+  color: red;
+  border: none;
+  cursor: default;
+}
+
+.Definition.highlight {
+  padding: 8px;
+  background-color: rgba(255, 255, 0, 0.7);
+}
+
+.Definitions-search {
+  margin-bottom: 30px;
+  display: flex;
+}
+
+.Definitions-search input {
+  font-size: 1.4rem;
+}
+
+.Definitions-search button {
+  font-size: 1.2rem;
+  padding: 0em 2em;
+  margin-left: 15px;
+  height: auto;
+  box-sizing: border-box;
+}

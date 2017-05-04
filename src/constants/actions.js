@@ -36,7 +36,9 @@ const Actions = {
 
   CLEAR: "CLEAR",
 
-  SIGN_IN: "SIGN_IN"
+  SIGN_IN: "SIGN_IN",
+
+  LOAD_DEFINITIONS: "LOAD_DEFINITIONS"
 }
 
 export default Actions

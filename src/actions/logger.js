@@ -1,6 +1,6 @@
 import io from "socket.io-client"
 import Constants from "constants/actions"
-import { COMMUNITY_SERVER_URL } from "constants/strings"
+import { COMMUNITY_SERVER_URL, CUBE_MINIMUM } from "constants/strings"
 import { setStore, getStore, genSid, resizePNG } from "helpers/util"
 
 function sendSocket(getState, event, payload) {
@@ -104,6 +104,17 @@ const Actions = {
           type: Constants.CLEAR
         })
       })
+
+      socket.on("definitions", (e) => {
+        const definitions = {}
+        for (const definition of e.definitions)
+          definitions[definition.symbol] = definition
+
+        dispatch({
+          type: Constants.LOAD_DEFINITIONS,
+          definitions
+        })
+      })
     }
   },
 
@@ -191,6 +202,7 @@ const Actions = {
               type: Constants.NEW_STRUCT,
               uid: e.uid,
               id: e.id,
+              image: e.image,
               score: e.score,
               upvotes: e.upvotes,
               struct: e.struct
@@ -234,8 +246,8 @@ const Actions = {
 
       const structure = history[history.length - 1]
 
-      if (structure.value.length < 400) {
-        alert("You are sharing a really simple structure (less than 400 blocks total). Try creating something a bit more complex and interesting and then sharing that.")
+      if (structure.value.length < CUBE_MINIMUM) {
+        alert(`You are sharing a really simple structure (less than ${CUBE_MINIMUM} blocks total). Try creating something a bit more complex and interesting and then sharing that.`)
         return
       }
 
@@ -305,6 +317,12 @@ const Actions = {
 
       if (token)
         sendSocket(getState, "get_user", { token })
+    }
+  },
+
+  getDefinitions: () => {
+    return (dispatch, getState) => {
+      sendSocket(getState, "get_definitions")
     }
   }
 }

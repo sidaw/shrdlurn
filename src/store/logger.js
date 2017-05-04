@@ -8,7 +8,8 @@ const initialState = {
   topBuilders: [],
   score: 0,
   user_structs: [],
-  sid: "1"
+  sid: "1",
+  definitions: {}
 }
 
 /* Prune the number of utts displayed to under 10, ordered by latest timestamp */
@@ -42,11 +43,11 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, lastValue: action.value }
     case Constants.NEW_ACCEPT:
       const prevUtterancesNA = state.utterances.hasOwnProperty(action.uid) ? state.utterances[action.uid] : []
-      const newUttsNA = { ...state.utterances, [action.uid]: [ { type: "accept", msg: {query: action.query}, timestamp: action.timestamp}, ...prevUtterancesNA ]}
+      const newUttsNA = { ...state.utterances, [action.uid]: [{ type: "accept", msg: { query: action.query }, timestamp: action.timestamp }, ...prevUtterancesNA] }
       return { ...state, utterances: pruneUtts(newUttsNA) }
     case Constants.NEW_DEFINE:
       const prevUtterancesND = state.utterances.hasOwnProperty(action.uid) ? state.utterances[action.uid] : []
-      const newUttsND = { ...state.utterances, [action.uid]: [ { type: "define", msg: {defineAs: action.defined}, timestamp: action.timestamp}, ...prevUtterancesND ]}
+      const newUttsND = { ...state.utterances, [action.uid]: [{ type: "define", msg: { defineAs: action.defined }, timestamp: action.timestamp }, ...prevUtterancesND] }
       return { ...state, utterances: pruneUtts(newUttsND) }
     case Constants.NEW_UPVOTE:
       const modifiedStructs = state.structs.slice()
@@ -57,7 +58,7 @@ export default function reducer(state = initialState, action = {}) {
     case Constants.NEW_STRUCT:
       const value = JSON.parse(action.struct.value)
       const recipe = action.struct.recipe
-      const newStruct = { uid: action.uid, id: action.id, score: action.score, upvotes: action.upvotes, value: value, recipe: recipe }
+      const newStruct = { uid: action.uid, id: action.id, score: action.score, upvotes: action.upvotes, image: action.image, value: value, recipe: recipe }
 
       if (state.structs === "loading") {
         return { ...state, structs: [newStruct] }
@@ -68,7 +69,7 @@ export default function reducer(state = initialState, action = {}) {
         /* Modifying a preexisting struct */
         const newStructStructs = state.structs.slice()
         newStructStructs[sid_idx] = newStruct
-        return { ...state, structs: newStructStructs}
+        return { ...state, structs: newStructStructs }
       }
 
       return { ...state, structs: [...state.structs, newStruct] }
@@ -84,6 +85,8 @@ export default function reducer(state = initialState, action = {}) {
       return { ...state, user_structs: action.structs }
     case Constants.SET_STRUCTURE_ID:
       return { ...state, sid: action.sid }
+    case Constants.LOAD_DEFINITIONS:
+      return { ...state, definitions: action.definitions }
     default:
       return state
   }

@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from "react"
 import { connect } from "react-redux"
 import Actions from "actions/world"
 import classnames from "classnames"
-import { STATUS } from "constants/strings"
+import { STATUS, DEFINE_THIS, FINISH_DEFINITION } from "constants/strings"
 
 import "./styles.css"
 
@@ -39,7 +39,7 @@ class HistoryItem extends Component {
           }
           <div className="HistoryItem-text-text">{text}</div>
           {(last || tentative) && !defining &&
-            <button onClick={(e) => { e.stopPropagation(); setPin() }}>Define This</button>
+            <button onClick={(e) => { e.stopPropagation(); setPin() }}>{DEFINE_THIS}</button>
           }
         </div>
       </div>
@@ -57,7 +57,7 @@ const HistoryPin = ({ text, head, define, defining, remove, query }) => {
       }
       <div className="HistoryPin-remove" onClick={(e) => { e.stopPropagation(); remove() }}>&times;</div>
       {head &&
-        <button onClick={(e) => { e.stopPropagation(); define() }}>Finish Definition</button>
+        <button onClick={(e) => { e.stopPropagation(); define() }}>{FINISH_DEFINITION}</button>
       }
     </div>
   )

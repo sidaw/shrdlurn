@@ -21,9 +21,14 @@ export const STATUS = {
   LOADING: "LOADING"
 }
 
+/* Important Variables */
+export const CUBE_MINIMUM = 50
+
 /* Display Strings */
 export const COMMAND_BAR_PLACEHOLDER = "Tell the computer to build something..."
 export const COMMAND_BAR_DEFINE_PLACEHOLDER = "Define this set of actions as..."
 export const TRY_MSG = "Enter a command for the computer."
 export const ACCEPT_MSG = "Click accept if the computer correctly intepreted what you meant, scroll to see other intepretations, or revise your command."
 export const DEFINE_MSG = "Define the highlighted set of actions as this phrase (e.g. build a chair)."
+export const DEFINE_THIS = "Define This"
+export const FINISH_DEFINITION = "Finish Definition"
