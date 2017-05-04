@@ -211,8 +211,8 @@ class Build extends Component {
                 <div>
                   <span>{this.state.selectedResp + 1} / {responses.length} possible interpretations</span>
                   <div className="Build-actions-buttons">
-                    <button onClick={() => this.upSelected()}>&uarr;</button>
-                    <button onClick={() => this.downSelected()}>&darr;</button>
+                    <button onClick={() => this.downSelected()}>&uarr;</button>
+                    <button onClick={() => this.upSelected()}>&darr;</button>
                   </div>
                 </div>
               }
