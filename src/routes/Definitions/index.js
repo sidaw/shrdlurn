@@ -72,7 +72,7 @@ class Definitions extends Component {
                   <span key={idx} className="Step">
                     {b.map((t, idx) => {
                       if (typeof t === "string") {
-                        return (<span key={idx}>{t}{idx !== t.length - 1 && " "}</span>)
+                        return (<span key={idx}>{t}&nbsp;</span>)
                       } else {
                         return (
                           <a
@@ -80,7 +80,7 @@ class Definitions extends Component {
                             onClick={() => this.scrollTo(t[0])}
                             className={classnames({ "nomatch": t[0] === "(no_match)" || t[0] === "(no_parse)" })}
                           >
-                            {t.slice(1).join(" ")}{idx !== t.length - 1 && " "}
+                            {t.slice(1).join(" ")}&nbsp;
                           </a>
                         )
                       }
