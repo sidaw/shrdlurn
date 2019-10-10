@@ -1977,7 +1977,7 @@ util.log2int = function(nbestind) {
 var configs = {};
 configs.URL_Parameters = util.parseQueryString();
 if (configs.SEMPRE_URL==undefined)
-    configs.SEMPRE_URL = "http://jonsson.stanford.edu:8400"
+    configs.SEMPRE_URL = "http://ec2-54-191-252-119.us-west-2.compute.amazonaws.com:8400"
 if (configs.URL_Parameters.hasOwnProperty("local")) {
   configs.SEMPRE_URL = "http://localhost:8400";
 }
